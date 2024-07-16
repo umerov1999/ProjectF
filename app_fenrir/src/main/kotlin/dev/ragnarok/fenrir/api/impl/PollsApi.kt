@@ -8,8 +8,12 @@ import dev.ragnarok.fenrir.api.model.VKApiPoll
 import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.api.services.IPollsService
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.checkInt
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.emptyListFlow
 import dev.ragnarok.fenrir.util.serializeble.json.Json
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 
@@ -23,19 +27,18 @@ internal class PollsApi(accountId: Long, provider: IServiceProvider) :
         backgroundId: Int?,
         ownerId: Long,
         addAnswers: List<String>
-    ): Single<VKApiPoll> {
+    ): Flow<VKApiPoll> {
         return provideService(IPollsService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .create(
-                        question,
-                        integerFromBoolean(isAnonymous),
-                        integerFromBoolean(isMultiple),
-                        integerFromBoolean(disableUnvote),
-                        backgroundId,
-                        ownerId,
-                        Json.encodeToString(ListSerializer(String.serializer()), addAnswers)
-                    )
+            .flatMapConcat {
+                it.create(
+                    question,
+                    integerFromBoolean(isAnonymous),
+                    integerFromBoolean(isMultiple),
+                    integerFromBoolean(disableUnvote),
+                    backgroundId,
+                    ownerId,
+                    Json.encodeToString(ListSerializer(String.serializer()), addAnswers)
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -45,12 +48,12 @@ internal class PollsApi(accountId: Long, provider: IServiceProvider) :
         pollId: Int,
         answerId: Long,
         isBoard: Boolean?
-    ): Single<Boolean> {
+    ): Flow<Boolean> {
         return provideService(IPollsService(), TokenType.USER)
-            .flatMap { service ->
-                service.deleteVote(ownerId, pollId, answerId, integerFromBoolean(isBoard))
+            .flatMapConcat {
+                it.deleteVote(ownerId, pollId, answerId, integerFromBoolean(isBoard))
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
@@ -59,27 +62,27 @@ internal class PollsApi(accountId: Long, provider: IServiceProvider) :
         pollId: Int,
         answerIds: Set<Long>,
         isBoard: Boolean?
-    ): Single<Boolean> {
+    ): Flow<Boolean> {
         return provideService(IPollsService(), TokenType.USER)
-            .flatMap { service ->
-                service.addVote(ownerId, pollId, join(answerIds, ","), integerFromBoolean(isBoard))
+            .flatMapConcat {
+                it.addVote(ownerId, pollId, join(answerIds, ","), integerFromBoolean(isBoard))
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
-    override fun getById(ownerId: Long, isBoard: Boolean?, pollId: Int): Single<VKApiPoll> {
+    override fun getById(ownerId: Long, isBoard: Boolean?, pollId: Int): Flow<VKApiPoll> {
         return provideService(IPollsService(), TokenType.USER)
-            .flatMap { service ->
-                service.getById(ownerId, integerFromBoolean(isBoard), pollId)
+            .flatMapConcat {
+                it.getById(ownerId, integerFromBoolean(isBoard), pollId)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getBackgrounds(): Single<List<VKApiPoll.Background>> {
+    override fun getBackgrounds(): Flow<List<VKApiPoll.Background>> {
         return provideService(IPollsService(), TokenType.USER)
-            .flatMap { service ->
-                service.getBackgrounds()
+            .flatMapConcat {
+                it.getBackgrounds()
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -89,13 +92,11 @@ internal class PollsApi(accountId: Long, provider: IServiceProvider) :
         pollId: Int,
         isBoard: Int?,
         answer_ids: List<Long>, offset: Int?, count: Int?
-    ): Single<List<VKApiUser>> {
-        val ids = join(answer_ids, ",") { it.toString() } ?: return Single.just(
-            emptyList()
-        )
+    ): Flow<List<VKApiUser>> {
+        val ids = join(answer_ids, ",") { it.toString() } ?: return emptyListFlow()
         return provideService(IPollsService(), TokenType.USER)
-            .flatMap { service ->
-                service.getVoters(
+            .flatMapConcat { s ->
+                s.getVoters(
                     ownerId,
                     pollId,
                     isBoard,

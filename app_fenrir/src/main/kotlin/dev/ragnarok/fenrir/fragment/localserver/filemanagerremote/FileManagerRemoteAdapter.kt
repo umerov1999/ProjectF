@@ -19,7 +19,6 @@ import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.ILocalServerInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.link.VKLinkParser
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController
 import dev.ragnarok.fenrir.media.music.PlayerStatus
@@ -35,13 +34,14 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.toColor
-import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
-import io.reactivex.rxjava3.disposables.Disposable
 
 class FileManagerRemoteAdapter(private var context: Context, private var data: List<FileRemote>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -49,8 +49,8 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
     private val colorOnSurface = CurrentTheme.getColorOnSurface(context)
     private val messageBubbleColor = CurrentTheme.getMessageBubbleColor(context)
     private var clickListener: ClickListener? = null
-    private var mPlayerDisposable = Disposable.disposed()
-    private var audioListDisposable = Disposable.disposed()
+    private var mPlayerDisposable = CancelableJob()
+    private var audioListDisposable = CancelableJob()
     private var currAudio: Audio? = MusicPlaybackController.currentAudio
     private val factory: ILocalServerInteractor = InteractorFactory.createLocalServerInteractor()
 
@@ -61,9 +61,8 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        mPlayerDisposable = MusicPlaybackController.observeServiceBinding()
-            .toMainThread()
-            .subscribe { status ->
+        mPlayerDisposable += MusicPlaybackController.observeServiceBinding()
+            .sharedFlowToMain { status ->
                 onServiceBindEvent(
                     status
                 )
@@ -101,8 +100,8 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
-        mPlayerDisposable.dispose()
-        audioListDisposable.dispose()
+        mPlayerDisposable.cancel()
+        audioListDisposable.cancel()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -323,8 +322,8 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                         if (hash1.isNullOrEmpty()) {
                             return@show
                         }
-                        audioListDisposable =
-                            factory.uploadAudio(hash1).fromIOToMain().subscribe(
+                        audioListDisposable +=
+                            factory.uploadAudio(hash1).fromIOToMain(
                                 { createCustomToast(context).showToast(R.string.success) }) { o ->
                                 createCustomToast(context).showToastThrowable(o)
                             }
@@ -343,13 +342,12 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                 if (hash1.isNullOrEmpty()) {
                                     return@setPositiveButton
                                 }
-                                audioListDisposable =
-                                    factory
-                                        .delete_media(hash1)
-                                        .fromIOToMain().subscribe(
-                                            { createCustomToast(context).showToast(R.string.success) }) {
-                                            createCustomToast(context).showToastThrowable(it)
-                                        }
+                                audioListDisposable += factory
+                                    .delete_media(hash1)
+                                    .fromIOToMain(
+                                        { createCustomToast(context).showToast(R.string.success) }) {
+                                        createCustomToast(context).showToastThrowable(it)
+                                    }
                             }
                             .setNegativeButton(R.string.button_cancel, null)
                             .show()
@@ -361,12 +359,11 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                         if (hash.isNullOrEmpty()) {
                             return@show
                         }
-                        audioListDisposable =
-                            factory.update_time(hash)
-                                .fromIOToMain().subscribe(
-                                    { createCustomToast(context).showToast(R.string.success) }) {
-                                    createCustomToast(context).showToastThrowable(it)
-                                }
+                        audioListDisposable += factory.update_time(hash)
+                            .fromIOToMain(
+                                { createCustomToast(context).showToast(R.string.success) }) {
+                                createCustomToast(context).showToastThrowable(it)
+                            }
                     }
 
                     FileLocalServerOption.edit_item -> {
@@ -375,47 +372,44 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                         if (hash2.isNullOrEmpty()) {
                             return@show
                         }
-                        audioListDisposable =
-                            factory.get_file_name(hash2)
-                                .fromIOToMain().subscribe(
-                                    { t ->
-                                        val root =
-                                            View.inflate(
-                                                context,
-                                                R.layout.entry_file_name,
-                                                null
-                                            )
-                                        root.findViewById<TextInputEditText>(R.id.edit_file_name)
-                                            .setText(
-                                                t
-                                            )
-                                        MaterialAlertDialogBuilder(context)
-                                            .setTitle(R.string.change_name)
-                                            .setCancelable(true)
-                                            .setView(root)
-                                            .setPositiveButton(R.string.button_ok) { _, _ ->
-                                                audioListDisposable =
-                                                    factory
-                                                        .update_file_name(
-                                                            hash2,
-                                                            root.findViewById<TextInputEditText>(R.id.edit_file_name).text.toString()
-                                                                .trim { it <= ' ' })
-                                                        .fromIOToMain()
-                                                        .subscribe({
-                                                            createCustomToast(context).showToast(
-                                                                R.string.success
-                                                            )
-                                                        }) {
-                                                            createCustomToast(context).showToastThrowable(
-                                                                it
-                                                            )
-                                                        }
-                                            }
-                                            .setNegativeButton(R.string.button_cancel, null)
-                                            .show()
-                                    }) {
-                                    createCustomToast(context).showToastThrowable(it)
-                                }
+                        audioListDisposable += factory.get_file_name(hash2)
+                            .fromIOToMain(
+                                { t ->
+                                    val root =
+                                        View.inflate(
+                                            context,
+                                            R.layout.entry_file_name,
+                                            null
+                                        )
+                                    root.findViewById<TextInputEditText>(R.id.edit_file_name)
+                                        .setText(
+                                            t
+                                        )
+                                    MaterialAlertDialogBuilder(context)
+                                        .setTitle(R.string.change_name)
+                                        .setCancelable(true)
+                                        .setView(root)
+                                        .setPositiveButton(R.string.button_ok) { _, _ ->
+                                            audioListDisposable += factory
+                                                .update_file_name(
+                                                    hash2,
+                                                    root.findViewById<TextInputEditText>(R.id.edit_file_name).text.toString()
+                                                        .trim { it <= ' ' })
+                                                .fromIOToMain({
+                                                    createCustomToast(context).showToast(
+                                                        R.string.success
+                                                    )
+                                                }) {
+                                                    createCustomToast(context).showToastThrowable(
+                                                        it
+                                                    )
+                                                }
+                                        }
+                                        .setNegativeButton(R.string.button_cancel, null)
+                                        .show()
+                                }) {
+                                createCustomToast(context).showToastThrowable(it)
+                            }
                     }
 
                     FileLocalServerOption.play_item_audio -> {
@@ -543,13 +537,12 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                 if (hash1.isNullOrEmpty()) {
                                     return@setPositiveButton
                                 }
-                                audioListDisposable =
-                                    factory
-                                        .delete_media(hash1)
-                                        .fromIOToMain().subscribe(
-                                            { createCustomToast(context).showToast(R.string.success) }) {
-                                            createCustomToast(context).showToastThrowable(it)
-                                        }
+                                audioListDisposable += factory
+                                    .delete_media(hash1)
+                                    .fromIOToMain(
+                                        { createCustomToast(context).showToast(R.string.success) }) {
+                                        createCustomToast(context).showToastThrowable(it)
+                                    }
                             }
                             .setNegativeButton(R.string.button_cancel, null)
                             .show()
@@ -561,12 +554,11 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                         if (hash.isNullOrEmpty()) {
                             return@show
                         }
-                        audioListDisposable =
-                            factory.update_time(hash)
-                                .fromIOToMain().subscribe(
-                                    { createCustomToast(context).showToast(R.string.success) }) {
-                                    createCustomToast(context).showToastThrowable(it)
-                                }
+                        audioListDisposable += factory.update_time(hash)
+                            .fromIOToMain(
+                                { createCustomToast(context).showToast(R.string.success) }) {
+                                createCustomToast(context).showToastThrowable(it)
+                            }
                     }
 
                     FileLocalServerOption.edit_item -> {
@@ -575,47 +567,44 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                         if (hash2.isNullOrEmpty()) {
                             return@show
                         }
-                        audioListDisposable =
-                            factory.get_file_name(hash2)
-                                .fromIOToMain().subscribe(
-                                    { t ->
-                                        val root =
-                                            View.inflate(
-                                                context,
-                                                R.layout.entry_file_name,
-                                                null
-                                            )
-                                        root.findViewById<TextInputEditText>(R.id.edit_file_name)
-                                            .setText(
-                                                t
-                                            )
-                                        MaterialAlertDialogBuilder(context)
-                                            .setTitle(R.string.change_name)
-                                            .setCancelable(true)
-                                            .setView(root)
-                                            .setPositiveButton(R.string.button_ok) { _, _ ->
-                                                audioListDisposable =
-                                                    factory
-                                                        .update_file_name(
-                                                            hash2,
-                                                            root.findViewById<TextInputEditText>(R.id.edit_file_name).text.toString()
-                                                                .trim { it <= ' ' })
-                                                        .fromIOToMain()
-                                                        .subscribe({
-                                                            createCustomToast(context).showToast(
-                                                                R.string.success
-                                                            )
-                                                        }) {
-                                                            createCustomToast(context).showToastThrowable(
-                                                                it
-                                                            )
-                                                        }
-                                            }
-                                            .setNegativeButton(R.string.button_cancel, null)
-                                            .show()
-                                    }) {
-                                    createCustomToast(context).showToastThrowable(it)
-                                }
+                        audioListDisposable += factory.get_file_name(hash2)
+                            .fromIOToMain(
+                                { t ->
+                                    val root =
+                                        View.inflate(
+                                            context,
+                                            R.layout.entry_file_name,
+                                            null
+                                        )
+                                    root.findViewById<TextInputEditText>(R.id.edit_file_name)
+                                        .setText(
+                                            t
+                                        )
+                                    MaterialAlertDialogBuilder(context)
+                                        .setTitle(R.string.change_name)
+                                        .setCancelable(true)
+                                        .setView(root)
+                                        .setPositiveButton(R.string.button_ok) { _, _ ->
+                                            audioListDisposable += factory
+                                                .update_file_name(
+                                                    hash2,
+                                                    root.findViewById<TextInputEditText>(R.id.edit_file_name).text.toString()
+                                                        .trim { it <= ' ' })
+                                                .fromIOToMain({
+                                                    createCustomToast(context).showToast(
+                                                        R.string.success
+                                                    )
+                                                }) {
+                                                    createCustomToast(context).showToastThrowable(
+                                                        it
+                                                    )
+                                                }
+                                        }
+                                        .setNegativeButton(R.string.button_cancel, null)
+                                        .show()
+                                }) {
+                                createCustomToast(context).showToastThrowable(it)
+                            }
                     }
 
                     else -> {}

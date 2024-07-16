@@ -16,19 +16,18 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.TextView
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.view.media.MaterialPlayPauseFab
 import dev.ragnarok.fenrir.view.media.MediaActionDrawable
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.Disposable
-import java.util.concurrent.TimeUnit
 
 class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
     private val mContext: Context
     private val mUseFastForward: Boolean
-    private var mRefreshDisposable = Disposable.disposed()
-    private var mHideDisposable = Disposable.disposed()
+    private var mRefreshDisposable = CancelableJob()
+    private var mHideDisposable = CancelableJob()
     private var mPlayer: MediaPlayerControl? = null
     private var mAnchor: ViewGroup? = null
     private var mRoot: View? = null
@@ -207,29 +206,25 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
     }
 
     private fun queueNextRefresh(timeMs: Long) {
-        mRefreshDisposable.dispose()
-        mRefreshDisposable = Observable.just(Any())
-            .delay(timeMs, TimeUnit.MILLISECONDS)
-            .toMainThread()
-            .subscribe {
+        mRefreshDisposable.cancel()
+        mRefreshDisposable.set(delayTaskFlow(timeMs)
+            .toMain {
                 val pos = setProgress()
                 if (!mDragging && isShowing && mPlayer?.isPlaying == true) {
                     queueNextRefresh(1000 - pos % 1000)
                 }
-            }
+            })
     }
 
     private fun queueHide() {
-        mHideDisposable.dispose()
-        mHideDisposable = Observable.just(Any())
-            .delay(15, TimeUnit.SECONDS)
-            .toMainThread()
-            .subscribe {
+        mHideDisposable.cancel()
+        mHideDisposable.set(delayTaskFlow(15000)
+            .toMain {
                 if (!mDragging && isShowing && mPlayer?.isPlaying == true) {
                     mPlayer?.hideActionBar()
                     hide()
                 }
-            }
+            })
     }
 
     fun show() {
@@ -255,8 +250,8 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
      */
     fun hide() {
         try {
-            mHideDisposable.dispose()
-            mRefreshDisposable.dispose()
+            mHideDisposable.cancel()
+            mRefreshDisposable.cancel()
             mAnchor?.removeView(this)
         } catch (ex: Exception) {
             Log.w("MediaController", "already removed")
@@ -269,8 +264,8 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         if (isInEditMode) {
             return
         }
-        mHideDisposable.dispose()
-        mRefreshDisposable.dispose()
+        mHideDisposable.cancel()
+        mRefreshDisposable.cancel()
     }
 
     private fun stringForTime(timeMs: Long): String {
@@ -302,7 +297,7 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         }
     }
 
-    internal fun setProgress(): Long {
+    private fun setProgress(): Long {
         if (mPlayer == null || mDragging) {
             return 0
         }
@@ -506,8 +501,8 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         mPlayer ?: return
         if (!mDragging) {
             mDragging = true
-            mRefreshDisposable.dispose()
-            mHideDisposable.dispose()
+            mRefreshDisposable.cancel()
+            mHideDisposable.cancel()
         }
 
         if (mCurrentTime != null) mCurrentTime?.text = stringForTime(position)

@@ -20,7 +20,6 @@ import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.Includes
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.fragment.localserver.audioslocalserver.AudioLocalServerRecyclerAdapter
-import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.media.music.MusicPlaybackController
 import dev.ragnarok.filegallery.media.music.PlayerStatus
 import dev.ragnarok.filegallery.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
@@ -34,13 +33,14 @@ import dev.ragnarok.filegallery.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.toColor
-import dev.ragnarok.filegallery.toMainThread
 import dev.ragnarok.filegallery.util.DownloadWorkUtils
 import dev.ragnarok.filegallery.util.Utils
+import dev.ragnarok.filegallery.util.coroutines.CancelableJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.filegallery.util.toast.CustomSnackbars
 import dev.ragnarok.filegallery.util.toast.CustomToast
 import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
-import io.reactivex.rxjava3.disposables.Disposable
 
 class FileManagerRemoteAdapter(private var context: Context, private var data: List<FileRemote>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -48,8 +48,8 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
     private val colorOnSurface = CurrentTheme.getColorOnSurface(context)
     private val messageBubbleColor = CurrentTheme.getMessageBubbleColor(context)
     private var clickListener: ClickListener? = null
-    private var mPlayerDisposable = Disposable.disposed()
-    private var audioListDisposable = Disposable.disposed()
+    private var mPlayerDisposable = CancelableJob()
+    private var audioListDisposable = CancelableJob()
     private var currAudio: Audio? = MusicPlaybackController.currentAudio
 
     fun setItems(data: List<FileRemote>) {
@@ -59,13 +59,12 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        mPlayerDisposable = MusicPlaybackController.observeServiceBinding()
-            .toMainThread()
-            .subscribe { status ->
+        mPlayerDisposable.set(MusicPlaybackController.observeServiceBinding()
+            .sharedFlowToMain {
                 onServiceBindEvent(
-                    status
+                    it
                 )
-            }
+            })
     }
 
     private fun onServiceBindEvent(@PlayerStatus status: Int) {
@@ -99,8 +98,8 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
-        mPlayerDisposable.dispose()
-        audioListDisposable.dispose()
+        mPlayerDisposable.cancel()
+        audioListDisposable.cancel()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -300,19 +299,18 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                 if (hash1.isNullOrEmpty()) {
                                     return@setPositiveButton
                                 }
-                                audioListDisposable =
-                                    Includes.networkInterfaces.localServerApi()
-                                        .delete_media(hash1)
-                                        .fromIOToMain().subscribe(
-                                            {
-                                                CustomToast.createCustomToast(
-                                                    context, view
-                                                )?.showToast(R.string.success)
-                                            }) {
-                                            CustomToast.createCustomToast(context, view)
-                                                ?.setDuration(Toast.LENGTH_LONG)
-                                                ?.showToastThrowable(it)
-                                        }
+                                audioListDisposable.set(Includes.networkInterfaces.localServerApi()
+                                    .delete_media(hash1)
+                                    .fromIOToMain(
+                                        {
+                                            CustomToast.createCustomToast(
+                                                context, view
+                                            )?.showToast(R.string.success)
+                                        }) {
+                                        CustomToast.createCustomToast(context, view)
+                                            ?.setDuration(Toast.LENGTH_LONG)
+                                            ?.showToastThrowable(it)
+                                    })
                             }
                             .setNegativeButton(R.string.button_cancel, null)
                             .show()
@@ -324,17 +322,17 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                         if (hash.isNullOrEmpty()) {
                             return@show
                         }
-                        audioListDisposable =
-                            Includes.networkInterfaces.localServerApi().update_time(hash)
-                                .fromIOToMain().subscribe(
-                                    {
-                                        CustomToast.createCustomToast(
-                                            context, view
-                                        )?.showToast(R.string.success)
-                                    }) {
-                                    CustomToast.createCustomToast(context, view)
-                                        ?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(it)
-                                }
+                        audioListDisposable.set(Includes.networkInterfaces.localServerApi()
+                            .update_time(hash)
+                            .fromIOToMain(
+                                {
+                                    CustomToast.createCustomToast(
+                                        context, view
+                                    )?.showToast(R.string.success)
+                                }) {
+                                CustomToast.createCustomToast(context, view)
+                                    ?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(it)
+                            })
                     }
 
                     FileLocalServerOption.edit_item -> {
@@ -343,53 +341,51 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                         if (hash2.isNullOrEmpty()) {
                             return@show
                         }
-                        audioListDisposable =
-                            Includes.networkInterfaces.localServerApi().get_file_name(hash2)
-                                .fromIOToMain().subscribe(
-                                    { t ->
-                                        val root =
-                                            View.inflate(
-                                                context,
-                                                R.layout.entry_file_name,
-                                                null
-                                            )
-                                        root.findViewById<TextInputEditText>(R.id.edit_file_name)
-                                            .setText(
-                                                t
-                                            )
-                                        MaterialAlertDialogBuilder(context)
-                                            .setTitle(R.string.change_name)
-                                            .setCancelable(true)
-                                            .setView(root)
-                                            .setPositiveButton(R.string.button_ok) { _, _ ->
-                                                audioListDisposable =
-                                                    Includes.networkInterfaces.localServerApi()
-                                                        .update_file_name(
-                                                            hash2,
-                                                            root.findViewById<TextInputEditText>(R.id.edit_file_name).text.toString()
-                                                                .trim { it <= ' ' })
-                                                        .fromIOToMain()
-                                                        .subscribe({
-                                                            CustomToast.createCustomToast(
-                                                                context, view
-                                                            )?.showToast(
-                                                                R.string.success
-                                                            )
-                                                        }) {
-                                                            CustomToast.createCustomToast(
-                                                                context,
-                                                                view
-                                                            )
-                                                                ?.setDuration(Toast.LENGTH_LONG)
-                                                                ?.showToastThrowable(it)
-                                                        }
-                                            }
-                                            .setNegativeButton(R.string.button_cancel, null)
-                                            .show()
-                                    }) {
-                                    CustomToast.createCustomToast(context, view)
-                                        ?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(it)
-                                }
+                        audioListDisposable.set(Includes.networkInterfaces.localServerApi()
+                            .get_file_name(hash2)
+                            .fromIOToMain(
+                                { t ->
+                                    val root =
+                                        View.inflate(
+                                            context,
+                                            R.layout.entry_file_name,
+                                            null
+                                        )
+                                    root.findViewById<TextInputEditText>(R.id.edit_file_name)
+                                        .setText(
+                                            t
+                                        )
+                                    MaterialAlertDialogBuilder(context)
+                                        .setTitle(R.string.change_name)
+                                        .setCancelable(true)
+                                        .setView(root)
+                                        .setPositiveButton(R.string.button_ok) { _, _ ->
+                                            audioListDisposable.set(Includes.networkInterfaces.localServerApi()
+                                                .update_file_name(
+                                                    hash2,
+                                                    root.findViewById<TextInputEditText>(R.id.edit_file_name).text.toString()
+                                                        .trim { it <= ' ' })
+                                                .fromIOToMain({
+                                                    CustomToast.createCustomToast(
+                                                        context, view
+                                                    )?.showToast(
+                                                        R.string.success
+                                                    )
+                                                }) {
+                                                    CustomToast.createCustomToast(
+                                                        context,
+                                                        view
+                                                    )
+                                                        ?.setDuration(Toast.LENGTH_LONG)
+                                                        ?.showToastThrowable(it)
+                                                })
+                                        }
+                                        .setNegativeButton(R.string.button_cancel, null)
+                                        .show()
+                                }) {
+                                CustomToast.createCustomToast(context, view)
+                                    ?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(it)
+                            })
                     }
 
                     FileLocalServerOption.play_item_audio -> {
@@ -517,19 +513,18 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                 if (hash1.isNullOrEmpty()) {
                                     return@setPositiveButton
                                 }
-                                audioListDisposable =
-                                    Includes.networkInterfaces.localServerApi()
-                                        .delete_media(hash1)
-                                        .fromIOToMain().subscribe(
-                                            {
-                                                CustomToast.createCustomToast(
-                                                    context, view
-                                                )?.showToast(R.string.success)
-                                            }) {
-                                            CustomToast.createCustomToast(context, view)
-                                                ?.setDuration(Toast.LENGTH_LONG)
-                                                ?.showToastThrowable(it)
-                                        }
+                                audioListDisposable.set(Includes.networkInterfaces.localServerApi()
+                                    .delete_media(hash1)
+                                    .fromIOToMain(
+                                        {
+                                            CustomToast.createCustomToast(
+                                                context, view
+                                            )?.showToast(R.string.success)
+                                        }) {
+                                        CustomToast.createCustomToast(context, view)
+                                            ?.setDuration(Toast.LENGTH_LONG)
+                                            ?.showToastThrowable(it)
+                                    })
                             }
                             .setNegativeButton(R.string.button_cancel, null)
                             .show()
@@ -541,17 +536,17 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                         if (hash.isNullOrEmpty()) {
                             return@show
                         }
-                        audioListDisposable =
-                            Includes.networkInterfaces.localServerApi().update_time(hash)
-                                .fromIOToMain().subscribe(
-                                    {
-                                        CustomToast.createCustomToast(
-                                            context, null
-                                        )?.showToast(R.string.success)
-                                    }) {
-                                    CustomToast.createCustomToast(context, view)
-                                        ?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(it)
-                                }
+                        audioListDisposable.set(Includes.networkInterfaces.localServerApi()
+                            .update_time(hash)
+                            .fromIOToMain(
+                                {
+                                    CustomToast.createCustomToast(
+                                        context, null
+                                    )?.showToast(R.string.success)
+                                }) {
+                                CustomToast.createCustomToast(context, view)
+                                    ?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(it)
+                            })
                     }
 
                     FileLocalServerOption.edit_item -> {
@@ -560,53 +555,51 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                         if (hash2.isNullOrEmpty()) {
                             return@show
                         }
-                        audioListDisposable =
-                            Includes.networkInterfaces.localServerApi().get_file_name(hash2)
-                                .fromIOToMain().subscribe(
-                                    { t ->
-                                        val root =
-                                            View.inflate(
-                                                context,
-                                                R.layout.entry_file_name,
-                                                null
-                                            )
-                                        root.findViewById<TextInputEditText>(R.id.edit_file_name)
-                                            .setText(
-                                                t
-                                            )
-                                        MaterialAlertDialogBuilder(context)
-                                            .setTitle(R.string.change_name)
-                                            .setCancelable(true)
-                                            .setView(root)
-                                            .setPositiveButton(R.string.button_ok) { _, _ ->
-                                                audioListDisposable =
-                                                    Includes.networkInterfaces.localServerApi()
-                                                        .update_file_name(
-                                                            hash2,
-                                                            root.findViewById<TextInputEditText>(R.id.edit_file_name).text.toString()
-                                                                .trim { it <= ' ' })
-                                                        .fromIOToMain()
-                                                        .subscribe({
-                                                            CustomToast.createCustomToast(
-                                                                context, view
-                                                            )?.showToast(
-                                                                R.string.success
-                                                            )
-                                                        }) {
-                                                            CustomToast.createCustomToast(
-                                                                context,
-                                                                view
-                                                            )
-                                                                ?.setDuration(Toast.LENGTH_LONG)
-                                                                ?.showToastThrowable(it)
-                                                        }
-                                            }
-                                            .setNegativeButton(R.string.button_cancel, null)
-                                            .show()
-                                    }) {
-                                    CustomToast.createCustomToast(context, view)
-                                        ?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(it)
-                                }
+                        audioListDisposable.set(Includes.networkInterfaces.localServerApi()
+                            .get_file_name(hash2)
+                            .fromIOToMain(
+                                { t ->
+                                    val root =
+                                        View.inflate(
+                                            context,
+                                            R.layout.entry_file_name,
+                                            null
+                                        )
+                                    root.findViewById<TextInputEditText>(R.id.edit_file_name)
+                                        .setText(
+                                            t
+                                        )
+                                    MaterialAlertDialogBuilder(context)
+                                        .setTitle(R.string.change_name)
+                                        .setCancelable(true)
+                                        .setView(root)
+                                        .setPositiveButton(R.string.button_ok) { _, _ ->
+                                            audioListDisposable.set(Includes.networkInterfaces.localServerApi()
+                                                .update_file_name(
+                                                    hash2,
+                                                    root.findViewById<TextInputEditText>(R.id.edit_file_name).text.toString()
+                                                        .trim { it <= ' ' })
+                                                .fromIOToMain({
+                                                    CustomToast.createCustomToast(
+                                                        context, view
+                                                    )?.showToast(
+                                                        R.string.success
+                                                    )
+                                                }) {
+                                                    CustomToast.createCustomToast(
+                                                        context,
+                                                        view
+                                                    )
+                                                        ?.setDuration(Toast.LENGTH_LONG)
+                                                        ?.showToastThrowable(it)
+                                                })
+                                        }
+                                        .setNegativeButton(R.string.button_cancel, null)
+                                        .show()
+                                }) {
+                                CustomToast.createCustomToast(context, view)
+                                    ?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(it)
+                            })
                     }
 
                     else -> {}

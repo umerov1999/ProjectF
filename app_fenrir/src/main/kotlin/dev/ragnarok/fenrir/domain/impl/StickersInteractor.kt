@@ -25,16 +25,19 @@ import dev.ragnarok.fenrir.util.AppPerms.hasReadStoragePermissionSimple
 import dev.ragnarok.fenrir.util.Utils.getCachedMyStickers
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNullMutable
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import java.io.File
 
 class StickersInteractor(private val networker: INetworker, private val storage: IStickersStorage) :
     IStickersInteractor {
-    override fun reciveAndStoreCustomStickerSets(accountId: Long): Completable {
+    override fun receiveAndStoreCustomStickerSets(accountId: Long): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .store().recentStickers
-            .flatMapCompletable { items ->
+            .flatMapConcat { items ->
                 val temp = StickerSetEntity(-1).setTitle("recent")
                     .setStickers(mapAll(listEmptyIfNull(listEmptyIfNull(items.items))) {
                         mapSticker(
@@ -48,11 +51,11 @@ class StickersInteractor(private val networker: INetworker, private val storage:
             }
     }
 
-    override fun reciveAndStoreStickerSets(accountId: Long): Completable {
+    override fun receiveAndStoreStickerSets(accountId: Long): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .store()
             .stickersSets
-            .flatMapCompletable { items ->
+            .flatMapConcat { items ->
                 val list: MutableList<Product> = listEmptyIfNullMutable(items.items)
                 if (Settings.get().ui().isStickers_by_new) {
                     list.reverse()
@@ -65,11 +68,11 @@ class StickersInteractor(private val networker: INetworker, private val storage:
             }
     }
 
-    override fun reciveAndStoreKeywordsStickers(accountId: Long): Completable {
+    override fun receiveAndStoreKeywordsStickers(accountId: Long): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .store()
             .stickerKeywords
-            .flatMapCompletable { items ->
+            .flatMapConcat { items ->
                 val list: MutableList<VKApiStickersKeywords> =
                     listEmptyIfNullMutable(items.dictionary)
                 val temp: MutableList<StickersKeywordsEntity> = ArrayList()
@@ -93,7 +96,7 @@ class StickersInteractor(private val networker: INetworker, private val storage:
             }
     }
 
-    override fun getStickerSets(accountId: Long): Single<List<StickerSet>> {
+    override fun getStickerSets(accountId: Long): Flow<List<StickerSet>> {
         return storage.getStickerSets(accountId)
             .map { entities ->
                 mapAll(entities) {
@@ -104,7 +107,7 @@ class StickersInteractor(private val networker: INetworker, private val storage:
             }
     }
 
-    override fun getKeywordsStickers(accountId: Long, s: String?): Single<List<Sticker>> {
+    override fun getKeywordsStickers(accountId: Long, s: String?): Flow<List<Sticker>> {
         return storage.getKeywordsStickers(accountId, s)
             .map { entities ->
                 mapAll(entities) {
@@ -115,18 +118,18 @@ class StickersInteractor(private val networker: INetworker, private val storage:
             }
     }
 
-    override fun placeToStickerCache(context: Context): Completable {
+    override fun placeToStickerCache(context: Context): Flow<Boolean> {
         return if (!hasReadStoragePermissionSimple(context)) {
-            Completable.complete()
+            emptyFlow()
         } else {
-            Completable.create { t ->
+            flow {
                 val temp = File(Settings.get().main().stickerDir)
                 if (!temp.exists()) {
-                    t.onComplete()
+                    emit(false)
                 } else {
                     val file_list = temp.listFiles()
                     if (file_list == null || file_list.isEmpty()) {
-                        t.onComplete()
+                        emit(false)
                     } else {
                         file_list.sortBy {
                             it.lastModified()
@@ -139,6 +142,7 @@ class StickersInteractor(private val networker: INetworker, private val storage:
                                 getCachedMyStickers().add(LocalSticker(u.absolutePath, true))
                             }
                         }
+                        emit(true)
                     }
                 }
             }

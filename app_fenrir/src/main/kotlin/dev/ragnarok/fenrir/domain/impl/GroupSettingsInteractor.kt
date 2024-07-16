@@ -27,19 +27,23 @@ import dev.ragnarok.fenrir.util.Utils.findById
 import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import dev.ragnarok.fenrir.util.VKOwnIds
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.andThen
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 class GroupSettingsInteractor(
     private val networker: INetworker,
     private val repository: IOwnersStorage,
     private val ownersRepository: IOwnersRepository
 ) : IGroupSettingsInteractor {
-    override fun getGroupSettings(accountId: Long, groupId: Long): Single<GroupSettings> {
+    override fun getGroupSettings(accountId: Long, groupId: Long): Flow<GroupSettings> {
         return networker.vkDefault(accountId)
             .groups()
             .getSettings(groupId)
-            .flatMap { dto -> Single.just(createFromDto(dto)) }
+            .map {
+                createFromDto(it)
+            }
     }
 
     override fun ban(
@@ -50,7 +54,7 @@ class GroupSettingsInteractor(
         reason: Int,
         comment: String?,
         commentVisible: Boolean
-    ): Completable {
+    ): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .groups()
             .ban(groupId, ownerId, endDateUnixtime, reason, comment, commentVisible)
@@ -71,7 +75,7 @@ class GroupSettingsInteractor(
         obscene_filter: Int?,
         obscene_stopwords: Int?,
         obscene_words: String?
-    ): Completable {
+    ): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .groups()
             .edit(
@@ -99,7 +103,7 @@ class GroupSettingsInteractor(
         position: String?,
         email: String?,
         phone: String?
-    ): Completable {
+    ): Flow<Boolean> {
         val targetRole = if ("creator".equals(role, ignoreCase = true)) "administrator" else role
         return networker.vkDefault(accountId)
             .groups()
@@ -112,25 +116,23 @@ class GroupSettingsInteractor(
                 email,
                 phone
             )
-            .andThen(
-                Single
-                    .fromCallable {
-                        val info = ContactInfo(user.getOwnerObjectId())
-                            .setDescription(position)
-                            .setPhone(phone)
-                            .setEmail(email)
-                        Manager(user, role)
-                            .setContactInfo(info)
+            .flatMapConcat {
+                repository.fireManagementChangeAction(
+                    create(
+                        groupId, Manager(user, role)
+                            .setContactInfo(
+                                ContactInfo(user.getOwnerObjectId())
+                                    .setDescription(position)
+                                    .setPhone(phone)
+                                    .setEmail(email)
+                            )
                             .setDisplayAsContact(asContact)
-                    }
-                    .flatMapCompletable { manager ->
-                        repository.fireManagementChangeAction(
-                            create(groupId, manager)
-                        )
-                    })
+                    )
+                )
+            }
     }
 
-    override fun unban(accountId: Long, groupId: Long, ownerId: Long): Completable {
+    override fun unban(accountId: Long, groupId: Long, ownerId: Long): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .groups()
             .unban(groupId, ownerId)
@@ -142,13 +144,13 @@ class GroupSettingsInteractor(
         groupId: Long,
         startFrom: IntNextFrom,
         count: Int
-    ): Single<Pair<List<Banned>, IntNextFrom>> {
+    ): Flow<Pair<List<Banned>, IntNextFrom>> {
         val nextFrom = IntNextFrom(startFrom.offset + count)
         return networker.vkDefault(accountId)
             .groups()
             .getBanned(groupId, startFrom.offset, count, Fields.FIELDS_BASE_OWNER, null)
             .map { obj -> obj.items.orEmpty() }
-            .flatMap { items ->
+            .flatMapConcat { items ->
                 val ids = VKOwnIds()
                 for (u in items) {
                     ids.append(u.banInfo?.adminId)
@@ -190,7 +192,7 @@ class GroupSettingsInteractor(
             }
     }
 
-    override fun getContacts(accountId: Long, groupId: Long): Single<List<ContactInfo>> {
+    override fun getContacts(accountId: Long, groupId: Long): Flow<List<ContactInfo>> {
         return networker.vkDefault(accountId).groups()
             .getById(setOf(groupId), null, null, "contacts")
             .map { communities ->
@@ -205,7 +207,7 @@ class GroupSettingsInteractor(
             }
     }
 
-    override fun getManagers(accountId: Long, groupId: Long): Single<List<Manager>> {
+    override fun getManagers(accountId: Long, groupId: Long): Flow<List<Manager>> {
         return networker.vkDefault(accountId)
             .groups()
             .getMembers(
@@ -216,7 +218,7 @@ class GroupSettingsInteractor(
                 Fields.FIELDS_BASE_OWNER,
                 "managers"
             )
-            .flatMap { items ->
+            .flatMapConcat { items ->
                 networker.vkDefault(accountId)
                     .groups()
                     .getById(setOf(groupId), null, null, "contacts")

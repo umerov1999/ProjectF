@@ -2,14 +2,12 @@ package dev.ragnarok.fenrir.fragment.attachments.commentcreate
 
 import android.os.Bundle
 import dev.ragnarok.fenrir.Includes
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.db.AttachToType
 import dev.ragnarok.fenrir.domain.IAttachmentsRepository
 import dev.ragnarok.fenrir.domain.IAttachmentsRepository.IAddEvent
 import dev.ragnarok.fenrir.domain.IAttachmentsRepository.IBaseEvent
 import dev.ragnarok.fenrir.domain.IAttachmentsRepository.IRemoveEvent
 import dev.ragnarok.fenrir.fragment.attachments.absattachmentsedit.AbsAttachmentsEditPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.model.AttachmentEntry
 import dev.ragnarok.fenrir.model.LocalPhoto
@@ -18,8 +16,13 @@ import dev.ragnarok.fenrir.upload.UploadDestination
 import dev.ragnarok.fenrir.upload.UploadUtils
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils.removeIf
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.subscribeOnIOAndIgnore
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.zip
 
 class CommentCreatePresenter(
     accountId: Long,
@@ -59,32 +62,29 @@ class CommentCreatePresenter(
         safelyNotifyItemsAdded(size, d.size)
     }
 
-    private fun attachmentsSingle(): Single<List<AttachmentEntry>> {
+    private fun attachmentsSingle(): Flow<List<AttachmentEntry>> {
         return attachmentsRepository
             .getAttachmentsWithIds(accountId, AttachToType.COMMENT, commentId)
             .map { createFrom(it, true) }
     }
 
-    private fun uploadsSingle(): Single<List<AttachmentEntry>> {
+    private fun uploadsSingle(): Flow<List<AttachmentEntry>> {
         return uploadManager[accountId, destination]
-            .flatMap { u ->
-                Single.just(
-                    createFrom(
-                        u
-                    )
+            .map { u ->
+                createFrom(
+                    u
                 )
             }
     }
 
     private fun loadAttachments() {
-        appendDisposable(attachmentsSingle()
-            .zipWith(uploadsSingle()) { first, second ->
+        appendJob(attachmentsSingle()
+            .zip(uploadsSingle()) { first, second ->
                 combine(
                     first, second
                 )
             }
-            .fromIOToMain()
-            .subscribe({ onAttachmentsRestored(it) }) { it.printStackTrace() })
+            .fromIOToMain({ onAttachmentsRestored(it) }) { it.printStackTrace() })
     }
 
     private fun onAttachmentsRestored(entries: List<AttachmentEntry>) {
@@ -96,14 +96,12 @@ class CommentCreatePresenter(
 
     override fun onAttachmentRemoveClick(index: Int, attachment: AttachmentEntry) {
         if (attachment.optionalId != 0) {
-            subscribeOnIOAndIgnore(
-                attachmentsRepository.remove(
-                    accountId,
-                    AttachToType.COMMENT,
-                    commentId,
-                    attachment.optionalId
-                )
-            )
+            attachmentsRepository.remove(
+                accountId,
+                AttachToType.COMMENT,
+                commentId,
+                attachment.optionalId
+            ).hiddenIO()
             // из списка не удаляем, так как удаление из репозитория "слушается"
             // (будет удалено асинхронно и после этого удалится из списка)
         } else {
@@ -113,14 +111,12 @@ class CommentCreatePresenter(
     }
 
     override fun onModelsAdded(models: List<AbsModel>) {
-        subscribeOnIOAndIgnore(
-            attachmentsRepository.attach(
-                accountId,
-                AttachToType.COMMENT,
-                commentId,
-                models
-            )
-        )
+        attachmentsRepository.attach(
+            accountId,
+            AttachToType.COMMENT,
+            commentId,
+            models
+        ).hiddenIO()
     }
 
     override fun doUploadPhotos(photos: List<LocalPhoto>, size: Int) {
@@ -166,34 +162,28 @@ class CommentCreatePresenter(
         if (savedInstanceState == null) {
             setTextBody(body)
         }
-        appendDisposable(uploadManager.observeAdding()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { it -> onUploadQueueUpdates(it) { destination.compareTo(it.destination) } })
-        appendDisposable(uploadManager.observeStatus()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe {
+        appendJob(uploadManager.observeAdding()
+            .sharedFlowToMain { it -> onUploadQueueUpdates(it) { destination.compareTo(it.destination) } })
+        appendJob(uploadManager.observeStatus()
+            .sharedFlowToMain {
                 onUploadStatusUpdate(
                     it
                 )
             })
-        appendDisposable(uploadManager.observeProgress()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onUploadProgressUpdate(it) })
-        appendDisposable(uploadManager.observeDeleting(true)
-            .observeOn(provideMainThreadScheduler())
-            .subscribe {
+        appendJob(uploadManager.observeProgress()
+            .sharedFlowToMain { onUploadProgressUpdate(it) })
+        appendJob(uploadManager.observeDeleting(true)
+            .sharedFlowToMain {
                 onUploadObjectRemovedFromQueue(
                     it
                 )
             })
-        appendDisposable(attachmentsRepository.observeAdding()
+        appendJob(attachmentsRepository.observeAdding()
             .filter { filterAttachEvents(it) }
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { handleAttachmentsAdding(it) })
-        appendDisposable(attachmentsRepository.observeRemoving()
+            .sharedFlowToMain { handleAttachmentsAdding(it) })
+        appendJob(attachmentsRepository.observeRemoving()
             .filter { filterAttachEvents(it) }
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { handleAttachmentRemoving(it) })
+            .sharedFlowToMain { handleAttachmentRemoving(it) })
         loadAttachments()
     }
 }

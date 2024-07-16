@@ -1,21 +1,18 @@
 package dev.ragnarok.fenrir
 
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.messaging.FirebaseMessaging
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.tasks.await
 
 object FCMToken {
-    val fcmToken: Single<String>
-        get() = Single.create { emitter: SingleEmitter<String> ->
-            val listener = OnCompleteListener { task: Task<String> ->
-                if (task.isSuccessful && task.result.nonNullNoEmpty()) {
-                    emitter.onSuccess(task.result)
-                } else {
-                    emitter.tryOnError(task.exception ?: Throwable("fcmToken!!!"))
-                }
+    val fcmToken: Flow<String>
+        get() = flow {
+            val res = FirebaseMessaging.getInstance().token.await()
+            if (res.nonNullNoEmpty()) {
+                emit(res)
+            } else {
+                throw Throwable("fcmToken is empty!!!")
             }
-            FirebaseMessaging.getInstance().token.addOnCompleteListener(listener)
         }
 }

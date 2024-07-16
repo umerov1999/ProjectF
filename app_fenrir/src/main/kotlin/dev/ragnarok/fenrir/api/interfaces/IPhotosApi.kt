@@ -17,103 +17,103 @@ import dev.ragnarok.fenrir.api.model.server.VKApiOwnerPhotoUploadServer
 import dev.ragnarok.fenrir.api.model.server.VKApiPhotoMessageServer
 import dev.ragnarok.fenrir.api.model.server.VKApiUploadServer
 import dev.ragnarok.fenrir.api.model.server.VKApiWallUploadServer
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IPhotosApi {
     @CheckResult
-    fun deleteAlbum(albumId: Int, groupId: Long?): Single<Boolean>
+    fun deleteAlbum(albumId: Int, groupId: Long?): Flow<Boolean>
 
     @CheckResult
-    fun restore(ownerId: Long?, photoId: Int): Single<Boolean>
+    fun restore(ownerId: Long?, photoId: Int): Flow<Boolean>
 
     @CheckResult
-    fun delete(ownerId: Long?, photoId: Int): Single<Boolean>
+    fun delete(ownerId: Long?, photoId: Int): Flow<Boolean>
 
     @CheckResult
-    fun deleteComment(ownerId: Long?, commentId: Int): Single<Boolean>
+    fun deleteComment(ownerId: Long?, commentId: Int): Flow<Boolean>
 
     @CheckResult
-    fun restoreComment(ownerId: Long?, commentId: Int): Single<Boolean>
+    fun restoreComment(ownerId: Long?, commentId: Int): Flow<Boolean>
 
     @CheckResult
     fun editComment(
         ownerId: Long?, commentId: Int, message: String?,
         attachments: Collection<IAttachmentToken>?
-    ): Single<Boolean>
+    ): Flow<Boolean>
 
     @CheckResult
     fun createAlbum(
         title: String?, groupId: Long?, description: String?,
         privacyView: VKApiPrivacy?, privacyComment: VKApiPrivacy?,
         uploadByAdminsOnly: Boolean?, commentsDisabled: Boolean?
-    ): Single<VKApiPhotoAlbum>
+    ): Flow<VKApiPhotoAlbum>
 
     @CheckResult
     fun editAlbum(
         albumId: Int, title: String?, description: String?, ownerId: Long?,
         privacyView: VKApiPrivacy?, privacyComment: VKApiPrivacy?,
         uploadByAdminsOnly: Boolean?, commentsDisabled: Boolean?
-    ): Single<Boolean>
+    ): Flow<Boolean>
 
     @CheckResult
-    fun copy(ownerId: Long, photoId: Int, accessKey: String?): Single<Int>
+    fun copy(ownerId: Long, photoId: Int, accessKey: String?): Flow<Int>
 
     @CheckResult
     fun createComment(
         ownerId: Long?, photoId: Int, fromGroup: Boolean?, message: String?,
         replyToComment: Int?, attachments: Collection<IAttachmentToken>?,
         stickerId: Int?, accessKey: String?, generatedUniqueId: Int?
-    ): Single<Int>
+    ): Flow<Int>
 
     @CheckResult
     fun getComments(
         ownerId: Long?, photoId: Int, needLikes: Boolean?,
         startCommentId: Int?, offset: Int?, count: Int?, sort: String?,
         accessKey: String?, extended: Boolean?, fields: String?
-    ): Single<DefaultCommentsResponse>
+    ): Flow<DefaultCommentsResponse>
 
     @CheckResult
-    fun getById(ids: Collection<AccessIdPair>): Single<List<VKApiPhoto>>
+    fun getById(ids: Collection<AccessIdPair>): Flow<List<VKApiPhoto>>
 
     @CheckResult
-    fun getUploadServer(albumId: Int, groupId: Long?): Single<VKApiUploadServer>
+    fun getUploadServer(albumId: Int, groupId: Long?): Flow<VKApiUploadServer>
 
     @CheckResult
     fun saveOwnerPhoto(
         server: String?,
         hash: String?,
         photo: String?
-    ): Single<UploadOwnerPhotoResponse>
+    ): Flow<UploadOwnerPhotoResponse>
 
     @CheckResult
-    fun getOwnerPhotoUploadServer(ownerId: Long?): Single<VKApiOwnerPhotoUploadServer>
+    fun getOwnerPhotoUploadServer(ownerId: Long?): Flow<VKApiOwnerPhotoUploadServer>
 
     @CheckResult
-    fun getChatUploadServer(chat_id: Long?): Single<VKApiChatPhotoUploadServer>
+    fun getChatUploadServer(chat_id: Long?): Flow<VKApiChatPhotoUploadServer>
 
     @CheckResult
-    fun setChatPhoto(file: String?): Single<UploadChatPhotoResponse>
+    fun setChatPhoto(file: String?): Flow<UploadChatPhotoResponse>
 
     @CheckResult
     fun saveWallPhoto(
         userId: Long?, groupId: Long?, photo: String?, server: Long,
         hash: String?, latitude: Double?, longitude: Double?, caption: String?
-    ): Single<List<VKApiPhoto>>
+    ): Flow<List<VKApiPhoto>>
 
     @CheckResult
-    fun getWallUploadServer(groupId: Long?): Single<VKApiWallUploadServer>
+    fun getWallUploadServer(groupId: Long?): Flow<VKApiWallUploadServer>
 
     @CheckResult
     fun save(
         albumId: Int, groupId: Long?, server: Long, photosList: String?, hash: String?,
         latitude: Double?, longitude: Double?, caption: String?
-    ): Single<List<VKApiPhoto>>
+    ): Flow<List<VKApiPhoto>>
 
     @CheckResult
     operator fun get(
         ownerId: Long?, albumId: String?, photoIds: Collection<Int>?, rev: Boolean?,
         offset: Int?, count: Int?
-    ): Single<Items<VKApiPhoto>>
+    ): Flow<Items<VKApiPhoto>>
 
     @CheckResult
     fun getUsersPhoto(
@@ -122,7 +122,7 @@ interface IPhotosApi {
         sort: Int?,
         offset: Int?,
         count: Int?
-    ): Single<Items<VKApiPhoto>>
+    ): Flow<Items<VKApiPhoto>>
 
     @CheckResult
     fun getAll(
@@ -131,22 +131,22 @@ interface IPhotosApi {
         photo_sizes: Int?,
         offset: Int?,
         count: Int?
-    ): Single<Items<VKApiPhoto>>
+    ): Flow<Items<VKApiPhoto>>
 
     @get:CheckResult
-    val messagesUploadServer: Single<VKApiPhotoMessageServer>
+    val messagesUploadServer: Flow<VKApiPhotoMessageServer>
 
     @CheckResult
-    fun saveMessagesPhoto(server: Long?, photo: String?, hash: String?): Single<List<VKApiPhoto>>
+    fun saveMessagesPhoto(server: Long?, photo: String?, hash: String?): Flow<List<VKApiPhoto>>
 
     @CheckResult
     fun getAlbums(
         ownerId: Long?, albumIds: Collection<Int>?, offset: Int?,
         count: Int?, needSystem: Boolean?, needCovers: Boolean?
-    ): Single<Items<VKApiPhotoAlbum>>
+    ): Flow<Items<VKApiPhotoAlbum>>
 
     @CheckResult
-    fun getTags(ownerId: Long?, photo_id: Int?, access_key: String?): Single<List<VKApiPhotoTags>>
+    fun getTags(ownerId: Long?, photo_id: Int?, access_key: String?): Flow<List<VKApiPhotoTags>>
 
     @CheckResult
     fun getAllComments(
@@ -155,7 +155,7 @@ interface IPhotosApi {
         need_likes: Int?,
         offset: Int?,
         count: Int?
-    ): Single<Items<VKApiComment>>
+    ): Flow<Items<VKApiComment>>
 
     @CheckResult
     fun search(
@@ -168,5 +168,5 @@ interface IPhotosApi {
         endTime: Long?,
         offset: Int?,
         count: Int?
-    ): Single<Items<VKApiPhoto>>
+    ): Flow<Items<VKApiPhoto>>
 }

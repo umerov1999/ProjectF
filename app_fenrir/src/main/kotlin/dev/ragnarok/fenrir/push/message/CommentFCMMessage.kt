@@ -25,7 +25,7 @@ import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -57,8 +57,7 @@ class CommentFCMMessage {
         }
         val app = context.applicationContext
         getRx(context, accountId, from_id)
-            .subscribeOn(INSTANCE)
-            .subscribe({ ownerInfo -> notifyImpl(app, ownerInfo) }, RxUtils.ignore())
+            .fromScopeToMain(INSTANCE) { ownerInfo -> notifyImpl(app, ownerInfo) }
     }
 
     private fun notifyImpl(context: Context, ownerInfo: OwnerInfo) {

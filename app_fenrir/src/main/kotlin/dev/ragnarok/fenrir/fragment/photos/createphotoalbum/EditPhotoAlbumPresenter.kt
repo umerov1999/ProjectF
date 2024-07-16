@@ -4,11 +4,11 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.Includes.networkInterfaces
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.PhotoAlbum
 import dev.ragnarok.fenrir.model.PhotoAlbumEditor
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.view.steppers.impl.CreatePhotoAlbumStepsHost
 import dev.ragnarok.fenrir.view.steppers.impl.CreatePhotoAlbumStepsHost.PhotoAlbumState
 import kotlin.math.abs
@@ -116,16 +116,15 @@ class EditPhotoAlbumPresenter : AccountDependencyPresenter<IEditPhotoAlbumView> 
                     it, title, description, ownerId, null,
                     null, uploadsByAdminsOnly, commentsDisabled
                 )
-                    .fromIOToMain()
-                    .subscribe({ t -> view?.goToEditedAlbum(accountId, album, t) }) { l ->
+                    .fromIOToMain({ t -> view?.goToEditedAlbum(accountId, album, t) }) { l ->
                         showError(
                             getCauseIfRuntime(l)
                         )
                     }
-            }?.let { appendDisposable(it) }
+            }?.let { appendJob(it) }
         } else {
             val groupId = if (ownerId < 0) abs(ownerId) else null
-            appendDisposable(api.createAlbum(
+            appendJob(api.createAlbum(
                 title,
                 groupId,
                 description,
@@ -134,8 +133,7 @@ class EditPhotoAlbumPresenter : AccountDependencyPresenter<IEditPhotoAlbumView> 
                 uploadsByAdminsOnly,
                 commentsDisabled
             )
-                .fromIOToMain()
-                .subscribe({ album -> view?.goToAlbum(accountId, album) }) { t ->
+                .fromIOToMain({ album -> view?.goToAlbum(accountId, album) }) { t ->
                     showError(getCauseIfRuntime(t))
                 })
         }

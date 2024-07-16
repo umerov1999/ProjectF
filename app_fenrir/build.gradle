@@ -68,6 +68,7 @@ android {
         jvmTarget = "1.8"
         freeCompilerArgs = ["-opt-in=kotlin.contracts.ExperimentalContracts",
                             "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
+                            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
                             "-opt-in=kotlinx.serialization.internal.CoreFriendModuleApi",
                             "-opt-in=kotlinx.serialization.InternalSerializationApi",
                             "-opt-in=kotlin.RequiresOptIn", "-opt-in=kotlin.ExperimentalStdlibApi"]
@@ -131,7 +132,6 @@ dependencies {
     implementation("androidx.browser:browser:$browserVersion")
     implementation("androidx.webkit:webkit:$webkitVersion")
     implementation("androidx.exifinterface:exifinterface:$exifinterfaceVersion")
-    implementation("io.reactivex.rxjava3:rxjava:$rxJavaVersion")
     implementation("com.google.firebase:firebase-datatransport:$firebaseDatatransportVersion")
     implementation("com.google.firebase:firebase-messaging:$firebaseMessagingVersion") {
         exclude group: "com.google.firebase", module: "firebase-installations"

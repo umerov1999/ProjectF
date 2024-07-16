@@ -19,13 +19,16 @@ import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 class RelationshipInteractor(
     private val repositories: IStorages,
     private val networker: INetworker
 ) : IRelationshipInteractor {
-    override fun getCachedGroupMembers(accountId: Long, groupId: Long): Single<List<Owner>> {
+    override fun getCachedGroupMembers(accountId: Long, groupId: Long): Flow<List<Owner>> {
         return repositories.relativeship()
             .getGroupMembers(accountId, groupId)
             .map { obj -> buildOwnerUsersFromDbo(obj) }
@@ -37,7 +40,7 @@ class RelationshipInteractor(
         offset: Int,
         count: Int,
         filter: String?
-    ): Single<List<Owner>> {
+    ): Flow<List<Owner>> {
         return networker.vkDefault(accountId)
             .groups()
             .getMembers(
@@ -48,7 +51,7 @@ class RelationshipInteractor(
                 Fields.FIELDS_BASE_OWNER,
                 filter
             )
-            .flatMap { items ->
+            .flatMapConcat { items ->
                 val dtos = listEmptyIfNull(
                     items.items
                 )
@@ -56,26 +59,28 @@ class RelationshipInteractor(
                     val dbos = mapUsers(dtos)
                     repositories.relativeship()
                         .storeGroupMembers(accountId, dbos, groupId, offset == 0)
-                        .andThen(Single.just(Dto2Model.transformOwners(dtos, null)))
+                        .map {
+                            Dto2Model.transformOwners(dtos, null)
+                        }
                 } else {
-                    Single.just(Dto2Model.transformOwners(dtos, null))
+                    toFlow(Dto2Model.transformOwners(dtos, null))
                 }
             }
     }
 
-    override fun getCachedFriends(accountId: Long, objectId: Long): Single<List<User>> {
+    override fun getCachedFriends(accountId: Long, objectId: Long): Flow<List<User>> {
         return repositories.relativeship()
             .getFriends(accountId, objectId)
             .map { obj -> buildUsersFromDbo(obj) }
     }
 
-    override fun getCachedFollowers(accountId: Long, objectId: Long): Single<List<User>> {
+    override fun getCachedFollowers(accountId: Long, objectId: Long): Flow<List<User>> {
         return repositories.relativeship()
             .getFollowers(accountId, objectId)
             .map { obj -> buildUsersFromDbo(obj) }
     }
 
-    override fun getCachedRequests(accountId: Long): Single<List<User>> {
+    override fun getCachedRequests(accountId: Long): Flow<List<User>> {
         return repositories.relativeship()
             .getRequests(accountId)
             .map { obj -> buildUsersFromDbo(obj) }
@@ -86,17 +91,19 @@ class RelationshipInteractor(
         objectId: Long,
         count: Int?,
         offset: Int
-    ): Single<List<User>> {
+    ): Flow<List<User>> {
         val order = if (accountId == objectId) "hints" else null
         return networker.vkDefault(accountId)
             .friends()[objectId, order, null, count, offset, Fields.FIELDS_BASE_USER, null]
             .map { items -> listEmptyIfNull(items.items) }
-            .flatMap { dtos ->
+            .flatMapConcat { dtos ->
                 val dbos = mapUsers(dtos)
                 val users = transformUsers(dtos)
                 repositories.relativeship()
                     .storeFriends(accountId, dbos, objectId, offset == 0)
-                    .andThen(Single.just(users))
+                    .map {
+                        users
+                    }
             }
     }
 
@@ -105,7 +112,7 @@ class RelationshipInteractor(
         objectId: Long,
         count: Int,
         offset: Int
-    ): Single<List<User>> {
+    ): Flow<List<User>> {
         val order =
             if (accountId == objectId) "hints" else null // hints (сортировка по популярности) доступна только для своих друзей
         return networker.vkDefault(accountId)
@@ -115,7 +122,7 @@ class RelationshipInteractor(
             .map { obj -> transformUsers(obj) }
     }
 
-    override fun getRecommendations(accountId: Long, count: Int?): Single<List<User>> {
+    override fun getRecommendations(accountId: Long, count: Int?): Flow<List<User>> {
         return networker.vkDefault(accountId)
             .friends()
             .getRecommendations(count, Fields.FIELDS_BASE_USER, null)
@@ -123,7 +130,7 @@ class RelationshipInteractor(
             .map { obj -> transformUsers(obj) }
     }
 
-    override fun deleteSubscriber(accountId: Long, subscriber_id: Long): Single<Int> {
+    override fun deleteSubscriber(accountId: Long, subscriber_id: Long): Flow<Int> {
         return networker.vkDefault(accountId)
             .friends()
             .deleteSubscriber(subscriber_id)
@@ -134,17 +141,19 @@ class RelationshipInteractor(
         objectId: Long,
         count: Int,
         offset: Int
-    ): Single<List<User>> {
+    ): Flow<List<User>> {
         return networker.vkDefault(accountId)
             .users()
             .getFollowers(objectId, offset, count, Fields.FIELDS_BASE_USER, null)
             .map { items -> listEmptyIfNull(items.items) }
-            .flatMap { dtos ->
+            .flatMapConcat { dtos ->
                 val dbos = mapUsers(dtos)
                 val users = transformUsers(dtos)
                 repositories.relativeship()
                     .storeFollowers(accountId, dbos, objectId, offset == 0)
-                    .andThen(Single.just(users))
+                    .map {
+                        users
+                    }
             }
     }
 
@@ -153,20 +162,22 @@ class RelationshipInteractor(
         offset: Int?,
         count: Int?,
         store: Boolean
-    ): Single<List<User>> {
+    ): Flow<List<User>> {
         return networker.vkDefault(accountId)
             .users()
             .getRequests(offset, count, 1, 1, Fields.FIELDS_BASE_USER)
             .map { items -> listEmptyIfNull(items.items) }
-            .flatMap { dtos ->
+            .flatMapConcat { dtos ->
                 val dbos = mapUsers(dtos)
                 val users = transformUsers(dtos)
                 if (store) {
                     repositories.relativeship()
                         .storeRequests(accountId, dbos, accountId, offset == 0)
-                        .andThen(Single.just(users))
+                        .map {
+                            users
+                        }
                 } else {
-                    Single.just(users)
+                    toFlow(users)
                 }
             }
     }
@@ -176,7 +187,7 @@ class RelationshipInteractor(
         objectId: Long,
         count: Int,
         offset: Int
-    ): Single<List<User>> {
+    ): Flow<List<User>> {
         return networker.vkDefault(accountId)
             .friends()
             .getMutual(accountId, objectId, count, offset, Fields.FIELDS_BASE_USER)
@@ -189,7 +200,7 @@ class RelationshipInteractor(
         count: Int,
         offset: Int,
         q: String?
-    ): Single<Pair<List<User>, Int>> {
+    ): Flow<Pair<List<User>, Int>> {
         return networker.vkDefault(accountId)
             .friends()
             .search(userId, q, Fields.FIELDS_BASE_USER, null, offset, count)
@@ -199,7 +210,7 @@ class RelationshipInteractor(
             }
     }
 
-    override fun getFriendsCounters(accountId: Long, userId: Long): Single<FriendsCounters> {
+    override fun getFriendsCounters(accountId: Long, userId: Long): Flow<FriendsCounters> {
         return networker.vkDefault(accountId)
             .users()[listOf(userId), null, "counters", null]
             .map { users ->
@@ -226,35 +237,35 @@ class RelationshipInteractor(
         userId: Long,
         optionalText: String?,
         keepFollow: Boolean
-    ): Single<Int> {
+    ): Flow<Int> {
         return networker.vkDefault(accountId)
             .friends()
             .add(userId, optionalText, keepFollow)
     }
 
-    override fun deleteFriends(accountId: Long, userId: Long): Single<Int> {
+    override fun deleteFriends(accountId: Long, userId: Long): Flow<Int> {
         return networker.vkDefault(accountId)
             .friends()
             .delete(userId)
-            .flatMap { response ->
+            .map { response ->
                 when {
                     response.friend_deleted -> {
-                        Single.just(DeletedCodes.FRIEND_DELETED)
+                        DeletedCodes.FRIEND_DELETED
                     }
 
                     response.in_request_deleted -> {
-                        Single.just(DeletedCodes.IN_REQUEST_DELETED)
+                        DeletedCodes.IN_REQUEST_DELETED
                     }
 
                     response.out_request_deleted -> {
-                        Single.just(DeletedCodes.OUT_REQUEST_DELETED)
+                        DeletedCodes.OUT_REQUEST_DELETED
                     }
 
                     response.suggestion_deleted -> {
-                        Single.just(DeletedCodes.SUGGESTION_DELETED)
+                        DeletedCodes.SUGGESTION_DELETED
                     }
 
-                    else -> Single.error(UnepectedResultException())
+                    else -> throw UnepectedResultException()
                 }
             }
     }

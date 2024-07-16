@@ -6,13 +6,15 @@ import dev.ragnarok.filegallery.api.interfaces.IUploadApi
 import dev.ragnarok.filegallery.api.model.response.BaseResponse
 import dev.ragnarok.filegallery.api.services.IUploadService
 import dev.ragnarok.filegallery.api.util.ProgressRequestBody
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import java.io.InputStream
 
 class UploadApi internal constructor(private val provider: IUploadRestProvider) : IUploadApi {
-    private fun service(): Single<IUploadService> {
+    private fun service(): Flow<IUploadService> {
         return provider.provideUploadRest().map {
             val ret = IUploadService()
             ret.addon(it)
@@ -25,13 +27,13 @@ class UploadApi internal constructor(private val provider: IUploadRestProvider) 
         filename: String?,
         inputStream: InputStream,
         listener: PercentagePublisher?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         val body = ProgressRequestBody(
             inputStream, LocalServerApi.wrapPercentageListener(listener),
             "*/*".toMediaTypeOrNull()
         )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("audio", filename, body)
         return service()
-            .flatMap { it.remotePlayAudioRx(server, part) }
+            .flatMapConcat { it.remotePlayAudioRx(server, part) }
     }
 }

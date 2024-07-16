@@ -26,23 +26,22 @@ import android.widget.OverScroller
 import androidx.appcompat.widget.AppCompatImageView
 import com.squareup.picasso3.Rotatable
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.getSerializableCompat
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.animation.AnimatedFileDrawable
 import dev.ragnarok.fenrir.picasso.PicassoInstance
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.view.natives.animation.AnimationNetworkCache
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.coroutines.flow.flow
+import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.io.BufferedInputStream
 import java.io.File
 import java.lang.ref.WeakReference
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -63,7 +62,7 @@ open class TouchImageView @JvmOverloads constructor(
      */
     // Scale of image ranges from minScale to maxScale, where minScale == 1
     // when the image is stretched to fit view.
-    private var mDisposable: Disposable? = null
+    private var mDisposable = CancelableJob()
     private val cache: AnimationNetworkCache by lazy { AnimationNetworkCache(context) }
     var currentZoom = 0f
         private set
@@ -256,40 +255,37 @@ open class TouchImageView @JvmOverloads constructor(
             setAnimationByUrlCache(key, fallback, true)
             return
         }
-        mDisposable = Single.create { u: SingleEmitter<Boolean> ->
+        mDisposable.set(flow {
+            var call: Call? = null
             try {
                 val request: Request = Request.Builder()
                     .url(url)
                     .build()
-                val response: Response = client.build().newCall(request).execute()
+                call = client.build().newCall(request)
+                val response: Response = call.execute()
                 if (!response.isSuccessful) {
-                    u.onSuccess(false)
-                    return@create
+                    emit(false)
+                    return@flow
                 }
-                val bfr = response.body.byteStream()
-                val input = BufferedInputStream(bfr)
-                cache.writeTempCacheFile(key, input)
-                input.close()
-                cache.renameTempFile(key)
-            } catch (e: Exception) {
-                u.onSuccess(false)
-                return@create
+                cache.writeTempCacheFile(url, response.body.source())
+                response.close()
+                cache.renameTempFile(url)
+                emit(true)
+            } catch (e: CancellationException) {
+                call?.cancel()
+                throw e
             }
-            u.onSuccess(true)
-        }.fromIOToMain()
-            .subscribe(
-                { u ->
-                    if (u) {
-                        setAnimationByUrlCache(key, fallback, true)
-                    } else {
-                        PicassoInstance.with().load(fallback).into(this)
-                    }
-                }, RxUtils.ignore()
-            )
+        }.fromIOToMain {
+            if (it) {
+                setAnimationByUrlCache(key, fallback, true)
+            } else {
+                PicassoInstance.with().load(fallback).into(this)
+            }
+        })
     }
 
     open fun clearAnimationDrawable() {
-        mDisposable?.dispose()
+        mDisposable.cancel()
         if (animDrawable != null) {
             animDrawable?.stop()
             animDrawable?.callback = null
@@ -315,7 +311,7 @@ open class TouchImageView @JvmOverloads constructor(
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        mDisposable?.dispose()
+        mDisposable.cancel()
         animDrawable?.stop()
         animDrawable?.callback = null
     }

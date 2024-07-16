@@ -5,7 +5,6 @@ import dev.ragnarok.fenrir.db.Stores
 import dev.ragnarok.fenrir.db.serialize.Serializers
 import dev.ragnarok.fenrir.domain.ILocalServerInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.TmpSource
 import dev.ragnarok.fenrir.module.FenrirNative
@@ -14,8 +13,8 @@ import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.PersistentLogger
 import dev.ragnarok.fenrir.util.Utils
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import kotlinx.coroutines.flow.flow
 
 class PhotoAlbumPagerPresenter : PhotoPagerPresenter {
     private val localServerInteractor: ILocalServerInteractor
@@ -87,27 +86,25 @@ class PhotoAlbumPagerPresenter : PhotoPagerPresenter {
 
     private fun loadDataFromParcelNative(parcelNative: Long) {
         changeLoadingNowState(true)
-        appendDisposable(
-            Single.create { v: SingleEmitter<ArrayList<Photo>> ->
-                v.onSuccess(
+        appendJob(
+            flow {
+                emit(
                     ParcelNative.loadParcelableArrayList(
                         parcelNative, Photo.NativeCreator, ParcelFlags.MUTABLE_LIST
                     ) ?: ArrayList()
                 )
             }
-                .fromIOToMain()
-                .subscribe({ onInitialLoadingFinished(it) }) {
+                .fromIOToMain({ onInitialLoadingFinished(it) }) {
                     PersistentLogger.logThrowable("PhotoAlbumPagerPresenter", it)
                 })
     }
 
     private fun loadDataFromDatabase(source: TmpSource) {
         changeLoadingNowState(true)
-        appendDisposable(Stores.instance
+        appendJob(Stores.instance
             .tempStore()
             .getTemporaryData(source.ownerId, source.sourceId, Serializers.PHOTOS_SERIALIZER)
-            .fromIOToMain()
-            .subscribe({ onInitialLoadingFinished(it) }) {
+            .fromIOToMain({ onInitialLoadingFinished(it) }) {
                 PersistentLogger.logThrowable("PhotoAlbumPagerPresenter", it)
             })
     }
@@ -129,15 +126,14 @@ class PhotoAlbumPagerPresenter : PhotoPagerPresenter {
         if (!canLoad) return
         changeLoadingNowState(true)
         if (mAlbumId != -9001 && mAlbumId != -9000 && mAlbumId != -311) {
-            appendDisposable(photosInteractor[accountId, mOwnerId, mAlbumId, COUNT_PER_LOAD, mPhotos.size, !invertPhotoRev]
-                .fromIOToMain()
-                .subscribe({ onActualPhotosReceived(it) }) { t ->
+            appendJob(photosInteractor[accountId, mOwnerId, mAlbumId, COUNT_PER_LOAD, mPhotos.size, !invertPhotoRev]
+                .fromIOToMain({ onActualPhotosReceived(it) }) { t ->
                     onActualDataGetError(
                         t
                     )
                 })
         } else if (mAlbumId == -9000) {
-            appendDisposable(photosInteractor.getUsersPhoto(
+            appendJob(photosInteractor.getUsersPhoto(
                 accountId,
                 mOwnerId,
                 1,
@@ -145,14 +141,13 @@ class PhotoAlbumPagerPresenter : PhotoPagerPresenter {
                 mPhotos.size,
                 COUNT_PER_LOAD
             )
-                .fromIOToMain()
-                .subscribe({ onActualPhotosReceived(it) }) { t ->
+                .fromIOToMain({ onActualPhotosReceived(it) }) { t ->
                     onActualDataGetError(
                         t
                     )
                 })
         } else if (mAlbumId == -9001) {
-            appendDisposable(photosInteractor.getAll(
+            appendJob(photosInteractor.getAll(
                 accountId,
                 mOwnerId,
                 1,
@@ -160,20 +155,18 @@ class PhotoAlbumPagerPresenter : PhotoPagerPresenter {
                 mPhotos.size,
                 COUNT_PER_LOAD
             )
-                .fromIOToMain()
-                .subscribe({ onActualPhotosReceived(it) }) {
+                .fromIOToMain({ onActualPhotosReceived(it) }) {
                     onActualDataGetError(
                         it
                     )
                 })
         } else {
-            appendDisposable(localServerInteractor.getPhotos(
+            appendJob(localServerInteractor.getPhotos(
                 mPhotos.size,
                 COUNT_PER_LOAD,
                 invertPhotoRev
             )
-                .fromIOToMain()
-                .subscribe({ onActualPhotosReceived(it) }) {
+                .fromIOToMain({ onActualPhotosReceived(it) }) {
                     onActualDataGetError(
                         it
                     )

@@ -574,7 +574,6 @@ internal class MainSettings(context: Context) : IMainSettings {
             return ret
         }
 
-    @Suppress("DEPRECATION")
     override val musicDir: String
         get() {
             var ret = getPreferences(app).getString("music_dir", null)
@@ -586,7 +585,6 @@ internal class MainSettings(context: Context) : IMainSettings {
             return ret!!
         }
 
-    @Suppress("DEPRECATION")
     override val photoDir: String
         get() {
             var ret = getPreferences(app).getString("photo_dir", null)
@@ -598,7 +596,6 @@ internal class MainSettings(context: Context) : IMainSettings {
             return ret
         }
 
-    @Suppress("DEPRECATION")
     override val videoDir: String
         get() {
             var ret = getPreferences(app).getString("video_dir", null)
@@ -610,7 +607,6 @@ internal class MainSettings(context: Context) : IMainSettings {
             return ret
         }
 
-    @Suppress("DEPRECATION")
     override val docDir: String
         get() {
             var ret = getPreferences(app).getString("docs_dir", null)
@@ -622,7 +618,6 @@ internal class MainSettings(context: Context) : IMainSettings {
             return ret
         }
 
-    @Suppress("DEPRECATION")
     override val stickerDir: String
         get() {
             var ret = getPreferences(app).getString("sticker_dir", null)
@@ -860,7 +855,7 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override val photoExt: Set<String>
         get() = getPreferences(app)
-            .getStringSet("photo_ext", setOf("gif", "jpg", "jpeg", "jpg", "webp", "png", "tiff"))!!
+            .getStringSet("photo_ext", setOf("jpg", "jpeg", "heic", "webp", "png", "tiff"))!!
 
     override val audioExt: Set<String>
         get() = getPreferences(app)

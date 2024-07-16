@@ -9,7 +9,7 @@ import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.NewsfeedResponse
 import dev.ragnarok.fenrir.api.model.response.NewsfeedSearchResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class INewsfeedService : IServiceRest() {
     /**
@@ -26,7 +26,7 @@ class INewsfeedService : IServiceRest() {
         startFrom: String?,
         fields: String?,
         photoSizes: Int?
-    ): Single<BaseResponse<NewsfeedCommentsResponse>> {
+    ): Flow<BaseResponse<NewsfeedCommentsResponse>> {
         return rest.request(
             "newsfeed.getComments", form(
                 "count" to count,
@@ -49,7 +49,7 @@ class INewsfeedService : IServiceRest() {
         offset: Int?,
         startTime: Long?,
         endTime: Long?
-    ): Single<BaseResponse<NewsfeedCommentsResponse>> {
+    ): Flow<BaseResponse<NewsfeedCommentsResponse>> {
         return rest.request(
             "newsfeed.getMentions", form(
                 "owner_id" to owner_id,
@@ -65,7 +65,7 @@ class INewsfeedService : IServiceRest() {
     fun getLists(
         listIds: String?,
         extended: Int?
-    ): Single<BaseResponse<Items<VKApiFeedList>>> {
+    ): Flow<BaseResponse<Items<VKApiFeedList>>> {
         return rest.request(
             "newsfeed.getLists", form(
                 "list_ids" to listIds,
@@ -78,7 +78,7 @@ class INewsfeedService : IServiceRest() {
     fun saveList(
         title: String?,
         source_ids: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "newsfeed.saveList", form(
                 "title" to title,
@@ -91,7 +91,7 @@ class INewsfeedService : IServiceRest() {
     fun getBanned(
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<NewsfeedBanResponse>> {
+    ): Flow<BaseResponse<NewsfeedBanResponse>> {
         return rest.request(
             "newsfeed.getBanned", form(
                 "extended" to extended,
@@ -104,7 +104,7 @@ class INewsfeedService : IServiceRest() {
     fun deleteBan(
         user_ids: String?,
         group_ids: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "newsfeed.deleteBan", form(
                 "user_ids" to user_ids,
@@ -117,7 +117,7 @@ class INewsfeedService : IServiceRest() {
     fun addBan(
         user_ids: String?,
         group_ids: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "newsfeed.addBan", form(
                 "user_ids" to user_ids,
@@ -131,7 +131,7 @@ class INewsfeedService : IServiceRest() {
         type: String?,
         owner_id: Long?,
         item_id: Int?
-    ): Single<BaseResponse<IgnoreItemResponse>> {
+    ): Flow<BaseResponse<IgnoreItemResponse>> {
         return rest.request(
             "newsfeed.ignoreItem", form(
                 "type" to type,
@@ -142,7 +142,7 @@ class INewsfeedService : IServiceRest() {
     }
 
     //https://vk.com/dev/newsfeed.deleteList
-    fun deleteList(list_id: Int?): Single<BaseResponse<Int>> {
+    fun deleteList(list_id: Int?): Flow<BaseResponse<Int>> {
         return rest.request("newsfeed.deleteList", form("list_id" to list_id), baseInt)
     }
 
@@ -171,7 +171,7 @@ class INewsfeedService : IServiceRest() {
         endTime: Long?,
         startFrom: String?,
         fields: String?
-    ): Single<BaseResponse<NewsfeedSearchResponse>> {
+    ): Flow<BaseResponse<NewsfeedSearchResponse>> {
         return rest.request(
             "newsfeed.search", form(
                 "q" to query,
@@ -232,7 +232,7 @@ class INewsfeedService : IServiceRest() {
         startFrom: String?,
         count: Int?,
         fields: String?
-    ): Single<BaseResponse<NewsfeedResponse>> {
+    ): Flow<BaseResponse<NewsfeedResponse>> {
         return rest.request(
             "newsfeed.get", form(
                 "filters" to filters,
@@ -259,7 +259,7 @@ class INewsfeedService : IServiceRest() {
         startFrom: String?,
         count: Int?,
         fields: String?
-    ): Single<BaseResponse<NewsfeedResponse>> {
+    ): Flow<BaseResponse<NewsfeedResponse>> {
         return rest.request(
             "newsfeed.getByType", form(
                 "feed_type" to feed_type,
@@ -283,7 +283,7 @@ class INewsfeedService : IServiceRest() {
         startFrom: String?,
         count: Int?,
         fields: String?
-    ): Single<BaseResponse<NewsfeedResponse>> {
+    ): Flow<BaseResponse<NewsfeedResponse>> {
         return rest.request(
             "newsfeed.getRecommended", form(
                 "start_time" to startTime,
@@ -301,7 +301,7 @@ class INewsfeedService : IServiceRest() {
         startFrom: String?,
         count: Int?,
         fields: String?
-    ): Single<BaseResponse<NewsfeedResponse>> {
+    ): Flow<BaseResponse<NewsfeedResponse>> {
         return rest.request(
             "execute.getFeedLikes", form(
                 "max_photos" to maxPhotoCount,

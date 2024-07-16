@@ -4,8 +4,8 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IMessagesRepository
 import dev.ragnarok.fenrir.domain.Repository.messages
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.AppChatUser
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import java.util.Locale
 
 class ChatUsersDomainPresenter(
@@ -79,9 +79,8 @@ class ChatUsersDomainPresenter(
 
     private fun requestData() {
         setRefreshing(true)
-        appendDisposable(messagesInteractor.getChatUsers(accountId, chatId)
-            .fromIOToMain()
-            .subscribe({ onDataReceived(it) }) { t ->
+        appendJob(messagesInteractor.getChatUsers(accountId, chatId)
+            .fromIOToMain({ onDataReceived(it) }) { t ->
                 onDataGetError(
                     t
                 )

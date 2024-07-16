@@ -16,9 +16,9 @@ import dev.ragnarok.fenrir.dialog.base.AccountDependencyDialogFragment
 import dev.ragnarok.fenrir.domain.IDatabaseInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.search.filteredit.FilterEditFragment
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.model.database.University
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class SelectUniversityDialog : AccountDependencyDialogFragment(), UniversitiesAdapter.Listener {
     private val mHandler = Handler(Looper.getMainLooper())
@@ -67,7 +67,7 @@ class SelectUniversityDialog : AccountDependencyDialogFragment(), UniversitiesAd
     }
 
     private fun request(offset: Int) {
-        appendDisposable(
+        appendJob(
             mDatabaseInteractor.getUniversities(
                 accountId,
                 filter,
@@ -76,13 +76,12 @@ class SelectUniversityDialog : AccountDependencyDialogFragment(), UniversitiesAd
                 COUNT_PER_REQUEST,
                 offset
             )
-                .fromIOToMain()
-                .subscribe({ universities ->
+                .fromIOToMain { universities ->
                     onDataReceived(
                         offset,
                         universities
                     )
-                }) { })
+                })
     }
 
     private fun onDataReceived(offset: Int, universities: List<University>) {

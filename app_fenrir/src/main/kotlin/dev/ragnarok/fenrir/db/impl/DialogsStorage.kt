@@ -38,15 +38,17 @@ import dev.ragnarok.fenrir.util.Optional.Companion.wrap
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.createPublishSubject
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.emptyListFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.myEmit
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.subjects.PublishSubject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.flow
 
 internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsStorage {
-    private val unreadDialogsCounter: PublishSubject<Pair<Long, Int>> = PublishSubject.create()
+    private val unreadDialogsCounter = createPublishSubject<Pair<Long, Int>>()
     private val preferences: SharedPreferences =
         base.getSharedPreferences("dialogs_prefs", Context.MODE_PRIVATE)
 
@@ -54,12 +56,12 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
         synchronized(this) { return preferences.getInt(unreadKeyFor(accountId), 0) }
     }
 
-    override fun observeUnreadDialogsCount(): Observable<Pair<Long, Int>> {
+    override fun observeUnreadDialogsCount(): SharedFlow<Pair<Long, Int>> {
         return unreadDialogsCounter
     }
 
-    override fun getDialogs(criteria: DialogsCriteria): Single<List<DialogDboEntity>> {
-        return Single.create { e: SingleEmitter<List<DialogDboEntity>> ->
+    override fun getDialogs(criteria: DialogsCriteria): Flow<List<DialogDboEntity>> {
+        return flow {
             val start = System.currentTimeMillis()
             val uri = getDialogsContentUriFor(criteria.accountId)
             val cursor = context.contentResolver.query(
@@ -69,23 +71,23 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
             val dbos: MutableList<DialogDboEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     dbos.add(mapEntity(cursor))
                 }
                 cursor.close()
             }
-            e.onSuccess(dbos)
             log("getDialogs", start)
+            emit(dbos)
         }
     }
 
-    override fun removePeerWithId(accountId: Long, peerId: Long): Completable {
-        return Completable.create { emitter ->
+    override fun removePeerWithId(accountId: Long, peerId: Long): Flow<Boolean> {
+        return flow {
             val uri = getDialogsContentUriFor(accountId)
             contentResolver.delete(uri, BaseColumns._ID + " = ?", arrayOf(peerId.toString()))
-            emitter.onComplete()
+            emit(true)
         }
     }
 
@@ -93,8 +95,8 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
         accountId: Long,
         dbos: List<DialogDboEntity>,
         clearBefore: Boolean
-    ): Completable {
-        return Completable.create { emitter ->
+    ): Flow<Boolean> {
+        return flow {
             val start = System.currentTimeMillis()
             val uri = getDialogsContentUriFor(accountId)
             val peersUri = getPeersContentUriFor(accountId)
@@ -124,12 +126,12 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
                 }
             }
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            emitter.onComplete()
             log(
                 "DialogsStorage.insertDialogs",
                 start,
                 "count: " + dbos.size + ", clearBefore: " + clearBefore
             )
+            emit(true)
         }
     }
 
@@ -185,15 +187,15 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
         return cv
     }
 
-    override fun savePeerDialog(accountId: Long, entity: PeerDialogEntity): Completable {
-        return Completable.create { emitter ->
+    override fun savePeerDialog(accountId: Long, entity: PeerDialogEntity): Flow<Boolean> {
+        return flow {
             val uri = getPeersContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             operations.add(
                 ContentProviderOperation.newInsert(uri).withValues(createPeerCv(entity)).build()
             )
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            emitter.onComplete()
+            emit(true)
         }
     }
 
@@ -201,8 +203,8 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
         accountId: Long,
         peerId: Long,
         keyboardEntity: KeyboardEntity?
-    ): Completable {
-        return Completable.create { emitter ->
+    ): Flow<Boolean> {
+        return flow {
             val uri = getPeersContentUriFor(accountId)
             val args = arrayOf(peerId.toString())
             val operations = ArrayList<ContentProviderOperation>(1)
@@ -222,17 +224,17 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
                     .build()
             )
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            emitter.onComplete()
+            emit(true)
         }
     }
 
     override fun findPeerStates(
         accountId: Long,
         ids: Collection<Long>
-    ): Single<List<PeerStateEntity>> {
+    ): Flow<List<PeerStateEntity>> {
         return if (ids.isEmpty()) {
-            Single.just(emptyList())
-        } else Single.create { emitter: SingleEmitter<List<PeerStateEntity>> ->
+            emptyListFlow()
+        } else flow {
             val projection = arrayOf(
                 BaseColumns._ID,
                 PeersColumns.UNREAD,
@@ -258,12 +260,12 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
                 }
                 cursor.close()
             }
-            emitter.onSuccess(entities)
+            emit(entities)
         }
     }
 
-    override fun findPeerDialog(accountId: Long, peerId: Long): Single<Optional<PeerDialogEntity>> {
-        return Single.create { emitter: SingleEmitter<Optional<PeerDialogEntity>> ->
+    override fun findPeerDialog(accountId: Long, peerId: Long): Flow<Optional<PeerDialogEntity>> {
+        return flow {
             val projection = arrayOf(
                 PeersColumns.UNREAD,
                 PeersColumns.TITLE,
@@ -318,7 +320,7 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
                 }
                 cursor.close()
             }
-            emitter.onSuccess(wrap(entity))
+            emit(wrap(entity))
         }
     }
 
@@ -328,16 +330,16 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
                 .putInt(unreadKeyFor(accountId), unreadCount)
                 .apply()
         }
-        unreadDialogsCounter.onNext(Pair(accountId, unreadCount))
+        unreadDialogsCounter.myEmit(Pair(accountId, unreadCount))
     }
 
     override fun getMissingGroupChats(
         accountId: Long,
         ids: Collection<Long>
-    ): Single<Collection<Long>> {
-        return Single.create { e: SingleEmitter<Collection<Long>> ->
+    ): Flow<Collection<Long>> {
+        return flow {
             if (ids.isEmpty()) {
-                e.onSuccess(emptyList())
+                emit(emptyList())
             } else {
                 val peerIds: MutableSet<Long> = HashSet(ids)
                 val projection = arrayOf(BaseColumns._ID)
@@ -353,13 +355,13 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
                     }
                     cursor.close()
                 }
-                e.onSuccess(peerIds)
+                emit(peerIds)
             }
         }
     }
 
-    override fun insertChats(accountId: Long, chats: List<VKApiChat>): Completable {
-        return Completable.fromAction {
+    override fun insertChats(accountId: Long, chats: List<VKApiChat>): Flow<Boolean> {
+        return flow {
             val operations = ArrayList<ContentProviderOperation>(chats.size)
             for (chat in chats) {
                 operations.add(
@@ -370,11 +372,12 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
                 )
             }
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
+            emit(true)
         }
     }
 
-    override fun applyPatches(accountId: Long, patches: List<PeerPatch>): Completable {
-        return Completable.create { emitter ->
+    override fun applyPatches(accountId: Long, patches: List<PeerPatch>): Flow<Boolean> {
+        return flow {
             val dialogsUri = getDialogsContentUriFor(accountId)
             val peersUri = getPeersContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>(patches.size * 2)
@@ -434,12 +437,12 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
             if (operations.nonNullNoEmpty()) {
                 contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
             }
-            emitter.onComplete()
+            emit(true)
         }
     }
 
-    override fun findChatById(accountId: Long, peerId: Long): Single<Optional<Chat>> {
-        return Single.fromCallable {
+    override fun findChatById(accountId: Long, peerId: Long): Flow<Optional<Chat>> {
+        return flow {
             val projection = arrayOf(
                 DialogsColumns.TITLE,
                 DialogsColumns.PHOTO_200,
@@ -462,7 +465,7 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
                 }
                 cursor.close()
             }
-            wrap(chat)
+            emit(wrap(chat))
         }
     }
 

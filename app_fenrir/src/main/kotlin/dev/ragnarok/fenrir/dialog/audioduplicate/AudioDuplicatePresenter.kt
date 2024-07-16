@@ -8,19 +8,19 @@ import android.provider.BaseColumns
 import android.provider.MediaStore
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getString
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.observeServiceBinding
 import dev.ragnarok.fenrir.media.music.PlayerStatus
 import dev.ragnarok.fenrir.model.Audio
-import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.Mp3InfoHelper.getBitrate
 import dev.ragnarok.fenrir.util.Mp3InfoHelper.getLength
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.fenrir.util.hls.M3U8
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class AudioDuplicatePresenter(
     private val accountId: Long,
@@ -29,19 +29,18 @@ class AudioDuplicatePresenter(
     savedInstanceState: Bundle?
 ) : RxSupportPresenter<IAudioDuplicateView>(savedInstanceState) {
     private val mAudioInteractor = InteractorFactory.createAudioInteractor()
-    private val mPlayerDisposable: Disposable
+    private val mPlayerDisposable = CancelableJob()
+    private var audioListDisposable = CancelableJob()
     private var oldBitrate: Int? = null
     private var newBitrate: Int? = null
     private var needShowBitrateButton = true
-    private var audioListDisposable = Disposable.disposed()
     private val mp3AndBitrate: Unit
         get() {
             val mode = new_audio.needRefresh()
             if (mode.first) {
-                audioListDisposable =
+                audioListDisposable +=
                     mAudioInteractor.getByIdOld(accountId, listOf(new_audio), mode.second)
-                        .fromIOToMain()
-                        .subscribe({ t -> getBitrate(t[0]) }) {
+                        .fromIOToMain({ t -> getBitrate(t[0]) }) {
                             getBitrate(
                                 new_audio
                             )
@@ -51,19 +50,15 @@ class AudioDuplicatePresenter(
             }
         }
 
-    private fun doBitrate(url: String): Single<Int> {
-        return Single.create { v: SingleEmitter<Int> ->
-            try {
-                val retriever = MediaMetadataRetriever()
-                retriever.setDataSource(url, HashMap())
-                val bitrate = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)
-                if (bitrate != null) {
-                    v.onSuccess((bitrate.toLong() / 1000).toInt())
-                } else {
-                    v.tryOnError(Throwable("Can't receipt bitrate "))
-                }
-            } catch (e: RuntimeException) {
-                v.tryOnError(e)
+    private fun doBitrate(url: String): Flow<Int> {
+        return flow {
+            val retriever = MediaMetadataRetriever()
+            retriever.setDataSource(url, HashMap())
+            val bitrate = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)
+            if (bitrate != null) {
+                emit((bitrate.toLong() / 1000).toInt())
+            } else {
+                throw Throwable("Can't receipt bitrate!")
             }
         }
     }
@@ -74,61 +69,53 @@ class AudioDuplicatePresenter(
             return
         }
         if (audio.isHLS) {
-            audioListDisposable = M3U8(pUrl).length.fromIOToMain()
-                .subscribe({ r ->
-                    newBitrate = getBitrate(audio.duration, r)
-                    view?.setNewBitrate(
-                        newBitrate
-                    )
-                }) { t -> onDataGetError(t) }
+            audioListDisposable += M3U8(pUrl).length.fromIOToMain({ r ->
+                newBitrate = getBitrate(audio.duration, r)
+                view?.setNewBitrate(
+                    newBitrate
+                )
+            }) { t -> onDataGetError(t) }
         } else if (!audio.isLocalServer) {
-            audioListDisposable = getLength(pUrl).fromIOToMain()
-                .subscribe({ r ->
-                    newBitrate = getBitrate(audio.duration, r)
-                    view?.setNewBitrate(
-                        newBitrate
-                    )
-                }) { t -> onDataGetError(t) }
+            audioListDisposable += getLength(pUrl).fromIOToMain({ r ->
+                newBitrate = getBitrate(audio.duration, r)
+                view?.setNewBitrate(
+                    newBitrate
+                )
+            }) { t -> onDataGetError(t) }
         } else {
-            audioListDisposable = doBitrate(pUrl).fromIOToMain()
-                .subscribe({ r ->
-                    newBitrate = r
-                    view?.setNewBitrate(
-                        newBitrate
-                    )
-                }) { t -> onDataGetError(t) }
+            audioListDisposable += doBitrate(pUrl).fromIOToMain({ r ->
+                newBitrate = r
+                view?.setNewBitrate(
+                    newBitrate
+                )
+            }) { t -> onDataGetError(t) }
         }
     }
 
-    @Suppress("DEPRECATION")
-    private fun doLocalBitrate(context: Context, url: String): Single<Int> {
-        return Single.create { v: SingleEmitter<Int> ->
-            try {
-                val cursor = context.contentResolver.query(
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    arrayOf(MediaStore.MediaColumns.DATA),
-                    BaseColumns._ID + "=? ",
-                    arrayOf(Uri.parse(url).lastPathSegment),
-                    null
-                )
-                if (cursor != null && cursor.moveToFirst()) {
-                    val retriever = MediaMetadataRetriever()
-                    val fl =
-                        cursor.getString(MediaStore.MediaColumns.DATA)
-                    retriever.setDataSource(fl)
-                    cursor.close()
-                    val bitrate =
-                        retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)
-                    if (bitrate != null) {
-                        v.onSuccess((bitrate.toLong() / 1000).toInt())
-                    } else {
-                        v.tryOnError(Throwable("Can't receipt bitrate "))
-                    }
+    private fun doLocalBitrate(context: Context, url: String): Flow<Int> {
+        return flow {
+            val cursor = context.contentResolver.query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                arrayOf(MediaStore.MediaColumns.DATA),
+                BaseColumns._ID + "=? ",
+                arrayOf(Uri.parse(url).lastPathSegment),
+                null
+            )
+            if (cursor != null && cursor.moveToFirst()) {
+                val retriever = MediaMetadataRetriever()
+                val fl =
+                    cursor.getString(MediaStore.MediaColumns.DATA)
+                retriever.setDataSource(fl)
+                cursor.close()
+                val bitrate =
+                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)
+                if (bitrate != null) {
+                    emit((bitrate.toLong() / 1000).toInt())
                 } else {
-                    v.tryOnError(Throwable("Can't receipt bitrate "))
+                    throw Throwable("Can't receipt bitrate!")
                 }
-            } catch (e: RuntimeException) {
-                v.tryOnError(e)
+            } else {
+                throw Throwable("Can't receipt bitrate!")
             }
         }
     }
@@ -142,14 +129,13 @@ class AudioDuplicatePresenter(
         view?.updateShowBitrate(
             needShowBitrateButton
         )
-        audioListDisposable = doLocalBitrate(context, pUrl).fromIOToMain()
-            .subscribe({ r ->
-                oldBitrate = r
-                view?.setOldBitrate(
-                    oldBitrate
-                )
-                mp3AndBitrate
-            }) { t -> onDataGetError(t) }
+        audioListDisposable += doLocalBitrate(context, pUrl).fromIOToMain({ r ->
+            oldBitrate = r
+            view?.setOldBitrate(
+                oldBitrate
+            )
+            mp3AndBitrate
+        }) { t -> onDataGetError(t) }
     }
 
     private fun onServiceBindEvent(@PlayerStatus status: Int) {
@@ -165,8 +151,8 @@ class AudioDuplicatePresenter(
     }
 
     override fun onDestroyed() {
-        mPlayerDisposable.dispose()
-        audioListDisposable.dispose()
+        mPlayerDisposable.cancel()
+        audioListDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -188,8 +174,7 @@ class AudioDuplicatePresenter(
     }
 
     init {
-        mPlayerDisposable = observeServiceBinding()
-            .toMainThread()
-            .subscribe { onServiceBindEvent(it) }
+        mPlayerDisposable += observeServiceBinding()
+            .sharedFlowToMain { onServiceBindEvent(it) }
     }
 }

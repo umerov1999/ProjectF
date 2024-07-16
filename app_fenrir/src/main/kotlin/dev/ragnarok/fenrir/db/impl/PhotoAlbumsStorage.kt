@@ -21,18 +21,18 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.wrap
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 internal class PhotoAlbumsStorage(base: AppStorages) : AbsStorage(base), IPhotoAlbumsStorage {
     override fun findAlbumById(
         accountId: Long,
         ownerId: Long,
         albumId: Int
-    ): Single<Optional<PhotoAlbumDboEntity>> {
-        return Single.create { e: SingleEmitter<Optional<PhotoAlbumDboEntity>> ->
+    ): Flow<Optional<PhotoAlbumDboEntity>> {
+        return flow {
             val where =
                 PhotoAlbumsColumns.OWNER_ID + " = ? AND " + PhotoAlbumsColumns.ALBUM_ID + " = ?"
             val args = arrayOf(ownerId.toString(), albumId.toString())
@@ -45,12 +45,12 @@ internal class PhotoAlbumsStorage(base: AppStorages) : AbsStorage(base), IPhotoA
                 }
                 cursor.close()
             }
-            e.onSuccess(wrap(album))
+            emit(wrap(album))
         }
     }
 
-    override fun findAlbumsByCriteria(criteria: PhotoAlbumsCriteria): Single<List<PhotoAlbumDboEntity>> {
-        return Single.create { e: SingleEmitter<List<PhotoAlbumDboEntity>> ->
+    override fun findAlbumsByCriteria(criteria: PhotoAlbumsCriteria): Flow<List<PhotoAlbumDboEntity>> {
+        return flow {
             val uri = getPhotoAlbumsContentUriFor(criteria.accountId)
             val cursor = context.contentResolver.query(
                 uri,
@@ -62,14 +62,14 @@ internal class PhotoAlbumsStorage(base: AppStorages) : AbsStorage(base), IPhotoA
             val data: MutableList<PhotoAlbumDboEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     data.add(mapAlbum(cursor))
                 }
                 cursor.close()
             }
-            e.onSuccess(data)
+            emit(data)
         }
     }
 
@@ -78,8 +78,8 @@ internal class PhotoAlbumsStorage(base: AppStorages) : AbsStorage(base), IPhotoA
         ownerId: Long,
         albums: List<PhotoAlbumDboEntity>,
         clearBefore: Boolean
-    ): Completable {
-        return Completable.create { e ->
+    ): Flow<Boolean> {
+        return flow {
             val operations =
                 ArrayList<ContentProviderOperation>(if (clearBefore) albums.size + 1 else albums.size)
             val uri = getPhotoAlbumsContentUriFor(accountId)
@@ -103,18 +103,18 @@ internal class PhotoAlbumsStorage(base: AppStorages) : AbsStorage(base), IPhotoA
                 )
             }
             context.contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            e.onComplete()
+            emit(true)
         }
     }
 
-    override fun removeAlbumById(accountId: Long, ownerId: Long, albumId: Int): Completable {
-        return Completable.create { e ->
+    override fun removeAlbumById(accountId: Long, ownerId: Long, albumId: Int): Flow<Boolean> {
+        return flow {
             val where =
                 PhotoAlbumsColumns.OWNER_ID + " = ? AND " + PhotoAlbumsColumns.ALBUM_ID + " = ?"
             val args = arrayOf(ownerId.toString(), albumId.toString())
             val uri = getPhotoAlbumsContentUriFor(accountId)
             context.contentResolver.delete(uri, where, args)
-            e.onComplete()
+            emit(true)
         }
     }
 

@@ -26,6 +26,7 @@ import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.Logger.e
 import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 
 class ReplyFCMMessage {
     //04-14 13:02:31.114 1784-2485/dev.ragnarok.fenrir D/MyFcmListenerService: onMessage,
@@ -56,14 +57,13 @@ class ReplyFCMMessage {
         }
         val app = context.applicationContext
         getRx(app, accountId, from_id)
-            .subscribeOn(INSTANCE)
-            .subscribe({ ownerInfo ->
+            .fromScopeToMain(INSTANCE) { ownerInfo ->
                 notifyImpl(
                     app,
                     ownerInfo.owner,
                     ownerInfo.avatar
                 )
-            }) { }
+            }
     }
 
     private fun notifyImpl(context: Context, owner: Owner, bitmap: Bitmap?) {

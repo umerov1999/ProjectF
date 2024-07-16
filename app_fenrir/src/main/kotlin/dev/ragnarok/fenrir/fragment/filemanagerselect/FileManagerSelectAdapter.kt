@@ -13,22 +13,14 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.model.FileItem
 import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.util.Utils
-import io.reactivex.rxjava3.disposables.Disposable
-
 
 class FileManagerSelectAdapter(private var data: List<FileItem>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var clickListener: ClickListener? = null
-    private var mPlayerDisposable = Disposable.disposed()
 
     fun setItems(data: List<FileItem>) {
         this.data = data
         notifyDataSetChanged()
-    }
-
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
-        super.onDetachedFromRecyclerView(recyclerView)
-        mPlayerDisposable.dispose()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

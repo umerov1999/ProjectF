@@ -7,15 +7,16 @@ import dev.ragnarok.fenrir.model.ProxyConfig
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.wrap
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.subjects.PublishSubject
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.createPublishSubject
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.myEmit
+import kotlinx.coroutines.flow.SharedFlow
 
 class ProxySettingsImpl(context: Context) : IProxySettings {
     private val preferences: SharedPreferences =
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-    private val addPublisher: PublishSubject<ProxyConfig> = PublishSubject.create()
-    private val deletePublisher: PublishSubject<ProxyConfig> = PublishSubject.create()
-    private val activePublisher: PublishSubject<Optional<ProxyConfig>> = PublishSubject.create()
+    private val addPublisher = createPublishSubject<ProxyConfig>()
+    private val deletePublisher = createPublishSubject<ProxyConfig>()
+    private val activePublisher = createPublishSubject<Optional<ProxyConfig>>()
     override fun put(address: String, port: Int) {
         val id = generateNextId()
         val config = ProxyConfig().set(id, address, port)
@@ -29,7 +30,7 @@ class ProxySettingsImpl(context: Context) : IProxySettings {
         preferences.edit()
             .putStringSet(KEY_LIST, set)
             .apply()
-        addPublisher.onNext(config)
+        addPublisher.myEmit(config)
     }
 
     override fun put(address: String, port: Int, username: String, pass: String) {
@@ -38,13 +39,13 @@ class ProxySettingsImpl(context: Context) : IProxySettings {
         put(config)
     }
 
-    override val observeAdding: Observable<ProxyConfig>
+    override val observeAdding: SharedFlow<ProxyConfig>
         get() = addPublisher
 
-    override val observeRemoving: Observable<ProxyConfig>
+    override val observeRemoving: SharedFlow<ProxyConfig>
         get() = deletePublisher
 
-    override val observeActive: Observable<Optional<ProxyConfig>>
+    override val observeActive: SharedFlow<Optional<ProxyConfig>>
         get() = activePublisher
 
     override val all: MutableList<ProxyConfig>
@@ -74,18 +75,18 @@ class ProxySettingsImpl(context: Context) : IProxySettings {
                 if (config == null) null else kJson.encodeToString(ProxyConfig.serializer(), config)
             )
             .apply()
-        activePublisher.onNext(wrap(config))
+        activePublisher.myEmit(wrap(config))
     }
 
     override fun broadcastUpdate(config: ProxyConfig?) {
         if (config == null) {
-            activePublisher.onNext(
+            activePublisher.myEmit(
                 wrap(
                     activeProxy
                 )
             )
         } else {
-            activePublisher.onNext(wrap(config))
+            activePublisher.myEmit(wrap(config))
         }
     }
 
@@ -96,7 +97,7 @@ class ProxySettingsImpl(context: Context) : IProxySettings {
         preferences.edit()
             .putStringSet(KEY_LIST, set)
             .apply()
-        deletePublisher.onNext(config)
+        deletePublisher.myEmit(config)
     }
 
     private fun generateNextId(): Int {

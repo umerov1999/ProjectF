@@ -20,16 +20,16 @@ import dev.ragnarok.fenrir.insert
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Exestime.log
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 
 internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersStorage {
-    override fun storeStickerSets(accountId: Long, sets: List<StickerSetEntity>): Completable {
-        return Completable.create { e ->
+    override fun storeStickerSets(accountId: Long, sets: List<StickerSetEntity>): Flow<Boolean> {
+        return flow {
             val start = System.currentTimeMillis()
             val db = TempDataHelper.helper.writableDatabase
             db.beginTransaction()
@@ -41,10 +41,10 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
                 }
                 db.setTransactionSuccessful()
                 db.endTransaction()
-                e.onComplete()
+                emit(true)
             } catch (exception: Exception) {
                 db.endTransaction()
-                e.tryOnError(exception)
+                throw exception
             }
             log("StickersStorage.storeStickerSets", start, "count: " + safeCountOf(sets))
         }
@@ -53,8 +53,8 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
     override fun storeStickerSetsCustom(
         accountId: Long,
         sets: List<StickerSetEntity>
-    ): Completable {
-        return Completable.create { e ->
+    ): Flow<Boolean> {
+        return flow {
             val start = System.currentTimeMillis()
             val db = TempDataHelper.helper.writableDatabase
             db.beginTransaction()
@@ -74,20 +74,20 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
                 }
                 db.setTransactionSuccessful()
                 db.endTransaction()
-                e.onComplete()
+                emit(true)
             } catch (exception: Exception) {
                 db.endTransaction()
-                e.tryOnError(exception)
+                throw exception
             }
             log("StickersStorage.storeStickerSetsCustom", start, "count: " + safeCountOf(sets))
         }
     }
 
-    override fun clearAccount(accountId: Long): Completable {
+    override fun clearAccount(accountId: Long): Flow<Boolean> {
         Settings.get().main().del_last_sticker_sets_sync(accountId)
         Settings.get().main().del_last_sticker_sets_custom_sync(accountId)
         Settings.get().main().del_last_sticker_keywords_sync(accountId)
-        return Completable.create { e ->
+        return flow {
             val db = TempDataHelper.helper.writableDatabase
             db.beginTransaction()
             try {
@@ -107,16 +107,16 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
                 )
                 db.setTransactionSuccessful()
                 db.endTransaction()
-                e.onComplete()
+                emit(true)
             } catch (exception: Exception) {
                 db.endTransaction()
-                e.tryOnError(exception)
+                throw exception
             }
         }
     }
 
-    override fun storeKeyWords(accountId: Long, sets: List<StickersKeywordsEntity>): Completable {
-        return Completable.create { e ->
+    override fun storeKeyWords(accountId: Long, sets: List<StickersKeywordsEntity>): Flow<Boolean> {
+        return flow {
             val start = System.currentTimeMillis()
             val db = TempDataHelper.helper.writableDatabase
             db.beginTransaction()
@@ -136,17 +136,17 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
                 }
                 db.setTransactionSuccessful()
                 db.endTransaction()
-                e.onComplete()
+                emit(true)
             } catch (exception: Exception) {
                 db.endTransaction()
-                e.tryOnError(exception)
+                throw exception
             }
             log("StickersStorage.storeKeyWords", start, "count: " + safeCountOf(sets))
         }
     }
 
-    override fun getStickerSets(accountId: Long): Single<List<StickerSetEntity>> {
-        return Single.create { e: SingleEmitter<List<StickerSetEntity>> ->
+    override fun getStickerSets(accountId: Long): Flow<List<StickerSetEntity>> {
+        return flow {
             val start = System.currentTimeMillis()
             val where =
                 "${StickerSetsColumns.ACCOUNT_ID} = ?"
@@ -164,7 +164,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
             )
             val stickers: MutableList<StickerSetEntity> = ArrayList(cursor.count)
             while (cursor.moveToNext()) {
-                if (e.isDisposed) {
+                if (!isActive()) {
                     break
                 }
                 stickers.add(mapStickerSet(cursor))
@@ -172,7 +172,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
             stickers.sortWith(COMPARATOR_STICKER_SET)
             cursor.close()
 
-            if (!e.isDisposed) {
+            if (isActive()) {
                 cursor = TempDataHelper.helper.writableDatabase.query(
                     StickerSetsCustomColumns.TABLENAME,
                     COLUMNS_STICKER_SET_CUSTOM,
@@ -183,19 +183,19 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
                     null
                 )
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     stickers.insert(0, mapStickerSetCustom(cursor))
                 }
             }
-            e.onSuccess(stickers)
             log("StickersStorage.get", start, "count: " + stickers.size)
+            emit(stickers)
         }
     }
 
-    override fun getKeywordsStickers(accountId: Long, s: String?): Single<List<StickerDboEntity>> {
-        return Single.create { e: SingleEmitter<List<StickerDboEntity>> ->
+    override fun getKeywordsStickers(accountId: Long, s: String?): Flow<List<StickerDboEntity>> {
+        return flow {
             val where = "${StickersKeywordsColumns.ACCOUNT_ID} = ?"
             val args = arrayOf(accountId.toString())
             val cursor = TempDataHelper.helper.writableDatabase.query(
@@ -209,7 +209,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
             )
             val stickers: MutableList<StickerDboEntity> = ArrayList(safeCountOf(cursor))
             while (cursor.moveToNext()) {
-                if (e.isDisposed) {
+                if (!isActive()) {
                     break
                 }
                 val entity = mapStickersKeywords(cursor)
@@ -217,13 +217,13 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
                     if (s.equals(v, ignoreCase = true)) {
                         entity.stickers.let { stickers.addAll(it) }
                         cursor.close()
-                        e.onSuccess(stickers)
-                        return@create
+                        emit(stickers)
+                        return@flow
                     }
                 }
             }
             cursor.close()
-            e.onSuccess(stickers)
+            emit(stickers)
         }
     }
 

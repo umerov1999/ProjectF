@@ -5,14 +5,14 @@ import dev.ragnarok.fenrir.api.model.VKApiDoc
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.server.VKApiDocsUploadServer
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class IDocsService : IServiceRest() {
     //https://vk.com/dev/docs.delete
     fun delete(
         ownerId: Long?,
         docId: Int
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "docs.delete", form(
                 "owner_id" to ownerId,
@@ -33,7 +33,7 @@ class IDocsService : IServiceRest() {
         ownerId: Long,
         docId: Int,
         accessKey: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "docs.add", form(
                 "owner_id" to ownerId,
@@ -50,7 +50,7 @@ class IDocsService : IServiceRest() {
      * List of comma-separated words, required parameter
      * @return an array of objects describing documents
      */
-    fun getById(ids: String?): Single<BaseResponse<List<VKApiDoc>>> {
+    fun getById(ids: String?): Flow<BaseResponse<List<VKApiDoc>>> {
         return rest.request("docs.getById", form("docs" to ids), baseList(VKApiDoc.serializer()))
     }
 
@@ -66,7 +66,7 @@ class IDocsService : IServiceRest() {
         query: String?,
         count: Int?,
         offset: Int?
-    ): Single<BaseResponse<Items<VKApiDoc>>> {
+    ): Flow<BaseResponse<Items<VKApiDoc>>> {
         return rest.request(
             "docs.search", form(
                 "q" to query,
@@ -88,7 +88,7 @@ class IDocsService : IServiceRest() {
         file: String?,
         title: String?,
         tags: String?
-    ): Single<BaseResponse<VKApiDoc.Entry>> {
+    ): Flow<BaseResponse<VKApiDoc.Entry>> {
         return rest.request(
             "docs.save", form(
                 "file" to file,
@@ -108,7 +108,7 @@ class IDocsService : IServiceRest() {
     fun getMessagesUploadServer(
         peer_id: Long?,
         type: String?
-    ): Single<BaseResponse<VKApiDocsUploadServer>> {
+    ): Flow<BaseResponse<VKApiDocsUploadServer>> {
         return rest.request(
             "docs.getMessagesUploadServer", form(
                 "peer_id" to peer_id,
@@ -117,7 +117,7 @@ class IDocsService : IServiceRest() {
         )
     }
 
-    fun getUploadServer(groupId: Long?): Single<BaseResponse<VKApiDocsUploadServer>> {
+    fun getUploadServer(groupId: Long?): Flow<BaseResponse<VKApiDocsUploadServer>> {
         return rest.request(
             "docs.getUploadServer",
             form("group_id" to groupId),
@@ -149,7 +149,7 @@ class IDocsService : IServiceRest() {
         count: Int?,
         offset: Int?,
         type: Int?
-    ): Single<BaseResponse<Items<VKApiDoc>>> {
+    ): Flow<BaseResponse<Items<VKApiDoc>>> {
         return rest.request(
             "docs.get", form(
                 "owner_id" to ownerId,

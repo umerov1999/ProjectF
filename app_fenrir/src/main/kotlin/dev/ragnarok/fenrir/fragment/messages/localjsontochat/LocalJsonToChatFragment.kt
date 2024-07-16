@@ -21,7 +21,6 @@ import dev.ragnarok.fenrir.activity.ActivityUtils
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
 import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter
 import dev.ragnarok.fenrir.fragment.messages.chat.MessagesAdapter.OnMessageActionListener
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
@@ -35,18 +34,17 @@ import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.disposables.Disposable
-import java.util.concurrent.TimeUnit
 
 class LocalJsonToChatFragment :
     PlaceSupportMvpFragment<LocalJsonToChatPresenter, ILocalJsonToChatView>(), ILocalJsonToChatView,
     OnMessageActionListener {
     private var mEmpty: TextView? = null
     private var mLoadingProgressBar: RLottieImageView? = null
-    private var mLoadingProgressBarDispose = Disposable.disposed()
+    private var mLoadingProgressBarDispose = CancelableJob()
     private var mLoadingProgressBarLoaded = false
     private var mAdapter: MessagesAdapter? = null
     private var recyclerView: RecyclerView? = null
@@ -221,7 +219,7 @@ class LocalJsonToChatFragment :
     }
 
     override fun showRefreshing(refreshing: Boolean) {
-        mLoadingProgressBarDispose.dispose()
+        mLoadingProgressBarDispose.cancel()
         if (mLoadingProgressBarLoaded && !refreshing) {
             mLoadingProgressBarLoaded = false
             val k = ObjectAnimator.ofFloat(mLoadingProgressBar, View.ALPHA, 0.0f).setDuration(1000)
@@ -240,9 +238,7 @@ class LocalJsonToChatFragment :
             })
             k.start()
         } else if (refreshing) {
-            mLoadingProgressBarDispose = Completable.create {
-                it.onComplete()
-            }.delay(300, TimeUnit.MILLISECONDS).fromIOToMain().subscribe({
+            mLoadingProgressBarDispose += delayTaskFlow(300).toMain {
                 mLoadingProgressBarLoaded = true
                 mLoadingProgressBar?.visibility = View.VISIBLE
                 mLoadingProgressBar?.fromRes(
@@ -257,7 +253,7 @@ class LocalJsonToChatFragment :
                     )
                 )
                 mLoadingProgressBar?.playAnimation()
-            }, RxUtils.ignore())
+            }
         }
     }
 
@@ -304,7 +300,7 @@ class LocalJsonToChatFragment :
 
     override fun onDestroy() {
         super.onDestroy()
-        mLoadingProgressBarDispose.dispose()
+        mLoadingProgressBarDispose.cancel()
     }
 
     override fun setToolbarTitle(title: String?) {

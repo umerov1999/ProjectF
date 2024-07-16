@@ -9,29 +9,28 @@ import dev.ragnarok.fenrir.api.model.VKApiSticker
 import dev.ragnarok.fenrir.api.model.VKApiStickerSet
 import dev.ragnarok.fenrir.api.model.VKApiStickersKeywords
 import dev.ragnarok.fenrir.api.services.IStoreService
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 internal class StoreApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IStoreApi {
-    override val stickerKeywords: Single<Dictionary<VKApiStickersKeywords>>
+    override val stickerKeywords: Flow<Dictionary<VKApiStickersKeywords>>
         get() = provideService(IStoreService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .getStickersKeywords()
+            .flatMapConcat {
+                it.getStickersKeywords()
                     .map(extractResponseWithErrorHandling())
             }
-    override val stickersSets: Single<Items<VKApiStickerSet.Product>>
+    override val stickersSets: Flow<Items<VKApiStickerSet.Product>>
         get() = provideService(IStoreService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .getStickersSets()
+            .flatMapConcat {
+                it.getStickersSets()
                     .map(extractResponseWithErrorHandling())
             }
-    override val recentStickers: Single<Items<VKApiSticker>>
+    override val recentStickers: Flow<Items<VKApiSticker>>
         get() = provideService(IStoreService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .getRecentStickers()
+            .flatMapConcat {
+                it.getRecentStickers()
                     .map(extractResponseWithErrorHandling())
             }
 }

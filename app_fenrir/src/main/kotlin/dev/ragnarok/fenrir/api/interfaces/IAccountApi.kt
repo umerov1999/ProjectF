@@ -9,19 +9,18 @@ import dev.ragnarok.fenrir.api.model.VKApiProfileInfoResponse
 import dev.ragnarok.fenrir.api.model.response.AccountsBannedResponse
 import dev.ragnarok.fenrir.api.model.response.ContactsResponse
 import dev.ragnarok.fenrir.api.model.response.PushSettingsResponse
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IAccountApi {
     @CheckResult
-    fun ban(ownerId: Long): Single<Int>
+    fun ban(ownerId: Long): Flow<Int>
 
     @CheckResult
-    fun unban(ownerId: Long): Single<Int>
-    fun getBanned(count: Int?, offset: Int?, fields: String?): Single<AccountsBannedResponse>
+    fun unban(ownerId: Long): Flow<Int>
+    fun getBanned(count: Int?, offset: Int?, fields: String?): Flow<AccountsBannedResponse>
 
     @CheckResult
-    fun unregisterDevice(deviceId: String?): Single<Boolean>
+    fun unregisterDevice(deviceId: String?): Flow<Boolean>
 
     @CheckResult
     fun registerDevice(
@@ -35,16 +34,16 @@ interface IAccountApi {
         deviceId: String?,
         systemVersion: String?,
         settings: String?
-    ): Single<Boolean>
+    ): Flow<Boolean>
 
     @CheckResult
-    fun setOffline(): Single<Boolean>
+    fun setOffline(): Flow<Boolean>
 
     @get:CheckResult
-    val profileInfo: Single<VKApiProfileInfo>
+    val profileInfo: Flow<VKApiProfileInfo>
 
     @get:CheckResult
-    val pushSettings: Single<PushSettingsResponse>
+    val pushSettings: Flow<PushSettingsResponse>
 
     @CheckResult
     fun saveProfileInfo(
@@ -55,10 +54,10 @@ interface IAccountApi {
         bdate: String?,
         home_town: String?,
         sex: Int?
-    ): Single<VKApiProfileInfoResponse>
+    ): Flow<VKApiProfileInfoResponse>
 
     @CheckResult
-    fun getCounters(filter: String?): Single<CountersDto>
+    fun getCounters(filter: String?): Flow<CountersDto>
 
     @CheckResult
     fun refreshToken(
@@ -66,20 +65,20 @@ interface IAccountApi {
         receipt2: String?,
         nonce: String?,
         timestamp: Long?
-    ): Single<RefreshToken>
+    ): Flow<RefreshToken>
 
     @CheckResult
-    fun getExchangeToken(): Single<RefreshToken>
+    fun getExchangeToken(): Flow<RefreshToken>
 
     @CheckResult
-    fun importMessagesContacts(contacts: String?): Completable
+    fun importMessagesContacts(contacts: String?): Flow<Boolean>
 
     @CheckResult
-    fun processAuthCode(auth_code: String, action: Int): Single<VKApiProcessAuthCode>
+    fun processAuthCode(auth_code: String, action: Int): Flow<VKApiProcessAuthCode>
 
     @CheckResult
-    fun getContactList(offset: Int?, count: Int?): Single<ContactsResponse>
+    fun getContactList(offset: Int?, count: Int?): Flow<ContactsResponse>
 
     @CheckResult
-    fun resetMessagesContacts(): Completable
+    fun resetMessagesContacts(): Flow<Boolean>
 }

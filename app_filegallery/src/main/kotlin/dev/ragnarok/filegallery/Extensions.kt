@@ -13,43 +13,13 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.view.View
 import androidx.annotation.ColorInt
-import dev.ragnarok.filegallery.util.rxutils.RxUtils
-import dev.ragnarok.filegallery.util.rxutils.io.AndroidSchedulers
+import androidx.core.database.getStringOrNull
 import dev.ragnarok.filegallery.util.serializeble.json.Json
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.functions.Consumer
-import io.reactivex.rxjava3.schedulers.Schedulers
 import okhttp3.ResponseBody
 import java.io.Serializable
 import kotlin.contracts.contract
 
 val kJson: Json by lazy { Json { ignoreUnknownKeys = true; isLenient = true } }
-
-inline fun <reified T : Any> Single<T>.fromIOToMain(): Single<T> =
-    subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-
-inline fun <reified T : Any> Maybe<T>.fromIOToMain(): Maybe<T> =
-    subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-
-inline fun <reified T : Any> Single<T>.fromIOToMainComputation(): Single<T> =
-    subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread())
-
-inline fun <reified T : Any> Single<T>.subscribeIOAndIgnoreResults(): Disposable =
-    subscribeOn(Schedulers.io()).subscribe(RxUtils.ignore(), RxUtils.ignore())
-
-inline fun <reified T : Any> Flowable<T>.toMainThread(): Flowable<T> =
-    observeOn(AndroidSchedulers.mainThread())
-
-inline fun <reified T : Any> Observable<T>.toMainThread(): Observable<T> =
-    observeOn(AndroidSchedulers.mainThread())
-
-fun Completable.fromIOToMain(): Completable =
-    subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
 
 fun SQLiteDatabase.query(
     tableName: String,
@@ -69,9 +39,7 @@ fun Cursor.getBoolean(columnName: String): Boolean =
     getInt(getColumnIndexOrThrow(columnName)) == 1
 
 fun Cursor.getString(columnName: String): String? =
-    getString(getColumnIndexOrThrow(columnName))
-
-fun Disposable.notDisposed(): Boolean = !isDisposed
+    getStringOrNull(getColumnIndexOrThrow(columnName))
 
 inline fun <reified T> Collection<T?>?.safeAllIsNullOrEmpty(): Boolean {
     contract {
@@ -340,15 +308,6 @@ inline fun <reified T, reified E : List<T>> E?.requireNonNull(block: (E) -> Unit
 inline fun <reified T, reified E : MutableList<T>> E?.requireNonNullMutable(block: (E) -> Unit) {
     this?.apply(block)
 }
-
-inline fun <reified T : Any> Flowable<T>.subscribeIgnoreErrors(consumer: Consumer<in T>): Disposable =
-    subscribe(consumer, RxUtils.ignore())
-
-inline fun <reified T : Any> Single<T>.subscribeIgnoreErrors(consumer: Consumer<in T>): Disposable =
-    subscribe(consumer, RxUtils.ignore())
-
-fun Completable.subscribeIOAndIgnoreResults(): Disposable =
-    subscribeOn(Schedulers.io()).subscribe(RxUtils.dummy(), RxUtils.ignore())
 
 inline fun View.fadeOut(duration: Long, crossinline onEnd: () -> Unit = {}) {
     ObjectAnimator.ofPropertyValuesHolder(

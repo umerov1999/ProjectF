@@ -113,7 +113,7 @@ Java_dev_ragnarok_fenrir_module_rlottie_RLottieDrawable_create(JNIEnv *env, jobj
     }
     delete[] arr;
     if (!orig) {
-        if (jsonString.length() <= 0) {
+        if (jsonString.empty()) {
             delete info;
             return 0;
         }

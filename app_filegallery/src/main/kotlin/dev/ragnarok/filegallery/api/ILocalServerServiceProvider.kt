@@ -1,8 +1,8 @@
 package dev.ragnarok.filegallery.api
 
 import dev.ragnarok.filegallery.api.services.ILocalServerService
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface ILocalServerServiceProvider {
-    fun provideLocalServerService(): Single<ILocalServerService>
+    fun provideLocalServerService(): Flow<ILocalServerService>
 }

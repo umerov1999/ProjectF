@@ -3,9 +3,9 @@ package dev.ragnarok.filegallery.fragment.tagowner
 import dev.ragnarok.filegallery.Includes
 import dev.ragnarok.filegallery.db.interfaces.ISearchRequestHelperStorage
 import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
-import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.model.FileItem
 import dev.ragnarok.filegallery.model.tags.TagOwner
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class TagOwnerPresenter :
     RxSupportPresenter<ITagOwnerView>() {
@@ -19,19 +19,17 @@ class TagOwnerPresenter :
     }
 
     private fun loadActualData() {
-        appendDisposable(
+        appendJob(
             storage.getTagOwners()
-                .fromIOToMain()
-                .subscribe({ onActualDataReceived(it) },
+                .fromIOToMain({ onActualDataReceived(it) },
                     { t -> onActualDataGetError(t) })
         )
     }
 
     fun addDir(owner: TagOwner, item: FileItem) {
-        appendDisposable(
+        appendJob(
             storage.insertTagDir(owner.id, item)
-                .fromIOToMain()
-                .subscribe(
+                .fromIOToMain(
                     {
                         view?.successAdd(owner, item)
                     }, { t -> onActualDataGetError(t) })
@@ -39,10 +37,9 @@ class TagOwnerPresenter :
     }
 
     fun deleteTagOwner(pos: Int, owner: TagOwner) {
-        appendDisposable(
+        appendJob(
             storage.deleteTagOwner(owner.id)
-                .fromIOToMain()
-                .subscribe(
+                .fromIOToMain(
                     {
                         tagOwnerData.removeAt(pos)
                         view?.notifyRemove(pos)
@@ -54,10 +51,9 @@ class TagOwnerPresenter :
         if (name.isNullOrEmpty()) {
             return
         }
-        appendDisposable(
+        appendJob(
             storage.updateNameTagOwner(owner.id, name)
-                .fromIOToMain()
-                .subscribe(
+                .fromIOToMain(
                     {
                         loadActualData()
                     }, { t -> onActualDataGetError(t) })
@@ -78,10 +74,9 @@ class TagOwnerPresenter :
         if (name.isNullOrEmpty()) {
             return
         }
-        appendDisposable(
+        appendJob(
             storage.insertTagOwner(name)
-                .fromIOToMain()
-                .subscribe(
+                .fromIOToMain(
                     {
                         tagOwnerData.add(0, it)
                         view?.notifyAdd(0)

@@ -1,7 +1,7 @@
 package dev.ragnarok.fenrir.api
 
 import dev.ragnarok.fenrir.api.model.Captcha
-import io.reactivex.rxjava3.core.Observable
+import kotlinx.coroutines.flow.SharedFlow
 
 interface ICaptchaProvider {
     /**
@@ -25,7 +25,7 @@ interface ICaptchaProvider {
      *
      * @return "паблишер" кода капчи
      */
-    fun observeCanceling(): Observable<String>
+    fun observeCanceling(): SharedFlow<String>
 
     /**
      * Проверить, не появился ли введенный текст капчи
@@ -45,7 +45,7 @@ interface ICaptchaProvider {
      *
      * @return "паблишер" кода капчи
      */
-    fun observeWaiting(): Observable<String>
+    fun observeWaiting(): SharedFlow<String>
 
     /**
      * Уведомдить провайдер о том, что пользователь все еще в процессе ввода текста

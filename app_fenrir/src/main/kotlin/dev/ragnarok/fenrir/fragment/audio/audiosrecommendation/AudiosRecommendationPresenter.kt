@@ -5,7 +5,6 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IAudioInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.media.music.MusicPlaybackService.Companion.startForPlayList
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.nonNullNoEmpty
@@ -13,7 +12,8 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.TrackIsDownloaded
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class AudiosRecommendationPresenter(
     accountId: Long,
@@ -24,7 +24,7 @@ class AudiosRecommendationPresenter(
 ) : AccountDependencyPresenter<IAudiosRecommendationView>(accountId, savedInstanceState) {
     private val audioInteractor: IAudioInteractor = InteractorFactory.createAudioInteractor()
     private val audios: ArrayList<Audio> = ArrayList()
-    private val audioListDisposable = CompositeDisposable()
+    private val audioListDisposable = CompositeJob()
     private var loadingNow = false
     private var doAudioLoadTabs = false
     fun setLoadingNow(loadingNow: Boolean) {
@@ -78,8 +78,7 @@ class AudiosRecommendationPresenter(
             genre,
             REC_COUNT
         )
-            .fromIOToMain()
-            .subscribe({ onEndlessListReceived(it) }) { t ->
+            .fromIOToMain({ onEndlessListReceived(it) }) { t ->
                 onListGetError(
                     t
                 )
@@ -95,8 +94,7 @@ class AudiosRecommendationPresenter(
                     ownerId.toString() + "_" + option_menu_id,
                     REC_COUNT
                 )
-                    .fromIOToMain()
-                    .subscribe({ onEndlessListReceived(it) }) {
+                    .fromIOToMain({ onEndlessListReceived(it) }) {
                         onListGetError(
                             it
                         )
@@ -107,8 +105,7 @@ class AudiosRecommendationPresenter(
                     ownerId,
                     REC_COUNT
                 )
-                    .fromIOToMain()
-                    .subscribe({ onEndlessListReceived(it) }) { t ->
+                    .fromIOToMain({ onEndlessListReceived(it) }) { t ->
                         onListGetError(
                             t
                         )
@@ -117,7 +114,7 @@ class AudiosRecommendationPresenter(
         }
 
     override fun onDestroyed() {
-        audioListDisposable.dispose()
+        audioListDisposable.cancel()
         super.onDestroyed()
     }
 

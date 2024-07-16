@@ -567,7 +567,7 @@ internal abstract class AbstractJsonLexer {
                         "found ] instead of } at path: $path",
                         source
                     )
-                    tokenStack.removeLast()
+                    tokenStack.removeLastOrNull()
                 }
 
                 TC_END_OBJ -> {
@@ -576,7 +576,7 @@ internal abstract class AbstractJsonLexer {
                         "found } instead of ] at path: $path",
                         source
                     )
-                    tokenStack.removeLast()
+                    tokenStack.removeLastOrNull()
                 }
 
                 TC_EOF -> fail("Unexpected end of input due to malformed JSON during ignoring unknown keys")

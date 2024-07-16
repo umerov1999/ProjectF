@@ -61,7 +61,6 @@ class FriendsByPhonesFragment : BaseMvpFragment<FriendsByPhonesPresenter, IFrien
         startImportContacts()
     }
 
-    @Suppress("DEPRECATION")
     private fun startExportContacts() {
         exportPhones.launch(
             FileManagerSelectActivity.makeFileManager(
@@ -72,7 +71,6 @@ class FriendsByPhonesFragment : BaseMvpFragment<FriendsByPhonesPresenter, IFrien
         )
     }
 
-    @Suppress("DEPRECATION")
     private fun startImportContacts() {
         importContacts.launch(
             FileManagerSelectActivity.makeFileManager(

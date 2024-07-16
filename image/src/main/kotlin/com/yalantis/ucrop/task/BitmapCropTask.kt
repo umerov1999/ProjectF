@@ -10,14 +10,18 @@ import android.net.Uri
 import android.util.Log
 import androidx.exifinterface.media.ExifInterface
 import com.yalantis.ucrop.callback.BitmapCropCallback
-import com.yalantis.ucrop.io.AndroidSchedulers.mainThread
 import com.yalantis.ucrop.model.CropParameters
 import com.yalantis.ucrop.model.ImageState
 import com.yalantis.ucrop.util.BitmapLoadUtils
 import com.yalantis.ucrop.util.FileUtils
 import com.yalantis.ucrop.util.ImageHeaderParser
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -60,38 +64,51 @@ class BitmapCropTask(
 
     @SuppressLint("CheckResult")
     fun execute() {
-        doInBackground().fromIOToMain()
-            .subscribe({
-                val uri = Uri.fromFile(mImageOutputPath?.let { File(it) })
-                mCropCallback?.onBitmapCropped(
-                    uri,
-                    cropOffsetX,
-                    cropOffsetY,
-                    mCroppedImageWidth,
-                    mCroppedImageHeight
-                )
-            }) {
-                mCropCallback?.onCropFailure(
-                    it
-                )
+        CoroutineScope(Dispatchers.IO).launch {
+            doInBackground().catch {
+                if (isActive) {
+                    launch(Dispatchers.Main) {
+                        mCropCallback?.onCropFailure(
+                            it
+                        )
+                    }
+                }
+            }.collect {
+                if (isActive) {
+                    launch(Dispatchers.Main) {
+                        val uri = Uri.fromFile(mImageOutputPath?.let { File(it) })
+                        mCropCallback?.onBitmapCropped(
+                            uri,
+                            cropOffsetX,
+                            cropOffsetY,
+                            mCroppedImageWidth,
+                            mCroppedImageHeight
+                        )
+                    }
+                }
             }
+        }
     }
 
-    private fun doInBackground(): Completable {
+    private fun doInBackground(): Flow<Boolean> {
         if (mViewBitmap == null) {
-            return Completable.error(NullPointerException("ViewBitmap is null"))
+            return flow {
+                throw NullPointerException("ViewBitmap is null")
+            }
         } else if (mViewBitmap?.isRecycled == true) {
-            return Completable.error(NullPointerException("ViewBitmap is recycled"))
+            return flow {
+                throw NullPointerException("ViewBitmap is recycled")
+            }
         } else if (mCurrentImageRect.isEmpty) {
-            return Completable.error(NullPointerException("CurrentImageRect is empty"))
+            return flow {
+                throw NullPointerException("CurrentImageRect is empty")
+            }
         }
-        mViewBitmap = try {
-            crop()
-            null
-        } catch (throwable: Throwable) {
-            return Completable.error(throwable)
+        return flow {
+            val s = crop()
+            mViewBitmap = null
+            emit(s)
         }
-        return Completable.complete()
     }
 
     @Throws(IOException::class)
@@ -212,7 +229,5 @@ class BitmapCropTask(
 
     companion object {
         private const val TAG = "BitmapCropTask"
-        private fun Completable.fromIOToMain(): Completable =
-            subscribeOn(Schedulers.io()).observeOn(mainThread())
     }
 }

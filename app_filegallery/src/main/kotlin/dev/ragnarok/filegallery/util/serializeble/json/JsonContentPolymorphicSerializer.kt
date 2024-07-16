@@ -104,7 +104,6 @@ abstract class JsonContentPolymorphicSerializer<T : Any>(private val baseClass: 
         val input = decoder.asJsonDecoder()
         val tree = input.decodeJsonElement()
 
-        @Suppress("UNCHECKED_CAST")
         val actualSerializer = selectDeserializer(tree) as KSerializer<T>
         return input.json.decodeFromJsonElement(actualSerializer, tree)
     }

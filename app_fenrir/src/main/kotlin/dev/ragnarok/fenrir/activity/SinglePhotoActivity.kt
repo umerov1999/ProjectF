@@ -12,7 +12,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.RelativeLayout
-import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.core.view.WindowInsetsControllerCompat
@@ -27,33 +26,35 @@ import dev.ragnarok.fenrir.activity.slidr.model.SlidrConfig
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrListener
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrPosition
 import dev.ragnarok.fenrir.fragment.audio.AudioPlayerFragment
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.listener.AppStyleable
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceProvider
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.settings.CurrentTheme.getNavigationBarColor
+import dev.ragnarok.fenrir.settings.CurrentTheme.getStatusBarColor
+import dev.ragnarok.fenrir.settings.CurrentTheme.getStatusBarNonColored
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCream
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.CircleCounterButton
 import dev.ragnarok.fenrir.view.TouchImageView
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 import dev.ragnarok.fenrir.view.pager.WeakPicassoLoadCallback
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.disposables.Disposable
 import java.io.File
 import java.lang.ref.WeakReference
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
-import java.util.concurrent.TimeUnit
 
 class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
     private var url: String? = null
@@ -244,7 +245,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
         private val mPicassoLoadCallback: WeakPicassoLoadCallback
         val photo: TouchImageView
         val progress: RLottieImageView
-        var animationDispose: Disposable = Disposable.disposed()
+        var animationDispose = CancelableJob()
         private var mAnimationLoaded = false
         private var mLoadingNow = false
         fun bindTo(url: String?) {
@@ -263,7 +264,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
         }
 
         private fun resolveProgressVisibility(forceStop: Boolean) {
-            animationDispose.dispose()
+            animationDispose.cancel()
             if (mAnimationLoaded && !mLoadingNow && !forceStop) {
                 mAnimationLoaded = false
                 val k = ObjectAnimator.ofFloat(progress, View.ALPHA, 0.0f).setDuration(1000)
@@ -286,9 +287,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                 progress.clearAnimationDrawable()
                 progress.visibility = View.GONE
             } else if (mLoadingNow) {
-                animationDispose = Completable.create {
-                    it.onComplete()
-                }.delay(300, TimeUnit.MILLISECONDS).fromIOToMain().subscribe({
+                animationDispose += delayTaskFlow(300).toMain {
                     mAnimationLoaded = true
                     progress.visibility = View.VISIBLE
                     progress.fromRes(
@@ -303,7 +302,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                         )
                     )
                     progress.playAnimation()
-                }, RxUtils.ignore())
+                }
             }
         }
 
@@ -369,13 +368,15 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
 
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val statusBarNonColored = CurrentTheme.getStatusBarNonColored(this)
-        val statusBarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.statusBarColor = if (colored) statusBarColored else statusBarNonColored
-        @ColorInt val navigationColor =
-            if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
-        w.navigationBarColor = navigationColor
+        if (!hasVanillaIceCream()) {
+            w.statusBarColor =
+                if (colored) getStatusBarColor(this) else getStatusBarNonColored(
+                    this
+                )
+            w.navigationBarColor =
+                if (colored) getNavigationBarColor(this) else Color.BLACK
+        }
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons

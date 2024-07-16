@@ -1,7 +1,7 @@
 package dev.ragnarok.fenrir.domain
 
 import dev.ragnarok.fenrir.model.Owner
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface ILikesInteractor {
     fun getLikes(
@@ -12,7 +12,7 @@ interface ILikesInteractor {
         filter: String?,
         count: Int,
         offset: Int
-    ): Single<List<Owner>>
+    ): Flow<List<Owner>>
 
     companion object {
         const val FILTER_LIKES = "likes"

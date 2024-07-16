@@ -4,10 +4,10 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.INewsfeedInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.NewsfeedComment
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class NewsfeedCommentsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     PlaceSupportPresenter<INewsfeedCommentsView>(accountId, savedInstanceState) {
@@ -37,14 +37,13 @@ class NewsfeedCommentsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     private fun load(startFrom: String?) {
-        appendDisposable(interactor.getNewsfeedComments(
+        appendJob(interactor.getNewsfeedComments(
             accountId,
             10,
             startFrom,
             "post,photo,video,topic"
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 onDataReceived(
                     startFrom,
                     it.second,

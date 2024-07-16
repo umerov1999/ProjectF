@@ -23,7 +23,6 @@ import dev.ragnarok.fenrir.domain.IPhotosInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.link.LinkHelper
 import dev.ragnarok.fenrir.model.AccessIdPairModel
 import dev.ragnarok.fenrir.model.Commented
@@ -45,8 +44,8 @@ import dev.ragnarok.fenrir.util.DownloadWorkUtils.doDownloadPhoto
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.fixStart
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.makeLegalFilename
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
-import io.reactivex.rxjava3.core.Completable
 import java.io.File
 import java.util.Calendar
 import kotlin.math.abs
@@ -256,12 +255,11 @@ open class PhotoPagerPresenter internal constructor(
     }
 
     private fun getOwnerForPhoto(context: Context, photo: Photo, album: PhotoAlbum?) {
-        appendDisposable(
+        appendJob(
             owners.findBaseOwnersDataAsBundle(
                 accountId, setOf(photo.ownerId), IOwnersRepository.MODE_ANY
             )
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain({
                     showPhotoInfo(
                         context,
                         photo,
@@ -273,9 +271,8 @@ open class PhotoPagerPresenter internal constructor(
 
     fun fireInfoButtonClick(context: Context) {
         val photo = current
-        appendDisposable(photosInteractor.getAlbumById(accountId, photo.ownerId, photo.albumId)
-            .fromIOToMain()
-            .subscribe({
+        appendJob(photosInteractor.getAlbumById(accountId, photo.ownerId, photo.albumId)
+            .fromIOToMain({
                 getOwnerForPhoto(
                     context,
                     photo,
@@ -310,7 +307,7 @@ open class PhotoPagerPresenter internal constructor(
         if (need_update && need_update_info() && hasPhotos()) {
             val photo = current
             if (photo.albumId != -311) {
-                appendDisposable(photosInteractor.getPhotosByIds(
+                appendJob(photosInteractor.getPhotosByIds(
                     accountId,
                     setOf(
                         AccessIdPairModel(
@@ -320,8 +317,7 @@ open class PhotoPagerPresenter internal constructor(
                         )
                     )
                 )
-                    .fromIOToMain()
-                    .subscribe({
+                    .fromIOToMain {
                         if (it[0].getObjectId() == photo.getObjectId()) {
                             val ne = it[0]
                             if (ne.accessKey == null) {
@@ -338,7 +334,7 @@ open class PhotoPagerPresenter internal constructor(
                             }
                             refreshInfoViews(false)
                         }
-                    }) { })
+                    })
             }
         }
     }
@@ -362,9 +358,8 @@ open class PhotoPagerPresenter internal constructor(
         val ownerId = photo.ownerId
         val photoId = photo.getObjectId()
         val add = !photo.isUserLikes
-        appendDisposable(photosInteractor.like(accountId, ownerId, photoId, add, photo.accessKey)
-            .fromIOToMain()
-            .subscribe({
+        appendJob(photosInteractor.like(accountId, ownerId, photoId, add, photo.accessKey)
+            .fromIOToMain({
                 interceptLike(
                     ownerId,
                     photoId,
@@ -426,9 +421,8 @@ open class PhotoPagerPresenter internal constructor(
             }
             downloadResult(context, fixStart(path), dir, photo)
         } else {
-            appendDisposable(OwnerInfo.getRx(context, accountId, photo.ownerId)
-                .fromIOToMain()
-                .subscribe({
+            appendJob(OwnerInfo.getRx(context, accountId, photo.ownerId)
+                .fromIOToMain({
                     downloadResult(
                         context,
                         makeLegalFilename(
@@ -473,14 +467,13 @@ open class PhotoPagerPresenter internal constructor(
         if (photo.albumId == -311) {
             return
         }
-        appendDisposable(photosInteractor.copy(
+        appendJob(photosInteractor.copy(
             accountId,
             photo.ownerId,
             photo.getObjectId(),
             photo.accessKey
         )
-            .fromIOToMain()
-            .subscribe({ onPhotoCopied() }) { t ->
+            .fromIOToMain({ onPhotoCopied() }) { t ->
                 view?.let {
                     showError(
                         it,
@@ -563,20 +556,25 @@ open class PhotoPagerPresenter internal constructor(
         }
         val photoId = photo.getObjectId()
         val ownerId = photo.ownerId
-        val completable: Completable = if (detele) {
+        val completable = if (detele) {
             photosInteractor.deletePhoto(accountId, ownerId, photoId)
         } else {
             photosInteractor.restorePhoto(accountId, ownerId, photoId)
         }
-        appendDisposable(completable.fromIOToMain()
-            .subscribe({ onDeleteOrRestoreResult(photoId, ownerId, detele) }) { t ->
-                view?.let {
-                    showError(
-                        it,
-                        Utils.getCauseIfRuntime(t)
-                    )
-                }
-            })
+        appendJob(completable.fromIOToMain({
+            onDeleteOrRestoreResult(
+                photoId,
+                ownerId,
+                detele
+            )
+        }) { t ->
+            view?.let {
+                showError(
+                    it,
+                    Utils.getCauseIfRuntime(t)
+                )
+            }
+        })
     }
 
     private fun delete() {
@@ -630,11 +628,10 @@ open class PhotoPagerPresenter internal constructor(
             return
         }
         if (photo.photoTags.isNullOrEmpty()) {
-            appendDisposable(
+            appendJob(
                 InteractorFactory.createPhotosInteractor()
                     .getTags(accountId, photo.ownerId, photo.getObjectId(), photo.accessKey)
-                    .fromIOToMain()
-                    .subscribe({
+                    .fromIOToMain({
                         photo.setPhotoTags(it)
                         photo.setShowPhotoTags(true)
                         view?.rebindPhotoAtPartial(currentIndex)
@@ -655,11 +652,10 @@ open class PhotoPagerPresenter internal constructor(
     fun fireWithUserLongClick(context: Context) {
         val photo = current
         if (photo.photoTags.isNullOrEmpty()) {
-            appendDisposable(
+            appendJob(
                 InteractorFactory.createPhotosInteractor()
                     .getTags(accountId, photo.ownerId, photo.getObjectId(), photo.accessKey)
-                    .fromIOToMain()
-                    .subscribe({
+                    .fromIOToMain({
                         photo.setPhotoTags(it)
                         showWithUserDialog(context, photo)
                     }) { throwable ->

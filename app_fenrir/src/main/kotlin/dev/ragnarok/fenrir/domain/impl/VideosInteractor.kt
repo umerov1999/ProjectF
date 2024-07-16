@@ -22,8 +22,11 @@ import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.ignoreElement
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 class VideosInteractor(private val networker: INetworker, private val cache: IStorages) :
     IVideosInteractor {
@@ -33,10 +36,10 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
         albumId: Int,
         count: Int,
         offset: Int
-    ): Single<List<Video>> {
+    ): Flow<List<Video>> {
         return networker.vkDefault(accountId)
             .video()[ownerId, null, albumId, count, offset, true]
-            .flatMap { items ->
+            .flatMapConcat { items ->
                 val dtos = listEmptyIfNull(
                     items.items
                 )
@@ -48,7 +51,9 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
                 }
                 cache.videos()
                     .insertData(accountId, ownerId, albumId, dbos, offset == 0)
-                    .andThen(Single.just(videos))
+                    .map {
+                        videos
+                    }
             }
     }
 
@@ -56,7 +61,7 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
         accountId: Long,
         ownerId: Long,
         albumId: Int
-    ): Single<List<Video>> {
+    ): Flow<List<Video>> {
         val criteria = VideoCriteria(accountId, ownerId, albumId)
         return cache.videos()
             .findByCriteria(criteria)
@@ -75,26 +80,28 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
         videoId: Int,
         accessKey: String?,
         cache: Boolean
-    ): Single<Video> {
+    ): Flow<Video> {
         val ids: Collection<AccessIdPair> = listOf(AccessIdPair(videoId, ownerId, accessKey))
         return networker.vkDefault(accountId)
             .video()[null, ids, null, null, null, true]
-            .flatMap { items ->
+            .map { items ->
                 val tmp = items.items
                 if (tmp.isNullOrEmpty()) {
-                    Single.error(NotFoundException())
+                    throw NotFoundException()
                 } else {
-                    Single.just(tmp[0])
+                    tmp[0]
                 }
             }
-            .flatMap { dto ->
+            .flatMapConcat { dto ->
                 if (cache) {
                     val dbo = mapVideo(dto)
                     this.cache.videos()
                         .insertData(accountId, ownerId, dto.album_id, listOf(dbo), false)
-                        .andThen(Single.just(dto))
+                        .map {
+                            dto
+                        }
                 } else {
-                    Single.just(dto)
+                    toFlow(dto)
                 }
             }
             .map { transform(it) }
@@ -105,7 +112,7 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
         targetOwnerId: Long,
         videoOwnerId: Long,
         videoId: Int
-    ): Completable {
+    ): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .video()
             .addVideo(targetOwnerId, videoId, videoOwnerId)
@@ -118,7 +125,7 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
         video_id: Int,
         name: String?,
         desc: String?
-    ): Completable {
+    ): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .video()
             .edit(ownerId, video_id, name, desc)
@@ -130,7 +137,7 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
         videoId: Int?,
         ownerId: Long?,
         targetId: Long?
-    ): Completable {
+    ): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .video()
             .deleteVideo(videoId, ownerId, targetId)
@@ -142,12 +149,12 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
         ownerId: Long,
         videoId: Int,
         accessKey: String?
-    ): Single<Int> {
+    ): Flow<Int> {
         return networker.vkDefault(accountId)
             .likes().checkAndAddLike("video", ownerId, videoId, accessKey)
     }
 
-    override fun isLiked(accountId: Long, ownerId: Long, videoId: Int): Single<Boolean> {
+    override fun isLiked(accountId: Long, ownerId: Long, videoId: Int): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .likes()
             .isLiked("video", ownerId, videoId)
@@ -159,7 +166,7 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
         videoId: Int,
         accessKey: String?,
         like: Boolean
-    ): Single<Pair<Int, Boolean>> {
+    ): Flow<Pair<Int, Boolean>> {
         return if (like) {
             networker.vkDefault(accountId)
                 .likes()
@@ -173,7 +180,7 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
         }
     }
 
-    override fun getCachedAlbums(accountId: Long, ownerId: Long): Single<List<VideoAlbum>> {
+    override fun getCachedAlbums(accountId: Long, ownerId: Long): Flow<List<VideoAlbum>> {
         val criteria = VideoAlbumCriteria(accountId, ownerId)
         return cache.videoAlbums()
             .findByCriteria(criteria)
@@ -191,11 +198,11 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
         target_id: Long,
         owner_id: Long,
         video_id: Int
-    ): Single<List<VideoAlbum>> {
+    ): Flow<List<VideoAlbum>> {
         return networker.vkDefault(accountId)
             .video()
             .getAlbumsByVideo(target_id, owner_id, video_id)
-            .flatMap { items ->
+            .map { items ->
                 val dtos = listEmptyIfNull(
                     items.items
                 )
@@ -204,7 +211,7 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
                     val dbo = buildVideoAlbumDbo(dto)
                     albums.add(buildVideoAlbumFromDbo(dbo))
                 }
-                Single.just(albums)
+                albums
             }
     }
 
@@ -213,11 +220,11 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
         ownerId: Long,
         count: Int,
         offset: Int
-    ): Single<List<VideoAlbum>> {
+    ): Flow<List<VideoAlbum>> {
         return networker.vkDefault(accountId)
             .video()
             .getAlbums(ownerId, offset, count, true)
-            .flatMap { items ->
+            .flatMapConcat { items ->
                 val dtos = listEmptyIfNull(
                     items.items
                 )
@@ -230,7 +237,9 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
                 }
                 cache.videoAlbums()
                     .insertData(accountId, ownerId, dbos, offset == 0)
-                    .andThen(Single.just(albums))
+                    .map {
+                        albums
+                    }
             }
     }
 
@@ -239,7 +248,7 @@ class VideosInteractor(private val networker: INetworker, private val cache: ISt
         criteria: VideoSearchCriteria,
         count: Int,
         offset: Int
-    ): Single<List<Video>> {
+    ): Flow<List<Video>> {
         val sortOption = criteria.findOptionByKey<SpinnerOption>(VideoSearchCriteria.KEY_SORT)
         val sort = sortOption?.value?.id
         val hd = criteria.extractBoleanValueFromOption(VideoSearchCriteria.KEY_HD)

@@ -9,12 +9,15 @@ import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformCommunities
 import dev.ragnarok.fenrir.domain.mappers.Entity2Model.buildCommunitiesFromDbos
 import dev.ragnarok.fenrir.model.Community
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.ignoreElement
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 class CommunitiesInteractor(private val networker: INetworker, private val stores: IStorages) :
     ICommunitiesInteractor {
-    override fun getCachedData(accountId: Long, userId: Long): Single<List<Community>> {
+    override fun getCachedData(accountId: Long, userId: Long): Flow<List<Community>> {
         return stores.relativeship()
             .getCommunities(accountId, userId)
             .map { obj -> buildCommunitiesFromDbos(obj) }
@@ -26,20 +29,22 @@ class CommunitiesInteractor(private val networker: INetworker, private val store
         count: Int,
         offset: Int,
         store: Boolean
-    ): Single<List<Community>> {
+    ): Flow<List<Community>> {
         return networker.vkDefault(accountId)
             .groups()[userId, true, null, Fields.FIELDS_BASE_GROUP, offset, count]
-            .flatMap { items ->
+            .flatMapConcat { items ->
                 val dtos = listEmptyIfNull(
                     items.items
                 )
                 val dbos = mapCommunities(dtos)
                 if (store) {
                     stores.relativeship()
-                        .storeComminities(accountId, dbos, userId, offset == 0)
-                        .andThen(Single.just(buildCommunitiesFromDbos(dbos)))
+                        .storeCommunities(accountId, dbos, userId, offset == 0)
+                        .map {
+                            buildCommunitiesFromDbos(dbos)
+                        }
                 } else {
-                    Single.just(buildCommunitiesFromDbos(dbos))
+                    toFlow(buildCommunitiesFromDbos(dbos))
                 }
             }
     }
@@ -54,7 +59,7 @@ class CommunitiesInteractor(private val networker: INetworker, private val store
         sort: Int?,
         count: Int,
         offset: Int
-    ): Single<List<Community>> {
+    ): Flow<List<Community>> {
         return networker.vkDefault(accountId)
             .groups()
             .search(
@@ -77,14 +82,14 @@ class CommunitiesInteractor(private val networker: INetworker, private val store
             }
     }
 
-    override fun join(accountId: Long, groupId: Long): Completable {
+    override fun join(accountId: Long, groupId: Long): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .groups()
             .join(groupId, null)
             .ignoreElement()
     }
 
-    override fun leave(accountId: Long, groupId: Long): Completable {
+    override fun leave(accountId: Long, groupId: Long): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .groups()
             .leave(groupId)

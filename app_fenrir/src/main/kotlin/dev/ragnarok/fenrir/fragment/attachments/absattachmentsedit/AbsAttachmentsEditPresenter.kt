@@ -75,8 +75,8 @@ abstract class AbsAttachmentsEditPresenter<V : IBaseAttachmentsEditView> interna
         }
     }
 
-    fun onUploadProgressUpdate(updates: List<IProgressUpdate>) {
-        for (update in updates) {
+    fun onUploadProgressUpdate(updates: IProgressUpdate?) {
+        updates?.let { update ->
             val info = findInfoByPredicate(
                 data
             ) {
@@ -87,7 +87,7 @@ abstract class AbsAttachmentsEditPresenter<V : IBaseAttachmentsEditView> interna
                 val entry = info.second
                 val obj = entry.attachment as Upload
                 if (obj.status != Upload.STATUS_UPLOADING) {
-                    continue
+                    return
                 }
                 view?.updateProgressAtIndex(
                     entry.id,

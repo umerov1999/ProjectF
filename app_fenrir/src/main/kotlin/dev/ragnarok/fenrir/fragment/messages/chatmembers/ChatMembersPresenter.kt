@@ -4,13 +4,13 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IMessagesRepository
 import dev.ragnarok.fenrir.domain.Repository.messages
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.AppChatUser
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.findIndexById
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import java.util.Locale
 
 class ChatMembersPresenter(accountId: Long, private val chatId: Long, savedInstanceState: Bundle?) :
@@ -83,9 +83,8 @@ class ChatMembersPresenter(accountId: Long, private val chatId: Long, savedInsta
 
     private fun requestData() {
         setRefreshing(true)
-        appendDisposable(messagesInteractor.getChatUsers(accountId, chatId)
-            .fromIOToMain()
-            .subscribe({ onDataReceived(it) }) { t ->
+        appendJob(messagesInteractor.getChatUsers(accountId, chatId)
+            .fromIOToMain({ onDataReceived(it) }) { t ->
                 onDataGetError(
                     t
                 )
@@ -127,9 +126,8 @@ class ChatMembersPresenter(accountId: Long, private val chatId: Long, savedInsta
 
     fun fireUserDeleteConfirmed(user: AppChatUser) {
         val userId = user.member?.ownerId ?: return
-        appendDisposable(messagesInteractor.removeChatMember(accountId, chatId, userId)
-            .fromIOToMain()
-            .subscribe({ onUserRemoved(userId) }) { t ->
+        appendJob(messagesInteractor.removeChatMember(accountId, chatId, userId)
+            .fromIOToMain({ onUserRemoved(userId) }) { t ->
                 showError(getCauseIfRuntime(t))
             })
     }
@@ -158,9 +156,8 @@ class ChatMembersPresenter(accountId: Long, private val chatId: Long, savedInsta
             }
         }
         if (usersData.nonNullNoEmpty()) {
-            appendDisposable(messagesInteractor.addChatUsers(accountId, chatId, usersData)
-                .fromIOToMain()
-                .subscribe({ onChatUsersAdded(it) }) { t ->
+            appendJob(messagesInteractor.addChatUsers(accountId, chatId, usersData)
+                .fromIOToMain({ onChatUsersAdded(it) }) { t ->
                     onChatUsersAddError(
                         t
                     )
@@ -192,9 +189,8 @@ class ChatMembersPresenter(accountId: Long, private val chatId: Long, savedInsta
     }
 
     fun fireAdminToggleClick(isAdmin: Boolean, ownerId: Long) {
-        appendDisposable(messagesInteractor.setMemberRole(accountId, chatId, ownerId, isAdmin)
-            .fromIOToMain()
-            .subscribe({ fireRefresh() }) { t -> onChatUsersAddError(t) })
+        appendJob(messagesInteractor.setMemberRole(accountId, chatId, ownerId, isAdmin)
+            .fromIOToMain({ fireRefresh() }) { t -> onChatUsersAddError(t) })
     }
 
     init {

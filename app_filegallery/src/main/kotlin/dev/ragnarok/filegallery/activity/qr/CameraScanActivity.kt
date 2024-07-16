@@ -201,7 +201,7 @@ class CameraScanActivity : NoMainActivity() {
             ).setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
             .build()
         val preview = Preview.Builder().setResolutionSelector(resolution).build()
-        preview.setSurfaceProvider(textureView.surfaceProvider)
+        preview.surfaceProvider = textureView.surfaceProvider
         val imageAnalysis = ImageAnalysis.Builder()
             .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
             .setResolutionSelector(resolution)

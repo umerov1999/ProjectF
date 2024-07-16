@@ -5,9 +5,9 @@ import dev.ragnarok.fenrir.domain.IRelationshipInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.absownerslist.ISimpleOwnersView
 import dev.ragnarok.fenrir.fragment.absownerslist.SimpleOwnersPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.User
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class MutualFriendsPresenter(
     accountId: Long,
@@ -17,7 +17,7 @@ class MutualFriendsPresenter(
     SimpleOwnersPresenter<ISimpleOwnersView>(accountId, savedInstanceState) {
     private val relationshipInteractor: IRelationshipInteractor =
         InteractorFactory.createRelationshipInteractor()
-    private val actualDataDisposable = CompositeDisposable()
+    private val actualDataDisposable = CompositeJob()
     private var endOfContent = false
     private var actualDataLoading = false
     private var doLoadTabs = false
@@ -49,8 +49,7 @@ class MutualFriendsPresenter(
             200,
             offset
         )
-            .fromIOToMain()
-            .subscribe({ users -> onDataReceived(users) }) { t ->
+            .fromIOToMain({ users -> onDataReceived(users) }) { t ->
                 onDataGetError(
                     t
                 )
@@ -95,7 +94,7 @@ class MutualFriendsPresenter(
     }
 
     override fun onDestroyed() {
-        actualDataDisposable.dispose()
+        actualDataDisposable.cancel()
         super.onDestroyed()
     }
 

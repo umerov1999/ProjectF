@@ -5,11 +5,10 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IPollInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Poll
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class CreatePollPresenter(
     accountId: Long,
@@ -69,7 +68,7 @@ class CreatePollPresenter(
         val backgroundId =
             if (backgroundsPollList[selectedBackgroundPoll].id == -1 && backgroundsPollList[selectedBackgroundPoll].name == "default") null else backgroundsPollList[selectedBackgroundPoll].id
         setCreationNow(true)
-        appendDisposable(pollInteractor.createPoll(
+        appendJob(pollInteractor.createPoll(
             accountId,
             mQuestion,
             mAnonymous,
@@ -79,8 +78,7 @@ class CreatePollPresenter(
             mOwnerId,
             nonEmptyOptions
         )
-            .fromIOToMain()
-            .subscribe({ onPollCreated(it) }) { t ->
+            .fromIOToMain({ onPollCreated(it) }) { t ->
                 onPollCreateError(
                     t
                 )
@@ -137,14 +135,12 @@ class CreatePollPresenter(
 
     init {
         backgroundsPollList.add(Poll.PollBackground(-1).setName("default"))
-        appendDisposable(
-            pollInteractor.getBackgrounds(accountId).fromIOToMain().subscribe(
-                {
-                    backgroundsPollList.clear()
-                    backgroundsPollList.addAll(it)
-                    view?.setBackgroundsPoll(backgroundsPollList, 0)
-                }, RxUtils.ignore()
-            )
+        appendJob(
+            pollInteractor.getBackgrounds(accountId).fromIOToMain {
+                backgroundsPollList.clear()
+                backgroundsPollList.addAll(it)
+                view?.setBackgroundsPoll(backgroundsPollList, 0)
+            }
         )
     }
 }

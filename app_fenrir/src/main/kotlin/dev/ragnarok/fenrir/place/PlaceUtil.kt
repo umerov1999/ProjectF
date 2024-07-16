@@ -8,7 +8,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.Repository.owners
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.model.EditingPostType
 import dev.ragnarok.fenrir.model.Post
@@ -16,6 +15,7 @@ import dev.ragnarok.fenrir.model.WallEditorAttrs
 import dev.ragnarok.fenrir.place.PlaceFactory.getCreatePostPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getEditPostPlace
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.spots.SpotsDialog
 import java.lang.ref.WeakReference
 
@@ -31,8 +31,7 @@ object PlaceUtil {
         ids.add(ownerId)
         val disposable = owners
             .findBaseOwnersDataAsBundle(accountId, ids, IOwnersRepository.MODE_NET)
-            .fromIOToMain()
-            .subscribe({ owners ->
+            .fromIOToMain({ owners ->
                 val attrs = WallEditorAttrs(owners.getById(ownerId), owners.getById(accountId))
                 val d = dialogWeakReference.get()
                 d?.dismiss()
@@ -41,7 +40,7 @@ object PlaceUtil {
                     getEditPostPlace(accountId, post, attrs).tryOpenWith(a)
                 }
             }) { throwable -> safelyShowError(reference, throwable) }
-        dialog.setOnCancelListener { disposable.dispose() }
+        dialog.setOnCancelListener { disposable.cancel() }
     }
 
     private fun safelyShowError(reference: WeakReference<Activity>, throwable: Throwable) {
@@ -75,8 +74,7 @@ object PlaceUtil {
         ids.add(ownerId)
         val disposable = owners
             .findBaseOwnersDataAsBundle(accountId, ids, IOwnersRepository.MODE_NET)
-            .fromIOToMain()
-            .subscribe({ owners ->
+            .fromIOToMain({ owners ->
                 val attrs = WallEditorAttrs(owners.getById(ownerId), owners.getById(accountId))
                 val d = dialogWeakReference.get()
                 d?.dismiss()
@@ -94,7 +92,7 @@ object PlaceUtil {
                     ).tryOpenWith(a)
                 }
             }) { throwable -> safelyShowError(reference, throwable) }
-        dialog.setOnCancelListener { disposable.dispose() }
+        dialog.setOnCancelListener { disposable.cancel() }
     }
 
     private fun createProgressDialog(activity: Activity): AlertDialog {

@@ -8,10 +8,10 @@ import dev.ragnarok.fenrir.api.model.response.ResolveDomailResponse
 import dev.ragnarok.fenrir.api.model.response.VKApiChatResponse
 import dev.ragnarok.fenrir.api.model.response.VKApiLinkResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class IUtilsService : IServiceRest() {
-    fun resolveScreenName(screenName: String?): Single<BaseResponse<ResolveDomailResponse>> {
+    fun resolveScreenName(screenName: String?): Flow<BaseResponse<ResolveDomailResponse>> {
         return rest.request(
             "utils.resolveScreenName",
             form("screen_name" to screenName),
@@ -19,7 +19,7 @@ class IUtilsService : IServiceRest() {
         )
     }
 
-    fun getShortLink(url: String?, t_private: Int?): Single<BaseResponse<VKApiShortLink>> {
+    fun getShortLink(url: String?, t_private: Int?): Flow<BaseResponse<VKApiShortLink>> {
         return rest.request(
             "utils.getShortLink",
             form("url" to url, "private" to t_private),
@@ -30,28 +30,28 @@ class IUtilsService : IServiceRest() {
     fun getLastShortenedLinks(
         count: Int?,
         offset: Int?
-    ): Single<BaseResponse<Items<VKApiShortLink>>> {
+    ): Flow<BaseResponse<Items<VKApiShortLink>>> {
         return rest.request(
             "utils.getLastShortenedLinks", form("count" to count, "offset" to offset),
             items(VKApiShortLink.serializer())
         )
     }
 
-    fun deleteFromLastShortened(key: String?): Single<BaseResponse<Int>> {
+    fun deleteFromLastShortened(key: String?): Flow<BaseResponse<Int>> {
         return rest.request(
             "utils.deleteFromLastShortened", form("key" to key),
             baseInt
         )
     }
 
-    fun checkLink(url: String?): Single<BaseResponse<VKApiCheckedLink>> {
+    fun checkLink(url: String?): Flow<BaseResponse<VKApiCheckedLink>> {
         return rest.request(
             "utils.checkLink", form("url" to url),
             base(VKApiCheckedLink.serializer())
         )
     }
 
-    fun joinChatByInviteLink(link: String?): Single<BaseResponse<VKApiChatResponse>> {
+    fun joinChatByInviteLink(link: String?): Flow<BaseResponse<VKApiChatResponse>> {
         return rest.request(
             "messages.joinChatByInviteLink",
             form("link" to link),
@@ -62,7 +62,7 @@ class IUtilsService : IServiceRest() {
     fun getInviteLink(
         peer_id: Long?,
         reset: Int?
-    ): Single<BaseResponse<VKApiLinkResponse>> {
+    ): Flow<BaseResponse<VKApiLinkResponse>> {
         return rest.request(
             "messages.getInviteLink",
             form("peer_id" to peer_id, "reset" to reset),
@@ -70,11 +70,11 @@ class IUtilsService : IServiceRest() {
         )
     }
 
-    fun customScript(code: String?): Single<BaseResponse<Int>> {
+    fun customScript(code: String?): Flow<BaseResponse<Int>> {
         return rest.request("execute", form("code" to code), baseInt)
     }
 
-    fun getServerTime(): Single<BaseResponse<Long>> {
+    fun getServerTime(): Flow<BaseResponse<Long>> {
         return rest.request("utils.getServerTime", null, baseLong)
     }
 }

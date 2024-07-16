@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.fragment.feed
 import android.content.Context
 import android.os.Bundle
 import android.text.InputType
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.db.model.PostUpdate
 import dev.ragnarok.fenrir.domain.IFaveInteractor
@@ -12,7 +11,6 @@ import dev.ragnarok.fenrir.domain.IWallsRepository
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.FeedList
 import dev.ragnarok.fenrir.model.FeedSource
 import dev.ragnarok.fenrir.model.LoadMoreState
@@ -21,12 +19,15 @@ import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.util.DisposableHolder
 import dev.ragnarok.fenrir.util.InputTextDialog
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.needReloadNews
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.dummy
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 
 class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
@@ -36,8 +37,8 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private val walls: IWallsRepository = Repository.walls
     private val mFeed: MutableList<News>
     private val mFeedSources: MutableList<FeedSource>
-    private val loadingHolder = DisposableHolder<Void>()
-    private val cacheLoadingHolder = DisposableHolder<Void>()
+    private val loadingHolder = CompositeJob()
+    private val cacheLoadingHolder = CompositeJob()
     private var mNextFrom: String? = null
     private var mSourceIds: String? = null
     private var loadingNow = false
@@ -46,19 +47,17 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private var mTmpFeedScrollOnGuiReady: String? = null
     private var needAskWhenGuiReady = false
     private fun refreshFeedSources() {
-        appendDisposable(feedInteractor.getCachedFeedLists(accountId)
-            .fromIOToMain()
-            .subscribe({ lists ->
+        appendJob(feedInteractor.getCachedFeedLists(accountId)
+            .fromIOToMain({ lists ->
                 onFeedListsUpdated(lists)
                 requestActualFeedLists()
             }) { requestActualFeedLists() })
     }
 
     internal fun requestActualFeedLists() {
-        appendDisposable(
+        appendJob(
             feedInteractor.getActualFeedLists(accountId)
-                .fromIOToMain()
-                .subscribe({ lists -> onFeedListsUpdated(lists) }, { onActualFeedGetError(it) })
+                .fromIOToMain({ lists -> onFeedListsUpdated(lists) }, { onActualFeedGetError(it) })
         )
     }
 
@@ -74,7 +73,7 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     private fun requestFeedAtLast(startFrom: String?) {
-        loadingHolder.dispose()
+        loadingHolder.clear()
         val sourcesIds = mSourceIds
         loadingNowNextFrom = startFrom
         loadingNow = true
@@ -93,7 +92,7 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
                     throw UnsupportedOperationException()
                 }
             }
-            loadingHolder.append(feedInteractor.getActualFeed(
+            loadingHolder.add(feedInteractor.getActualFeed(
                 accountId,
                 25,
                 startFrom,
@@ -101,8 +100,7 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
                 9,
                 sourcesIds
             )
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain({
                     onActualFeedReceived(
                         startFrom,
                         it.first,
@@ -110,7 +108,7 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
                     )
                 }) { t -> onActualFeedGetError(t) })
         } else {
-            loadingHolder.append(feedInteractor.getActualFeed(
+            loadingHolder.add(feedInteractor.getActualFeed(
                 accountId,
                 25,
                 startFrom,
@@ -118,8 +116,7 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
                 9,
                 sourcesIds
             )
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain({
                     onActualFeedReceived(
                         startFrom,
                         it.first,
@@ -187,11 +184,10 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
 
     private fun loadCachedFeed(thenScrollToState: String?) {
         setCacheLoadingNow(true)
-        cacheLoadingHolder.append(
+        cacheLoadingHolder.add(
             feedInteractor
                 .getCachedFeed(accountId)
-                .fromIOToMain()
-                .subscribe(
+                .fromIOToMain(
                     { onCachedFeedReceived(it, thenScrollToState) },
                     {
                         setCacheLoadingNow(false)
@@ -202,8 +198,8 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     override fun onDestroyed() {
-        loadingHolder.dispose()
-        cacheLoadingHolder.dispose()
+        loadingHolder.cancel()
+        cacheLoadingHolder.cancel()
         super.onDestroyed()
     }
 
@@ -329,8 +325,8 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun fireRefresh() {
-        cacheLoadingHolder.dispose()
-        loadingHolder.dispose()
+        cacheLoadingHolder.clear()
+        loadingHolder.clear()
         loadingNow = false
         cacheLoadingNow = false
         requestFeedAtLast(null)
@@ -362,13 +358,12 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
             .setInputType(InputType.TYPE_CLASS_TEXT)
             .setCallback(object : InputTextDialog.Callback {
                 override fun onChanged(newValue: String?) {
-                    appendDisposable(feedInteractor.saveList(
+                    appendJob(feedInteractor.saveList(
                         accountId,
                         newValue?.trim { it <= ' ' },
                         iIds
                     )
-                        .fromIOToMain()
-                        .subscribe({
+                        .fromIOToMain({
                             createCustomToast(context).showToastSuccessBottom(R.string.success)
                             requestActualFeedLists()
                         }) { i ->
@@ -386,8 +381,8 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     fun fireFeedSourceClick(entry: FeedSource) {
         mSourceIds = entry.value
         mNextFrom = null
-        cacheLoadingHolder.dispose()
-        loadingHolder.dispose()
+        cacheLoadingHolder.clear()
+        loadingHolder.clear()
         loadingNow = false
         cacheLoadingNow = false
         refreshFeedSourcesSelection()
@@ -396,9 +391,8 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun fireFeedSourceDelete(id: Int?) {
-        appendDisposable(feedInteractor.deleteList(accountId, id)
-            .fromIOToMain()
-            .subscribe(ignore()) { t ->
+        appendJob(feedInteractor.deleteList(accountId, id)
+            .fromIOToMain(dummy()) { t ->
                 showError(t)
             })
     }
@@ -422,9 +416,8 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun fireAddBookmark(ownerId: Long, postId: Int) {
-        appendDisposable(faveInteractor.addPost(accountId, ownerId, postId, null)
-            .fromIOToMain()
-            .subscribe({ onPostAddedToBookmarks() }) { t ->
+        appendJob(faveInteractor.addPost(accountId, ownerId, postId, null)
+            .fromIOToMain({ onPostAddedToBookmarks() }) { t ->
                 showError(getCauseIfRuntime(t))
             })
     }
@@ -444,16 +437,14 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun fireBanClick(news: News) {
-        appendDisposable(feedInteractor.addBan(accountId, setOf(news.sourceId))
-            .fromIOToMain()
-            .subscribe({ fireRefresh() }) { t -> onActualFeedGetError(t) })
+        appendJob(feedInteractor.addBan(accountId, setOf(news.sourceId))
+            .fromIOToMain({ fireRefresh() }) { t -> onActualFeedGetError(t) })
     }
 
     fun fireIgnoreClick(news: News) {
         val type = if ("post" == news.type) "wall" else news.type
-        appendDisposable(feedInteractor.ignoreItem(accountId, type, news.sourceId, news.postId)
-            .fromIOToMain()
-            .subscribe({
+        appendJob(feedInteractor.ignoreItem(accountId, type, news.sourceId, news.postId)
+            .fromIOToMain({
                 if (it.status) {
                     fireRefresh()
                 } else {
@@ -491,10 +482,9 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
         }
         if ("post".equals(news.type, ignoreCase = true)) {
             val add = !news.isUserLike
-            appendDisposable(
+            appendJob(
                 walls.like(accountId, news.sourceId, news.postId, add)
-                    .fromIOToMain()
-                    .subscribe(ignore(), ignore())
+                    .hiddenIO()
             )
         }
     }
@@ -530,9 +520,8 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     init {
-        appendDisposable(walls.observeMinorChanges()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onPostUpdateEvent(it) })
+        appendJob(walls.observeMinorChanges()
+            .sharedFlowToMain { onPostUpdateEvent(it) })
         feedInteractor = InteractorFactory.createFeedInteractor()
         mFeed = ArrayList()
         mFeedSources = ArrayList(createDefaultFeedSources())

@@ -8,7 +8,6 @@ import dev.ragnarok.fenrir.domain.Repository.messages
 import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchPresenter
 import dev.ragnarok.fenrir.fragment.search.criteria.MessageSearchCriteria
 import dev.ragnarok.fenrir.fragment.search.nextfrom.IntNextFrom
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.media.voice.IVoicePlayer
 import dev.ragnarok.fenrir.model.Message
@@ -20,8 +19,10 @@ import dev.ragnarok.fenrir.util.Lookup
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class MessagesSearchPresenter(
     accountId: Long,
@@ -78,7 +79,7 @@ class MessagesSearchPresenter(
         accountId: Long,
         criteria: MessageSearchCriteria,
         startFrom: IntNextFrom
-    ): Single<Pair<List<Message>, IntNextFrom>> {
+    ): Flow<Pair<List<Message>, IntNextFrom>> {
         val offset = startFrom.offset
         return messagesInteractor
             .searchMessages(accountId, criteria.peerId, COUNT, offset, criteria.query)
@@ -94,11 +95,11 @@ class MessagesSearchPresenter(
     }
 
     fun fireMessageLongClick(message: Message) {
-        appendDisposable(
+        appendJob(
             messagesInteractor.getConversationSingle(
                 accountId, message.peerId,
                 Mode.NET
-            ).fromIOToMain().subscribe({
+            ).fromIOToMain({
                 view?.goToPeerLookup(
                     accountId,
                     Peer(message.peerId).setTitle(it.title).setAvaUrl(it.imageUrl)
@@ -129,13 +130,12 @@ class MessagesSearchPresenter(
             if (messageChanged) {
                 if (!voiceMessage.was_listened) {
                     if (!Utils.isHiddenCurrent && Settings.get().main().isMarkListenedVoice) {
-                        appendDisposable(
+                        appendJob(
                             messages.markAsListened(accountId, messageId)
-                                .fromIOToMain()
-                                .subscribe({
+                                .fromIOToMain {
                                     voiceMessage.setWasListened(true)
                                     resolveVoiceMessagePlayingState()
-                                }, RxUtils.ignore())
+                                }
                         )
                     }
                 }
@@ -179,10 +179,10 @@ class MessagesSearchPresenter(
     }
 
     fun fireTranscript(voiceMessageId: String?, messageId: Int) {
-        appendDisposable(
+        appendJob(
             messages.recogniseAudioMessage(accountId, messageId, voiceMessageId)
-                .fromIOToMain()
-                .subscribe({ }) { })
+                .hiddenIO()
+        )
     }
 
     internal fun resolveVoiceMessagePlayingState(anim: Boolean = false) {

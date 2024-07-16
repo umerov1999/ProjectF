@@ -70,7 +70,6 @@ add_library(thorvg STATIC
         animation/thorvg/src/loaders/svg/tvgSvgSceneBuilder.cpp
         animation/thorvg/src/loaders/svg/tvgSvgUtil.cpp
         animation/thorvg/src/loaders/svg/tvgXmlParser.cpp
-        animation/thorvg/src/common/tvgLines.cpp
         animation/thorvg/src/common/tvgCompressor.cpp
         animation/thorvg/src/common/tvgMath.cpp
         animation/thorvg/src/common/tvgStr.cpp)
@@ -150,6 +149,7 @@ add_library(libyuv STATIC
         animation/libyuv/source/rotate.cc
         animation/libyuv/source/rotate_common.cc
         animation/libyuv/source/rotate_gcc.cc
+        animation/libyuv/source/rotate_sme.cc
         animation/libyuv/source/rotate_lsx.cc
         animation/libyuv/source/rotate_msa.cc
         animation/libyuv/source/rotate_neon64.cc
@@ -163,6 +163,7 @@ add_library(libyuv STATIC
         animation/libyuv/source/row_neon64.cc
         animation/libyuv/source/row_neon.cc
         animation/libyuv/source/row_rvv.cc
+        animation/libyuv/source/row_sve.cc
         animation/libyuv/source/scale_any.cc
         animation/libyuv/source/scale_argb.cc
         animation/libyuv/source/scale.cc

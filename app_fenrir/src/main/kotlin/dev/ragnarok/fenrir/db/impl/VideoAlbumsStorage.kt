@@ -18,14 +18,14 @@ import dev.ragnarok.fenrir.ifNonNull
 import dev.ragnarok.fenrir.model.VideoAlbumCriteria
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 internal class VideoAlbumsStorage(base: AppStorages) : AbsStorage(base), IVideoAlbumsStorage {
-    override fun findByCriteria(criteria: VideoAlbumCriteria): Single<List<VideoAlbumDboEntity>> {
-        return Single.create { e: SingleEmitter<List<VideoAlbumDboEntity>> ->
+    override fun findByCriteria(criteria: VideoAlbumCriteria): Flow<List<VideoAlbumDboEntity>> {
+        return flow {
             val uri = getVideoAlbumsContentUriFor(criteria.accountId)
             val where: String
             val args: Array<String>
@@ -47,14 +47,14 @@ internal class VideoAlbumsStorage(base: AppStorages) : AbsStorage(base), IVideoA
             val data: MutableList<VideoAlbumDboEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     data.add(mapAlbum(cursor))
                 }
                 cursor.close()
             }
-            e.onSuccess(data)
+            emit(data)
         }
     }
 
@@ -63,8 +63,8 @@ internal class VideoAlbumsStorage(base: AppStorages) : AbsStorage(base), IVideoA
         ownerId: Long,
         data: List<VideoAlbumDboEntity>,
         invalidateBefore: Boolean
-    ): Completable {
-        return Completable.create { e ->
+    ): Flow<Boolean> {
+        return flow {
             val uri = getVideoAlbumsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             if (invalidateBefore) {
@@ -87,7 +87,7 @@ internal class VideoAlbumsStorage(base: AppStorages) : AbsStorage(base), IVideoA
                 )
             }
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            e.onComplete()
+            emit(true)
         }
     }
 

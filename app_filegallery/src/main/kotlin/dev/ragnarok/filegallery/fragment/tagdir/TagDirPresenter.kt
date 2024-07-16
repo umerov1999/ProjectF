@@ -5,16 +5,16 @@ import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.filegallery.Includes
 import dev.ragnarok.filegallery.db.interfaces.ISearchRequestHelperStorage
 import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
-import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.model.FileType
 import dev.ragnarok.filegallery.model.Photo
 import dev.ragnarok.filegallery.model.Video
 import dev.ragnarok.filegallery.model.tags.TagDir
 import dev.ragnarok.filegallery.util.Objects
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
 import java.util.Locale
 
-class TagDirPresenter(private val owner_id: Int) :
+class TagDirPresenter(private val owner_id: Long) :
     RxSupportPresenter<ITagDirView>() {
     private val tagDirData: ArrayList<TagDir> = ArrayList()
     private val tagDirDataSearch: ArrayList<TagDir> = ArrayList()
@@ -57,19 +57,17 @@ class TagDirPresenter(private val owner_id: Int) :
     }
 
     private fun loadActualData() {
-        appendDisposable(
+        appendJob(
             storage.getTagDirs(owner_id)
-                .fromIOToMain()
-                .subscribe({ onActualDataReceived(it) },
+                .fromIOToMain({ onActualDataReceived(it) },
                     { t -> onActualDataGetError(t) })
         )
     }
 
     fun deleteTagDir(pos: Int, owner: TagDir) {
-        appendDisposable(
+        appendJob(
             storage.deleteTagDir(owner.id)
-                .fromIOToMain()
-                .subscribe(
+                .fromIOToMain(
                     {
                         tagDirData.removeAt(pos)
                         view?.notifyRemove(pos)
@@ -115,7 +113,7 @@ class TagDirPresenter(private val owner_id: Int) :
                 photo.setPhoto_url("file://" + i.path)
                 photo.setPreview_url("thumb_file://" + i.path)
                 photo.setLocal(true)
-                photo.setGif(i.type == FileType.video || i.name.toString().endsWith("gif", true))
+                photo.setIsAnimation(i.type == FileType.video)
                 photo.setText(i.name)
                 mem.writeParcelable(photo)
                 o++

@@ -8,10 +8,10 @@ import dev.ragnarok.fenrir.api.model.response.DeleteFriendResponse
 import dev.ragnarok.fenrir.api.model.response.MutualFriendsResponse
 import dev.ragnarok.fenrir.api.model.response.OnlineFriendsResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class IFriendsService : IServiceRest() {
-    fun getOnline(code: String?): Single<BaseResponse<OnlineFriendsResponse>> {
+    fun getOnline(code: String?): Flow<BaseResponse<OnlineFriendsResponse>> {
         return rest.request(
             "execute",
             form("code" to code),
@@ -30,7 +30,7 @@ class IFriendsService : IServiceRest() {
         offset: Int?,
         fields: String?,
         nameCase: String?
-    ): Single<BaseResponse<Items<VKApiUser>>> {
+    ): Flow<BaseResponse<Items<VKApiUser>>> {
         return rest.request(
             "friends.get", form(
                 "user_id" to userId,
@@ -48,7 +48,7 @@ class IFriendsService : IServiceRest() {
         count: Int?,
         fields: String?,
         nameCase: String?
-    ): Single<BaseResponse<Items<VKApiUser>>> {
+    ): Flow<BaseResponse<Items<VKApiUser>>> {
         return rest.request(
             "friends.getRecommendations", form(
                 "count" to count,
@@ -62,7 +62,7 @@ class IFriendsService : IServiceRest() {
     fun getLists(
         userId: Long?,
         returnSystem: Int?
-    ): Single<BaseResponse<Items<VKApiFriendList>>> {
+    ): Flow<BaseResponse<Items<VKApiFriendList>>> {
         return rest.request(
             "friends.getLists", form(
                 "user_id" to userId,
@@ -72,7 +72,7 @@ class IFriendsService : IServiceRest() {
     }
 
     //https://vk.com/dev/friends.delete
-    fun delete(userId: Long): Single<BaseResponse<DeleteFriendResponse>> {
+    fun delete(userId: Long): Flow<BaseResponse<DeleteFriendResponse>> {
         return rest.request(
             "friends.delete",
             form("user_id" to userId),
@@ -85,7 +85,7 @@ class IFriendsService : IServiceRest() {
         userId: Long,
         text: String?,
         follow: Int?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "friends.add", form(
                 "user_id" to userId,
@@ -97,7 +97,7 @@ class IFriendsService : IServiceRest() {
 
     fun deleteSubscriber(
         subscriber_id: Long
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "friends.deleteSubscriber", form(
                 "subscriber_id" to subscriber_id,
@@ -113,7 +113,7 @@ class IFriendsService : IServiceRest() {
         nameCase: String?,
         offset: Int?,
         count: Int?
-    ): Single<BaseResponse<Items<VKApiUser>>> {
+    ): Flow<BaseResponse<Items<VKApiUser>>> {
         return rest.request(
             "friends.search", form(
                 "user_id" to userId,
@@ -126,7 +126,7 @@ class IFriendsService : IServiceRest() {
         )
     }
 
-    fun getMutual(code: String?): Single<BaseResponse<MutualFriendsResponse>> {
+    fun getMutual(code: String?): Flow<BaseResponse<MutualFriendsResponse>> {
         return rest.request(
             "execute",
             form("code" to code),
@@ -138,7 +138,7 @@ class IFriendsService : IServiceRest() {
     fun getByPhones(
         phones: String?,
         fields: String?
-    ): Single<BaseResponse<List<VKApiUser>>> {
+    ): Flow<BaseResponse<List<VKApiUser>>> {
         return rest.request(
             "friends.getByPhones", form(
                 "phones" to phones,

@@ -14,12 +14,16 @@ import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.upload.UploadResult
 import dev.ragnarok.fenrir.upload.UploadUtils
 import dev.ragnarok.fenrir.util.Utils.safelyClose
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.safelyCloseAction
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlowThrowable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.math.abs
 
 class Video2WallUploadable(
@@ -27,18 +31,19 @@ class Video2WallUploadable(
     private val networker: INetworker,
     private val attachmentsRepository: IAttachmentsRepository
 ) : IUploadable<Video> {
+    @Suppress("BlockingMethodInNonBlockingContext")
     override fun doUpload(
         upload: Upload,
         initialServer: UploadServer?,
         listener: PercentagePublisher?
-    ): Single<UploadResult<Video>> {
+    ): Flow<UploadResult<Video>> {
         val accountId = upload.accountId
         val ownerId = upload.destination.ownerId
         val groupId = if (ownerId < 0) abs(ownerId) else null
         val serverSingle = networker.vkDefault(accountId)
             .video()
             .getVideoServer(1, groupId, UploadUtils.findFileName(context, upload.fileUri))
-        return serverSingle.flatMap { server ->
+        return serverSingle.flatMapConcat { server ->
             var inputStream: InputStream? = null
             try {
                 val uri = upload.fileUri
@@ -49,7 +54,7 @@ class Video2WallUploadable(
                     context.contentResolver.openInputStream(uri)
                 }
                 if (inputStream == null) {
-                    Single.error(
+                    toFlowThrowable(
                         NotFoundException(
                             "Unable to open InputStream, URI: $uri"
                         )
@@ -63,8 +68,8 @@ class Video2WallUploadable(
                             inputStream,
                             listener
                         )
-                        .doFinally(safelyCloseAction(inputStream))
-                        .flatMap { dto ->
+                        .onCompletion { safelyClose(inputStream) }
+                        .flatMapConcat { dto ->
                             val video =
                                 Video().setId(dto.video_id).setOwnerId(dto.owner_id).setTitle(
                                     UploadUtils.findFileName(
@@ -73,17 +78,20 @@ class Video2WallUploadable(
                                 )
                             val result = UploadResult(server, video)
                             if (upload.isAutoCommit) {
-                                commit(attachmentsRepository, upload, video).andThen(
-                                    Single.just(result)
-                                )
+                                commit(attachmentsRepository, upload, video).map {
+                                    result
+                                }
                             } else {
-                                Single.just(result)
+                                toFlow(result)
                             }
                         }
                 }
             } catch (e: Exception) {
                 safelyClose(inputStream)
-                Single.error(e)
+                if (e is CancellationException) {
+                    throw e
+                }
+                toFlowThrowable(e)
             }
         }
     }
@@ -92,7 +100,7 @@ class Video2WallUploadable(
         repository: IAttachmentsRepository,
         upload: Upload,
         video: Video
-    ): Completable {
+    ): Flow<Boolean> {
         val accountId = upload.accountId
         val dest = upload.destination
         when (dest.method) {
@@ -102,6 +110,6 @@ class Video2WallUploadable(
             Method.TO_WALL -> return repository
                 .attach(accountId, AttachToType.POST, dest.id, listOf(video))
         }
-        return Completable.error(UnsupportedOperationException())
+        return toFlowThrowable(UnsupportedOperationException())
     }
 }

@@ -31,7 +31,6 @@ import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.NewsFeedCriteria
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.link.LinkHelper
 import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
@@ -47,14 +46,13 @@ import dev.ragnarok.fenrir.util.AppTextUtils.getDateFromUnixTime
 import dev.ragnarok.fenrir.util.PostDownload
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.CircleCounterButton
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.disposables.Disposable
-import java.util.concurrent.TimeUnit
 
 class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostView>(),
     EmojiconTextView.OnHashTagClickListener, IWallPostView, MenuProvider {
@@ -71,7 +69,7 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
     private var mAttachmentsViews: AttachmentsHolder? = null
     private var mTextSelectionAllowed = false
     private var loading: RLottieImageView? = null
-    private var animationDispose = Disposable.disposed()
+    private var animationDispose = CancelableJob()
     private var mAnimationLoaded = false
     private var animLoad: ObjectAnimator? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -168,7 +166,7 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
 
     override fun onDestroy() {
         super.onDestroy()
-        animationDispose.dispose()
+        animationDispose.cancel()
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -434,15 +432,13 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
     }
 
     private fun resolveLoading(visible: Boolean) {
-        animationDispose.dispose()
+        animationDispose.cancel()
         if (mAnimationLoaded && !visible) {
             mAnimationLoaded = false
             animLoad?.start()
         } else if (!mAnimationLoaded && visible) {
             animLoad?.end()
-            animationDispose = Completable.create {
-                it.onComplete()
-            }.delay(300, TimeUnit.MILLISECONDS).fromIOToMain().subscribe({
+            animationDispose += delayTaskFlow(300).toMain {
                 mAnimationLoaded = true
                 loading?.visibility = View.VISIBLE
                 loading?.alpha = 1f
@@ -458,7 +454,7 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
                     )
                 )
                 loading?.playAnimation()
-            }, RxUtils.ignore())
+            }
         }
     }
 

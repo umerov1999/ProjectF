@@ -36,13 +36,17 @@ import dev.ragnarok.fenrir.util.Logger.wtf
 import dev.ragnarok.fenrir.util.Unixtime.now
 import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayedFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.dummy
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.toast.CustomToast
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
 import java.security.InvalidKeyException
 import java.security.NoSuchAlgorithmException
 import java.security.spec.InvalidKeySpecException
-import java.util.concurrent.TimeUnit
 import javax.crypto.BadPaddingException
 import javax.crypto.IllegalBlockSizeException
 import javax.crypto.NoSuchPaddingException
@@ -50,7 +54,7 @@ import kotlin.random.Random
 
 class KeyExchangeService : Service() {
     private val mUtilsInteractor: IUtilsInteractor = InteractorFactory.createUtilsInteractor()
-    private val mCompositeSubscription = CompositeDisposable()
+    private val mCompositeJob = CompositeJob()
     private var mCurrentActiveSessions: LongSparseArray<KeyExchangeSession> = LongSparseArray(1)
     private var mCurrentActiveNotifications: LongSparseArray<NotificationCompat.Builder> =
         LongSparseArray(1)
@@ -184,9 +188,8 @@ class KeyExchangeService : Service() {
             return
         }
         mUtilsInteractor.getServerTime(accountId)
-            .fromIOToMain()
-            .delay(1500, TimeUnit.MILLISECONDS)
-            .subscribe({
+            .delayedFlow(1500)
+            .fromIOToMain {
                 val session = KeyExchangeSession.createOutSession(
                     it, accountId, peerId, keyLocationPolicy
                 )
@@ -211,7 +214,7 @@ class KeyExchangeService : Service() {
                 } catch (e: NoSuchAlgorithmException) {
                     e.printStackTrace()
                 }
-            }) { }
+            }
     }
 
     private fun onReceiveSessionFailStatus(message: ExchangeMessage) {
@@ -243,9 +246,8 @@ class KeyExchangeService : Service() {
         messageId: Int,
         message: ExchangeMessage
     ) {
-        mCompositeSubscription.add(OwnerInfo.getRx(this, accountId, Peer.toUserId(peerId))
-            .fromIOToMain()
-            .subscribe({ userInfo ->
+        mCompositeJob.add(OwnerInfo.getRx(this, accountId, Peer.toUserId(peerId))
+            .fromIOToMain { userInfo ->
                 displayUserConfirmNotificationImpl(
                     accountId,
                     peerId,
@@ -253,12 +255,12 @@ class KeyExchangeService : Service() {
                     message,
                     userInfo
                 )
-            }) { })
+            })
     }
 
     override fun onDestroy() {
         wakeLock?.release()
-        mCompositeSubscription.dispose()
+        mCompositeJob.cancel()
         super.onDestroy()
     }
 
@@ -267,14 +269,13 @@ class KeyExchangeService : Service() {
     }
 
     private fun notifyAboutKeyExchangeAsync(accountId: Long, peerId: Long, sessionId: Long) {
-        mCompositeSubscription.add(OwnerInfo.getRx(this, accountId, Peer.toUserId(peerId))
-            .fromIOToMain()
-            .subscribe({ userInfo ->
+        mCompositeJob.add(OwnerInfo.getRx(this, accountId, Peer.toUserId(peerId))
+            .fromIOToMain { userInfo ->
                 notifyAboutKeyExchange(
                     sessionId,
                     userInfo
                 )
-            }) { })
+            })
     }
 
     private fun notifyAboutKeyExchange(sessionId: Long, info: OwnerInfo) {
@@ -523,8 +524,7 @@ class KeyExchangeService : Service() {
         Stores.instance
             .keys(session.keyLocationPolicy)
             .saveKeyPair(pair)
-            .fromIOToMain()
-            .subscribe({}) { throwable -> showError(throwable.toString()) }
+            .fromIOToMain(dummy()) { throwable -> showError(throwable.toString()) }
     }
 
     private fun processIniciatorState2(
@@ -665,19 +665,18 @@ class KeyExchangeService : Service() {
     private fun sendMessage(accountId: Long, peerId: Long, message: ExchangeMessage) {
         d(TAG, "sendMessage, message: $message")
         sendMessageImpl(accountId, peerId, message)
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 onMessageSent(
                     message,
                     it
                 )
-            }) { throwable ->
+            }, { throwable ->
                 showError(throwable.toString())
                 val session = findSessionFor(accountId, peerId)
                 if (session != null) {
                     finishSession(session, true)
                 }
-            }
+            })
     }
 
     @SuppressLint("MissingPermission")
@@ -747,7 +746,7 @@ class KeyExchangeService : Service() {
             )
         }
 
-        fun intercept(
+        private fun intercept(
             context: Context,
             accountId: Long,
             peerId: Long,
@@ -790,10 +789,9 @@ class KeyExchangeService : Service() {
             accountId: Long,
             peerId: Long,
             message: ExchangeMessage
-        ): Single<SendMessageResponse> {
-            return Single.just(Any())
-                .delay(1, TimeUnit.SECONDS)
-                .flatMap {
+        ): Flow<SendMessageResponse> {
+            return delayTaskFlow(1000)
+                .flatMapConcat {
                     get()
                         .vkDefault(accountId)
                         .messages()
@@ -813,7 +811,7 @@ class KeyExchangeService : Service() {
                 }
         }
 
-        fun iniciateKeyExchangeSession(
+        fun initiateKeyExchangeSession(
             context: Context, accountId: Long,
             peerId: Long, @KeyLocationPolicy policy: Int
         ) {

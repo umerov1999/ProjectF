@@ -2,15 +2,15 @@ package dev.ragnarok.fenrir.api
 
 import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.api.rest.SimplePostHttp
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IOtherVKRestProvider {
     fun provideAuthRest(
         @AccountType accountType: Int,
         customDevice: String?
-    ): Single<SimplePostHttp>
+    ): Flow<SimplePostHttp>
 
-    fun provideAuthServiceRest(): Single<SimplePostHttp>
-    fun provideLongpollRest(): Single<SimplePostHttp>
-    fun provideLocalServerRest(): Single<SimplePostHttp>
+    fun provideAuthServiceRest(): Flow<SimplePostHttp>
+    fun provideLongpollRest(): Flow<SimplePostHttp>
+    fun provideLocalServerRest(): Flow<SimplePostHttp>
 }

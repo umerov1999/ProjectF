@@ -16,7 +16,8 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils.dpToPx
 import dev.ragnarok.fenrir.util.Utils.hasFlag
 import dev.ragnarok.fenrir.util.Utils.hasOreo
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.io.IOException
 
 object NotificationUtils {
@@ -24,9 +25,9 @@ object NotificationUtils {
         context: Context,
         url: String?,
         @DrawableRes ifErrorOrEmpty: Int
-    ): Single<Bitmap> {
+    ): Flow<Bitmap> {
         val app = context.applicationContext
-        return Single.fromCallable { loadRoundedImage(app, url, ifErrorOrEmpty) }
+        return flow { emit(loadRoundedImage(app, url, ifErrorOrEmpty)) }
     }
 
     fun loadRoundedImage(

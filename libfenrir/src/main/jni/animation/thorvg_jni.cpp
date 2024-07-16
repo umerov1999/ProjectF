@@ -71,7 +71,6 @@ Java_dev_ragnarok_fenrir_module_thorvg_ThorVGRender_createBitmapNative(JNIEnv *e
                               : picture->load((const char *) jsonString.data(), jsonString.size(),
                                               "svg", "", false);
     if (result != tvg::Result::Success) {
-        canvas.release();
         return;
     }
     picture->size((float) w, (float) h);
@@ -80,7 +79,6 @@ Java_dev_ragnarok_fenrir_module_thorvg_ThorVGRender_createBitmapNative(JNIEnv *e
     if (AndroidBitmap_lockPixels(env, bitmap, &pixels) >= 0) {
         if (canvas->target((uint32_t *) pixels, w, w, h, tvg::SwCanvas::ABGR8888) !=
             tvg::Result::Success) {
-            canvas.release();
             AndroidBitmap_unlockPixels(env, bitmap);
             return;
         }
@@ -89,7 +87,6 @@ Java_dev_ragnarok_fenrir_module_thorvg_ThorVGRender_createBitmapNative(JNIEnv *e
         canvas->draw();
         canvas->sync();
         canvas->clear(true, false);
-        canvas.release();
         AndroidBitmap_unlockPixels(env, bitmap);
     }
 }

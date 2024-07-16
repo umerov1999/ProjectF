@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.fragment.messages.dialogs
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.crypt.KeyLocationPolicy
@@ -16,7 +15,6 @@ import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.exception.UnauthorizedException
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.fragment.messages.dialogs.IDialogsView.IContextView
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.longpoll.ILongpollManager
 import dev.ragnarok.fenrir.longpoll.LongpollInstance
 import dev.ragnarok.fenrir.model.Dialog
@@ -47,9 +45,11 @@ import dev.ragnarok.fenrir.util.Utils.isHiddenAccount
 import dev.ragnarok.fenrir.util.Utils.isHiddenCurrent
 import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.needReloadDialogs
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.dummy
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.dummy
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 
 class DialogsPresenter(
     accountId: Long,
@@ -62,8 +62,8 @@ class DialogsPresenter(
     private val stickerInteractor: IStickersInteractor
     private val accountsInteractor: IAccountsInteractor
     private val longpollManager: ILongpollManager
-    private val netDisposable = CompositeDisposable()
-    private val cacheLoadingDisposable = CompositeDisposable()
+    private val netDisposable = CompositeJob()
+    private val cacheLoadingDisposable = CompositeJob()
     private var dialogsOwnerId = 0L
     private var endOfContent = false
     private var netLoadingNow = false
@@ -97,8 +97,7 @@ class DialogsPresenter(
         if (!Settings.get().main().isBe_online || isHiddenAccount(accountId)) {
             netDisposable.add(
                 accountsInteractor.setOffline(accountId)
-                    .fromIOToMain()
-                    .subscribe(ignore(), ignore())
+                    .hiddenIO()
             )
         }
         setNetLoadingNow(false)
@@ -133,8 +132,7 @@ class DialogsPresenter(
         }
         setNetLoadingNow(true)
         netDisposable.add(messagesInteractor.getDialogs(dialogsOwnerId, COUNT, null)
-            .fromIOToMain()
-            .subscribe({ onDialogsFirstResponse(it) }) { t ->
+            .fromIOToMain({ onDialogsFirstResponse(it) }) { t ->
                 onDialogsGetError(
                     t
                 )
@@ -149,8 +147,7 @@ class DialogsPresenter(
         val lastMid = lastDialogMessageId ?: return
         setNetLoadingNow(true)
         netDisposable.add(messagesInteractor.getDialogs(dialogsOwnerId, COUNT, lastMid)
-            .fromIOToMain()
-            .subscribe(
+            .fromIOToMain(
                 { onNextDialogsResponse(it) }
             ) { throwable -> onDialogsGetError(getCauseIfRuntime(throwable)) })
     }
@@ -159,8 +156,7 @@ class DialogsPresenter(
         if (!Settings.get().main().isBe_online || isHiddenAccount(accountId)) {
             netDisposable.add(
                 accountsInteractor.setOffline(accountId)
-                    .fromIOToMain()
-                    .subscribe(ignore(), ignore())
+                    .hiddenIO()
             )
         }
         setNetLoadingNow(false)
@@ -187,9 +183,8 @@ class DialogsPresenter(
 
     private fun removeDialog(peeId: Long) {
         val accountId = dialogsOwnerId
-        appendDisposable(messagesInteractor.deleteDialog(accountId, peeId)
-            .fromIOToMain()
-            .subscribe({ onDialogRemovedSuccessfully(accountId, peeId) }) { t ->
+        appendJob(messagesInteractor.deleteDialog(accountId, peeId)
+            .fromIOToMain({ onDialogRemovedSuccessfully(accountId, peeId) }) { t ->
                 showError(t)
             })
     }
@@ -205,8 +200,7 @@ class DialogsPresenter(
         cacheNowLoading = true
         resolveRefreshingView()
         cacheLoadingDisposable.add(messagesInteractor.getCachedDialogs(dialogsOwnerId)
-            .fromIOToMain()
-            .subscribe({ onCachedDataReceived(it) }) { ignored ->
+            .fromIOToMain({ onCachedDataReceived(it) }) { ignored ->
                 ignored.printStackTrace()
                 onCachedDataReceived(emptyList())
             })
@@ -234,10 +228,10 @@ class DialogsPresenter(
                 Settings.get().security().getEncryptionLocationPolicy(accountId, dialog.peerId)
         }
         builder.setRequireEncryption(encryptionEnabled).setKeyLocationPolicy(keyLocationPolicy)
-        appendDisposable(messagesInteractor.put(builder)
-            .fromIOToMain()
-            .doOnSuccess { messagesInteractor.runSendingQueue() }
-            .subscribe({
+        appendJob(messagesInteractor.put(builder)
+            .fromIOToMain({
+                messagesInteractor.runSendingQueue()
+
                 view?.showSnackbar(
                     R.string.success,
                     false
@@ -254,8 +248,7 @@ class DialogsPresenter(
             if (Utils.needReloadReactionAssets(accountId)) {
                 messagesInteractor
                     .getReactionsAssets(accountId)
-                    .fromIOToMain()
-                    .subscribe({
+                    .fromIOToMain({
                         if (Utils.getReactionsAssets()[accountId] == null) {
                             Utils.getReactionsAssets()[accountId] = HashMap()
                         } else {
@@ -274,9 +267,8 @@ class DialogsPresenter(
 
             if (Utils.needReloadStickerSets(accountId)) {
                 stickerInteractor
-                    .reciveAndStoreStickerSets(accountId)
-                    .fromIOToMain()
-                    .subscribe(dummy()) {
+                    .receiveAndStoreStickerSets(accountId)
+                    .fromIOToMain(dummy()) {
                         Settings.get().main().del_last_sticker_sets_sync(accountId)
                         if (Settings.get().main().isDeveloper_mode) {
                             showError(it)
@@ -285,9 +277,8 @@ class DialogsPresenter(
             }
             if (Utils.needReloadStickerSetsCustom(accountId)) {
                 stickerInteractor
-                    .reciveAndStoreCustomStickerSets(accountId)
-                    .fromIOToMain()
-                    .subscribe(dummy()) {
+                    .receiveAndStoreCustomStickerSets(accountId)
+                    .fromIOToMain(dummy()) {
                         Settings.get().main().del_last_sticker_sets_custom_sync(accountId)
                         if (Settings.get().main().isDeveloper_mode) {
                             showError(it)
@@ -298,9 +289,8 @@ class DialogsPresenter(
                     .main().isHint_stickers && Utils.needReloadStickerKeywords(accountId)
             ) {
                 stickerInteractor
-                    .reciveAndStoreKeywordsStickers(accountId)
-                    .fromIOToMain()
-                    .subscribe(dummy()) {
+                    .receiveAndStoreKeywordsStickers(accountId)
+                    .fromIOToMain(dummy()) {
                         Settings.get().main().del_last_sticker_keywords_sync(accountId)
                         if (Settings.get().main().isDeveloper_mode) {
                             showError(it)
@@ -362,10 +352,9 @@ class DialogsPresenter(
         val peerId = update.peerId
         if (update.lastMessage != null) {
             val id = listOf((update.lastMessage ?: return).messageId)
-            appendDisposable(
+            appendJob(
                 messagesInteractor.findCachedMessages(accountId, id)
-                    .fromIOToMain()
-                    .subscribe({ messages ->
+                    .fromIOToMain { messages ->
                         if (messages.isEmpty()) {
                             onDialogDeleted(accountId, peerId)
                         } else {
@@ -375,7 +364,7 @@ class DialogsPresenter(
                                 )
                             )
                         }
-                    }, ignore())
+                    }
             )
         } else {
             onActualMessagePeerMessageReceived(accountId, peerId, update, empty())
@@ -419,21 +408,19 @@ class DialogsPresenter(
             safeNotifyDataSetChanged()
         } else {
             if (Peer.isGroup(peerId) || Peer.isUser(peerId)) {
-                appendDisposable(
+                appendJob(
                     owners.getBaseOwnerInfo(accountId, peerId, IOwnersRepository.MODE_ANY)
-                        .fromIOToMain()
-                        .subscribe({ o ->
+                        .fromIOToMain { o ->
                             dialog.setInterlocutor(o)
-                            appendDisposable(
+                            appendJob(
                                 messages.insertDialog(accountId, dialog)
-                                    .fromIOToMain()
-                                    .subscribe({
+                                    .fromIOToMain {
                                         dialogs.add(dialog)
                                         dialogs.sortWith(COMPARATOR)
                                         safeNotifyDataSetChanged()
-                                    }, ignore())
+                                    }
                             )
-                        }, ignore())
+                        }
                 )
             } else {
                 dialogs.add(dialog)
@@ -459,8 +446,8 @@ class DialogsPresenter(
     }
 
     override fun onDestroyed() {
-        cacheLoadingDisposable.dispose()
-        netDisposable.dispose()
+        cacheLoadingDisposable.cancel()
+        netDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -564,13 +551,12 @@ class DialogsPresenter(
     fun fireNewGroupChatTitleEntered(users: List<User>, title: String?) {
         val targetTitle = if (title.isNullOrEmpty()) getTitleIfEmpty(users) else title
         val accountId = accountId
-        appendDisposable(messagesInteractor.createGroupChat(
+        appendJob(messagesInteractor.createGroupChat(
             accountId,
             idsListOfOwner(users),
             targetTitle
         )
-            .fromIOToMain()
-            .subscribe({ chatid ->
+            .fromIOToMain({ chatid ->
                 onGroupChatCreated(
                     chatid,
                     targetTitle
@@ -621,13 +607,12 @@ class DialogsPresenter(
     fun fireCreateShortcutClick(dialog: Dialog) {
         assertPositive(dialogsOwnerId)
         val app = applicationContext
-        appendDisposable(
+        appendJob(
             createChatShortcutRx(
                 app, dialog.imageUrl ?: VKApiUser.CAMERA_50, accountId,
                 dialog.peerId, dialog.getDisplayTitle(app) ?: ("id" + dialog.peerId)
             )
-                .fromIOToMain()
-                .subscribe({ onShortcutCreated() }) { throwable ->
+                .fromIOToMain({ onShortcutCreated() }) { throwable ->
                     view?.showError(throwable.message)
                 })
     }
@@ -667,9 +652,8 @@ class DialogsPresenter(
     }
 
     fun fireUnPin(dialog: Dialog) {
-        appendDisposable(messagesInteractor.pinUnPinConversation(accountId, dialog.peerId, false)
-            .fromIOToMain()
-            .subscribe({
+        appendJob(messagesInteractor.pinUnPinConversation(accountId, dialog.peerId, false)
+            .fromIOToMain({
                 view?.customToast?.showToastSuccessBottom(
                     R.string.success
                 )
@@ -680,9 +664,8 @@ class DialogsPresenter(
     }
 
     fun firePin(dialog: Dialog) {
-        appendDisposable(messagesInteractor.pinUnPinConversation(accountId, dialog.peerId, true)
-            .fromIOToMain()
-            .subscribe({
+        appendJob(messagesInteractor.pinUnPinConversation(accountId, dialog.peerId, true)
+            .fromIOToMain({
                 view?.customToast?.showToastSuccessBottom(
                     R.string.success
                 )
@@ -698,9 +681,8 @@ class DialogsPresenter(
             .setAvaUrl(dialog.imageUrl)
             .setTitle(dialog.getDisplayTitle(applicationContext))
         val completable = addDynamicShortcut(applicationContext, dialogsOwnerId, peer)
-        appendDisposable(completable
-            .fromIOToMain()
-            .subscribe({
+        appendJob(completable
+            .fromIOToMain({
                 view?.customToast?.showToastSuccessBottom(
                     R.string.success
                 )
@@ -708,13 +690,12 @@ class DialogsPresenter(
     }
 
     fun fireRead(dialog: Dialog) {
-        appendDisposable(messagesInteractor.markAsRead(
+        appendJob(messagesInteractor.markAsRead(
             accountId,
             dialog.peerId,
             dialog.lastMessageId
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 view?.customToast?.showToastSuccessBottom(
                     R.string.success
                 )
@@ -768,26 +749,23 @@ class DialogsPresenter(
         stickerInteractor = InteractorFactory.createStickersInteractor()
         accountsInteractor = InteractorFactory.createAccountInteractor()
         longpollManager = LongpollInstance.longpollManager
-        appendDisposable(
+        appendJob(
             messagesInteractor
                 .observePeerUpdates()
-                .observeOn(provideMainThreadScheduler())
-                .subscribe({ onPeerUpdate(it) }, ignore())
+                .sharedFlowToMain { onPeerUpdate(it) }
         )
-        appendDisposable(
+        appendJob(
             messagesInteractor.observePeerDeleting()
-                .observeOn(provideMainThreadScheduler())
-                .subscribe({ dialog ->
+                .sharedFlowToMain { dialog ->
                     onDialogDeleted(
                         dialog.accountId,
                         dialog.peerId
                     )
-                }, ignore())
+                }
         )
-        appendDisposable(
+        appendJob(
             longpollManager.observeKeepAlive()
-                .observeOn(provideMainThreadScheduler())
-                .subscribe({ checkLongpoll() }, ignore())
+                .sharedFlowToMain { checkLongpoll() }
         )
         loadCachedThenActualData()
     }

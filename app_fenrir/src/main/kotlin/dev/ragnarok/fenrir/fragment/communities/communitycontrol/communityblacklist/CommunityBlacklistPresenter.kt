@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.fragment.communities.communitycontrol.communityblack
 
 import android.os.Bundle
 import dev.ragnarok.fenrir.Includes.networkInterfaces
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.Includes.stores
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.db.model.BanAction
@@ -11,13 +10,15 @@ import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.domain.impl.GroupSettingsInteractor
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.fragment.search.nextfrom.IntNextFrom
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Banned
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.findIndexByPredicate
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import kotlinx.coroutines.flow.filter
 
 class CommunityBlacklistPresenter(
     accountId: Long,
@@ -64,9 +65,8 @@ class CommunityBlacklistPresenter(
     private fun request(startFrom: IntNextFrom) {
         if (loadingNow) return
         setLoadingNow(true)
-        appendDisposable(groupSettingsInteractor.getBanned(accountId, groupId, startFrom, COUNT)
-            .fromIOToMain()
-            .subscribe(
+        appendJob(groupSettingsInteractor.getBanned(accountId, groupId, startFrom, COUNT)
+            .fromIOToMain(
                 {
                     onBannedUsersReceived(
                         startFrom,
@@ -146,10 +146,9 @@ class CommunityBlacklistPresenter(
     }
 
     fun fireBannedRemoveClick(banned: Banned) {
-        appendDisposable(groupSettingsInteractor
+        appendJob(groupSettingsInteractor
             .unban(accountId, groupId, banned.banned.ownerId)
-            .fromIOToMain()
-            .subscribe({ onUnbanComplete() }) { throwable ->
+            .fromIOToMain({ onUnbanComplete() }) { throwable ->
                 onUnbanError(
                     throwable
                 )
@@ -187,10 +186,9 @@ class CommunityBlacklistPresenter(
         val networker = networkInterfaces
         val repository = stores.owners()
         groupSettingsInteractor = GroupSettingsInteractor(networker, repository, owners)
-        appendDisposable(repository.observeBanActions()
+        appendJob(repository.observeBanActions()
             .filter { it.groupId == groupId }
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onBanActionReceived(it) })
+            .sharedFlowToMain { onBanActionReceived(it) })
         requestDataAtStart()
     }
 }

@@ -12,7 +12,9 @@ import dev.ragnarok.fenrir.settings.IProxySettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.UncompressDefaultInterceptor
 import dev.ragnarok.fenrir.util.Utils
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import okhttp3.FormBody
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -42,8 +44,8 @@ class OtherVKRestProvider @SuppressLint("CheckResult") constructor(private val p
     override fun provideAuthRest(
         @AccountType accountType: Int,
         customDevice: String?
-    ): Single<SimplePostHttp> {
-        return Single.fromCallable {
+    ): Flow<SimplePostHttp> {
+        return flow {
             val builder: OkHttpClient.Builder = OkHttpClient.Builder()
                 .readTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
                 .connectTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
@@ -64,12 +66,12 @@ class OtherVKRestProvider @SuppressLint("CheckResult") constructor(private val p
             ProxyUtil.applyProxyConfig(builder, proxySettings.activeProxy)
             HttpLoggerAndParser.adjust(builder)
             HttpLoggerAndParser.configureToIgnoreCertificates(builder)
-            SimplePostHttp("https://" + Settings.get().main().authDomain, builder)
+            emit(SimplePostHttp("https://" + Settings.get().main().authDomain, builder))
         }
     }
 
-    override fun provideAuthServiceRest(): Single<SimplePostHttp> {
-        return Single.fromCallable {
+    override fun provideAuthServiceRest(): Flow<SimplePostHttp> {
+        return flow {
             val builder: OkHttpClient.Builder = OkHttpClient.Builder()
                 .readTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
                 .connectTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
@@ -87,9 +89,11 @@ class OtherVKRestProvider @SuppressLint("CheckResult") constructor(private val p
             ProxyUtil.applyProxyConfig(builder, proxySettings.activeProxy)
             HttpLoggerAndParser.adjust(builder)
             HttpLoggerAndParser.configureToIgnoreCertificates(builder)
-            SimplePostHttp(
-                "https://" + Settings.get().main().apiDomain + "/method",
-                builder
+            emit(
+                SimplePostHttp(
+                    "https://" + Settings.get().main().apiDomain + "/method",
+                    builder
+                )
             )
         }
     }
@@ -153,8 +157,8 @@ class OtherVKRestProvider @SuppressLint("CheckResult") constructor(private val p
         )
     }
 
-    override fun provideLocalServerRest(): Single<SimplePostHttp> {
-        return Single.fromCallable {
+    override fun provideLocalServerRest(): Flow<SimplePostHttp> {
+        return flow {
             if (localServerRestInstance == null) {
                 synchronized(localServerRestLock) {
                     if (localServerRestInstance == null) {
@@ -162,12 +166,12 @@ class OtherVKRestProvider @SuppressLint("CheckResult") constructor(private val p
                     }
                 }
             }
-            localServerRestInstance!!
+            emit(localServerRestInstance ?: return@flow)
         }
     }
 
-    override fun provideLongpollRest(): Single<SimplePostHttp> {
-        return Single.fromCallable {
+    override fun provideLongpollRest(): Flow<SimplePostHttp> {
+        return flow {
             if (longpollRestInstance == null) {
                 synchronized(longpollRestLock) {
                     if (longpollRestInstance == null) {
@@ -175,12 +179,12 @@ class OtherVKRestProvider @SuppressLint("CheckResult") constructor(private val p
                     }
                 }
             }
-            longpollRestInstance!!
+            emit(longpollRestInstance ?: return@flow)
         }
     }
 
     init {
         proxySettings.observeActive
-            .subscribe { onProxySettingsChanged() }
+            .sharedFlowToMain { onProxySettingsChanged() }
     }
 }

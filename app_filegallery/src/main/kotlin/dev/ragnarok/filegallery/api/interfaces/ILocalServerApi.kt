@@ -5,20 +5,20 @@ import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.model.FileRemote
 import dev.ragnarok.filegallery.model.Photo
 import dev.ragnarok.filegallery.model.Video
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface ILocalServerApi {
     @CheckResult
-    fun getVideos(offset: Int?, count: Int?, reverse: Boolean): Single<List<Video>>
+    fun getVideos(offset: Int?, count: Int?, reverse: Boolean): Flow<List<Video>>
 
     @CheckResult
-    fun getAudios(offset: Int?, count: Int?, reverse: Boolean): Single<List<Audio>>
+    fun getAudios(offset: Int?, count: Int?, reverse: Boolean): Flow<List<Audio>>
 
     @CheckResult
-    fun getDiscography(offset: Int?, count: Int?, reverse: Boolean): Single<List<Audio>>
+    fun getDiscography(offset: Int?, count: Int?, reverse: Boolean): Flow<List<Audio>>
 
     @CheckResult
-    fun getPhotos(offset: Int?, count: Int?, reverse: Boolean): Single<MutableList<Photo>>
+    fun getPhotos(offset: Int?, count: Int?, reverse: Boolean): Flow<MutableList<Photo>>
 
     @CheckResult
     fun searchVideos(
@@ -26,7 +26,7 @@ interface ILocalServerApi {
         offset: Int?,
         count: Int?,
         reverse: Boolean
-    ): Single<List<Video>>
+    ): Flow<List<Video>>
 
     @CheckResult
     fun searchAudios(
@@ -34,7 +34,7 @@ interface ILocalServerApi {
         offset: Int?,
         count: Int?,
         reverse: Boolean
-    ): Single<List<Audio>>
+    ): Flow<List<Audio>>
 
     @CheckResult
     fun searchDiscography(
@@ -42,7 +42,7 @@ interface ILocalServerApi {
         offset: Int?,
         count: Int?,
         reverse: Boolean
-    ): Single<List<Audio>>
+    ): Flow<List<Audio>>
 
     @CheckResult
     fun searchPhotos(
@@ -50,23 +50,23 @@ interface ILocalServerApi {
         offset: Int?,
         count: Int?,
         reverse: Boolean
-    ): Single<List<Photo>>
+    ): Flow<List<Photo>>
 
     @CheckResult
-    fun update_time(hash: String?): Single<Int>
+    fun update_time(hash: String?): Flow<Int>
 
     @CheckResult
-    fun delete_media(hash: String?): Single<Int>
+    fun delete_media(hash: String?): Flow<Int>
 
     @CheckResult
-    fun get_file_name(hash: String?): Single<String>
+    fun get_file_name(hash: String?): Flow<String>
 
     @CheckResult
-    fun update_file_name(hash: String?, name: String?): Single<Int>
+    fun update_file_name(hash: String?, name: String?): Flow<Int>
 
     @CheckResult
-    fun fsGet(dir: String?): Single<List<FileRemote>>
+    fun fsGet(dir: String?): Flow<List<FileRemote>>
 
     @CheckResult
-    fun rebootPC(type: String?): Single<Int>
+    fun rebootPC(type: String?): Flow<Int>
 }

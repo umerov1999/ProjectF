@@ -9,11 +9,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.Repository
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
-import io.reactivex.rxjava3.disposables.Disposable
-import java.util.concurrent.TimeUnit
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayedFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class InputWallOffsetDialog internal constructor(
     private val context: Context,
@@ -24,7 +23,7 @@ class InputWallOffsetDialog internal constructor(
     private var titleRes = 0
     private var value: Int = 0
     private var callback: Callback? = null
-    private var disposable: Disposable = Disposable.disposed()
+    private var disposable = CancelableJob()
     private var onHasResult: Boolean = false
     fun show() {
         val builder = MaterialAlertDialogBuilder(context)
@@ -50,7 +49,7 @@ class InputWallOffsetDialog internal constructor(
             } else {
                 try {
                     callback?.onChanged(newValue)
-                    disposable.dispose()
+                    disposable.cancel()
                     onHasResult = true
                     dialog.dismiss()
                 } catch (e: IllegalArgumentException) {
@@ -79,26 +78,25 @@ class InputWallOffsetDialog internal constructor(
         }, 500)
         input.addTextChangedListener(object : TextWatcherAdapter() {
             override fun afterTextChanged(s: Editable?) {
-                disposable.dispose()
+                disposable.cancel()
                 try {
                     val mQuery = s.toString().trim().toInt()
                     if (mQuery >= 0) {
-                        disposable = Repository.walls.getWall(
+                        disposable += Repository.walls.getWall(
                             accountId,
                             ownerId,
                             mQuery,
                             1,
                             wallFilter,
                             false
-                        ).delay(1, TimeUnit.SECONDS).fromIOToMain()
-                            .subscribe({
-                                if (it.isEmpty()) {
-                                    dt.setText(R.string.list_is_empty)
-                                } else {
-                                    dt.text =
-                                        AppTextUtils.getDateFromUnixTimeShorted(context, it[0].date)
-                                }
-                            }, RxUtils.ignore())
+                        ).delayedFlow(1000).fromIOToMain {
+                            if (it.isEmpty()) {
+                                dt.setText(R.string.list_is_empty)
+                            } else {
+                                dt.text =
+                                    AppTextUtils.getDateFromUnixTimeShorted(context, it[0].date)
+                            }
+                        }
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()

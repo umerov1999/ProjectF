@@ -8,9 +8,9 @@ import dev.ragnarok.filegallery.model.FileType
 import dev.ragnarok.filegallery.putBoolean
 
 class TagDir : Parcelable {
-    var id = 0
+    var id = 0L
         private set
-    var owner_id = 0
+    var owner_id = 0L
         private set
     var size: Long = 0
         private set
@@ -27,8 +27,8 @@ class TagDir : Parcelable {
 
     constructor()
     constructor(parcel: Parcel) {
-        id = parcel.readInt()
-        owner_id = parcel.readInt()
+        id = parcel.readLong()
+        owner_id = parcel.readLong()
         name = parcel.readString()
         path = parcel.readString()
         type = parcel.readInt()
@@ -41,8 +41,8 @@ class TagDir : Parcelable {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(id)
-        parcel.writeInt(owner_id)
+        parcel.writeLong(id)
+        parcel.writeLong(owner_id)
         parcel.writeString(name)
         parcel.writeString(path)
         parcel.writeInt(type)
@@ -60,7 +60,7 @@ class TagDir : Parcelable {
     val filePathHash: Long
         get() = calculateCRC32(path!!).toLong()
 
-    fun setId(id: Int): TagDir {
+    fun setId(id: Long): TagDir {
         this.id = id
         return this
     }
@@ -70,7 +70,7 @@ class TagDir : Parcelable {
         return this
     }
 
-    fun setOwner_id(owner_id: Int): TagDir {
+    fun setOwner_id(owner_id: Long): TagDir {
         this.owner_id = owner_id
         return this
     }

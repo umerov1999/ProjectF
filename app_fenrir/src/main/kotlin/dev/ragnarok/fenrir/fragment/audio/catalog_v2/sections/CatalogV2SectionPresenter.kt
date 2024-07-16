@@ -5,7 +5,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IAudioInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.model.AbsModelType
 import dev.ragnarok.fenrir.model.Audio
@@ -16,7 +15,7 @@ import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2RecommendationPlaylis
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2Section
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import io.reactivex.rxjava3.disposables.Disposable
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class CatalogV2SectionPresenter(
     accountId: Long,
@@ -26,13 +25,11 @@ class CatalogV2SectionPresenter(
     AccountDependencyPresenter<ICatalogV2SectionView>(accountId, savedInstanceState) {
     private val pages: MutableList<AbsModel> = ArrayList()
     private val fInteractor: IAudioInteractor = InteractorFactory.createAudioInteractor()
-    private var actualDataDisposable = Disposable.disposed()
     private var doAudioLoadTabs = false
     private var actualDataLoading = false
     private var actualBlockLoading = false
     private var nextFrom: String? = null
     private var listContentType: String? = null
-    private var dataDisposable = Disposable.disposed()
 
     private fun resolveLoadMoreFooterView() {
         if (pages.nonNullNoEmpty() && nextFrom.isNullOrEmpty()) {
@@ -66,7 +63,6 @@ class CatalogV2SectionPresenter(
     }
 
     fun fireSearchRequestSubmitted(q: String?) {
-        dataDisposable.dispose()
         if (q.isNullOrEmpty()) {
             return
         }
@@ -131,9 +127,8 @@ class CatalogV2SectionPresenter(
     private fun loadActualData() {
         actualDataLoading = true
         resolveRefreshingView()
-        appendDisposable(fInteractor.getCatalogV2Section(accountId, section_id, null)
-            .fromIOToMain()
-            .subscribe({ data -> onActualDataReceived(false, data) }) { t ->
+        appendJob(fInteractor.getCatalogV2Section(accountId, section_id, null)
+            .fromIOToMain({ data -> onActualDataReceived(false, data) }) { t ->
                 onActualDataGetError(
                     t
                 )
@@ -154,9 +149,8 @@ class CatalogV2SectionPresenter(
         }
         actualDataLoading = true
         resolveRefreshingView()
-        appendDisposable(fInteractor.getCatalogV2Section(accountId, section_id, nextFrom)
-            .fromIOToMain()
-            .subscribe({ data -> onActualDataReceived(true, data) }) { t ->
+        appendJob(fInteractor.getCatalogV2Section(accountId, section_id, nextFrom)
+            .fromIOToMain({ data -> onActualDataReceived(true, data) }) { t ->
                 onActualDataGetError(
                     t
                 )
@@ -193,14 +187,13 @@ class CatalogV2SectionPresenter(
     }
 
     fun onAdd(album: AudioPlaylist) {
-        appendDisposable(fInteractor.followPlaylist(
+        appendJob(fInteractor.followPlaylist(
             accountId,
             album.id,
             album.owner_id,
             album.access_key
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 view?.customToast?.showToast(
                     R.string.success
                 )
@@ -209,12 +202,6 @@ class CatalogV2SectionPresenter(
                     it
                 )
             })
-    }
-
-    override fun onDestroyed() {
-        actualDataDisposable.dispose()
-        dataDisposable.dispose()
-        super.onDestroyed()
     }
 
     fun fireRefresh() {

@@ -10,30 +10,29 @@ import dev.ragnarok.fenrir.model.Chat
 import dev.ragnarok.fenrir.model.criteria.DialogsCriteria
 import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Pair
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 
 interface IDialogsStorage : IStorage {
     fun getUnreadDialogsCount(accountId: Long): Int
-    fun observeUnreadDialogsCount(): Observable<Pair<Long, Int>>
-    fun findPeerStates(accountId: Long, ids: Collection<Long>): Single<List<PeerStateEntity>>
+    fun observeUnreadDialogsCount(): SharedFlow<Pair<Long, Int>>
+    fun findPeerStates(accountId: Long, ids: Collection<Long>): Flow<List<PeerStateEntity>>
     fun setUnreadDialogsCount(accountId: Long, unreadCount: Int)
-    fun findPeerDialog(accountId: Long, peerId: Long): Single<Optional<PeerDialogEntity>>
-    fun savePeerDialog(accountId: Long, entity: PeerDialogEntity): Completable
+    fun findPeerDialog(accountId: Long, peerId: Long): Flow<Optional<PeerDialogEntity>>
+    fun savePeerDialog(accountId: Long, entity: PeerDialogEntity): Flow<Boolean>
     fun updateDialogKeyboard(
         accountId: Long,
         peerId: Long,
         keyboardEntity: KeyboardEntity?
-    ): Completable
+    ): Flow<Boolean>
 
-    fun getDialogs(criteria: DialogsCriteria): Single<List<DialogDboEntity>>
-    fun removePeerWithId(accountId: Long, peerId: Long): Completable
+    fun getDialogs(criteria: DialogsCriteria): Flow<List<DialogDboEntity>>
+    fun removePeerWithId(accountId: Long, peerId: Long): Flow<Boolean>
     fun insertDialogs(
         accountId: Long,
         dbos: List<DialogDboEntity>,
         clearBefore: Boolean
-    ): Completable
+    ): Flow<Boolean>
 
     /**
      * Получение списка идентификаторов диалогов, информация о которых отсутствует в базе данных
@@ -41,8 +40,8 @@ interface IDialogsStorage : IStorage {
      * @param ids список входящих идентификаторов
      * @return отсутствующие
      */
-    fun getMissingGroupChats(accountId: Long, ids: Collection<Long>): Single<Collection<Long>>
-    fun insertChats(accountId: Long, chats: List<VKApiChat>): Completable
-    fun applyPatches(accountId: Long, patches: List<PeerPatch>): Completable
-    fun findChatById(accountId: Long, peerId: Long): Single<Optional<Chat>>
+    fun getMissingGroupChats(accountId: Long, ids: Collection<Long>): Flow<Collection<Long>>
+    fun insertChats(accountId: Long, chats: List<VKApiChat>): Flow<Boolean>
+    fun applyPatches(accountId: Long, patches: List<PeerPatch>): Flow<Boolean>
+    fun findChatById(accountId: Long, peerId: Long): Flow<Optional<Chat>>
 }

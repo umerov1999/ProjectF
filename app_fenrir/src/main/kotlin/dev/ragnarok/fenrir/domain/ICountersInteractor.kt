@@ -1,8 +1,8 @@
 package dev.ragnarok.fenrir.domain
 
 import dev.ragnarok.fenrir.model.SectionCounters
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface ICountersInteractor {
-    fun getApiCounters(accountId: Long): Single<SectionCounters>
+    fun getApiCounters(accountId: Long): Flow<SectionCounters>
 }

@@ -8,10 +8,10 @@ import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Market
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.push.OwnerInfo.Companion.getRx
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class MarketViewPresenter(
     accountId: Long,
@@ -31,9 +31,8 @@ class MarketViewPresenter(
         setLoadingNow(true)
         val ids: Collection<AccessIdPair> =
             listOf(AccessIdPair(mMarket.id, mMarket.owner_id, mMarket.access_key))
-        appendDisposable(ownerInteractor.getMarketById(accountId, ids)
-            .fromIOToMain()
-            .subscribe({ market -> onMarketInfoUpdated(market) }) { t ->
+        appendJob(ownerInteractor.getMarketById(accountId, ids)
+            .fromIOToMain({ market -> onMarketInfoUpdated(market) }) { t ->
                 onLoadingError(
                     t
                 )
@@ -79,10 +78,9 @@ class MarketViewPresenter(
     }
 
     fun fireWriteToMarketer(market: Market, context: Context) {
-        appendDisposable(
+        appendJob(
             getRx(context, accountId, market.owner_id)
-                .fromIOToMain()
-                .subscribe({ userInfo ->
+                .fromIOToMain({ userInfo ->
                     val peer = Peer(Peer.fromOwnerId(userInfo.owner.ownerId))
                         .setAvaUrl(userInfo.owner.maxSquareAvatar)
                         .setTitle(userInfo.owner.fullName)
@@ -110,18 +108,16 @@ class MarketViewPresenter(
 
     fun fireFaveClick() {
         if (!mMarket.isIs_favorite) {
-            appendDisposable(faveInteractor.addProduct(
+            appendJob(faveInteractor.addProduct(
                 accountId,
                 mMarket.id,
                 mMarket.owner_id,
                 mMarket.access_key
             )
-                .fromIOToMain()
-                .subscribe({ onFaveSuccess() }) { t -> onLoadingError(t) })
+                .fromIOToMain({ onFaveSuccess() }) { t -> onLoadingError(t) })
         } else {
-            appendDisposable(faveInteractor.removeProduct(accountId, mMarket.id, mMarket.owner_id)
-                .fromIOToMain()
-                .subscribe({ onFaveSuccess() }) { t ->
+            appendJob(faveInteractor.removeProduct(accountId, mMarket.id, mMarket.owner_id)
+                .fromIOToMain({ onFaveSuccess() }) { t ->
                     onLoadingError(
                         t
                     )

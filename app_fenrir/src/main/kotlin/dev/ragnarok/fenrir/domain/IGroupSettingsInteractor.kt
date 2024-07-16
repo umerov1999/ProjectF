@@ -7,11 +7,10 @@ import dev.ragnarok.fenrir.model.GroupSettings
 import dev.ragnarok.fenrir.model.Manager
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.util.Pair
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IGroupSettingsInteractor {
-    fun getGroupSettings(accountId: Long, groupId: Long): Single<GroupSettings>
+    fun getGroupSettings(accountId: Long, groupId: Long): Flow<GroupSettings>
     fun edit(
         accountId: Long,
         groupId: Long,
@@ -26,7 +25,7 @@ interface IGroupSettingsInteractor {
         obscene_filter: Int?,
         obscene_stopwords: Int?,
         obscene_words: String?
-    ): Completable
+    ): Flow<Boolean>
 
     fun ban(
         accountId: Long,
@@ -36,7 +35,7 @@ interface IGroupSettingsInteractor {
         reason: Int,
         comment: String?,
         commentVisible: Boolean
-    ): Completable
+    ): Flow<Boolean>
 
     fun editManager(
         accountId: Long,
@@ -47,16 +46,16 @@ interface IGroupSettingsInteractor {
         position: String?,
         email: String?,
         phone: String?
-    ): Completable
+    ): Flow<Boolean>
 
-    fun unban(accountId: Long, groupId: Long, ownerId: Long): Completable
+    fun unban(accountId: Long, groupId: Long, ownerId: Long): Flow<Boolean>
     fun getBanned(
         accountId: Long,
         groupId: Long,
         startFrom: IntNextFrom,
         count: Int
-    ): Single<Pair<List<Banned>, IntNextFrom>>
+    ): Flow<Pair<List<Banned>, IntNextFrom>>
 
-    fun getManagers(accountId: Long, groupId: Long): Single<List<Manager>>
-    fun getContacts(accountId: Long, groupId: Long): Single<List<ContactInfo>>
+    fun getManagers(accountId: Long, groupId: Long): Flow<List<Manager>>
+    fun getContacts(accountId: Long, groupId: Long): Flow<List<ContactInfo>>
 }

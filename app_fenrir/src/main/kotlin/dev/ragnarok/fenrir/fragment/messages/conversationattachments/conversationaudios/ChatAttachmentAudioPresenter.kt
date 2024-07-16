@@ -12,7 +12,8 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class ChatAttachmentAudioPresenter(peerId: Long, accountId: Long, savedInstanceState: Bundle?) :
     BaseChatAttachmentsPresenter<Audio, IChatAttachmentAudiosView>(
@@ -28,7 +29,7 @@ class ChatAttachmentAudioPresenter(peerId: Long, accountId: Long, savedInstanceS
     override fun requestAttachments(
         peerId: Long,
         nextFrom: String?
-    ): Single<Pair<String?, List<Audio>>> {
+    ): Flow<Pair<String?, List<Audio>>> {
         return get().vkDefault(accountId)
             .messages()
             .getHistoryAttachments(peerId, VKApiAttachment.TYPE_AUDIO, nextFrom, 0, 1, 45, 50, null)

@@ -7,45 +7,41 @@ import de.maxr1998.modernpreferences.PreferenceScreen.Companion.getPreferences
 import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Includes.pushRegistrationResolver
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.ISettings.IAccountsSettings
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.dummy
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.processors.PublishProcessor
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.createPublishSubject
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.myEmit
+import kotlinx.coroutines.flow.SharedFlow
 import java.util.Collections
 
 internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(context: Context) :
     IAccountsSettings {
     private val app: Context = context.applicationContext
-    private val changesPublisher = PublishProcessor.create<IAccountsSettings>()
+    private val changesPublisher = createPublishSubject<IAccountsSettings>()
     private val preferences: SharedPreferences = getPreferences(context)
     private val tokens: MutableMap<Long, String> = Collections.synchronizedMap(HashMap(1))
     private val types: MutableMap<Long, Int> = Collections.synchronizedMap(HashMap(1))
     private val devices: MutableMap<Long, String> = Collections.synchronizedMap(HashMap(1))
     private val accounts: MutableSet<Long> = Collections.synchronizedSet(HashSet(1))
-    private val currentPublisher = PublishProcessor.create<Long>()
+    private val currentPublisher = createPublishSubject<Long>()
     private fun notifyAboutRegisteredChanges() {
-        changesPublisher.onNext(this)
+        changesPublisher.myEmit(this)
     }
 
-    override val observeRegistered: Flowable<IAccountsSettings>
-        get() = changesPublisher.onBackpressureBuffer()
+    override val observeRegistered: SharedFlow<IAccountsSettings>
+        get() = changesPublisher
 
-    override val observeChanges: Flowable<Long>
-        get() = currentPublisher.onBackpressureBuffer()
+    override val observeChanges: SharedFlow<Long>
+        get() = currentPublisher
 
     override val registered: List<Long>
         get() = ArrayList(accounts)
 
     @SuppressLint("CheckResult")
     private fun fireAccountChange() {
-        val registrationResolver = pushRegistrationResolver
-        registrationResolver.resolvePushRegistration()
-            .fromIOToMain()
-            .subscribe(dummy(), ignore())
-        currentPublisher.onNext(current)
+        currentPublisher.myEmit(current)
+        pushRegistrationResolver.resolvePushRegistration().hiddenIO()
     }
 
     override var current: Long

@@ -7,11 +7,11 @@ import dev.ragnarok.fenrir.model.database.Faculty
 import dev.ragnarok.fenrir.model.database.School
 import dev.ragnarok.fenrir.model.database.SchoolClazz
 import dev.ragnarok.fenrir.model.database.University
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IDatabaseInteractor {
-    fun getChairs(accountId: Long, facultyId: Int, count: Int, offset: Int): Single<List<Chair>>
-    fun getCountries(accountId: Long, ignoreCache: Boolean): Single<List<Country>>
+    fun getChairs(accountId: Long, facultyId: Int, count: Int, offset: Int): Flow<List<Chair>>
+    fun getCountries(accountId: Long, ignoreCache: Boolean): Flow<List<Country>>
     fun getCities(
         accountId: Long,
         countryId: Int,
@@ -19,23 +19,23 @@ interface IDatabaseInteractor {
         needAll: Boolean,
         count: Int,
         offset: Int
-    ): Single<List<City>>
+    ): Flow<List<City>>
 
     fun getFaculties(
         accountId: Long,
         universityId: Int,
         count: Int,
         offset: Int
-    ): Single<List<Faculty>>
+    ): Flow<List<Faculty>>
 
-    fun getSchoolClasses(accountId: Long, countryId: Int): Single<List<SchoolClazz>>
+    fun getSchoolClasses(accountId: Long, countryId: Int): Flow<List<SchoolClazz>>
     fun getSchools(
         accountId: Long,
         cityId: Int,
         q: String?,
         count: Int,
         offset: Int
-    ): Single<List<School>>
+    ): Flow<List<School>>
 
     fun getUniversities(
         accountId: Long,
@@ -44,5 +44,5 @@ interface IDatabaseInteractor {
         countyId: Int?,
         count: Int,
         offset: Int
-    ): Single<List<University>>
+    ): Flow<List<University>>
 }

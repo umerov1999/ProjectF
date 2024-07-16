@@ -42,8 +42,10 @@ import dev.ragnarok.fenrir.util.DownloadWorkUtils.CheckDirectory
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.makeLegalFilename
 import dev.ragnarok.fenrir.util.Utils.appLocale
 import dev.ragnarok.fenrir.util.Utils.hasOreo
-import dev.ragnarok.fenrir.util.Utils.inMainThread
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.inMainThread
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingle
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingleSafe
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import java.io.File
 import java.io.FileOutputStream
@@ -391,7 +393,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
             var owner: Owner? = null
             if (owner_id < VKApiMessage.CHAT_PEER) {
                 owner = OwnerInfo.getRx(applicationContext, account_id, owner_id)
-                    .blockingGet().owner
+                    .syncSingleSafe()?.owner
             }
             val peer_title = getTitle(owner, owner_id, chat_title)
             val mBuilder = NotificationCompat.Builder(
@@ -467,7 +469,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                         null,
                         cacheData = false,
                         rev = false
-                    ).blockingGet()
+                    ).syncSingle()
                     if (messages.isEmpty()) break
                     mBuilder.setContentTitle(applicationContext.getString(R.string.downloading) + " " + offset)
                     if (AppPerms.hasNotificationPermissionSimple(applicationContext)) {
@@ -567,7 +569,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
             var owner: Owner? = null
             if (owner_id < VKApiMessage.CHAT_PEER) {
                 owner = OwnerInfo.getRx(applicationContext, account_id, owner_id)
-                    .blockingGet().owner
+                    .syncSingleSafe()?.owner
             }
             val peer_title = getTitle(owner, owner_id, chat_title)
             val mBuilder = NotificationCompat.Builder(
@@ -633,7 +635,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                 try {
                     val messages =
                         messagesRepository.getJsonHistory(account_id, offset, 200, owner_id)
-                            .blockingGet()
+                            .syncSingle()
                     if (messages.isEmpty()) break
                     mBuilder.setContentTitle(applicationContext.getString(R.string.downloading) + " " + offset)
                     if (AppPerms.hasNotificationPermissionSimple(applicationContext)) {

@@ -1,12 +1,12 @@
 package dev.ragnarok.fenrir.api
 
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IServiceProvider {
     fun <T : IServiceRest> provideService(
         accountId: Long,
         serviceClass: T,
         vararg tokenTypes: Int
-    ): Single<T>
+    ): Flow<T>
 }

@@ -4,21 +4,21 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.ILocalServerInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.FindAt
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.Disposable
-import java.util.concurrent.TimeUnit
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 
 class VideosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IVideosLocalServerView>(accountId, savedInstanceState) {
     private val videos: MutableList<Video> = ArrayList()
     private val fInteractor: ILocalServerInteractor =
         InteractorFactory.createLocalServerInteractor()
-    private var actualDataDisposable = Disposable.disposed()
+    private var actualDataDisposable = CancelableJob()
     private var Foffset = 0
     private var actualDataReceived = false
     private var endOfContent = false
@@ -39,9 +39,8 @@ class VideosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun loadActualData(offset: Int) {
         actualDataLoading = true
         resolveRefreshingView()
-        appendDisposable(fInteractor.getVideos(offset, GET_COUNT, reverse)
-            .fromIOToMain()
-            .subscribe({
+        appendJob(fInteractor.getVideos(offset, GET_COUNT, reverse)
+            .fromIOToMain({
                 onActualDataReceived(
                     offset,
                     it
@@ -93,7 +92,7 @@ class VideosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     override fun onDestroyed() {
-        actualDataDisposable.dispose()
+        actualDataDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -112,14 +111,13 @@ class VideosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun doSearch() {
         actualDataLoading = true
         resolveRefreshingView()
-        appendDisposable(fInteractor.searchVideos(
+        appendJob(fInteractor.searchVideos(
             search_at.getQuery(),
             search_at.getOffset(),
             SEARCH_COUNT,
             reverse
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 onSearched(
                     FindAt(
                         search_at.getQuery(),
@@ -158,11 +156,9 @@ class VideosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
             doSearch()
             return
         }
-        actualDataDisposable.dispose()
-        actualDataDisposable = Single.just(Any())
-            .delay(WEB_SEARCH_DELAY.toLong(), TimeUnit.MILLISECONDS)
-            .fromIOToMain()
-            .subscribe({ doSearch() }) { t -> onActualDataGetError(t) }
+        actualDataDisposable.cancel()
+        actualDataDisposable += delayTaskFlow(WEB_SEARCH_DELAY.toLong())
+            .toMain { doSearch() }
     }
 
     fun fireSearchRequestChanged(q: String?) {
@@ -170,7 +166,7 @@ class VideosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
         if (!search_at.do_compare(query)) {
             actualDataLoading = false
             if (query.isNullOrEmpty()) {
-                actualDataDisposable.dispose()
+                actualDataDisposable.cancel()
                 fireRefresh(false)
             } else {
                 fireRefresh(true)

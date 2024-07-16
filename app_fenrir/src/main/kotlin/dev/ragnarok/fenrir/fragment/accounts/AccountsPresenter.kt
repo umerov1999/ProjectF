@@ -29,7 +29,6 @@ import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository
 import dev.ragnarok.fenrir.exception.UnauthorizedException
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.isMsgPack
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.longpoll.LongpollInstance
@@ -49,7 +48,10 @@ import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.ShortcutUtils
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingle
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingleSafe
 import dev.ragnarok.fenrir.util.serializeble.json.Json
 import dev.ragnarok.fenrir.util.serializeble.json.JsonArrayBuilder
 import dev.ragnarok.fenrir.util.serializeble.json.JsonObjectBuilder
@@ -64,17 +66,18 @@ import dev.ragnarok.fenrir.util.serializeble.json.longOrNull
 import dev.ragnarok.fenrir.util.serializeble.json.put
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import dev.ragnarok.fenrir.util.toast.CustomToast
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.exceptions.Exceptions
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.builtins.ListSerializer
 import okhttp3.FormBody
 import okhttp3.Request
-import okhttp3.Response
 import okio.buffer
 import okio.source
 import java.io.File
 import java.io.FileOutputStream
+import kotlin.coroutines.cancellation.CancellationException
 
 class AccountsPresenter(savedInstanceState: Bundle?) :
     RxSupportPresenter<IAccountsView>(savedInstanceState) {
@@ -114,10 +117,9 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
         if (!refresh) {
             view?.isLoading(true)
         }
-        appendDisposable(accountsInteractor
+        appendJob(accountsInteractor
             .getAll(refresh)
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 view?.isLoading(false)
                 val sz = mData.size
                 mData.clear()
@@ -190,14 +192,12 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
             }
         }
         view?.resolveEmptyText(mData.isEmpty())
-        appendDisposable(
-            Includes.stores.stickers().clearAccount(account.getOwnerObjectId()).fromIOToMain()
-                .subscribe(RxUtils.dummy(), RxUtils.ignore())
+        appendJob(
+            Includes.stores.stickers().clearAccount(account.getOwnerObjectId()).hiddenIO()
         )
-        appendDisposable(
+        appendJob(
             Includes.stores.tempStore().clearReactionAssets(account.getOwnerObjectId())
-                .fromIOToMain()
-                .subscribe(RxUtils.dummy(), RxUtils.ignore())
+                .hiddenIO()
         )
     }
 
@@ -234,10 +234,9 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                 .storeLogin(uid, json)
         }
         merge(Account(uid, null))
-        appendDisposable(
+        appendJob(
             mOwnersInteractor.getBaseOwnerInfo(uid, uid, IOwnersRepository.MODE_ANY)
-                .fromIOToMain()
-                .subscribe({ merge(Account(uid, it)) }) { })
+                .fromIOToMain { merge(Account(uid, it)) })
     }
 
     fun fireSetAsActive(account: Account) {
@@ -247,13 +246,12 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
     }
 
     fun processAccountByAccessToken(token: String, @AccountType type: Int) {
-        appendDisposable(
+        appendJob(
             getUserIdByAccessToken(
                 type,
                 token
             )
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain({
                     processNewAccount(
                         it,
                         token,
@@ -277,13 +275,13 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
             return  // this is community
         }
         val user = account.owner as User
-        appendDisposable(
+        appendJob(
             ShortcutUtils.createAccountShortcutRx(
                 context,
                 account.getOwnerObjectId(),
                 account.displayName,
                 user.maxSquareAvatar ?: VKApiUser.CAMERA_50
-            ).fromIOToMain().subscribe(
+            ).fromIOToMain(
                 {
                     view?.showColoredSnack(R.string.success, "#AA48BE2D".toColor())
                 }
@@ -300,21 +298,20 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
         }
         val accountFromTmp = tempAccountId
         tempAccountId = 0L
-        appendDisposable(
-            accountsInteractor.getExchangeToken(accountFromTmp).fromIOToMain().subscribe({
+        appendJob(
+            accountsInteractor.getExchangeToken(accountFromTmp).fromIOToMain({
                 if (it.token.nonNullNoEmpty()) {
                     DownloadWorkUtils.CheckDirectory(Settings.get().main().docDir)
                     val file = File(
                         Settings.get().main().docDir, "${accountFromTmp}_exchange_token.json"
                     )
-                    appendDisposable(
+                    appendJob(
                         mOwnersInteractor.findBaseOwnersDataAsBundle(
                             Settings.get().accounts().current,
                             Settings.get().accounts().registered,
                             IOwnersRepository.MODE_ANY
                         )
-                            .fromIOToMain()
-                            .subscribe({ own ->
+                            .fromIOToMain({ own ->
                                 saveExchangeToken(
                                     context,
                                     accountFromTmp,
@@ -414,7 +411,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                 val api_ver = elem["api_ver"]?.asPrimitiveSafe?.contentOrNull
                 val sak_version = elem["sak_version"]?.asPrimitiveSafe?.contentOrNull
 
-                appendDisposable(
+                appendJob(
                     networker.vkDirectAuth(type, device).authByExchangeToken(
                         Constants.API_ID,
                         Constants.API_ID,
@@ -425,12 +422,12 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                         sak_version,
                         null,
                         api_ver
-                    ).fromIOToMain().subscribe({
+                    ).fromIOToMain({
                         val aToken = it.resultUrl?.let { it1 -> tryExtractAccessToken(it1) }
-                            ?: return@subscribe
+                            ?: return@fromIOToMain
                         val user_id: Long =
                             it.resultUrl?.let { it1 -> tryExtractUserId(it1)?.toLong() }
-                                ?: return@subscribe
+                                ?: return@fromIOToMain
 
                         processNewAccount(
                             user_id, aToken, type, null, null, "fenrir_app",
@@ -442,7 +439,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                         if (hasPrimitive(elem, "login")) {
                             Settings.get().accounts().storeLogin(
                                 user_id,
-                                elem["login"]?.jsonPrimitive?.contentOrNull ?: return@subscribe
+                                elem["login"]?.jsonPrimitive?.contentOrNull ?: return@fromIOToMain
                             )
                         }
                         if (device_id.nonNullNoEmpty()) {
@@ -529,7 +526,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                                     }
                                     Includes.stores.dialogs().insertDialogs(
                                         aid, btmp, true
-                                    ).blockingAwait()
+                                    ).syncSingle()
                                 }
                             }
                         }
@@ -553,14 +550,13 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
             path,
             "fenrir_accounts_backup.json"
         )
-        appendDisposable(
+        appendJob(
             mOwnersInteractor.findBaseOwnersDataAsBundle(
                 Settings.get().accounts().current,
                 Settings.get().accounts().registered,
                 IOwnersRepository.MODE_ANY
             )
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain({
                     saveAccounts(
                         context,
                         file,
@@ -609,7 +605,8 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                 if (Utils.isHiddenAccount(i)) {
                     try {
                         val dialogs =
-                            Includes.stores.dialogs().getDialogs(DialogsCriteria(i)).blockingGet()
+                            Includes.stores.dialogs().getDialogs(DialogsCriteria(i))
+                                .syncSingleSafe()
                         val tmp = JsonObjectBuilder()
                         tmp.put(
                             "account_id", i
@@ -618,7 +615,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                             "conversation", kJson.encodeToJsonElement(
                                 ListSerializer(
                                     DialogDboEntity.serializer()
-                                ), dialogs
+                                ), dialogs.orEmpty()
                             )
                         )
                         arrDialogs.add(
@@ -668,7 +665,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
         private fun getUserIdByAccessToken(
             @AccountType type: Int,
             accessToken: String
-        ): Single<Long> {
+        ): Flow<Long> {
             val bodyBuilder = FormBody.Builder()
             bodyBuilder.add("access_token", accessToken)
                 .add("v", Constants.API_VERSION)
@@ -678,8 +675,8 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                     "device_id", Utils.getDeviceId(Includes.provideApplicationContext())
                 )
             return Includes.networkInterfaces.getVkRestProvider().provideRawHttpClient(type, null)
-                .flatMap { client ->
-                    Single.create { emitter: SingleEmitter<Response> ->
+                .flatMapConcat { client ->
+                    flow {
                         val request: Request = Request.Builder()
                             .url(
                                 "https://" + Settings.get().main()
@@ -688,28 +685,28 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                             .post(bodyBuilder.build())
                             .build()
                         val call = client.build().newCall(request)
-                        emitter.setCancellable { call.cancel() }
                         try {
                             val response = call.execute()
                             if (!response.isSuccessful) {
-                                emitter.tryOnError(HttpException(response.code))
+                                throw HttpException(response.code)
                             } else {
-                                emitter.onSuccess(response)
+                                emit(response)
                             }
                             response.close()
-                        } catch (e: Exception) {
-                            emitter.tryOnError(e)
+                        } catch (e: CancellationException) {
+                            call.cancel()
+                            throw e
                         }
                     }
                 }
-                .map<BaseResponse<List<VKApiUser>>> {
+                .map {
                     if (it.body.isMsgPack()
-                    ) MsgPack.decodeFromOkioStream(it.body.source()) else kJson.decodeFromBufferedSource(
+                    ) MsgPack.decodeFromOkioStream<BaseResponse<List<VKApiUser>>>(it.body.source()) else kJson.decodeFromBufferedSource<BaseResponse<List<VKApiUser>>>(
                         it.body.source()
                     )
                 }.map { it1 ->
                     it1.error.requireNonNull {
-                        throw Exceptions.propagate(ApiException(it))
+                        throw ApiException(it)
                     }
                     val o = it1.response.nonNullNoEmptyOr({
                         if (it.isEmpty()) -1 else it[0].id

@@ -4,28 +4,34 @@ import dev.ragnarok.fenrir.domain.IBlacklistRepository
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.subjects.PublishSubject
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.createPublishSubject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.flow
 
 class BlacklistRepository : IBlacklistRepository {
-    private val addPublisher: PublishSubject<Pair<Long, Owner>> = PublishSubject.create()
-    private val removePublisher: PublishSubject<Pair<Long, Long>> = PublishSubject.create()
+    private val addPublisher = createPublishSubject<Pair<Long, Owner>>()
+    private val removePublisher = createPublishSubject<Pair<Long, Long>>()
 
-    override fun fireAdd(accountId: Long, owner: Owner): Completable {
-        return Completable.fromAction { addPublisher.onNext(create(accountId, owner)) }
+    override fun fireAdd(accountId: Long, owner: Owner): Flow<Boolean> {
+        return flow {
+            addPublisher.emit(create(accountId, owner))
+            emit(true)
+        }
     }
 
-    override fun fireRemove(accountId: Long, ownerId: Long): Completable {
-        return Completable.fromAction { removePublisher.onNext(create(accountId, ownerId)) }
+    override fun fireRemove(accountId: Long, ownerId: Long): Flow<Boolean> {
+        return flow {
+            removePublisher.emit(create(accountId, ownerId))
+            emit(true)
+        }
     }
 
-    override fun observeAdding(): Observable<Pair<Long, Owner>> {
+    override fun observeAdding(): SharedFlow<Pair<Long, Owner>> {
         return addPublisher
     }
 
-    override fun observeRemoving(): Observable<Pair<Long, Long>> {
+    override fun observeRemoving(): SharedFlow<Pair<Long, Long>> {
         return removePublisher
     }
-
 }

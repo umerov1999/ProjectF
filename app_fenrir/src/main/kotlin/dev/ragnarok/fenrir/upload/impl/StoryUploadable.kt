@@ -18,30 +18,38 @@ import dev.ragnarok.fenrir.upload.UploadResult
 import dev.ragnarok.fenrir.upload.UploadUtils
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import dev.ragnarok.fenrir.util.Utils.safelyClose
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.safelyCloseAction
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlowThrowable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
+import kotlin.coroutines.cancellation.CancellationException
 
 class StoryUploadable(private val context: Context, private val networker: INetworker) :
     IUploadable<Story> {
+    @Suppress("BlockingMethodInNonBlockingContext")
     override fun doUpload(
         upload: Upload,
         initialServer: UploadServer?,
         listener: PercentagePublisher?
-    ): Single<UploadResult<Story>> {
+    ): Flow<UploadResult<Story>> {
         val accountId = upload.accountId
-        val serverSingle: Single<UploadServer> = if (initialServer == null) {
+        val serverSingle = if (initialServer == null) {
             if (upload.destination.messageMethod == MessageMethod.VIDEO) networker.vkDefault(
                 accountId
             ).stories().stories_getVideoUploadServer(null, upload.destination.ref)
-                .map { it } else networker.vkDefault(accountId).stories()
-                .stories_getPhotoUploadServer(null, upload.destination.ref).map { it }
+            else {
+                networker.vkDefault(accountId).stories()
+                    .stories_getPhotoUploadServer(null, upload.destination.ref)
+            }
         } else {
-            Single.just(initialServer)
+            toFlow(initialServer)
         }
-        return serverSingle.flatMap { server ->
+        return serverSingle.flatMapConcat { server ->
             var inputStream: InputStream? = null
             try {
                 val uri = upload.fileUri
@@ -52,7 +60,7 @@ class StoryUploadable(private val context: Context, private val networker: INetw
                     context.contentResolver.openInputStream(uri)
                 }
                 if (inputStream == null) {
-                    Single.error(
+                    toFlowThrowable(
                         NotFoundException(
                             "Unable to open InputStream, URI: $uri"
                         )
@@ -67,10 +75,10 @@ class StoryUploadable(private val context: Context, private val networker: INetw
                             listener,
                             upload.destination.messageMethod == MessageMethod.VIDEO
                         )
-                        .doFinally(safelyCloseAction(inputStream))
-                        .flatMap { dto ->
+                        .onCompletion { safelyClose(inputStream) }
+                        .flatMapConcat { dto ->
                             if (dto.error.nonNullNoEmpty()) {
-                                Single.error(Exception(dto.error))
+                                toFlowThrowable(Exception(dto.error))
                             } else {
                                 networker
                                     .vkDefault(accountId)
@@ -79,19 +87,18 @@ class StoryUploadable(private val context: Context, private val networker: INetw
                                     .map {
                                         listEmptyIfNull(it.items)
                                     }
-                                    .flatMap { tmpList ->
+                                    .flatMapConcat { tmpList ->
                                         if (tmpList.isEmpty()) {
-                                            Single.error(NotFoundException("[stories_save] returned empty list"))
+                                            toFlowThrowable(NotFoundException("[stories_save] returned empty list"))
                                         } else {
                                             owners.findBaseOwnersDataAsBundle(
                                                 accountId, listOf(
                                                     Settings.get().accounts().current
                                                 ), IOwnersRepository.MODE_ANY, null
-                                            ).flatMap {
+                                            ).map {
                                                 val document =
                                                     Dto2Model.transformStory(tmpList[0], it)
-                                                val result = UploadResult(server, document)
-                                                Single.just(result)
+                                                UploadResult(server, document)
                                             }
                                         }
                                     }
@@ -100,7 +107,10 @@ class StoryUploadable(private val context: Context, private val networker: INetw
                 }
             } catch (e: Exception) {
                 safelyClose(inputStream)
-                Single.error(e)
+                if (e is CancellationException) {
+                    throw e
+                }
+                toFlowThrowable(e)
             }
         }
     }

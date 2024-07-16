@@ -29,42 +29,40 @@ import dev.ragnarok.fenrir.model.criteria.FeedCriteria
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.builtins.ListSerializer
 
 internal class FeedStorage(base: AppStorages) : AbsStorage(base), IFeedStorage {
     private val storeLock = Any()
-    override fun findByCriteria(criteria: FeedCriteria): Single<List<NewsDboEntity>> {
-        return Single.create { e: SingleEmitter<List<NewsDboEntity>> ->
+    override fun findByCriteria(criteria: FeedCriteria): Flow<List<NewsDboEntity>> {
+        return flow {
             val uri = getNewsContentUriFor(criteria.accountId)
             val data: MutableList<NewsDboEntity> = ArrayList()
-            synchronized(storeLock) {
-                val cursor: Cursor? = if (criteria.range != null) {
-                    val range = criteria.range
-                    context.contentResolver.query(
-                        uri,
-                        null,
-                        BaseColumns._ID + " >= ? AND " + BaseColumns._ID + " <= ?",
-                        arrayOf(range?.first.toString(), range?.last.toString()),
-                        null
-                    )
-                } else {
-                    context.contentResolver.query(uri, null, null, null, null)
-                }
-                if (cursor != null) {
-                    while (cursor.moveToNext()) {
-                        if (e.isDisposed) {
-                            break
-                        }
-                        data.add(mapNewsBase(cursor))
-                    }
-                    cursor.close()
-                }
+            val cursor: Cursor? = if (criteria.range != null) {
+                val range = criteria.range
+                context.contentResolver.query(
+                    uri,
+                    null,
+                    BaseColumns._ID + " >= ? AND " + BaseColumns._ID + " <= ?",
+                    arrayOf(range?.first.toString(), range?.last.toString()),
+                    null
+                )
+            } else {
+                context.contentResolver.query(uri, null, null, null, null)
             }
-            e.onSuccess(data)
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    if (!isActive()) {
+                        break
+                    }
+                    data.add(mapNewsBase(cursor))
+                }
+                cursor.close()
+            }
+            emit(data)
         }
     }
 
@@ -73,8 +71,8 @@ internal class FeedStorage(base: AppStorages) : AbsStorage(base), IFeedStorage {
         data: List<NewsDboEntity>,
         owners: OwnerEntities?,
         clearBeforeStore: Boolean
-    ): Single<IntArray> {
-        return Single.create { emitter: SingleEmitter<IntArray> ->
+    ): Flow<IntArray> {
+        return flow {
             val uri = getNewsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             if (clearBeforeStore) {
@@ -111,12 +109,12 @@ internal class FeedStorage(base: AppStorages) : AbsStorage(base), IFeedStorage {
                 val result = results[index]
                 ids[i] = extractId(result)
             }
-            emitter.onSuccess(ids)
+            emit(ids)
         }
     }
 
-    override fun storeLists(accountId: Long, entities: List<FeedListEntity>): Completable {
-        return Completable.create { e ->
+    override fun storeLists(accountId: Long, entities: List<FeedListEntity>): Flow<Boolean> {
+        return flow {
             val uri = getFeedListsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             operations.add(
@@ -131,25 +129,25 @@ internal class FeedStorage(base: AppStorages) : AbsStorage(base), IFeedStorage {
                 )
             }
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            e.onComplete()
+            emit(true)
         }
     }
 
-    override fun getAllLists(criteria: FeedSourceCriteria): Single<List<FeedListEntity>> {
-        return Single.create { e: SingleEmitter<List<FeedListEntity>> ->
+    override fun getAllLists(criteria: FeedSourceCriteria): Flow<List<FeedListEntity>> {
+        return flow {
             val uri = getFeedListsContentUriFor(criteria.accountId)
             val cursor = contentResolver.query(uri, null, null, null, null)
             val data: MutableList<FeedListEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     data.add(mapList(cursor))
                 }
                 cursor.close()
             }
-            e.onSuccess(data)
+            emit(data)
         }
     }
 

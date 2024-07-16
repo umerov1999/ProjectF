@@ -5,15 +5,15 @@ import dev.ragnarok.fenrir.domain.IRelationshipInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.absownerslist.ISimpleOwnersView
 import dev.ragnarok.fenrir.fragment.absownerslist.SimpleOwnersPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.User
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class RecommendationsFriendsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     SimpleOwnersPresenter<ISimpleOwnersView>(accountId, savedInstanceState) {
     private val relationshipInteractor: IRelationshipInteractor =
         InteractorFactory.createRelationshipInteractor()
-    private val actualDataDisposable = CompositeDisposable()
+    private val actualDataDisposable = CompositeJob()
     private var actualDataLoading = false
     private var doLoadTabs = false
     private fun resolveRefreshingView() {
@@ -37,8 +37,7 @@ class RecommendationsFriendsPresenter(accountId: Long, savedInstanceState: Bundl
         actualDataLoading = true
         resolveRefreshingView()
         actualDataDisposable.add(relationshipInteractor.getRecommendations(accountId, 50)
-            .fromIOToMain()
-            .subscribe({ users -> onDataReceived(users) }) { t ->
+            .fromIOToMain({ users -> onDataReceived(users) }) { t ->
                 onDataGetError(
                     t
                 )
@@ -66,7 +65,7 @@ class RecommendationsFriendsPresenter(accountId: Long, savedInstanceState: Bundl
     }
 
     override fun onDestroyed() {
-        actualDataDisposable.dispose()
+        actualDataDisposable.cancel()
         super.onDestroyed()
     }
 

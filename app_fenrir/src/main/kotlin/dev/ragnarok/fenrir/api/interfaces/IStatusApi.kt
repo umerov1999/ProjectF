@@ -1,9 +1,9 @@
 package dev.ragnarok.fenrir.api.interfaces
 
 import androidx.annotation.CheckResult
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IStatusApi {
     @CheckResult
-    operator fun set(text: String?, groupId: Long?): Single<Boolean>
+    operator fun set(text: String?, groupId: Long?): Flow<Boolean>
 }

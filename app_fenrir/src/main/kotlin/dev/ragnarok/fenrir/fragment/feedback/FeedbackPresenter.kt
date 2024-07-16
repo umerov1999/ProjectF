@@ -4,20 +4,20 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IFeedbackInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.LoadMoreState
 import dev.ragnarok.fenrir.model.feedback.Feedback
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class FeedbackPresenter(accountId: Long, savedInstanceState: Bundle?) :
     PlaceSupportPresenter<IFeedbackView>(accountId, savedInstanceState) {
     private val mData: MutableList<Feedback> = ArrayList()
     private val feedbackInteractor: IFeedbackInteractor =
         InteractorFactory.createFeedbackInteractor()
-    private val cacheDisposable = CompositeDisposable()
-    private val netDisposable = CompositeDisposable()
+    private val cacheDisposable = CompositeJob()
+    private val netDisposable = CompositeJob()
     private var mNextFrom: String? = null
     private var actualDataReceived = false
     private var mEndOfContent = false
@@ -51,8 +51,7 @@ class FeedbackPresenter(accountId: Long, savedInstanceState: Bundle?) :
             COUNT_PER_REQUEST,
             startFrom
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 onActualDataReceived(
                     startFrom,
                     it.first,
@@ -119,8 +118,7 @@ class FeedbackPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun loadAllFromDb() {
         cacheLoadingNow = true
         cacheDisposable.add(feedbackInteractor.getCachedFeedbacks(accountId)
-            .fromIOToMain()
-            .subscribe({ onCachedDataReceived(it) }) { obj -> obj.printStackTrace() })
+            .fromIOToMain({ onCachedDataReceived(it) }) { obj -> obj.printStackTrace() })
     }
 
     private fun onCachedDataReceived(feedbacks: List<Feedback>) {
@@ -131,8 +129,8 @@ class FeedbackPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     override fun onDestroyed() {
-        cacheDisposable.dispose()
-        netDisposable.dispose()
+        cacheDisposable.cancel()
+        netDisposable.cancel()
         super.onDestroyed()
     }
 

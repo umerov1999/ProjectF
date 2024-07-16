@@ -6,7 +6,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IAudioInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.media.music.MusicPlaybackService.Companion.startForPlayList
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.model.AudioPlaylist
@@ -15,8 +14,8 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.TrackIsDownloaded
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.functions.Consumer
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class AudiosByArtistPresenter(
     accountId: Long,
@@ -26,7 +25,7 @@ class AudiosByArtistPresenter(
     AccountDependencyPresenter<IAudiosByArtistView>(accountId, savedInstanceState) {
     private val audioInteractor: IAudioInteractor = InteractorFactory.createAudioInteractor()
     private val audios: ArrayList<Audio> = ArrayList()
-    private val audioListDisposable = CompositeDisposable()
+    private val audioListDisposable = CompositeJob()
     private var actualReceived = false
     private var loadingNow = false
     private var endOfContent = false
@@ -63,11 +62,12 @@ class AudiosByArtistPresenter(
             offset,
             GET_COUNT
         )
-            .fromIOToMain()
-            .subscribe(if (offset == 0) Consumer { onListReceived(it) } else Consumer {
-                onNextListReceived(
-                    it
-                )
+            .fromIOToMain({
+                if (offset == 0) {
+                    onListReceived(it)
+                } else {
+                    onNextListReceived(it)
+                }
             }) { t -> onListGetError(t) })
     }
 
@@ -99,7 +99,7 @@ class AudiosByArtistPresenter(
     }
 
     override fun onDestroyed() {
-        audioListDisposable.dispose()
+        audioListDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -170,8 +170,7 @@ class AudiosByArtistPresenter(
             album.owner_id,
             album.access_key
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 view?.customToast?.showToast(
                     R.string.success
                 )

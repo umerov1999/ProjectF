@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir
 
 import android.app.Application
-import android.os.Handler
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.camera.core.ImageProcessingUtil
 import dev.ragnarok.fenrir.activity.crash.CrashUtils
@@ -16,19 +15,17 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Camera2ImageProcessingUtil
 import dev.ragnarok.fenrir.util.PersistentLogger
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.fenrir.util.existfile.FileExistJVM
 import dev.ragnarok.fenrir.util.existfile.FileExistNative
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.plugins.RxJavaPlugins
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.flatMapConcat
 
 class App : Application() {
-    private val compositeDisposable = CompositeDisposable()
-
     override fun onCreate() {
         sInstanse = this
+
         super.onCreate()
 
         AppCompatDelegate.setDefaultNightMode(Settings.get().ui().nightMode)
@@ -56,7 +53,6 @@ class App : Application() {
         } else {
             MusicPlaybackController.tracksExist = FileExistJVM()
         }
-
         Utils.isCompressIncomingTraffic = Settings.get().main().isCompress_incoming_traffic
         Utils.isCompressOutgoingTraffic = Settings.get().main().isCompress_outgoing_traffic
         Utils.currentParser = Settings.get().main().currentParser
@@ -64,55 +60,40 @@ class App : Application() {
         if (Settings.get().main().isKeepLongpoll) {
             KeepLongpollService.start(this)
         }
-        compositeDisposable.add(messages
+
+        messages
             .observePeerUpdates()
-            .flatMap { source -> Flowable.fromIterable(source) }
-            .subscribe({ update ->
-                if (update.readIn != null) {
+            .flatMapConcat {
+                it.asFlow()
+            }
+            .sharedFlowToMain { update ->
+                update.readIn?.let {
                     NotificationHelper.tryCancelNotificationForPeer(
                         this,
                         update.accountId,
                         update.peerId
                     )
                 }
-            }, RxUtils.ignore())
-        )
-        compositeDisposable.add(
-            messages
-                .observeSentMessages()
-                .subscribe({ sentMsg ->
-                    NotificationHelper.tryCancelNotificationForPeer(
-                        this,
-                        sentMsg.accountId,
-                        sentMsg.peerId
-                    )
-                }, RxUtils.ignore())
-        )
-        compositeDisposable.add(
-            messages
-                .observeMessagesSendErrors()
-                .toMainThread()
-                .subscribe({ throwable ->
-                    run {
-                        createCustomToast(this).showToastError(
-                            ErrorLocalizer.localizeThrowable(this, throwable)
-                        ); throwable.printStackTrace()
-                    }
-                }, RxUtils.ignore())
-        )
-        RxJavaPlugins.setErrorHandler {
-            it.printStackTrace()
-            Handler(mainLooper).post {
-                if (Settings.get().main().isDeveloper_mode) {
-                    createCustomToast(this).showToastError(
-                        ErrorLocalizer.localizeThrowable(
-                            this,
-                            it
-                        )
-                    )
-                }
             }
-        }
+
+        messages
+            .observeSentMessages()
+            .sharedFlowToMain {
+                NotificationHelper.tryCancelNotificationForPeer(
+                    this,
+                    it.accountId,
+                    it.peerId
+                )
+            }
+
+        messages
+            .observeMessagesSendErrors()
+            .sharedFlowToMain {
+                createCustomToast(this).showToastError(
+                    ErrorLocalizer.localizeThrowable(this, it)
+                )
+                it.printStackTrace()
+            }
     }
 
     companion object {
@@ -123,7 +104,7 @@ class App : Application() {
             get() {
                 sInstanse?.let {
                     return it
-                } ?: throw IllegalStateException("App instance is null!!! WTF???")
+                } ?: throw IllegalStateException("App instance is null!!!")
             }
     }
 }

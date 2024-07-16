@@ -8,49 +8,52 @@ import dev.ragnarok.fenrir.api.model.Items
 import dev.ragnarok.fenrir.api.model.VKApiDoc
 import dev.ragnarok.fenrir.api.model.server.VKApiDocsUploadServer
 import dev.ragnarok.fenrir.api.services.IDocsService
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.checkInt
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 internal class DocsApi(accountId: Long, provider: IServiceProvider) : AbsApi(accountId, provider),
     IDocsApi {
-    override fun delete(ownerId: Long?, docId: Int): Single<Boolean> {
+    override fun delete(ownerId: Long?, docId: Int): Flow<Boolean> {
         return provideService(IDocsService(), TokenType.USER)
-            .flatMap { service ->
-                service.delete(ownerId, docId)
+            .flatMapConcat {
+                it.delete(ownerId, docId)
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
-    override fun add(ownerId: Long, docId: Int, accessKey: String?): Single<Int> {
+    override fun add(ownerId: Long, docId: Int, accessKey: String?): Flow<Int> {
         return provideService(IDocsService(), TokenType.USER)
-            .flatMap { service ->
-                service.add(ownerId, docId, accessKey)
+            .flatMapConcat {
+                it.add(ownerId, docId, accessKey)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getById(pairs: Collection<AccessIdPair>): Single<List<VKApiDoc>> {
+    override fun getById(pairs: Collection<AccessIdPair>): Flow<List<VKApiDoc>> {
         val ids =
             join(pairs, ",") { AccessIdPair.format(it) }
         return provideService(IDocsService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.getById(ids)
+            .flatMapConcat {
+                it.getById(ids)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun search(query: String?, count: Int?, offset: Int?): Single<Items<VKApiDoc>> {
+    override fun search(query: String?, count: Int?, offset: Int?): Flow<Items<VKApiDoc>> {
         return provideService(IDocsService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.search(query, count, offset)
+            .flatMapConcat {
+                it.search(query, count, offset)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun save(file: String?, title: String?, tags: String?): Single<VKApiDoc.Entry> {
+    override fun save(file: String?, title: String?, tags: String?): Flow<VKApiDoc.Entry> {
         return provideService(IDocsService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.save(file, title, tags)
+            .flatMapConcat {
+                it.save(file, title, tags)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -58,18 +61,18 @@ internal class DocsApi(accountId: Long, provider: IServiceProvider) : AbsApi(acc
     override fun getMessagesUploadServer(
         peerId: Long?,
         type: String?
-    ): Single<VKApiDocsUploadServer> {
+    ): Flow<VKApiDocsUploadServer> {
         return provideService(IDocsService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.getMessagesUploadServer(peerId, type)
+            .flatMapConcat {
+                it.getMessagesUploadServer(peerId, type)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getUploadServer(groupId: Long?): Single<VKApiDocsUploadServer> {
+    override fun getUploadServer(groupId: Long?): Flow<VKApiDocsUploadServer> {
         return provideService(IDocsService(), TokenType.USER)
-            .flatMap { service ->
-                service.getUploadServer(groupId)
+            .flatMapConcat {
+                it.getUploadServer(groupId)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -79,10 +82,10 @@ internal class DocsApi(accountId: Long, provider: IServiceProvider) : AbsApi(acc
         count: Int?,
         offset: Int?,
         type: Int?
-    ): Single<Items<VKApiDoc>> {
+    ): Flow<Items<VKApiDoc>> {
         return provideService(IDocsService(), TokenType.USER)
-            .flatMap { service ->
-                service[ownerId, count, offset, type]
+            .flatMapConcat {
+                it[ownerId, count, offset, type]
                     .map(extractResponseWithErrorHandling())
             }
     }

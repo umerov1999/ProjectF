@@ -16,9 +16,9 @@ import dev.ragnarok.fenrir.dialog.base.AccountDependencyDialogFragment
 import dev.ragnarok.fenrir.domain.IDatabaseInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.search.filteredit.FilterEditFragment
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.model.database.School
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class SelectSchoolsDialog : AccountDependencyDialogFragment(), SchoolsAdapter.Listener {
     private val mHandler = Handler(Looper.getMainLooper())
@@ -68,15 +68,14 @@ class SelectSchoolsDialog : AccountDependencyDialogFragment(), SchoolsAdapter.Li
     }
 
     private fun request(offset: Int) {
-        appendDisposable(
+        appendJob(
             mDatabaseInteractor.getSchools(accountId, schoolId, filter, COUNT_PER_REQUEST, offset)
-                .fromIOToMain()
-                .subscribe({ schools ->
+                .fromIOToMain { schools ->
                     onDataReceived(
                         offset,
                         schools
                     )
-                }) { })
+                })
     }
 
     private fun onDataReceived(offset: Int, schools: List<School>) {

@@ -8,17 +8,16 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.fragment.videos.videopreview.MenuAdapter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Post
 import dev.ragnarok.fenrir.model.Text
 import dev.ragnarok.fenrir.model.menu.Item
 import dev.ragnarok.fenrir.util.AssertUtils.assertTrue
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class PostShareDialog : DialogFragment() {
-    private val compositeDisposable = CompositeDisposable()
+    private val compositeJob = CompositeJob()
     private var mAccountId = 0L
     private var mPost: Post? = null
     private var mAdapter: MenuAdapter? = null
@@ -29,7 +28,7 @@ class PostShareDialog : DialogFragment() {
     }
 
     override fun onDestroy() {
-        compositeDisposable.clear()
+        compositeJob.cancel()
         super.onDestroy()
     }
 
@@ -77,7 +76,7 @@ class PostShareDialog : DialogFragment() {
         val canShareToGroups =
             mPost?.isCanRepost == true || iAmOwnerAndAuthor && mPost?.isFriendsOnly == false
         if (canShareToGroups) {
-            compositeDisposable.add(
+            compositeJob.add(
                 interactor
                     .getCommunitiesWhereAdmin(
                         mAccountId,
@@ -85,8 +84,7 @@ class PostShareDialog : DialogFragment() {
                         editor = true,
                         moderator = false
                     )
-                    .fromIOToMain()
-                    .subscribe({ owners ->
+                    .fromIOToMain { owners ->
                         for (owner in owners) {
                             if (owner.ownerId == mPost?.ownerId) {
                                 continue
@@ -98,7 +96,7 @@ class PostShareDialog : DialogFragment() {
                             )
                         }
                         mAdapter?.notifyDataSetChanged()
-                    }, ignore())
+                    }
             )
         }
         return builder.create()

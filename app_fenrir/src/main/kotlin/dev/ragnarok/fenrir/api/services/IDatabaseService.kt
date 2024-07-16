@@ -10,11 +10,11 @@ import dev.ragnarok.fenrir.api.model.database.SchoolDto
 import dev.ragnarok.fenrir.api.model.database.UniversityDto
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class IDatabaseService : IServiceRest() {
     //https://vk.com/dev/database.getCitiesById
-    fun getCitiesById(cityIds: String?): Single<BaseResponse<List<VKApiCity>>> {
+    fun getCitiesById(cityIds: String?): Flow<BaseResponse<List<VKApiCity>>> {
         return rest.request(
             "database.getCities",
             form("city_ids" to cityIds),
@@ -37,7 +37,7 @@ class IDatabaseService : IServiceRest() {
         code: String?,
         offset: Int?,
         count: Int?
-    ): Single<BaseResponse<Items<VKApiCountry>>> {
+    ): Flow<BaseResponse<Items<VKApiCountry>>> {
         return rest.request(
             "database.getCountries",
             form("need_all" to needAll, "code" to code, "offset" to offset, "count" to count),
@@ -51,7 +51,7 @@ class IDatabaseService : IServiceRest() {
      * @param countryId Country ID.
      * @return Returns an array of objects, each of them is a pair of class ID and definition.
      */
-    fun getSchoolClasses(countryId: Int?): Single<BaseResponse<List<SchoolClazzDto>>> {
+    fun getSchoolClasses(countryId: Int?): Flow<BaseResponse<List<SchoolClazzDto>>> {
         return rest.request(
             "database.getSchoolClasses",
             form("country_id" to countryId),
@@ -71,7 +71,7 @@ class IDatabaseService : IServiceRest() {
         facultyId: Int,
         offset: Int?,
         count: Int?
-    ): Single<BaseResponse<Items<ChairDto>>> {
+    ): Flow<BaseResponse<Items<ChairDto>>> {
         return rest.request(
             "database.getChairs",
             form("faculty_id" to facultyId, "offset" to offset, "count" to count),
@@ -92,7 +92,7 @@ class IDatabaseService : IServiceRest() {
         universityId: Int,
         offset: Int?,
         count: Int?
-    ): Single<BaseResponse<Items<FacultyDto>>> {
+    ): Flow<BaseResponse<Items<FacultyDto>>> {
         return rest.request(
             "database.getFaculties",
             form("university_id" to universityId, "offset" to offset, "count" to count),
@@ -116,7 +116,7 @@ class IDatabaseService : IServiceRest() {
         cityId: Int?,
         offset: Int?,
         count: Int?
-    ): Single<BaseResponse<Items<UniversityDto>>> {
+    ): Flow<BaseResponse<Items<UniversityDto>>> {
         return rest.request(
             "database.getUniversities", form(
                 "q" to query,
@@ -142,7 +142,7 @@ class IDatabaseService : IServiceRest() {
         cityId: Int,
         offset: Int?,
         count: Int?
-    ): Single<BaseResponse<Items<SchoolDto>>> {
+    ): Flow<BaseResponse<Items<SchoolDto>>> {
         return rest.request(
             "database.getSchools", form(
                 "q" to query,
@@ -172,7 +172,7 @@ class IDatabaseService : IServiceRest() {
         needAll: Int?,
         offset: Int?,
         count: Int?
-    ): Single<BaseResponse<Items<VKApiCity>>> {
+    ): Flow<BaseResponse<Items<VKApiCity>>> {
         return rest.request(
             "database.getCities", form(
                 "country_id" to countryId,

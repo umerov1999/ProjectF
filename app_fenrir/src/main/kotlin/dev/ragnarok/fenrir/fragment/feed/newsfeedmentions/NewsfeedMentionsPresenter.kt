@@ -5,9 +5,9 @@ import dev.ragnarok.fenrir.domain.INewsfeedInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
 import dev.ragnarok.fenrir.fragment.feed.newsfeedcomments.INewsfeedCommentsView
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.NewsfeedComment
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class NewsfeedMentionsPresenter(
     accountId: Long,
@@ -42,9 +42,8 @@ class NewsfeedMentionsPresenter(
     }
 
     private fun load(offset: Int) {
-        appendDisposable(interactor.getMentions(accountId, ownerId, 50, offset, null, null)
-            .fromIOToMain()
-            .subscribe({
+        appendJob(interactor.getMentions(accountId, ownerId, 50, offset, null, null)
+            .fromIOToMain({
                 onDataReceived(
                     offset,
                     it.first

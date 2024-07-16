@@ -1,10 +1,9 @@
 package dev.ragnarok.fenrir.db.interfaces
 
 import dev.ragnarok.fenrir.db.model.entity.CountryDboEntity
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IDatabaseStore {
-    fun storeCountries(accountId: Long, dbos: List<CountryDboEntity>): Completable
-    fun getCountries(accountId: Long): Single<List<CountryDboEntity>>
+    fun storeCountries(accountId: Long, dbos: List<CountryDboEntity>): Flow<Boolean>
+    fun getCountries(accountId: Long): Flow<List<CountryDboEntity>>
 }

@@ -21,16 +21,20 @@ internal open class ColorPanelSlideListener(
     private val evaluator = ArgbEvaluator()
 
     @ColorInt
-    private val statusBarNonColored: Int = getStatusBarNonColored(activity)
+    private val statusBarNonColored: Int =
+        if (Utils.hasVanillaIceCream()) Color.BLACK else getStatusBarNonColored(activity)
 
     @ColorInt
-    private val statusBarColored: Int = getStatusBarColor(activity)
+    private val statusBarColored: Int =
+        if (Utils.hasVanillaIceCream()) Color.WHITE else getStatusBarColor(activity)
 
     @ColorInt
     private val navigationBarNonColored: Int = Color.BLACK
 
     @ColorInt
-    private val navigationBarColored: Int = getNavigationBarColor(activity)
+    private val navigationBarColored: Int =
+        if (Utils.hasVanillaIceCream()) Color.WHITE else getNavigationBarColor(activity)
+
     override fun onStateChanged(state: Int) {
         // Unused.
     }
@@ -51,19 +55,28 @@ internal open class ColorPanelSlideListener(
     override fun onSlideChange(percent: Float) {
         try {
             if (isFromUnColoredToColoredStatusBar) {
-                val statusColor =
-                    evaluator.evaluate(percent, statusBarColored, statusBarNonColored) as Int
-                val navigationColor = evaluator.evaluate(
-                    percent,
-                    navigationBarColored,
-                    navigationBarNonColored
-                ) as Int
                 val w = activity.window
                 if (w != null) {
-                    w.statusBarColor = statusColor
-                    w.navigationBarColor = navigationColor
-                    val invertIcons = !isDark(statusColor)
-
+                    val invertIcons: Boolean
+                    if (Utils.hasVanillaIceCream()) {
+                        val statusColor =
+                            evaluator.evaluate(percent, Color.WHITE, Color.BLACK) as Int
+                        invertIcons = !isDark(statusColor)
+                    } else {
+                        val statusColor = evaluator.evaluate(
+                            percent,
+                            statusBarColored,
+                            statusBarNonColored
+                        ) as Int
+                        val navigationColor = evaluator.evaluate(
+                            percent,
+                            navigationBarColored,
+                            navigationBarNonColored
+                        ) as Int
+                        w.statusBarColor = statusColor
+                        w.navigationBarColor = navigationColor
+                        invertIcons = !isDark(statusColor)
+                    }
                     val ins = WindowInsetsControllerCompat(w, w.decorView)
                     ins.isAppearanceLightStatusBars = invertIcons
                     ins.isAppearanceLightNavigationBars = invertIcons

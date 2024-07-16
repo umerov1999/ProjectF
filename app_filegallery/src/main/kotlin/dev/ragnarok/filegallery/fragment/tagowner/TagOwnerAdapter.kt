@@ -44,51 +44,51 @@ class TagOwnerAdapter(private var data: List<TagOwner>, private val context: Con
         }
     }
 
-    private fun createGradientImage(width: Int, height: Int, owner_id: Int): Bitmap {
+    private fun createGradientImage(width: Int, height: Int, owner_id: Long): Bitmap {
         val color1: String
         val color2: String
         when (owner_id % 10) {
-            1 -> {
+            1L -> {
                 color1 = "#cfe1b9"
                 color2 = "#718355"
             }
 
-            2 -> {
+            2L -> {
                 color1 = "#e3d0d8"
                 color2 = "#c6d2ed"
             }
 
-            3 -> {
+            3L -> {
                 color1 = "#38a3a5"
                 color2 = "#80ed99"
             }
 
-            4 -> {
+            4L -> {
                 color1 = "#9400D6"
                 color2 = "#D6008E"
             }
 
-            5 -> {
+            5L -> {
                 color1 = "#cd8fff"
                 color2 = "#9100ff"
             }
 
-            6 -> {
+            6L -> {
                 color1 = "#ff7f69"
                 color2 = "#fe0bdb"
             }
 
-            7 -> {
+            7L -> {
                 color1 = "#07beb8"
                 color2 = "#c4fff9"
             }
 
-            8 -> {
+            8L -> {
                 color1 = "#3a7ca5"
                 color2 = "#d9dcd6"
             }
 
-            9 -> {
+            9L -> {
                 color1 = "#004e64"
                 color2 = "#7ae582"
             }

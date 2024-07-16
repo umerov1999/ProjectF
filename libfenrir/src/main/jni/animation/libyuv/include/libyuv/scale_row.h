@@ -182,9 +182,10 @@ extern "C" {
 #define HAS_SCALEADDROW_RVV
 // TODO: Test ScaleARGBRowDownEven_RVV and enable it
 // #define HAS_SCALEARGBROWDOWNEVEN_RVV
+#if defined(__riscv_zve64x)
 #define HAS_SCALEUVROWDOWN4_RVV
+#endif
 #define HAS_SCALEUVROWDOWNEVEN_RVV
-#if __riscv_v_intrinsic == 11000
 #define HAS_SCALEARGBROWDOWN2_RVV
 #define HAS_SCALEARGBROWDOWN2BOX_RVV
 #define HAS_SCALEARGBROWDOWN2LINEAR_RVV
@@ -207,7 +208,6 @@ extern "C" {
 #define HAS_SCALEUVROWDOWN2LINEAR_RVV
 #define HAS_SCALEUVROWUP2_BILINEAR_RVV
 #define HAS_SCALEUVROWUP2_LINEAR_RVV
-#endif
 #endif
 
 // Scale ARGB vertically with bilinear interpolation.

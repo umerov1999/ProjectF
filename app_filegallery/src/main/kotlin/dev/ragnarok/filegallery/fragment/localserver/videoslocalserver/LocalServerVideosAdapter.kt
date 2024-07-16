@@ -15,7 +15,6 @@ import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.Includes.networkInterfaces
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.api.interfaces.ILocalServerApi
-import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
 import dev.ragnarok.filegallery.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.filegallery.model.Video
@@ -24,15 +23,16 @@ import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.filegallery.util.DownloadWorkUtils.doDownloadVideo
 import dev.ragnarok.filegallery.util.Utils
+import dev.ragnarok.filegallery.util.coroutines.CancelableJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.filegallery.util.toast.CustomToast.Companion.createCustomToast
-import io.reactivex.rxjava3.disposables.Disposable
 import java.util.regex.Pattern
 
 class LocalServerVideosAdapter(private val context: Context, private var data: List<Video>) :
     RecyclerView.Adapter<LocalServerVideosAdapter.Holder>() {
     private val mVideoInteractor: ILocalServerApi = networkInterfaces.localServerApi()
     private var videoOnClickListener: VideoOnClickListener? = null
-    private var listDisposable = Disposable.disposed()
+    private var listDisposable = CancelableJob()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         return Holder(
             LayoutInflater.from(
@@ -130,8 +130,8 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                         if (hash.isNullOrEmpty()) {
                             return@show
                         }
-                        listDisposable = mVideoInteractor.update_time(hash)
-                            .fromIOToMain().subscribe(
+                        listDisposable.set(mVideoInteractor.update_time(hash)
+                            .fromIOToMain(
                                 {
                                     createCustomToast(
                                         context, holder.card
@@ -139,7 +139,7 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                 }) {
                                 createCustomToast(context, holder.card)
                                     ?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(it)
-                            }
+                            })
                     }
 
                     VideoLocalServerOption.edit_item_video -> {
@@ -147,8 +147,8 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                         if (hash2.isNullOrEmpty()) {
                             return@show
                         }
-                        listDisposable = mVideoInteractor.get_file_name(hash2)
-                            .fromIOToMain().subscribe(
+                        listDisposable.set(mVideoInteractor.get_file_name(hash2)
+                            .fromIOToMain(
                                 { t ->
                                     val root = View.inflate(
                                         context, R.layout.entry_file_name, null
@@ -162,31 +162,29 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                         .setCancelable(true)
                                         .setView(root)
                                         .setPositiveButton(R.string.button_ok) { _, _ ->
-                                            listDisposable =
-                                                mVideoInteractor.update_file_name(
-                                                    hash2,
-                                                    root.findViewById<TextInputEditText>(R.id.edit_file_name).text.toString()
-                                                        .trim { it <= ' ' })
-                                                    .fromIOToMain()
-                                                    .subscribe({
-                                                        createCustomToast(
-                                                            context, holder.card
-                                                        )?.showToast(R.string.success)
-                                                    }) {
-                                                        createCustomToast(
-                                                            context,
-                                                            holder.card
-                                                        )
-                                                            ?.setDuration(Toast.LENGTH_LONG)
-                                                            ?.showToastThrowable(it)
-                                                    }
+                                            listDisposable.set(mVideoInteractor.update_file_name(
+                                                hash2,
+                                                root.findViewById<TextInputEditText>(R.id.edit_file_name).text.toString()
+                                                    .trim { it <= ' ' })
+                                                .fromIOToMain({
+                                                    createCustomToast(
+                                                        context, holder.card
+                                                    )?.showToast(R.string.success)
+                                                }) {
+                                                    createCustomToast(
+                                                        context,
+                                                        holder.card
+                                                    )
+                                                        ?.setDuration(Toast.LENGTH_LONG)
+                                                        ?.showToastThrowable(it)
+                                                })
                                         }
                                         .setNegativeButton(R.string.button_cancel, null)
                                         .show()
                                 }) {
                                 createCustomToast(context, holder.card)
                                     ?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(it)
-                            }
+                            })
                     }
 
                     VideoLocalServerOption.delete_item_video -> MaterialAlertDialogBuilder(
@@ -200,8 +198,8 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                             if (hash1.isNullOrEmpty()) {
                                 return@setPositiveButton
                             }
-                            listDisposable = mVideoInteractor.delete_media(hash1)
-                                .fromIOToMain().subscribe(
+                            listDisposable.set(mVideoInteractor.delete_media(hash1)
+                                .fromIOToMain(
                                     {
                                         createCustomToast(
                                             context, holder.card
@@ -210,7 +208,7 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                     createCustomToast(context, holder.card)
                                         ?.setDuration(Toast.LENGTH_LONG)
                                         ?.showToastThrowable(it)
-                                }
+                                })
                         }
                         .setNegativeButton(R.string.button_cancel, null)
                         .show()
@@ -224,7 +222,7 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
-        listDisposable.dispose()
+        listDisposable.cancel()
     }
 
     override fun getItemCount(): Int {

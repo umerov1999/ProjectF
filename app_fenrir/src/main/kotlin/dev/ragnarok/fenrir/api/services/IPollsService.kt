@@ -4,7 +4,7 @@ import dev.ragnarok.fenrir.api.model.VKApiPoll
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.PollUsersResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class IPollsService : IServiceRest() {
     fun create(
@@ -15,7 +15,7 @@ class IPollsService : IServiceRest() {
         backgroundId: Int?,
         ownerId: Long?,
         addAnswers: String?
-    ): Single<BaseResponse<VKApiPoll>> {
+    ): Flow<BaseResponse<VKApiPoll>> {
         return rest.request(
             "polls.create", form(
                 "question" to question,
@@ -35,7 +35,7 @@ class IPollsService : IServiceRest() {
         pollId: Int,
         answerId: Long,
         isBoard: Int?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "polls.deleteVote", form(
                 "owner_id" to ownerId,
@@ -52,7 +52,7 @@ class IPollsService : IServiceRest() {
         pollId: Int,
         answerIds: String?,
         isBoard: Int?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "polls.addVote", form(
                 "owner_id" to ownerId,
@@ -67,7 +67,7 @@ class IPollsService : IServiceRest() {
         ownerId: Long?,
         isBoard: Int?,
         pollId: Int?
-    ): Single<BaseResponse<VKApiPoll>> {
+    ): Flow<BaseResponse<VKApiPoll>> {
         return rest.request(
             "polls.getById", form(
                 "owner_id" to ownerId,
@@ -86,7 +86,7 @@ class IPollsService : IServiceRest() {
         count: Int?,
         fields: String?,
         nameCase: String?
-    ): Single<BaseResponse<List<PollUsersResponse>>> {
+    ): Flow<BaseResponse<List<PollUsersResponse>>> {
         return rest.request(
             "polls.getVoters", form(
                 "owner_id" to ownerId,
@@ -101,7 +101,7 @@ class IPollsService : IServiceRest() {
         )
     }
 
-    fun getBackgrounds(): Single<BaseResponse<List<VKApiPoll.Background>>> {
+    fun getBackgrounds(): Flow<BaseResponse<List<VKApiPoll.Background>>> {
         return rest.request(
             "polls.getBackgrounds", null, baseList(VKApiPoll.Background.serializer())
         )

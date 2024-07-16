@@ -11,7 +11,6 @@ import dev.ragnarok.fenrir.api.model.AccessIdPair
 import dev.ragnarok.fenrir.domain.IAudioInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.model.AudioPlaylist
 import dev.ragnarok.fenrir.nonNullNoEmpty
@@ -20,19 +19,20 @@ import dev.ragnarok.fenrir.util.FindAtWithContent
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.isValueAssigned
 import dev.ragnarok.fenrir.util.Utils.safeCheck
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import kotlinx.coroutines.flow.Flow
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 
 class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IAudioPlaylistsView>(accountId, savedInstanceState) {
     private val addon: MutableList<AudioPlaylist> = ArrayList()
     private val playlists: MutableList<AudioPlaylist> = ArrayList()
     private val fInteractor: IAudioInteractor = InteractorFactory.createAudioInteractor()
-    private val searcher: FindPlaylist = FindPlaylist(compositeDisposable)
-    private var actualDataDisposable = Disposable.disposed()
+    private val searcher: FindPlaylist = FindPlaylist(compositeJob)
+    private var actualDataDisposable = CancelableJob()
     private var pending_to_add: AudioPlaylist? = null
     private var Foffset = 0
     private var endOfContent = false
@@ -47,9 +47,8 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
     private fun loadActualData(offset: Int) {
         actualDataLoading = true
         resolveRefreshingView()
-        appendDisposable(fInteractor.getPlaylists(accountId, owner_id, offset, GET_COUNT)
-            .fromIOToMain()
-            .subscribe({ data ->
+        appendJob(fInteractor.getPlaylists(accountId, owner_id, offset, GET_COUNT)
+            .fromIOToMain({ data ->
                 onActualDataReceived(
                     offset,
                     data
@@ -101,14 +100,13 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
                 actualDataLoading = true
                 resolveRefreshingView()
                 if (ids.size == 1) {
-                    appendDisposable(fInteractor.getPlaylistById(
+                    appendJob(fInteractor.getPlaylistById(
                         accountId,
                         ids[0],
                         owner_id,
                         null
                     )
-                        .fromIOToMain()
-                        .subscribe({
+                        .fromIOToMain({
                             addon.clear()
                             addon.add(it)
                             loadActualData(0)
@@ -130,9 +128,8 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
                     }
                     code_addon.append("];")
                     code.append(code_addon)
-                    appendDisposable(fInteractor.getPlaylistsCustom(accountId, code.toString())
-                        .fromIOToMain()
-                        .subscribe({
+                    appendJob(fInteractor.getPlaylistsCustom(accountId, code.toString())
+                        .fromIOToMain({
                             addon.clear()
                             addon.addAll(it)
                             loadActualData(0)
@@ -153,7 +150,7 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
     }
 
     override fun onDestroyed() {
-        actualDataDisposable.dispose()
+        actualDataDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -171,14 +168,12 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
 
     private fun sleep_search(q: String?) {
         if (actualDataLoading) return
-        actualDataDisposable.dispose()
+        actualDataDisposable.cancel()
         if (q.isNullOrEmpty()) {
             searcher.cancel()
         } else {
-            actualDataDisposable = Single.just(Any())
-                .delay(WEB_SEARCH_DELAY.toLong(), TimeUnit.MILLISECONDS)
-                .fromIOToMain()
-                .subscribe({ searcher.do_search(q) }) { t ->
+            actualDataDisposable += delayTaskFlow(WEB_SEARCH_DELAY.toLong())
+                .fromIOToMain({ searcher.do_search(q) }) { t ->
                     onActualDataGetError(
                         t
                     )
@@ -191,9 +186,8 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
     }
 
     fun onDelete(index: Int, album: AudioPlaylist) {
-        appendDisposable(fInteractor.deletePlaylist(accountId, album.id, album.owner_id)
-            .fromIOToMain()
-            .subscribe({
+        appendJob(fInteractor.deletePlaylist(accountId, album.id, album.owner_id)
+            .fromIOToMain({
                 playlists.removeAt(index)
                 view?.notifyItemRemoved(
                     index
@@ -217,14 +211,13 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
             .setCancelable(true)
             .setView(root)
             .setPositiveButton(R.string.button_ok) { _, _ ->
-                appendDisposable(fInteractor.editPlaylist(
+                appendJob(fInteractor.editPlaylist(
                     accountId, album.owner_id, album.id,
                     root.findViewById<TextInputEditText>(R.id.edit_title).text.toString(),
                     root.findViewById<TextInputEditText>(R.id.edit_description).text.toString()
-                ).fromIOToMain()
-                    .subscribe({ fireRefresh() }) { t ->
-                        showError(getCauseIfRuntime(t))
-                    })
+                ).fromIOToMain({ fireRefresh() }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
             }
             .setNegativeButton(R.string.button_cancel, null)
             .show()
@@ -246,21 +239,20 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
             .setCancelable(true)
             .setView(root)
             .setPositiveButton(R.string.button_ok) { _, _ ->
-                appendDisposable(fInteractor.createPlaylist(
+                appendJob(fInteractor.createPlaylist(
                     accountId, owner_id,
                     root.findViewById<TextInputEditText>(R.id.edit_title).text.toString(),
                     root.findViewById<TextInputEditText>(R.id.edit_description).text.toString()
-                ).fromIOToMain()
-                    .subscribe({ playlist -> doInsertPlaylist(playlist) }) { t ->
-                        showError(getCauseIfRuntime(t))
-                    })
+                ).fromIOToMain({ playlist -> doInsertPlaylist(playlist) }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
             }
             .setNegativeButton(R.string.button_cancel, null)
             .show()
     }
 
     fun onAdd(album: AudioPlaylist, clone: Boolean) {
-        appendDisposable((if (clone) fInteractor.clonePlaylist(
+        appendJob((if (clone) fInteractor.clonePlaylist(
             accountId,
             album.id,
             album.owner_id
@@ -270,8 +262,7 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
             album.owner_id,
             album.access_key
         ))
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 view?.customToast?.showToast(
                     R.string.success
                 )
@@ -293,14 +284,13 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
             targets.add(AccessIdPair(i.id, i.ownerId, i.accessKey))
         }
         pending_to_add?.let { o ->
-            appendDisposable(fInteractor.addToPlaylist(
+            appendJob(fInteractor.addToPlaylist(
                 accountId,
                 o.owner_id,
                 o.id,
                 targets
             )
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain({
                     view?.customToast?.showToast(
                         R.string.success
                     )
@@ -329,11 +319,11 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
         }
     }
 
-    private inner class FindPlaylist(disposable: CompositeDisposable) :
+    private inner class FindPlaylist(disposable: CompositeJob) :
         FindAtWithContent<AudioPlaylist>(
             disposable, SEARCH_VIEW_COUNT, SEARCH_COUNT
         ) {
-        override fun search(offset: Int, count: Int): Single<List<AudioPlaylist>> {
+        override fun search(offset: Int, count: Int): Flow<List<AudioPlaylist>> {
             return fInteractor.getPlaylists(accountId, owner_id, offset, count)
         }
 

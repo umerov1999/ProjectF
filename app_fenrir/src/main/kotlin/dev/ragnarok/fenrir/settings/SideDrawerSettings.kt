@@ -6,13 +6,14 @@ import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.model.DrawerCategory
 import dev.ragnarok.fenrir.model.SwitchableCategory
 import dev.ragnarok.fenrir.settings.ISettings.ISideDrawerSettings
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.subjects.PublishSubject
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.createPublishSubject
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.myEmit
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.serialization.builtins.ListSerializer
 
 internal class SideDrawerSettings(context: Context) : ISideDrawerSettings {
     private val app: Context = context.applicationContext
-    private val publishSubject: PublishSubject<List<DrawerCategory>> = PublishSubject.create()
+    private val publishSubject = createPublishSubject<List<DrawerCategory>>()
 
     private fun makeDefaults(): List<DrawerCategory> {
         return listOf(
@@ -43,16 +44,16 @@ internal class SideDrawerSettings(context: Context) : ISideDrawerSettings {
                 kJson.encodeToString(ListSerializer(DrawerCategory.serializer()), list)
             )
                 .apply()
-            publishSubject.onNext(list)
+            publishSubject.myEmit(list)
         }
 
-    override val observeChanges: Observable<List<DrawerCategory>>
+    override val observeChanges: SharedFlow<List<DrawerCategory>>
         get() = publishSubject
 
     override fun reset() {
         getPreferences(app).edit().remove(
             "side_navigation_menu_order"
         ).apply()
-        publishSubject.onNext(makeDefaults())
+        publishSubject.myEmit(makeDefaults())
     }
 }

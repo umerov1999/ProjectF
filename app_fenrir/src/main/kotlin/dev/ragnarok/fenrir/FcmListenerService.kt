@@ -23,7 +23,7 @@ import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.PersistentLogger
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
 import dev.ragnarok.fenrir.util.serializeble.json.Json
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
@@ -35,8 +35,7 @@ class FcmListenerService : FirebaseMessagingService() {
         super.onNewToken(s)
         pushRegistrationResolver
             .resolvePushRegistration()
-            .fromIOToMain()
-            .subscribe(RxUtils.dummy(), RxUtils.ignore())
+            .hiddenIO()
     }
 
     @WorkerThread

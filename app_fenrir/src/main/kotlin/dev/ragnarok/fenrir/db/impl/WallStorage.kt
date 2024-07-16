@@ -33,17 +33,19 @@ import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.wrap
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
     override fun storeWallEntities(
         accountId: Long, posts: List<PostDboEntity>,
         owners: OwnerEntities?, clearWall: IClearWallTask?
-    ): Single<IntArray> {
-        return Single.create { emitter: SingleEmitter<IntArray> ->
+    ): Flow<IntArray> {
+        return flow {
             val operations = ArrayList<ContentProviderOperation>()
             if (clearWall != null) {
                 operations.add(operationForClearWall(accountId, clearWall.ownerId))
@@ -72,12 +74,12 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
                 val result = results[index]
                 ids[i] = extractId(result)
             }
-            emitter.onSuccess(ids)
+            emit(ids)
         }
     }
 
-    override fun replacePost(accountId: Long, post: PostDboEntity): Single<Int> {
-        return Single.create { e: SingleEmitter<Int> ->
+    override fun replacePost(accountId: Long, post: PostDboEntity): Flow<Int> {
+        return flow {
             val uri = getPostsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             val cv = createCv(post)
@@ -100,19 +102,19 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
             val results =
                 context.contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
             val dbid = extractId(results[mainPostIndex])
-            e.onSuccess(dbid)
+            emit(dbid)
         }
     }
 
-    private fun insertNew(accountId: Long, vkId: Int, ownerId: Long, authorId: Long): Single<Int> {
-        return Single.fromCallable {
+    private fun insertNew(accountId: Long, vkId: Int, ownerId: Long, authorId: Long): Flow<Int> {
+        return flow {
             val uri = getPostsContentUriFor(accountId)
             val cv = ContentValues()
             cv.put(PostsColumns.POST_ID, vkId)
             cv.put(PostsColumns.OWNER_ID, ownerId)
             cv.put(PostsColumns.FROM_ID, authorId)
             val resultUri = contentResolver.insert(uri, cv)
-            resultUri?.lastPathSegment?.toInt().orZero()
+            emit(resultUri?.lastPathSegment?.toInt().orZero())
         }
     }
 
@@ -121,15 +123,17 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
         ownerId: Long,
         @EditingPostType type: Int,
         includeAttachment: Boolean
-    ): Single<PostDboEntity> {
+    ): Flow<PostDboEntity> {
         val vkPostId = getVkPostIdForEditingType(type)
         return findPostById(accountId, ownerId, vkPostId, includeAttachment)
-            .flatMap {
+            .flatMapConcat {
                 if (it.nonEmpty()) {
-                    Single.just(it.requireNonEmpty())
+                    flow {
+                        emit(it.requireNonEmpty())
+                    }
                 } else {
                     insertNew(accountId, vkPostId, ownerId, accountId)
-                        .flatMap {
+                        .flatMapConcat {
                             findPostById(accountId, ownerId, vkPostId, includeAttachment)
                                 .map { obj -> obj.requireNonEmpty() }
                         }
@@ -137,21 +141,20 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
             }
     }
 
-    override fun deletePost(accountId: Long, dbid: Int): Completable {
-        return Completable.create { e ->
+    override fun deletePost(accountId: Long, dbid: Int): Flow<Boolean> {
+        return flow {
             contentResolver.delete(
                 getPostsContentUriFor(accountId),
                 BaseColumns._ID + " = ?", arrayOf(dbid.toString())
             )
-            e.onComplete()
+            emit(true)
         }
     }
 
-    override fun findPostById(accountId: Long, dbid: Int): Single<Optional<PostDboEntity>> {
-        return Single.create { e: SingleEmitter<Optional<PostDboEntity>> ->
+    override fun findPostById(accountId: Long, dbid: Int): Flow<Optional<PostDboEntity>> {
+        return flow {
             val cancelable = object : Cancelable {
-                override val isOperationCancelled: Boolean
-                    get() = e.isDisposed
+                override suspend fun canceled(): Boolean = !isActive()
             }
             val uri = getPostsContentUriFor(accountId)
             val where = BaseColumns._ID + " = ?"
@@ -169,7 +172,7 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
                 }
                 cursor.close()
             }
-            e.onSuccess(wrap(dbo))
+            emit(wrap(dbo))
         }
     }
 
@@ -178,8 +181,8 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
         ownerId: Long,
         vkpostId: Int,
         includeAttachment: Boolean
-    ): Single<Optional<PostDboEntity>> {
-        return Single.create { e: SingleEmitter<Optional<PostDboEntity>> ->
+    ): Flow<Optional<PostDboEntity>> {
+        return flow {
             val uri = getPostsContentUriFor(accountId)
             val cursor = contentResolver.query(
                 uri,
@@ -197,28 +200,26 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
                         includeAttachment,
                         includeAttachment,
                         object : Cancelable {
-                            override val isOperationCancelled: Boolean
-                                get() = e.isDisposed
+                            override suspend fun canceled(): Boolean = !isActive()
                         })
                 }
                 cursor.close()
             }
-            e.onSuccess(wrap(dbo))
+            emit(wrap(dbo))
         }
     }
 
-    override fun findDbosByCriteria(criteria: WallCriteria): Single<List<PostDboEntity>> {
-        return Single.create { emitter: SingleEmitter<List<PostDboEntity>> ->
+    override fun findDbosByCriteria(criteria: WallCriteria): Flow<List<PostDboEntity>> {
+        return flow {
             val accountId = criteria.accountId
             val cursor = buildCursor(criteria)
             val cancelable = object : Cancelable {
-                override val isOperationCancelled: Boolean
-                    get() = emitter.isDisposed
+                override suspend fun canceled(): Boolean = !isActive()
             }
             val dbos: MutableList<PostDboEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (emitter.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     dbos.add(
@@ -232,7 +233,7 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
                 }
                 cursor.close()
             }
-            emitter.onSuccess(dbos)
+            emit(dbos)
         }
     }
 
@@ -241,8 +242,8 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
         ownerId: Long,
         postId: Int,
         update: PostPatch
-    ): Completable {
-        return Completable.create { e ->
+    ): Flow<Boolean> {
+        return flow {
             val cv = ContentValues()
             update.deletePatch.requireNonNull {
                 cv.put(PostsColumns.DELETED, it.isDeleted)
@@ -261,16 +262,17 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
                 PostsColumns.POST_ID + " = ? AND " + PostsColumns.OWNER_ID + " = ?",
                 arrayOf(postId.toString(), ownerId.toString())
             )
-            e.onComplete()
+            emit(true)
         }
     }
 
-    override fun invalidatePost(accountId: Long, postVkid: Int, postOwnerId: Long): Completable {
-        return Completable.fromAction {
+    override fun invalidatePost(accountId: Long, postVkid: Int, postOwnerId: Long): Flow<Boolean> {
+        return flow {
             val uri = getPostsContentUriFor(accountId)
             val where = PostsColumns.POST_ID + " = ? AND " + PostsColumns.OWNER_ID + " = ?"
             val args = arrayOf(postVkid.toString(), postOwnerId.toString())
             contentResolver.delete(uri, where, args)
+            emit(true)
         }
     }
 
@@ -304,7 +306,7 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
         )
     }
 
-    private fun mapDbo(
+    private suspend fun mapDbo(
         accountId: Long,
         cursor: Cursor,
         includeAttachments: Boolean,

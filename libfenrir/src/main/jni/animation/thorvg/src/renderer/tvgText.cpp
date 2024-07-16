@@ -37,7 +37,6 @@
 
 Text::Text() : pImpl(new Impl)
 {
-    Paint::pImpl->id = TVG_CLASS_ID_TEXT;
 }
 
 
@@ -67,6 +66,21 @@ Result Text::load(const std::string& path) noexcept
         else return Result::NonSupport;
     }
 
+    return Result::Success;
+}
+
+
+Result Text::load(const char* name, const char* data, uint32_t size, const string& mimeType, bool copy) noexcept
+{
+    if (!name || (size == 0 && data)) return Result::InvalidArguments;
+
+    //unload font
+    if (!data) {
+        if (LoaderMgr::retrieve(name)) return Result::Success;
+        return Result::InsufficientCondition;
+    }
+
+    if (!LoaderMgr::loader(name, data, size, mimeType, copy)) return Result::NonSupport;
     return Result::Success;
 }
 
@@ -103,7 +117,7 @@ unique_ptr<Text> Text::gen() noexcept
 }
 
 
-uint32_t Text::identifier() noexcept
+Type Text::type() const noexcept
 {
-    return TVG_CLASS_ID_TEXT;
+    return Type::Text;
 }

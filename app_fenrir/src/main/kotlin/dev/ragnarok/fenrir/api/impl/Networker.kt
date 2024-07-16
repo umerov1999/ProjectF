@@ -1,7 +1,7 @@
 package dev.ragnarok.fenrir.api.impl
 
 import dev.ragnarok.fenrir.AccountType
-import dev.ragnarok.fenrir.api.IDirectLoginSeviceProvider
+import dev.ragnarok.fenrir.api.IDirectLoginServiceProvider
 import dev.ragnarok.fenrir.api.ILocalServerServiceProvider
 import dev.ragnarok.fenrir.api.IOtherVKRestProvider
 import dev.ragnarok.fenrir.api.IUploadRestProvider
@@ -19,7 +19,8 @@ import dev.ragnarok.fenrir.api.interfaces.IUploadApi
 import dev.ragnarok.fenrir.api.services.IAuthService
 import dev.ragnarok.fenrir.api.services.ILocalServerService
 import dev.ragnarok.fenrir.settings.IProxySettings
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class Networker(settings: IProxySettings) : INetworker {
     private val otherVkRestProvider: IOtherVKRestProvider = OtherVKRestProvider(settings)
@@ -39,8 +40,8 @@ class Networker(settings: IProxySettings) : INetworker {
     }
 
     override fun vkDirectAuth(@AccountType accountType: Int, customDevice: String?): IAuthApi {
-        return AuthApi(object : IDirectLoginSeviceProvider {
-            override fun provideAuthService(): Single<IAuthService> {
+        return AuthApi(object : IDirectLoginServiceProvider {
+            override fun provideAuthService(): Flow<IAuthService> {
                 return otherVkRestProvider.provideAuthRest(accountType, customDevice)
                     .map {
                         val ret = IAuthService()
@@ -52,8 +53,8 @@ class Networker(settings: IProxySettings) : INetworker {
     }
 
     override fun vkAuth(): IAuthApi {
-        return AuthApi(object : IDirectLoginSeviceProvider {
-            override fun provideAuthService(): Single<IAuthService> {
+        return AuthApi(object : IDirectLoginServiceProvider {
+            override fun provideAuthService(): Flow<IAuthService> {
                 return otherVkRestProvider.provideAuthServiceRest()
                     .map {
                         val ret = IAuthService()
@@ -66,7 +67,7 @@ class Networker(settings: IProxySettings) : INetworker {
 
     override fun localServerApi(): ILocalServerApi {
         return LocalServerApi(object : ILocalServerServiceProvider {
-            override fun provideLocalServerService(): Single<ILocalServerService> {
+            override fun provideLocalServerService(): Flow<ILocalServerService> {
                 return otherVkRestProvider.provideLocalServerRest()
                     .map {
                         val ret = ILocalServerService()

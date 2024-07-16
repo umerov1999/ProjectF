@@ -9,17 +9,16 @@ import dev.ragnarok.fenrir.model.Account
 import dev.ragnarok.fenrir.model.BannedPart
 import dev.ragnarok.fenrir.model.ContactConversation
 import dev.ragnarok.fenrir.model.Owner
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IAccountsInteractor {
-    fun getBanned(accountId: Long, count: Int, offset: Int): Single<BannedPart>
-    fun banOwners(accountId: Long, owners: Collection<Owner>): Completable
-    fun unbanOwner(accountId: Long, ownerId: Long): Completable
-    fun changeStatus(accountId: Long, status: String?): Completable
-    fun setOffline(accountId: Long): Single<Boolean>
-    fun getProfileInfo(accountId: Long): Single<VKApiProfileInfo>
-    fun getPushSettings(accountId: Long): Single<List<ConversationPushItem>>
+    fun getBanned(accountId: Long, count: Int, offset: Int): Flow<BannedPart>
+    fun banOwners(accountId: Long, owners: Collection<Owner>): Flow<Boolean>
+    fun unbanOwner(accountId: Long, ownerId: Long): Flow<Boolean>
+    fun changeStatus(accountId: Long, status: String?): Flow<Boolean>
+    fun setOffline(accountId: Long): Flow<Boolean>
+    fun getProfileInfo(accountId: Long): Flow<VKApiProfileInfo>
+    fun getPushSettings(accountId: Long): Flow<List<ConversationPushItem>>
     fun saveProfileInfo(
         accountId: Long,
         first_name: String?,
@@ -29,33 +28,33 @@ interface IAccountsInteractor {
         bdate: String?,
         home_town: String?,
         sex: Int?
-    ): Single<Int>
+    ): Flow<Int>
 
-    fun getAll(refresh: Boolean): Single<List<Account>>
+    fun getAll(refresh: Boolean): Flow<List<Account>>
 
     fun importMessagesContacts(
         accountId: Long,
         context: Context,
         offset: Int?,
         count: Int?
-    ): Single<List<ContactConversation>>
+    ): Flow<List<ContactConversation>>
 
     fun processAuthCode(
         accountId: Long,
         auth_code: String, action: Int
-    ): Single<VKApiProcessAuthCode>
+    ): Flow<VKApiProcessAuthCode>
 
     fun getContactList(
         accountId: Long,
         offset: Int?,
         count: Int?
-    ): Single<List<ContactConversation>>
+    ): Flow<List<ContactConversation>>
 
     fun resetMessagesContacts(
         accountId: Long,
         offset: Int?,
         count: Int?
-    ): Single<List<ContactConversation>>
+    ): Flow<List<ContactConversation>>
 
     fun refreshToken(
         accountId: Long,
@@ -63,9 +62,9 @@ interface IAccountsInteractor {
         receipt2: String?,
         nonce: String?,
         timestamp: Long?
-    ): Single<RefreshToken>
+    ): Flow<RefreshToken>
 
     fun getExchangeToken(
         accountId: Long
-    ): Single<RefreshToken>
+    ): Flow<RefreshToken>
 }

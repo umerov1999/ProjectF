@@ -8,7 +8,10 @@ import dev.ragnarok.fenrir.api.model.response.DefaultCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.TopicsResponse
 import dev.ragnarok.fenrir.api.services.IBoardService
 import dev.ragnarok.fenrir.requireNonNull
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.checkInt
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 internal class BoardApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IBoardApi {
@@ -22,40 +25,39 @@ internal class BoardApi(accountId: Long, provider: IServiceProvider) :
         extended: Boolean?,
         sort: String?,
         fields: String?
-    ): Single<DefaultCommentsResponse> {
+    ): Flow<DefaultCommentsResponse> {
         return provideService(IBoardService(), TokenType.USER, TokenType.SERVICE)
-            .flatMap { service ->
-                service
-                    .getComments(
-                        groupId,
-                        topicId,
-                        integerFromBoolean(needLikes),
-                        startCommentId,
-                        offset,
-                        count,
-                        integerFromBoolean(extended),
-                        sort,
-                        fields
-                    )
+            .flatMapConcat {
+                it.getComments(
+                    groupId,
+                    topicId,
+                    integerFromBoolean(needLikes),
+                    startCommentId,
+                    offset,
+                    count,
+                    integerFromBoolean(extended),
+                    sort,
+                    fields
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun restoreComment(groupId: Long, topicId: Int, commentId: Int): Single<Boolean> {
+    override fun restoreComment(groupId: Long, topicId: Int, commentId: Int): Flow<Boolean> {
         return provideService(IBoardService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.restoreComment(groupId, topicId, commentId)
+            .flatMapConcat {
+                it.restoreComment(groupId, topicId, commentId)
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
-    override fun deleteComment(groupId: Long, topicId: Int, commentId: Int): Single<Boolean> {
+    override fun deleteComment(groupId: Long, topicId: Int, commentId: Int): Flow<Boolean> {
         return provideService(IBoardService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.deleteComment(groupId, topicId, commentId)
+            .flatMapConcat {
+                it.deleteComment(groupId, topicId, commentId)
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
@@ -63,21 +65,20 @@ internal class BoardApi(accountId: Long, provider: IServiceProvider) :
         groupId: Long, topicIds: Collection<Int>?, order: Int?,
         offset: Int?, count: Int?, extended: Boolean?,
         preview: Int?, previewLength: Int?, fields: String?
-    ): Single<TopicsResponse> {
+    ): Flow<TopicsResponse> {
         return provideService(IBoardService(), TokenType.USER, TokenType.SERVICE)
-            .flatMap { service ->
-                service
-                    .getTopics(
-                        groupId,
-                        join(topicIds, ","),
-                        order,
-                        offset,
-                        count,
-                        integerFromBoolean(extended),
-                        preview,
-                        previewLength,
-                        fields
-                    )
+            .flatMapConcat { s ->
+                s.getTopics(
+                    groupId,
+                    join(topicIds, ","),
+                    order,
+                    offset,
+                    count,
+                    integerFromBoolean(extended),
+                    preview,
+                    previewLength,
+                    fields
+                )
                     .map(extractResponseWithErrorHandling())
                     .map { response ->
                         // fix (не приходит owner_id)
@@ -94,10 +95,10 @@ internal class BoardApi(accountId: Long, provider: IServiceProvider) :
     override fun editComment(
         groupId: Long, topicId: Int, commentId: Int, message: String?,
         attachments: Collection<IAttachmentToken>?
-    ): Single<Boolean> {
+    ): Flow<Boolean> {
         return provideService(IBoardService(), TokenType.USER)
-            .flatMap { service ->
-                service.editComment(
+            .flatMapConcat { s ->
+                s.editComment(
                     groupId,
                     topicId,
                     commentId,
@@ -107,7 +108,7 @@ internal class BoardApi(accountId: Long, provider: IServiceProvider) :
                         ","
                     ) { formatAttachmentToken(it) })
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
@@ -119,22 +120,21 @@ internal class BoardApi(accountId: Long, provider: IServiceProvider) :
         fromGroup: Boolean?,
         stickerId: Int?,
         generatedUniqueId: Int?
-    ): Single<Int> {
+    ): Flow<Int> {
         return provideService(IBoardService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .addComment(
-                        groupId,
-                        topicId,
-                        message,
-                        join(
-                            attachments,
-                            ","
-                        ) { formatAttachmentToken(it) },
-                        integerFromBoolean(fromGroup),
-                        stickerId,
-                        generatedUniqueId
-                    )
+            .flatMapConcat { s ->
+                s.addComment(
+                    groupId,
+                    topicId,
+                    message,
+                    join(
+                        attachments,
+                        ","
+                    ) { formatAttachmentToken(it) },
+                    integerFromBoolean(fromGroup),
+                    stickerId,
+                    generatedUniqueId
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }

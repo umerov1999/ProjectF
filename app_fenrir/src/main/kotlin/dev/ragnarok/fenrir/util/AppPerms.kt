@@ -17,7 +17,6 @@ import androidx.fragment.app.Fragment
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.util.toast.CustomToast
 
-
 object AppPerms {
     @SuppressLint("BatteryLife")
     fun ignoreBattery(context: Context) {

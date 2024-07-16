@@ -4,10 +4,10 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IStoriesShortVideosInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Narratives
 import dev.ragnarok.fenrir.nonNullNoEmpty
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class NarrativesPresenter(
     accountId: Long,
@@ -17,7 +17,7 @@ class NarrativesPresenter(
     private val storiesInteractor: IStoriesShortVideosInteractor =
         InteractorFactory.createStoriesInteractor()
     private val mNarratives: ArrayList<Narratives> = ArrayList()
-    private val netDisposable = CompositeDisposable()
+    private val netDisposable = CompositeJob()
     private var mEndOfContent = false
     private var netLoadingNow = false
     private fun resolveRefreshingView() {
@@ -27,7 +27,7 @@ class NarrativesPresenter(
     }
 
     override fun onDestroyed() {
-        netDisposable.dispose()
+        netDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -40,8 +40,7 @@ class NarrativesPresenter(
             null,
             null
         )
-            .fromIOToMain()
-            .subscribe({ products ->
+            .fromIOToMain({ products ->
                 onNetDataReceived(
                     offset,
                     products
@@ -101,10 +100,9 @@ class NarrativesPresenter(
         netLoadingNow = true
         resolveRefreshingView()
 
-        appendDisposable(
+        appendJob(
             storiesInteractor.getStoryById(accountId, narrative.getStoriesIds())
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain({
                     netLoadingNow = false
                     resolveRefreshingView()
                     if (it.nonNullNoEmpty()) {

@@ -40,7 +40,6 @@ import static androidx.camera.core.impl.UseCaseConfig.OPTION_SESSION_CONFIG_UNPA
 import static androidx.camera.core.impl.UseCaseConfig.OPTION_SURFACE_OCCUPANCY_PRIORITY;
 import static androidx.camera.core.impl.UseCaseConfig.OPTION_TARGET_CLASS;
 import static androidx.camera.core.impl.UseCaseConfig.OPTION_TARGET_NAME;
-import static androidx.camera.core.impl.UseCaseConfig.OPTION_USE_CASE_EVENT_CALLBACK;
 import static androidx.camera.core.impl.UseCaseConfig.OPTION_ZSL_DISABLED;
 import static androidx.camera.core.internal.ThreadConfig.OPTION_BACKGROUND_EXECUTOR;
 
@@ -112,7 +111,6 @@ import java.util.concurrent.Executor;
  * Failing to close the image will cause future images to be stalled or dropped depending on the
  * backpressure strategy.
  */
-@RequiresApi(21) // TODO(b/200306659): Remove and replace with annotation on package-info.java
 public final class ImageAnalysis extends UseCase {
 
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -424,7 +422,10 @@ public final class ImageAnalysis extends UseCase {
 
         sessionConfigBuilder.setExpectedFrameRateRange(streamSpec.getExpectedFrameRateRange());
 
-        sessionConfigBuilder.addSurface(mDeferrableSurface, streamSpec.getDynamicRange(), null);
+        sessionConfigBuilder.addSurface(mDeferrableSurface,
+                streamSpec.getDynamicRange(),
+                null,
+                MirrorMode.MIRROR_MODE_UNSPECIFIED);
 
         sessionConfigBuilder.addErrorListener((sessionConfig, error) -> {
             clearPipeline();
@@ -1567,15 +1568,6 @@ public final class ImageAnalysis extends UseCase {
         @NonNull
         public Builder setSurfaceOccupancyPriority(int priority) {
             getMutableConfig().insertOption(OPTION_SURFACE_OCCUPANCY_PRIORITY, priority);
-            return this;
-        }
-
-        @RestrictTo(Scope.LIBRARY_GROUP)
-        @Override
-        @NonNull
-        public Builder setUseCaseEventCallback(
-                @NonNull UseCase.EventCallback useCaseEventCallback) {
-            getMutableConfig().insertOption(OPTION_USE_CASE_EVENT_CALLBACK, useCaseEventCallback);
             return this;
         }
 

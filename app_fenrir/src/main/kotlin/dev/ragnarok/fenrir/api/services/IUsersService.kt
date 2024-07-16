@@ -6,7 +6,7 @@ import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.UserWallInfoResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class IUsersService : IServiceRest() {
     fun getUserWallInfo(
@@ -14,7 +14,7 @@ class IUsersService : IServiceRest() {
         userId: Long,
         fields: String?,
         nameCase: String?
-    ): Single<BaseResponse<UserWallInfoResponse>> {
+    ): Flow<BaseResponse<UserWallInfoResponse>> {
         return rest.request(
             "execute", form(
                 "code" to code,
@@ -32,7 +32,7 @@ class IUsersService : IServiceRest() {
         count: Int?,
         fields: String?,
         nameCase: String?
-    ): Single<BaseResponse<Items<VKApiUser>>> {
+    ): Flow<BaseResponse<Items<VKApiUser>>> {
         return rest.request(
             "users.getFollowers", form(
                 "user_id" to userId,
@@ -50,7 +50,7 @@ class IUsersService : IServiceRest() {
         extended: Int?,
         out: Int?,
         fields: String?
-    ): Single<BaseResponse<Items<VKApiUser>>> {
+    ): Flow<BaseResponse<Items<VKApiUser>>> {
         return rest.request(
             "friends.getRequests", form(
                 "offset" to offset,
@@ -97,7 +97,7 @@ class IUsersService : IServiceRest() {
         position: String?,
         groupId: Long?,
         fromList: String?
-    ): Single<BaseResponse<Items<VKApiUser>>> {
+    ): Flow<BaseResponse<Items<VKApiUser>>> {
         return rest.request(
             "users.search", form(
                 "q" to query,
@@ -157,7 +157,7 @@ class IUsersService : IServiceRest() {
         userIds: String?,
         fields: String?,
         nameCase: String?
-    ): Single<BaseResponse<List<VKApiUser>>> {
+    ): Flow<BaseResponse<List<VKApiUser>>> {
         return rest.request(
             "users.get", form(
                 "user_ids" to userIds,
@@ -171,7 +171,7 @@ class IUsersService : IServiceRest() {
         userId: Long?,
         type: String?,
         comment: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "users.report", form(
                 "user_id" to userId,
@@ -185,7 +185,7 @@ class IUsersService : IServiceRest() {
         user_id: Long?,
         count: Int?,
         offset: Int?
-    ): Single<BaseResponse<Items<VKApiGift>>> {
+    ): Flow<BaseResponse<Items<VKApiGift>>> {
         return rest.request(
             "gifts.get", form(
                 "user_id" to user_id,
@@ -198,7 +198,7 @@ class IUsersService : IServiceRest() {
     fun checkAndAddFriend(
         code: String?,
         user_id: Long?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "execute", form(
                 "code" to code,

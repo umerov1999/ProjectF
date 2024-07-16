@@ -10,7 +10,7 @@ import dev.ragnarok.fenrir.api.model.response.WallEditResponse
 import dev.ragnarok.fenrir.api.model.response.WallResponse
 import dev.ragnarok.fenrir.api.model.response.WallSearchResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class IWallService : IServiceRest() {
     //https://vk.com/dev/wall.search
@@ -23,7 +23,7 @@ class IWallService : IServiceRest() {
         offset: Int?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<WallSearchResponse>> {
+    ): Flow<BaseResponse<WallSearchResponse>> {
         return rest.request(
             "wall.search", form(
                 "owner_id" to ownerId,
@@ -52,7 +52,7 @@ class IWallService : IServiceRest() {
         longitude: Double?,
         placeId: Int?,
         markAsAds: Int?
-    ): Single<BaseResponse<WallEditResponse>> {
+    ): Flow<BaseResponse<WallEditResponse>> {
         return rest.request(
             "wall.edit", form(
                 "owner_id" to ownerId,
@@ -75,7 +75,7 @@ class IWallService : IServiceRest() {
     fun pin(
         ownerId: Long?,
         postId: Int
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "wall.pin", form(
                 "owner_id" to ownerId,
@@ -88,7 +88,7 @@ class IWallService : IServiceRest() {
     fun unpin(
         ownerId: Long?,
         postId: Int
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "wall.unpin", form(
                 "owner_id" to ownerId,
@@ -103,7 +103,7 @@ class IWallService : IServiceRest() {
         message: String?,
         groupId: Long?,
         markAsAds: Int?
-    ): Single<BaseResponse<RepostReponse>> {
+    ): Flow<BaseResponse<RepostReponse>> {
         return rest.request(
             "wall.repost", form(
                 "object" to pobject,
@@ -131,7 +131,7 @@ class IWallService : IServiceRest() {
         guid: Int?,
         markAsAds: Int?,
         adsPromotedStealth: Int?
-    ): Single<BaseResponse<PostCreateResponse>> {
+    ): Flow<BaseResponse<PostCreateResponse>> {
         return rest.request(
             "wall.post", form(
                 "owner_id" to ownerId,
@@ -164,7 +164,7 @@ class IWallService : IServiceRest() {
     fun delete(
         ownerId: Long?,
         postId: Int
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "wall.delete", form(
                 "owner_id" to ownerId,
@@ -184,7 +184,7 @@ class IWallService : IServiceRest() {
     fun restoreComment(
         ownerId: Long?,
         commentId: Int
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "wall.restoreComment", form(
                 "owner_id" to ownerId,
@@ -204,7 +204,7 @@ class IWallService : IServiceRest() {
     fun deleteComment(
         ownerId: Long?,
         commentId: Int
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "wall.deleteComment", form(
                 "owner_id" to ownerId,
@@ -225,7 +225,7 @@ class IWallService : IServiceRest() {
     fun restore(
         ownerId: Long?,
         postId: Int
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "wall.restore", form(
                 "owner_id" to ownerId,
@@ -260,7 +260,7 @@ class IWallService : IServiceRest() {
         commentId: Int,
         message: String?,
         attachments: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "wall.editComment", form(
                 "owner_id" to ownerId,
@@ -280,7 +280,7 @@ class IWallService : IServiceRest() {
         attachments: String?,
         stickerId: Int?,
         generatedUniqueId: Int?
-    ): Single<BaseResponse<CommentCreateResponse>> {
+    ): Flow<BaseResponse<CommentCreateResponse>> {
         return rest.request(
             "wall.createComment", form(
                 "owner_id" to ownerId,
@@ -307,7 +307,7 @@ class IWallService : IServiceRest() {
         extended: Int?,
         thread_items_count: Int?,
         fields: String?
-    ): Single<BaseResponse<DefaultCommentsResponse>> {
+    ): Flow<BaseResponse<DefaultCommentsResponse>> {
         return rest.request(
             "wall.getComments", form(
                 "owner_id" to ownerId,
@@ -332,7 +332,7 @@ class IWallService : IServiceRest() {
         filter: String?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<WallResponse>> {
+    ): Flow<BaseResponse<WallResponse>> {
         return rest.request(
             "wall.get", form(
                 "owner_id" to ownerId,
@@ -351,7 +351,7 @@ class IWallService : IServiceRest() {
         extended: Int?,
         copyHistoryDepth: Int?,
         fields: String?
-    ): Single<BaseResponse<PostsResponse>> {
+    ): Flow<BaseResponse<PostsResponse>> {
         return rest.request(
             "wall.getById", form(
                 "posts" to ids,
@@ -366,7 +366,7 @@ class IWallService : IServiceRest() {
         owner_id: Long?,
         comment_id: Int?,
         reason: Int?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "wall.reportComment", form(
                 "owner_id" to owner_id,
@@ -380,7 +380,7 @@ class IWallService : IServiceRest() {
         owner_id: Long?,
         post_id: Int?,
         reason: Int?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "wall.reportPost", form(
                 "owner_id" to owner_id,
@@ -390,11 +390,11 @@ class IWallService : IServiceRest() {
         )
     }
 
-    fun subscribe(owner_id: Long?): Single<BaseResponse<Int>> {
+    fun subscribe(owner_id: Long?): Flow<BaseResponse<Int>> {
         return rest.request("wall.subscribe", form("owner_id" to owner_id), baseInt)
     }
 
-    fun unsubscribe(owner_id: Long?): Single<BaseResponse<Int>> {
+    fun unsubscribe(owner_id: Long?): Flow<BaseResponse<Int>> {
         return rest.request("wall.unsubscribe", form("owner_id" to owner_id), baseInt)
     }
 }

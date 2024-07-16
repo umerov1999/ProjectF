@@ -7,16 +7,19 @@ import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transform
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.model.Chat
 import dev.ragnarok.fenrir.model.Peer
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 class DialogsInteractor(private val networker: INetworker, private val repositories: IStorages) :
     IDialogsInteractor {
-    override fun getChatById(accountId: Long, peerId: Long): Single<Chat> {
+    override fun getChatById(accountId: Long, peerId: Long): Flow<Chat> {
         return repositories.dialogs()
             .findChatById(accountId, peerId)
-            .flatMap { optional ->
+            .flatMapConcat { optional ->
                 if (optional.nonEmpty()) {
-                    Single.just(optional.requireNonEmpty())
+                    toFlow(optional.requireNonEmpty())
                 } else {
                     val chatId = Peer.toChatId(peerId)
                     networker.vkDefault(accountId)

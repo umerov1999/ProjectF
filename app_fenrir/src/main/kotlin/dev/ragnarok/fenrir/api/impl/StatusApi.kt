@@ -4,16 +4,19 @@ import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.IStatusApi
 import dev.ragnarok.fenrir.api.services.IStatusService
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.checkInt
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 internal class StatusApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IStatusApi {
-    override fun set(text: String?, groupId: Long?): Single<Boolean> {
+    override fun set(text: String?, groupId: Long?): Flow<Boolean> {
         return provideService(IStatusService(), TokenType.USER)
-            .flatMap { service ->
-                service.set(text, groupId)
+            .flatMapConcat {
+                it.set(text, groupId)
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 }

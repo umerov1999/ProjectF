@@ -7,7 +7,9 @@ import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transform
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformUsers
 import dev.ragnarok.fenrir.model.Poll
 import dev.ragnarok.fenrir.model.User
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 class PollInteractor(private val networker: INetworker) : IPollInteractor {
     override fun createPoll(
@@ -19,18 +21,18 @@ class PollInteractor(private val networker: INetworker) : IPollInteractor {
         backgroundId: Int?,
         ownerId: Long,
         options: List<String>
-    ): Single<Poll> {
+    ): Flow<Poll> {
         return networker.vkDefault(accountId)
             .polls()
             .create(question, anon, multiple, disableUnvote, backgroundId, ownerId, options)
             .map { transform(it) }
     }
 
-    override fun addVote(accountId: Long, poll: Poll, answerIds: Set<Long>): Single<Poll> {
+    override fun addVote(accountId: Long, poll: Poll, answerIds: Set<Long>): Flow<Poll> {
         return networker.vkDefault(accountId)
             .polls()
             .addVote(poll.ownerId, poll.id, answerIds, poll.isBoard)
-            .flatMap {
+            .flatMapConcat {
                 getPollById(
                     accountId,
                     poll.ownerId,
@@ -40,11 +42,11 @@ class PollInteractor(private val networker: INetworker) : IPollInteractor {
             }
     }
 
-    override fun removeVote(accountId: Long, poll: Poll, answerId: Long): Single<Poll> {
+    override fun removeVote(accountId: Long, poll: Poll, answerId: Long): Flow<Poll> {
         return networker.vkDefault(accountId)
             .polls()
             .deleteVote(poll.ownerId, poll.id, answerId, poll.isBoard)
-            .flatMap {
+            .flatMapConcat {
                 getPollById(
                     accountId,
                     poll.ownerId,
@@ -54,11 +56,11 @@ class PollInteractor(private val networker: INetworker) : IPollInteractor {
             }
     }
 
-    override fun getBackgrounds(accountId: Long): Single<List<Poll.PollBackground>> {
+    override fun getBackgrounds(accountId: Long): Flow<List<Poll.PollBackground>> {
         return networker.vkDefault(accountId)
             .polls()
             .getBackgrounds()
-            .flatMap {
+            .map {
                 val tmpList = ArrayList<Poll.PollBackground>(it.size + 1)
                 tmpList.add(Poll.PollBackground(-1).setName("default"))
                 for (i in it) {
@@ -67,7 +69,7 @@ class PollInteractor(private val networker: INetworker) : IPollInteractor {
                         tmpList.add(s)
                     }
                 }
-                Single.just(tmpList)
+                tmpList
             }
     }
 
@@ -76,7 +78,7 @@ class PollInteractor(private val networker: INetworker) : IPollInteractor {
         ownerId: Long,
         pollId: Int,
         isBoard: Boolean
-    ): Single<Poll> {
+    ): Flow<Poll> {
         return networker.vkDefault(accountId)
             .polls()
             .getById(ownerId, isBoard, pollId)
@@ -95,7 +97,7 @@ class PollInteractor(private val networker: INetworker) : IPollInteractor {
         answer_ids: List<Long>,
         offset: Int?,
         count: Int?
-    ): Single<List<User>> {
+    ): Flow<List<User>> {
         return networker.vkDefault(accountId)
             .polls()
             .getVoters(ownerId, pollId, isBoard, answer_ids, offset, count)

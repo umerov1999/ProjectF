@@ -10,13 +10,15 @@ import dev.ragnarok.fenrir.isMsgPack
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.util.serializeble.json.decodeFromBufferedSource
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.KSerializer
 import okhttp3.FormBody
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import kotlin.coroutines.cancellation.CancellationException
 
 class SimplePostHttp(
     private val baseUrl: String?,
@@ -33,7 +35,7 @@ class SimplePostHttp(
         body: RequestBody?,
         serial: KSerializer<T>,
         onlySuccessful: Boolean = true
-    ): Single<T> {
+    ): Flow<T> {
         return requestInternal(
             url,
             body,
@@ -44,8 +46,8 @@ class SimplePostHttp(
     fun requestAndGetURLFromRedirects(
         methodOrFullUrl: String,
         body: RequestBody?
-    ): Single<VKUrlResponse> {
-        return Single.create { emitter ->
+    ): Flow<VKUrlResponse> {
+        return flow {
             val request = Request.Builder()
                 .url(
                     if (baseUrl.isNullOrEmpty()) methodOrFullUrl else "$baseUrl/$methodOrFullUrl"
@@ -54,13 +56,12 @@ class SimplePostHttp(
                 { request.post(it) }, { request.get() }
             )
             val call = client.newCall(request.build())
-            emitter.setCancellable { call.cancel() }
             try {
                 val response = call.execute()
                 if (response.isSuccessful) {
                     val ret = VKUrlResponse()
                     ret.resultUrl = response.request.url.toString()
-                    emitter.onSuccess(ret)
+                    emit(ret)
                 } else {
                     val ret = if (response.body.isMsgPack()) MsgPack().decodeFromOkioStream(
                         VKUrlResponse.serializer(), response.body.source()
@@ -70,13 +71,12 @@ class SimplePostHttp(
                         throw UnsupportedOperationException()
                     }
                     ret.resultUrl = null
-                    emitter.onSuccess(
-                        ret
-                    )
+                    emit(ret)
                 }
                 response.close()
-            } catch (e: Exception) {
-                emitter.tryOnError(e)
+            } catch (e: CancellationException) {
+                call.cancel()
+                throw e
             }
         }
     }
@@ -86,7 +86,7 @@ class SimplePostHttp(
         body: RequestBody?,
         serial: KSerializer<T>,
         onlySuccessful: Boolean = true
-    ): Single<T> {
+    ): Flow<T> {
         return requestInternal(
             if (baseUrl.isNullOrEmpty()) methodOrFullUrl else "$baseUrl/$methodOrFullUrl",
             body,
@@ -99,8 +99,8 @@ class SimplePostHttp(
         body: RequestBody?,
         serial: KSerializer<T>,
         onlySuccessful: Boolean
-    ): Single<T> {
-        return Single.create { emitter ->
+    ): Flow<T> {
+        return flow {
             val request = Request.Builder()
                 .url(
                     url
@@ -109,11 +109,10 @@ class SimplePostHttp(
                 { request.post(it) }, { request.get() }
             )
             val call = client.newCall(request.build())
-            emitter.setCancellable { call.cancel() }
             try {
                 val response = call.execute()
                 if (!response.isSuccessful && onlySuccessful) {
-                    emitter.tryOnError(HttpException(response.code))
+                    throw HttpException(response.code)
                 } else {
                     val ret = if (response.body.isMsgPack()) MsgPack().decodeFromOkioStream(
                         serial, response.body.source()
@@ -152,13 +151,12 @@ class SimplePostHttp(
                             it.requestParams = o
                         }
                     }
-                    emitter.onSuccess(
-                        ret
-                    )
+                    emit(ret)
                 }
                 response.close()
-            } catch (e: Exception) {
-                emitter.tryOnError(e)
+            } catch (e: CancellationException) {
+                call.cancel()
+                throw e
             }
         }
     }
@@ -167,7 +165,7 @@ class SimplePostHttp(
         methodOrFullUrl: String,
         part: MultipartBody.Part,
         serial: KSerializer<T>, onlySuccessful: Boolean = true
-    ): Single<T> {
+    ): Flow<T> {
         val requestBodyMultipart: RequestBody =
             MultipartBody.Builder().setType(MultipartBody.FORM).addPart(part).build()
         return request(methodOrFullUrl, requestBodyMultipart, serial, onlySuccessful)
@@ -177,7 +175,7 @@ class SimplePostHttp(
         url: String,
         part: MultipartBody.Part,
         serial: KSerializer<T>, onlySuccessful: Boolean = true
-    ): Single<T> {
+    ): Flow<T> {
         val requestBodyMultipart: RequestBody =
             MultipartBody.Builder().setType(MultipartBody.FORM).addPart(part).build()
         return requestFullUrl(url, requestBodyMultipart, serial, onlySuccessful)

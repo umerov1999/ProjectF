@@ -5,11 +5,8 @@ import dev.ragnarok.fenrir.db.interfaces.IKeysStorage
 import dev.ragnarok.fenrir.db.interfaces.IStorages
 import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.wrap
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.MaybeEmitter
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.util.concurrent.CopyOnWriteArrayList
 
 internal class KeysRamStorage : IKeysStorage {
@@ -23,26 +20,26 @@ internal class KeysRamStorage : IKeysStorage {
         return list
     }
 
-    override fun saveKeyPair(pair: AesKeyPair): Completable {
-        return Completable.create { e ->
+    override fun saveKeyPair(pair: AesKeyPair): Flow<Boolean> {
+        return flow {
             prepareKeysFor(pair.accountId).add(pair)
-            e.onComplete()
+            emit(true)
         }
     }
 
-    override fun getAll(accountId: Long): Single<List<AesKeyPair>> {
-        return Single.create { e: SingleEmitter<List<AesKeyPair>> ->
+    override fun getAll(accountId: Long): Flow<List<AesKeyPair>> {
+        return flow {
             val list: List<AesKeyPair>? = mData[accountId]
             val result: MutableList<AesKeyPair> = ArrayList(if (list == null) 0 else 1)
             if (list != null) {
                 result.addAll(list)
             }
-            e.onSuccess(result)
+            emit(result)
         }
     }
 
-    override fun getKeys(accountId: Long, peerId: Long): Single<List<AesKeyPair>> {
-        return Single.create { e: SingleEmitter<List<AesKeyPair>> ->
+    override fun getKeys(accountId: Long, peerId: Long): Flow<List<AesKeyPair>> {
+        return flow {
             val list: List<AesKeyPair>? = mData[accountId]
             val result: MutableList<AesKeyPair> = ArrayList(if (list == null) 0 else 1)
             if (list != null) {
@@ -52,12 +49,12 @@ internal class KeysRamStorage : IKeysStorage {
                     }
                 }
             }
-            e.onSuccess(result)
+            emit(result)
         }
     }
 
-    override fun findLastKeyPair(accountId: Long, peerId: Long): Single<Optional<AesKeyPair>> {
-        return Single.create { e: SingleEmitter<Optional<AesKeyPair>> ->
+    override fun findLastKeyPair(accountId: Long, peerId: Long): Flow<Optional<AesKeyPair>> {
+        return flow {
             val list: List<AesKeyPair>? = mData[accountId]
             var result: AesKeyPair? = null
             if (list != null) {
@@ -67,12 +64,12 @@ internal class KeysRamStorage : IKeysStorage {
                     }
                 }
             }
-            e.onSuccess(wrap(result))
+            emit(wrap(result))
         }
     }
 
-    override fun findKeyPairFor(accountId: Long, sessionId: Long): Maybe<AesKeyPair> {
-        return Maybe.create { e: MaybeEmitter<AesKeyPair> ->
+    override fun findKeyPairFor(accountId: Long, sessionId: Long): Flow<AesKeyPair?> {
+        return flow {
             val pairs: List<AesKeyPair>? = mData[accountId]
             var result: AesKeyPair? = null
             if (pairs != null) {
@@ -83,17 +80,14 @@ internal class KeysRamStorage : IKeysStorage {
                     }
                 }
             }
-            if (result != null) {
-                e.onSuccess(result)
-            }
-            e.onComplete()
+            emit(result)
         }
     }
 
-    override fun deleteAll(accountId: Long): Completable {
-        return Completable.create { e ->
+    override fun deleteAll(accountId: Long): Flow<Boolean> {
+        return flow {
             mData.remove(accountId)
-            e.onComplete()
+            emit(true)
         }
     }
 

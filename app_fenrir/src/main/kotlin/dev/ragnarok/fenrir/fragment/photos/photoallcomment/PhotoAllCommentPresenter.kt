@@ -14,17 +14,16 @@ import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.domain.impl.CommentsInteractor
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.AccessIdPairModel
 import dev.ragnarok.fenrir.model.Comment
 import dev.ragnarok.fenrir.model.WallReply
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.util.DisposableHolder
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.dummy
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.dummy
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class PhotoAllCommentPresenter(
     accountId: Long,
@@ -35,8 +34,8 @@ class PhotoAllCommentPresenter(
     private val interactor: ICommentsInteractor =
         CommentsInteractor(networkInterfaces, stores, owners)
     private val mComments: ArrayList<Comment> = ArrayList()
-    private val netDisposable = CompositeDisposable()
-    private val deepLookingHolder = DisposableHolder<Void>()
+    private val netDisposable = CompositeJob()
+    private val deepLookingHolder = CompositeJob()
     private var mEndOfContent = false
     private var cacheLoadingNow = false
     private var netLoadingNow = false
@@ -47,8 +46,8 @@ class PhotoAllCommentPresenter(
     }
 
     override fun onDestroyed() {
-        netDisposable.dispose()
-        deepLookingHolder.dispose()
+        netDisposable.cancel()
+        deepLookingHolder.cancel()
         super.onDestroyed()
     }
 
@@ -62,8 +61,7 @@ class PhotoAllCommentPresenter(
             offset,
             COUNT_PER_REQUEST
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 onNetDataReceived(
                     offset,
                     it
@@ -131,12 +129,11 @@ class PhotoAllCommentPresenter(
     }
 
     fun fireGoPhotoClick(comment: Comment) {
-        appendDisposable(photosInteractor.getPhotosByIds(
+        appendJob(photosInteractor.getPhotosByIds(
             accountId,
             listOf(AccessIdPairModel(comment.commented.sourceId, owner_id, null))
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 view?.openSimplePhotoGallery(
                     accountId,
                     ArrayList(it),
@@ -155,9 +152,8 @@ class PhotoAllCommentPresenter(
         ) {
             return
         }
-        appendDisposable(interactor.like(accountId, comment.commented, comment.getObjectId(), add)
-            .fromIOToMain()
-            .subscribe(dummy()) { t ->
+        appendJob(interactor.like(accountId, comment.commented, comment.getObjectId(), add)
+            .fromIOToMain(dummy()) { t ->
                 showError(t)
             })
     }
@@ -176,15 +172,14 @@ class PhotoAllCommentPresenter(
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.report)
             .setItems(items) { dialog, item ->
-                appendDisposable(
+                appendJob(
                     interactor.reportComment(
                         accountId,
                         comment.fromId,
                         comment.getObjectId(),
                         item
                     )
-                        .fromIOToMain()
-                        .subscribe({ p ->
+                        .fromIOToMain({ p ->
                             if (p == 1) view?.customToast?.showToast(
                                 R.string.success
                             )
@@ -242,21 +237,20 @@ class PhotoAllCommentPresenter(
         }
         val older = firstCommentInList
         view?.displayDeepLookingCommentProgress()
-        deepLookingHolder.append(older?.getObjectId()?.let { it1 ->
+        older?.getObjectId()?.let { it1 ->
             interactor.getAllCommentsRange(
                 accountId,
                 older.commented,
                 it1,
                 commentId
             )
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain({
                     onDeepCommentLoadingResponse(
                         commentId,
                         it
                     )
                 }) { throwable -> onDeepCommentLoadingError(throwable) }
-        })
+        }?.let { deepLookingHolder.add(it) }
     }
 
     private fun onDeepCommentLoadingError(throwable: Throwable) {
@@ -296,12 +290,12 @@ class PhotoAllCommentPresenter(
     }
 
     override fun onGuiDestroyed() {
-        deepLookingHolder.dispose()
+        deepLookingHolder.clear()
         super.onGuiDestroyed()
     }
 
     fun fireDeepLookingCancelledByUser() {
-        deepLookingHolder.dispose()
+        deepLookingHolder.clear()
     }
 
     companion object {

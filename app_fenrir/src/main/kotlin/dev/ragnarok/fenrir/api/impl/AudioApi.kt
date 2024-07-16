@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.api.impl
 
+import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.interfaces.IAudioApi
@@ -19,17 +20,19 @@ import dev.ragnarok.fenrir.api.model.server.VKApiAudioUploadServer
 import dev.ragnarok.fenrir.api.services.IAudioService
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.nonNullNoEmpty
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.single
 
 internal class AudioApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IAudioApi {
-    override fun setBroadcast(audio: AccessIdPair, targetIds: Collection<Long>): Single<List<Int>> {
+    override fun setBroadcast(audio: AccessIdPair, targetIds: Collection<Long>): Flow<List<Int>> {
         val f = join(setOf(audio), ",") { AccessIdPair.format(it) }
         val s = join(targetIds, ",")
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .setBroadcast(f, s)
+            .flatMapConcat {
+                it.setBroadcast(f, s)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -43,20 +46,19 @@ internal class AudioApi(accountId: Long, provider: IServiceProvider) :
         searchOwn: Boolean?,
         offset: Int?,
         count: Int?
-    ): Single<Items<VKApiAudio>> {
+    ): Flow<Items<VKApiAudio>> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .search(
-                        query,
-                        integerFromBoolean(autoComplete),
-                        integerFromBoolean(lyrics),
-                        integerFromBoolean(performerOnly),
-                        sort,
-                        integerFromBoolean(searchOwn),
-                        offset,
-                        count
-                    )
+            .flatMapConcat {
+                it.search(
+                    query,
+                    integerFromBoolean(autoComplete),
+                    integerFromBoolean(lyrics),
+                    integerFromBoolean(performerOnly),
+                    sort,
+                    integerFromBoolean(searchOwn),
+                    offset,
+                    count
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -65,11 +67,10 @@ internal class AudioApi(accountId: Long, provider: IServiceProvider) :
         query: String?,
         offset: Int?,
         count: Int?
-    ): Single<Items<VKApiArtist>> {
+    ): Flow<Items<VKApiArtist>> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .searchArtists(query, offset, count)
+            .flatMapConcat {
+                it.searchArtists(query, offset, count)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -78,36 +79,34 @@ internal class AudioApi(accountId: Long, provider: IServiceProvider) :
         query: String?,
         offset: Int?,
         count: Int?
-    ): Single<Items<VKApiAudioPlaylist>> {
+    ): Flow<Items<VKApiAudioPlaylist>> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .searchPlaylists(query, offset, count)
+            .flatMapConcat {
+                it.searchPlaylists(query, offset, count)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun restore(audioId: Int, ownerId: Long?): Single<VKApiAudio> {
+    override fun restore(audioId: Int, ownerId: Long?): Flow<VKApiAudio> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .restore(audioId, ownerId)
+            .flatMapConcat {
+                it.restore(audioId, ownerId)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun delete(audioId: Int, ownerId: Long): Single<Boolean> {
+    override fun delete(audioId: Int, ownerId: Long): Flow<Boolean> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .delete(audioId, ownerId)
+            .flatMapConcat {
+                it.delete(audioId, ownerId)
                     .map(extractResponseWithErrorHandling())
-                    .map {
-                        if (it == 1) {
+                    .map { s ->
+                        if (s == 1) {
                             Includes.stores.tempStore().deleteAudio(accountId, audioId, ownerId)
-                                .blockingAwait()
+                                .single()
+                        } else {
+                            false
                         }
-                        it == 1
                     }
             }
     }
@@ -117,20 +116,18 @@ internal class AudioApi(accountId: Long, provider: IServiceProvider) :
         audioId: Int,
         artist: String?,
         title: String?
-    ): Single<Int> {
+    ): Flow<Int> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .edit(ownerId, audioId, artist, title)
+            .flatMapConcat {
+                it.edit(ownerId, audioId, artist, title)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun add(audioId: Int, ownerId: Long, groupId: Long?, accessKey: String?): Single<Int> {
+    override fun add(audioId: Int, ownerId: Long, groupId: Long?, accessKey: String?): Flow<Int> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .add(audioId, ownerId, groupId, accessKey)
+            .flatMapConcat {
+                it.add(audioId, ownerId, groupId, accessKey)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -139,11 +136,10 @@ internal class AudioApi(accountId: Long, provider: IServiceProvider) :
         ownerId: Long,
         title: String?,
         description: String?
-    ): Single<VKApiAudioPlaylist> {
+    ): Flow<VKApiAudioPlaylist> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .createPlaylist(ownerId, title, description)
+            .flatMapConcat {
+                it.createPlaylist(ownerId, title, description)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -153,11 +149,10 @@ internal class AudioApi(accountId: Long, provider: IServiceProvider) :
         playlist_id: Int,
         title: String?,
         description: String?
-    ): Single<Int> {
+    ): Flow<Int> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .editPlaylist(ownerId, playlist_id, title, description)
+            .flatMapConcat {
+                it.editPlaylist(ownerId, playlist_id, title, description)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -166,14 +161,13 @@ internal class AudioApi(accountId: Long, provider: IServiceProvider) :
         ownerId: Long,
         playlist_id: Int,
         audio_ids: Collection<AccessIdPair>
-    ): Single<Int> {
+    ): Flow<Int> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .removeFromPlaylist(
-                        ownerId,
-                        playlist_id,
-                        join(audio_ids, ",") { AccessIdPair.format(it) })
+            .flatMapConcat { s ->
+                s.removeFromPlaylist(
+                    ownerId,
+                    playlist_id,
+                    join(audio_ids, ",") { AccessIdPair.format(it) })
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -182,41 +176,38 @@ internal class AudioApi(accountId: Long, provider: IServiceProvider) :
         ownerId: Long,
         playlist_id: Int,
         audio_ids: Collection<AccessIdPair>
-    ): Single<List<AddToPlaylistResponse>> {
+    ): Flow<List<AddToPlaylistResponse>> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .addToPlaylist(
-                        ownerId,
-                        playlist_id,
-                        join(audio_ids, ",") { AccessIdPair.format(it) })
+            .flatMapConcat { s ->
+                s.addToPlaylist(
+                    ownerId,
+                    playlist_id,
+                    join(audio_ids, ",") { AccessIdPair.format(it) })
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun reorder(ownerId: Long, audio_id: Int, before: Int?, after: Int?): Single<Int> {
+    override fun reorder(ownerId: Long, audio_id: Int, before: Int?, after: Int?): Flow<Int> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .reorder(ownerId, audio_id, before, after)
+            .flatMapConcat {
+                it.reorder(ownerId, audio_id, before, after)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun trackEvents(events: String?): Single<Int> {
+    override fun trackEvents(events: String?): Flow<Int> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .trackEvents(events)
+            .flatMapConcat {
+                it.trackEvents(events)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
     override fun getCatalogV2Sections(
         owner_id: Long, artist_id: String?, url: String?, query: String?, context: String?
-    ): Single<VKApiCatalogV2ListResponse> {
+    ): Flow<VKApiCatalogV2ListResponse> {
         return provideService(IAudioService())
-            .flatMap { service ->
+            .flatMapConcat { service ->
                 (if (artist_id.nonNullNoEmpty()) service.getCatalogV2Artist(
                     artist_id,
                     0
@@ -233,11 +224,10 @@ internal class AudioApi(accountId: Long, provider: IServiceProvider) :
 
     override fun getCatalogV2BlockItems(
         block_id: String, start_from: String?
-    ): Single<VKApiCatalogV2BlockResponse> {
+    ): Flow<VKApiCatalogV2BlockResponse> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .getCatalogV2BlockItems(block_id, start_from)
+            .flatMapConcat {
+                it.getCatalogV2BlockItems(block_id, start_from)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -245,19 +235,18 @@ internal class AudioApi(accountId: Long, provider: IServiceProvider) :
     override fun getCatalogV2Section(
         section_id: String,
         start_from: String?
-    ): Single<VKApiCatalogV2SectionResponse> {
+    ): Flow<VKApiCatalogV2SectionResponse> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service.getCatalogV2Section(section_id, start_from)
+            .flatMapConcat {
+                it.getCatalogV2Section(section_id, start_from)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun deletePlaylist(playlist_id: Int, ownerId: Long): Single<Int> {
+    override fun deletePlaylist(playlist_id: Int, ownerId: Long): Flow<Int> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .deletePlaylist(playlist_id, ownerId)
+            .flatMapConcat {
+                it.deletePlaylist(playlist_id, ownerId)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -266,20 +255,18 @@ internal class AudioApi(accountId: Long, provider: IServiceProvider) :
         playlist_id: Int,
         ownerId: Long,
         accessKey: String?
-    ): Single<VKApiAudioPlaylist> {
+    ): Flow<VKApiAudioPlaylist> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .followPlaylist(playlist_id, ownerId, accessKey)
+            .flatMapConcat {
+                it.followPlaylist(playlist_id, ownerId, accessKey)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun clonePlaylist(playlist_id: Int, ownerId: Long): Single<VKApiAudioPlaylist> {
+    override fun clonePlaylist(playlist_id: Int, ownerId: Long): Flow<VKApiAudioPlaylist> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .clonePlaylist(playlist_id, ownerId)
+            .flatMapConcat {
+                it.clonePlaylist(playlist_id, ownerId)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -288,11 +275,10 @@ internal class AudioApi(accountId: Long, provider: IServiceProvider) :
         playlist_id: Int,
         ownerId: Long,
         accessKey: String?
-    ): Single<VKApiAudioPlaylist> {
+    ): Flow<VKApiAudioPlaylist> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .getPlaylistById(playlist_id, ownerId, accessKey)
+            .flatMapConcat {
+                it.getPlaylistById(playlist_id, ownerId, accessKey)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -303,52 +289,51 @@ internal class AudioApi(accountId: Long, provider: IServiceProvider) :
         offset: Int?,
         count: Int?,
         accessKey: String?
-    ): Single<Items<VKApiAudio>> {
-        return provideService(IAudioService()).flatMap { service ->
-            service[playlist_id, ownerId, offset, count, accessKey].map(
-                extractResponseWithErrorHandling()
-            )
-        }
+    ): Flow<Items<VKApiAudio>> {
+        return provideService(IAudioService())
+            .flatMapConcat {
+                it[playlist_id, ownerId, offset, count, accessKey].map(
+                    extractResponseWithErrorHandling()
+                )
+            }
     }
 
     override fun getAudiosByArtist(
         artist_id: String?,
         offset: Int?,
         count: Int?
-    ): Single<Items<VKApiAudio>> {
-        return provideService(IAudioService()).flatMap { service ->
-            service.getAudiosByArtist(artist_id, offset, count).map(
-                extractResponseWithErrorHandling()
-            )
-        }
+    ): Flow<Items<VKApiAudio>> {
+        return provideService(IAudioService())
+            .flatMapConcat {
+                it.getAudiosByArtist(artist_id, offset, count).map(
+                    extractResponseWithErrorHandling()
+                )
+            }
     }
 
     override fun getPopular(
         foreign: Int?,
         genre: Int?, count: Int?
-    ): Single<List<VKApiAudio>> {
+    ): Flow<List<VKApiAudio>> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .getPopular(foreign, genre, count)
+            .flatMapConcat {
+                it.getPopular(foreign, genre, count)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getRecommendations(audioOwnerId: Long?, count: Int?): Single<Items<VKApiAudio>> {
+    override fun getRecommendations(audioOwnerId: Long?, count: Int?): Flow<Items<VKApiAudio>> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .getRecommendations(audioOwnerId, count)
+            .flatMapConcat {
+                it.getRecommendations(audioOwnerId, count)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getRecommendationsByAudio(audio: String?, count: Int?): Single<Items<VKApiAudio>> {
+    override fun getRecommendationsByAudio(audio: String?, count: Int?): Flow<Items<VKApiAudio>> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .getRecommendationsByAudio(audio, count)
+            .flatMapConcat {
+                it.getRecommendationsByAudio(audio, count)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -357,68 +342,63 @@ internal class AudioApi(accountId: Long, provider: IServiceProvider) :
         owner_id: Long,
         offset: Int,
         count: Int
-    ): Single<Items<VKApiAudioPlaylist>> {
+    ): Flow<Items<VKApiAudioPlaylist>> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .getPlaylists(owner_id, offset, count)
+            .flatMapConcat {
+                it.getPlaylists(owner_id, offset, count)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getPlaylistsCustom(code: String?): Single<ServicePlaylistResponse> {
+    override fun getPlaylistsCustom(code: String?): Flow<ServicePlaylistResponse> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .getPlaylistsCustom(code)
+            .flatMapConcat {
+                it.getPlaylistsCustom(code)
             }
     }
 
-    override fun getById(audios: List<Audio>): Single<List<VKApiAudio>> {
+    override fun getById(audios: List<Audio>): Flow<List<VKApiAudio>> {
         val ids = ArrayList<AccessIdPair>(audios.size)
         for (i in audios) {
             ids.add(AccessIdPair(i.id, i.ownerId, i.accessKey))
         }
         val audio_string = join(ids, ",") { AccessIdPair.format(it) }
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .getById(audio_string)
+            .flatMapConcat {
+                it.getById(audio_string)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getByIdOld(audios: List<Audio>): Single<List<VKApiAudio>> {
+    override fun getByIdOld(audios: List<Audio>): Flow<List<VKApiAudio>> {
         val ids = ArrayList<AccessIdPair>(audios.size)
         for (i in audios) {
             ids.add(AccessIdPair(i.id, i.ownerId, i.accessKey))
         }
         val audio_string = join(ids, ",") { AccessIdPair.format(it) }
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .getByIdVersioned(audio_string, "5.90")
+            .flatMapConcat {
+                it.getByIdVersioned(audio_string, Constants.OLD_API_FOR_AUDIO_VERSION)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getLyrics(audio: Audio): Single<VKApiLyrics> {
+    override fun getLyrics(audio: Audio): Flow<VKApiLyrics> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .getLyrics(
-                        join(
-                            listOf(AccessIdPair(audio.id, audio.ownerId, audio.accessKey)),
-                            ","
-                        ) { AccessIdPair.format(it) })
+            .flatMapConcat { s ->
+                s.getLyrics(
+                    join(
+                        listOf(AccessIdPair(audio.id, audio.ownerId, audio.accessKey)),
+                        ","
+                    ) { AccessIdPair.format(it) })
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override val uploadServer: Single<VKApiAudioUploadServer>
+    override val uploadServer: Flow<VKApiAudioUploadServer>
         get() = provideService(IAudioService())
-            .flatMap { service ->
-                service.uploadServer
+            .flatMapConcat {
+                it.uploadServer
                     .map(extractResponseWithErrorHandling())
             }
 
@@ -428,21 +408,20 @@ internal class AudioApi(accountId: Long, provider: IServiceProvider) :
         hash: String?,
         artist: String?,
         title: String?
-    ): Single<VKApiAudio> {
+    ): Flow<VKApiAudio> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service.save(server, audio, hash, artist, title)
+            .flatMapConcat {
+                it.save(server, audio, hash, artist, title)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
     override fun getArtistById(
         artist_id: String
-    ): Single<ArtistInfo> {
+    ): Flow<ArtistInfo> {
         return provideService(IAudioService())
-            .flatMap { service ->
-                service
-                    .getArtistById(artist_id)
+            .flatMapConcat {
+                it.getArtistById(artist_id)
                     .map(extractResponseWithErrorHandling())
             }
     }

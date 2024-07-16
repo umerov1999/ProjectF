@@ -6,10 +6,12 @@ import dev.ragnarok.fenrir.model.wrappers.SelectablePhotoWrapper
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.hasReadStoragePermissionSimple
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.emptyTaskFlow
 import dev.ragnarok.fenrir.util.serializeble.json.internal.OkioSerialReader
 import dev.ragnarok.fenrir.util.serializeble.json.internal.WriteMode
 import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.ReaderJsonLexer
-import io.reactivex.rxjava3.core.Completable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import okio.buffer
 import okio.source
 import java.io.File
@@ -101,22 +103,23 @@ class FileExistJVM : AbsFileExist {
         }
     }
 
-    override fun findLocalImages(photos: List<SelectablePhotoWrapper>): Completable {
-        return Completable.create { t ->
+    override fun findLocalImages(photos: List<SelectablePhotoWrapper>): Flow<Boolean> {
+        return flow {
             if (!setBusy(true)) {
-                return@create
+                emit(false)
+                return@flow
             }
             val temp = File(Settings.get().main().photoDir)
             if (!temp.exists()) {
                 setBusy(false)
-                t.onComplete()
-                return@create
+                emit(false)
+                return@flow
             }
             val file_list = temp.listFiles()
             if (file_list == null || file_list.isEmpty()) {
                 setBusy(false)
-                t.onComplete()
-                return@create
+                emit(false)
+                return@flow
             }
             CachedPhotos.clear()
             for (u in file_list) {
@@ -128,7 +131,7 @@ class FileExistJVM : AbsFileExist {
                 i.setDownloaded(existPhoto(i.photo))
             }
             setBusy(false)
-            t.onComplete()
+            emit(true)
         }
     }
 
@@ -148,31 +151,31 @@ class FileExistJVM : AbsFileExist {
         setBusy(false)
     }
 
-    override fun findAllAudios(context: Context): Completable {
-        return if (!hasReadStoragePermissionSimple(context)) Completable.complete() else Completable.create { t ->
+    override fun findAllAudios(context: Context): Flow<Boolean> {
+        return if (!hasReadStoragePermissionSimple(context)) emptyTaskFlow() else flow {
             if (!setBusy(true)) {
-                t.onComplete()
-                return@create
+                emit(false)
+                return@flow
             }
             findRemoteAudios(context, false)
             val temp = File(Settings.get().main().musicDir)
             if (!temp.exists()) {
                 setBusy(false)
-                t.onComplete()
-                return@create
+                emit(false)
+                return@flow
             }
             val file_list = temp.listFiles()
             if (file_list == null || file_list.isEmpty()) {
                 setBusy(false)
-                t.onComplete()
-                return@create
+                emit(false)
+                return@flow
             }
             CachedAudios.clear()
             for (u in file_list) {
                 if (u.isFile) CachedAudios.add(u.name.lowercase(Locale.getDefault()))
             }
             setBusy(false)
-            t.onComplete()
+            emit(true)
         }
     }
 

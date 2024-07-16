@@ -14,7 +14,10 @@ import dev.ragnarok.fenrir.model.Topic
 import dev.ragnarok.fenrir.model.criteria.TopicsCriteria
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import dev.ragnarok.fenrir.util.VKOwnIds
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.andThen
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 import kotlin.math.abs
 
 class BoardInteractor(
@@ -22,11 +25,11 @@ class BoardInteractor(
     private val stores: IStorages,
     private val ownersRepository: IOwnersRepository
 ) : IBoardInteractor {
-    override fun getCachedTopics(accountId: Long, ownerId: Long): Single<List<Topic>> {
+    override fun getCachedTopics(accountId: Long, ownerId: Long): Flow<List<Topic>> {
         val criteria = TopicsCriteria(accountId, ownerId)
         return stores.topics()
             .getByCriteria(criteria)
-            .flatMap { dbos ->
+            .flatMapConcat { dbos ->
                 val ids = VKOwnIds()
                 for (dbo in dbos) {
                     ids.append(dbo.creatorId)
@@ -56,7 +59,7 @@ class BoardInteractor(
         ownerId: Long,
         count: Int,
         offset: Int
-    ): Single<List<Topic>> {
+    ): Flow<List<Topic>> {
         return networker.vkDefault(accountId)
             .board()
             .getTopics(
@@ -70,7 +73,7 @@ class BoardInteractor(
                 null,
                 Fields.FIELDS_BASE_OWNER
             )
-            .flatMap { response ->
+            .flatMapConcat { response ->
                 val dtos = listEmptyIfNull(response.items)
                 val dbos: MutableList<TopicDboEntity> = ArrayList(dtos.size)
                 for (dto in dtos) {

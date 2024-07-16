@@ -6,8 +6,9 @@ import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.VKApiCommunity
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Community
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import kotlinx.coroutines.flow.map
 
 class CommunityInfoLinksPresenter(
     accountId: Long,
@@ -41,7 +42,7 @@ class CommunityInfoLinksPresenter(
 
     private fun requestLinks() {
         setLoadingNow(true)
-        appendDisposable(networker.vkDefault(accountId)
+        appendJob(networker.vkDefault(accountId)
             .groups()
             .getById(listOf(groupId.id), null, null, "links")
             .map { dtos ->
@@ -51,8 +52,7 @@ class CommunityInfoLinksPresenter(
                 val links = dtos.groups?.get(0)?.links
                 links ?: emptyList()
             }
-            .fromIOToMain()
-            .subscribe({ onLinksReceived(it) }) { throwable ->
+            .fromIOToMain({ onLinksReceived(it) }) { throwable ->
                 onRequestError(
                     throwable
                 )

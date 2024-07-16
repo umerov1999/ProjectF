@@ -4,10 +4,10 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IDatabaseInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.database.Country
 import dev.ragnarok.fenrir.util.Objects.safeEquals
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import java.util.Locale
 
 class CountriesPresenter(private val accountId: Long, savedInstanceState: Bundle?) :
@@ -70,9 +70,8 @@ class CountriesPresenter(private val accountId: Long, savedInstanceState: Bundle
 
     private fun requestData() {
         setLoadingNow(true)
-        appendDisposable(databaseInteractor.getCountries(accountId, false)
-            .fromIOToMain()
-            .subscribe({ countries -> onDataReceived(countries) }) { t ->
+        appendJob(databaseInteractor.getCountries(accountId, false)
+            .fromIOToMain({ countries -> onDataReceived(countries) }) { t ->
                 onDataGetError(
                     t
                 )

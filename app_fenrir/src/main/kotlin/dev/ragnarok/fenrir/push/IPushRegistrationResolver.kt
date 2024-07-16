@@ -1,8 +1,8 @@
 package dev.ragnarok.fenrir.push
 
-import io.reactivex.rxjava3.core.Completable
+import kotlinx.coroutines.flow.Flow
 
 interface IPushRegistrationResolver {
     fun canReceivePushNotification(): Boolean
-    fun resolvePushRegistration(): Completable
+    fun resolvePushRegistration(): Flow<Boolean>
 }

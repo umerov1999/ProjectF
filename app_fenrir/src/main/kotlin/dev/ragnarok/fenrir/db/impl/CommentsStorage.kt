@@ -30,18 +30,18 @@ import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.Exestime.log
 import dev.ragnarok.fenrir.util.Unixtime.now
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.createPublishSubject
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.MaybeEmitter
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.subjects.PublishSubject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.single
 import kotlinx.serialization.builtins.ListSerializer
 
 internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsStorage {
-    private val minorUpdatesPublisher: PublishSubject<CommentUpdate> = PublishSubject.create()
+    private val minorUpdatesPublisher = createPublishSubject<CommentUpdate>()
     private val mStoreLock = Any()
     override fun insert(
         accountId: Long,
@@ -51,8 +51,8 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
         dbos: List<CommentEntity>,
         owners: OwnerEntities?,
         clearBefore: Boolean
-    ): Single<IntArray> {
-        return Single.create { emitter: SingleEmitter<IntArray> ->
+    ): Flow<IntArray> {
+        return flow {
             val operations = ArrayList<ContentProviderOperation>()
             if (clearBefore) {
                 val delete = ContentProviderOperation
@@ -108,7 +108,7 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
                 val result = results[index]
                 ids[i] = extractId(result)
             }
-            emitter.onSuccess(ids)
+            emit(ids)
         }
     }
 
@@ -141,17 +141,16 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
         }
     }
 
-    override fun getDbosByCriteria(criteria: CommentsCriteria): Single<List<CommentEntity>> {
-        return Single.create { emitter: SingleEmitter<List<CommentEntity>> ->
+    override fun getDbosByCriteria(criteria: CommentsCriteria): Flow<List<CommentEntity>> {
+        return flow {
             val cursor = createCursorByCriteria(criteria)
             val cancelation = object : Cancelable {
-                override val isOperationCancelled: Boolean
-                    get() = emitter.isDisposed
+                override suspend fun canceled(): Boolean = !isActive()
             }
             val dbos: MutableList<CommentEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (emitter.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     dbos.add(
@@ -165,12 +164,12 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
                 }
                 cursor.close()
             }
-            emitter.onSuccess(dbos)
+            emit(dbos)
         }
     }
 
-    override fun findEditingComment(accountId: Long, commented: Commented): Maybe<DraftComment> {
-        return Maybe.create { e: MaybeEmitter<DraftComment> ->
+    override fun findEditingComment(accountId: Long, commented: Commented): Flow<DraftComment?> {
+        return flow {
             val cursor = contentResolver.query(
                 getCommentsContentUriFor(accountId), null,
                 CommentsColumns.COMMENT_ID + " = ? AND " +
@@ -192,21 +191,11 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
                 }
                 cursor.close()
             }
-            if (comment != null) {
-                e.onSuccess(comment)
-            }
-            e.onComplete()
-        }.flatMap { comment ->
-            stores
-                .attachments()
-                .getCount(accountId, AttachToType.COMMENT, comment.id)
-                .flatMapMaybe {
-                    Maybe.just(
-                        comment.setAttachmentsCount(
-                            it
-                        )
-                    )
-                }
+            emit(comment)
+        }.map { comment ->
+            comment?.setAttachmentsCount(
+                stores.attachments().getCount(accountId, AttachToType.COMMENT, comment.id).single()
+            )
         }
     }
 
@@ -216,8 +205,8 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
         text: String?,
         replyToUser: Long,
         replyToComment: Int
-    ): Single<Int> {
-        return Single.create { e: SingleEmitter<Int> ->
+    ): Flow<Int> {
+        return flow {
             val start = System.currentTimeMillis()
             var id = findEditingCommentId(accountId, commented)
             val contentValues = ContentValues()
@@ -237,10 +226,7 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
             val commentsWithAccountUri = getCommentsContentUriFor(accountId)
             if (id == null) {
                 val uri = contentResolver.insert(commentsWithAccountUri, contentValues)
-                if (uri == null) {
-                    e.tryOnError(DatabaseException("Result URI is null"))
-                    return@create
-                }
+                    ?: throw DatabaseException("Result URI is null")
                 id = uri.pathSegments[1].toInt()
             } else {
                 contentResolver.update(
@@ -248,13 +234,13 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
                     BaseColumns._ID + " = ?", arrayOf(id.toString())
                 )
             }
-            e.onSuccess(id)
             log("CommentsStorage.saveDraftComment", start, "id: $id")
+            emit(id)
         }
     }
 
-    override fun commitMinorUpdate(update: CommentUpdate): Completable {
-        return Completable.fromAction {
+    override fun commitMinorUpdate(update: CommentUpdate): Flow<Boolean> {
+        return flow {
             val cv = ContentValues()
             update.likeUpdate.requireNonNull {
                 cv.put(CommentsColumns.USER_LIKES, it.userLikes)
@@ -272,20 +258,22 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
                     update.commentId.toString()
                 )
             contentResolver.update(uri, cv, where, args)
-            minorUpdatesPublisher.onNext(update)
+            minorUpdatesPublisher.emit(update)
+            emit(true)
         }
     }
 
-    override fun observeMinorUpdates(): Observable<CommentUpdate> {
+    override fun observeMinorUpdates(): SharedFlow<CommentUpdate> {
         return minorUpdatesPublisher
     }
 
-    override fun deleteByDbid(accountId: Long, dbid: Int): Completable {
-        return Completable.fromAction {
+    override fun deleteByDbid(accountId: Long, dbid: Int): Flow<Boolean> {
+        return flow {
             val uri = getCommentsContentUriFor(accountId)
             val where = BaseColumns._ID + " = ?"
             val args = arrayOf(dbid.toString())
             contentResolver.delete(uri, where, args)
+            emit(true)
         }
     }
 
@@ -313,7 +301,7 @@ internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsS
         return result
     }
 
-    private fun mapDbo(
+    private suspend fun mapDbo(
         accountId: Long,
         cursor: Cursor,
         includeAttachments: Boolean,

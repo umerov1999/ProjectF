@@ -7,12 +7,12 @@ import dev.ragnarok.fenrir.db.interfaces.ITempDataStorage
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.Repository
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.ShortcutStored
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.ShortcutUtils
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
 import java.util.regex.Pattern
 
 class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
@@ -30,9 +30,8 @@ class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
     }
 
     private fun requestData() {
-        appendDisposable(pInteractor.getShortcutAll()
-            .fromIOToMain()
-            .subscribe({ onDataReceived(it) }) { t ->
+        appendJob(pInteractor.getShortcutAll()
+            .fromIOToMain({ onDataReceived(it) }) { t ->
                 onDataGetError(
                     t
                 )
@@ -54,30 +53,29 @@ class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
         try {
             if (matcher.find()) {
                 val id = matcher.group(1)?.toLong() ?: return false
-                appendDisposable(
+                appendJob(
                     Repository.owners.getBaseOwnerInfo(
                         Settings.get().accounts().current,
                         id,
                         IOwnersRepository.MODE_NET
                     )
-                        .fromIOToMain()
-                        .subscribe({ its ->
-                            appendDisposable(
+                        .fromIOToMain({ its ->
+                            appendJob(
                                 ShortcutUtils.createAccountShortcutRx(
                                     context,
                                     id,
                                     its.fullName.nonNullNoEmpty({ it }, { shortcut.name }),
                                     its.maxSquareAvatar.nonNullNoEmpty({ it }, { shortcut.cover })
-                                ).fromIOToMain().subscribe(RxUtils.dummy(), RxUtils.ignore())
+                                ).hiddenIO()
                             )
                         }, {
-                            appendDisposable(
+                            appendJob(
                                 ShortcutUtils.createAccountShortcutRx(
                                     context,
                                     id,
                                     shortcut.name,
                                     shortcut.cover
-                                ).fromIOToMain().subscribe(RxUtils.dummy(), RxUtils.ignore())
+                                ).hiddenIO()
                             )
                         })
                 )
@@ -94,32 +92,31 @@ class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
             if (matcher.find()) {
                 val id = matcher.group(1)?.toLong() ?: return false
                 val account_id = matcher.group(2)?.toLong() ?: return false
-                appendDisposable(
+                appendJob(
                     Repository.owners.getBaseOwnerInfo(
                         Settings.get().accounts().current,
                         id,
                         IOwnersRepository.MODE_NET
                     )
-                        .fromIOToMain()
-                        .subscribe({ its ->
-                            appendDisposable(
+                        .fromIOToMain({ its ->
+                            appendJob(
                                 ShortcutUtils.createWallShortcutRx(
                                     context,
                                     account_id,
                                     id,
                                     its.fullName.nonNullNoEmpty({ it }, { shortcut.name }),
                                     its.maxSquareAvatar.nonNullNoEmpty({ it }, { shortcut.cover })
-                                ).fromIOToMain().subscribe(RxUtils.dummy(), RxUtils.ignore())
+                                ).hiddenIO()
                             )
                         }, {
-                            appendDisposable(
+                            appendJob(
                                 ShortcutUtils.createWallShortcutRx(
                                     context,
                                     account_id,
                                     id,
                                     shortcut.name,
                                     shortcut.cover
-                                ).fromIOToMain().subscribe(RxUtils.dummy(), RxUtils.ignore())
+                                ).hiddenIO()
                             )
                         })
                 )
@@ -136,14 +133,14 @@ class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
             if (matcher.find()) {
                 val id = matcher.group(1)?.toLong() ?: return false
                 val account_id = matcher.group(2)?.toLong() ?: return false
-                appendDisposable(
+                appendJob(
                     ShortcutUtils.createChatShortcutRx(
                         context,
                         shortcut.cover,
                         account_id,
                         id,
                         shortcut.name
-                    ).fromIOToMain().subscribe(RxUtils.dummy(), RxUtils.ignore())
+                    ).hiddenIO()
                 )
                 return true
             }
@@ -169,12 +166,11 @@ class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
     }
 
     fun fireShortcutDeleted(pos: Int, shortcut: ShortcutStored) {
-        appendDisposable(
-            pInteractor.deleteShortcut(shortcut.action).fromIOToMain()
-                .subscribe({
-                    shortcuts.removeAt(pos)
-                    view?.notifyItemRemoved(pos)
-                }, RxUtils.ignore())
+        appendJob(
+            pInteractor.deleteShortcut(shortcut.action).fromIOToMain {
+                shortcuts.removeAt(pos)
+                view?.notifyItemRemoved(pos)
+            }
         )
     }
 

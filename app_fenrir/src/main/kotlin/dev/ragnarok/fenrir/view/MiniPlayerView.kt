@@ -22,17 +22,17 @@ import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.toColor
-import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.view.media.MediaActionDrawable
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.Disposable
-import java.util.concurrent.TimeUnit
 
 class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
-    private var mPlayerDisposable = Disposable.disposed()
-    private var mAccountDisposable = Disposable.disposed()
-    private var mRefreshDisposable = Disposable.disposed()
+    private var mPlayerDisposable = CancelableJob()
+    private var mAccountDisposable = CancelableJob()
+    private var mRefreshDisposable = CancelableJob()
     private var mAccountId = 0L
     private lateinit var visual: ImageView
     private lateinit var playCover: ImageView
@@ -106,14 +106,13 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
     }
 
     private fun queueNextRefresh() {
-        mRefreshDisposable.dispose()
-        mRefreshDisposable = Observable.just(Any())
-            .delay(500, TimeUnit.MILLISECONDS)
-            .toMainThread()
-            .subscribe {
+        mRefreshDisposable.cancel()
+        mRefreshDisposable.set(delayTaskFlow(500)
+            .toMain {
                 refreshCurrentTime()
                 queueNextRefresh()
             }
+        )
     }
 
     private val transformCover: Transformation
@@ -236,16 +235,14 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         mAccountId = Settings.get()
             .accounts()
             .current
-        mAccountDisposable = Settings.get()
+        mAccountDisposable.set(Settings.get()
             .accounts()
             .observeChanges
-            .toMainThread()
-            .subscribe { mAccountId = it }
+            .sharedFlowToMain { mAccountId = it })
         refreshCurrentTime()
         queueNextRefresh()
-        mPlayerDisposable = MusicPlaybackController.observeServiceBinding()
-            .toMainThread()
-            .subscribe { onServiceBindEvent(it) }
+        mPlayerDisposable.set(MusicPlaybackController.observeServiceBinding()
+            .sharedFlowToMain { onServiceBindEvent(it) })
     }
 
     override fun onDetachedFromWindow() {
@@ -253,9 +250,9 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         if (isInEditMode) {
             return
         }
-        mPlayerDisposable.dispose()
-        mAccountDisposable.dispose()
-        mRefreshDisposable.dispose()
+        mPlayerDisposable.cancel()
+        mAccountDisposable.cancel()
+        mRefreshDisposable.cancel()
     }
 
     override fun onSeekBarDrag(position: Long) {

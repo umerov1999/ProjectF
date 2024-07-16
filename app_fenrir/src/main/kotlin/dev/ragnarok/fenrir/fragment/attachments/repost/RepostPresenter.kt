@@ -5,9 +5,9 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IWallsRepository
 import dev.ragnarok.fenrir.domain.Repository
 import dev.ragnarok.fenrir.fragment.attachments.absattachmentsedit.AbsAttachmentsEditPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.AttachmentEntry
 import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class RepostPresenter(
     accountId: Long, private val post: Post,
@@ -59,9 +59,8 @@ class RepostPresenter(
     fun fireReadyClick() {
         setPublishingNow(true)
         val body = getTextBody()
-        appendDisposable(walls.repost(accountId, post.vkid, post.ownerId, targetGroupId, body)
-            .fromIOToMain()
-            .subscribe({ onPublishComplete() }) { throwable ->
+        appendJob(walls.repost(accountId, post.vkid, post.ownerId, targetGroupId, body)
+            .fromIOToMain({ onPublishComplete() }) { throwable ->
                 onPublishError(
                     throwable
                 )

@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.api.services
 
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class IStatusService : IServiceRest() {
     /**
@@ -15,7 +15,7 @@ class IStatusService : IServiceRest() {
     operator fun set(
         text: String?,
         groupId: Long?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "status.set", form(
                 "text" to text,

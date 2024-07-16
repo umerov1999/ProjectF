@@ -2,17 +2,18 @@ package dev.ragnarok.fenrir.fragment.userbanned
 
 import android.os.Bundle
 import dev.ragnarok.fenrir.Includes.blacklistRepository
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.domain.IAccountsInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.BannedPart
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.nonNullNoEmpty
-import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils.findIndexById
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 
 class UserBannedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IUserBannedView>(accountId, savedInstanceState) {
@@ -85,9 +86,8 @@ class UserBannedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun loadNextPart(offset: Int) {
         if (loadinNow) return
         setLoadinNow(true)
-        appendDisposable(interactor.getBanned(accountId, 50, offset)
-            .fromIOToMain()
-            .subscribe(
+        appendJob(interactor.getBanned(accountId, 50, offset)
+            .fromIOToMain(
                 { part -> onBannedPartReceived(offset, part) }
             ) { throwable -> onBannedPartGetError(getCauseIfRuntime(throwable)) })
     }
@@ -110,9 +110,8 @@ class UserBannedPresenter(accountId: Long, savedInstanceState: Bundle?) :
 
     fun fireOwnersSelected(owners: ArrayList<Owner>) {
         if (owners.nonNullNoEmpty()) {
-            appendDisposable(interactor.banOwners(accountId, owners)
-                .fromIOToMain()
-                .subscribe({ onAddingComplete() }) { throwable ->
+            appendJob(interactor.banOwners(accountId, owners)
+                .fromIOToMain({ onAddingComplete() }) { throwable ->
                     onAddError(
                         getCauseIfRuntime(throwable)
                     )
@@ -135,9 +134,8 @@ class UserBannedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun fireRemoveClick(owner: Owner) {
-        appendDisposable(interactor.unbanOwner(accountId, owner.ownerId)
-            .fromIOToMain()
-            .subscribe({ onRemoveComplete() }) { throwable ->
+        appendJob(interactor.unbanOwner(accountId, owner.ownerId)
+            .fromIOToMain({ onRemoveComplete() }) { throwable ->
                 onRemoveError(
                     getCauseIfRuntime(throwable)
                 )
@@ -154,15 +152,17 @@ class UserBannedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     init {
         loadNextPart(0)
         val repository = blacklistRepository
-        appendDisposable(repository.observeAdding()
+        appendJob(repository.observeAdding()
             .filter { it.first == accountId }
-            .map(Pair<Long, Owner>::second)
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onOwnerAdded(it) })
-        appendDisposable(repository.observeRemoving()
+            .map {
+                it.second
+            }
+            .sharedFlowToMain { onOwnerAdded(it) })
+        appendJob(repository.observeRemoving()
             .filter { it.first == accountId }
-            .map(Pair<Long, Long>::second)
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onOwnerRemoved(it) })
+            .map {
+                it.second
+            }
+            .sharedFlowToMain { onOwnerRemoved(it) })
     }
 }

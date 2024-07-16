@@ -11,19 +11,24 @@ import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.upload.UploadResult
 import dev.ragnarok.fenrir.upload.UploadUtils
 import dev.ragnarok.fenrir.util.Utils.safelyClose
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.safelyCloseAction
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlowThrowable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
+import kotlin.coroutines.cancellation.CancellationException
 
 class VideoUploadable(private val context: Context, private val networker: INetworker) :
     IUploadable<Video> {
+    @Suppress("BlockingMethodInNonBlockingContext")
     override fun doUpload(
         upload: Upload,
         initialServer: UploadServer?,
         listener: PercentagePublisher?
-    ): Single<UploadResult<Video>> {
+    ): Flow<UploadResult<Video>> {
         val accountId = upload.accountId
         val ownerId = upload.destination.ownerId
         val groupId = if (ownerId >= 0) null else ownerId
@@ -35,7 +40,7 @@ class VideoUploadable(private val context: Context, private val networker: INetw
                     context, upload.fileUri
                 )
             )
-        return serverSingle.flatMap { server ->
+        return serverSingle.flatMapConcat { server ->
             var inputStream: InputStream? = null
             try {
                 val uri = upload.fileUri
@@ -46,7 +51,7 @@ class VideoUploadable(private val context: Context, private val networker: INetw
                     context.contentResolver.openInputStream(uri)
                 }
                 if (inputStream == null) {
-                    Single.error(
+                    toFlowThrowable(
                         NotFoundException(
                             "Unable to open InputStream, URI: $uri"
                         )
@@ -60,9 +65,9 @@ class VideoUploadable(private val context: Context, private val networker: INetw
                             inputStream,
                             listener
                         )
-                        .doFinally(safelyCloseAction(inputStream))
-                        .flatMap { dto ->
-                            val result = UploadResult(
+                        .onCompletion { safelyClose(inputStream) }
+                        .map { dto ->
+                            UploadResult(
                                 server,
                                 Video().setId(dto.video_id).setOwnerId(dto.owner_id).setTitle(
                                     UploadUtils.findFileName(
@@ -70,12 +75,14 @@ class VideoUploadable(private val context: Context, private val networker: INetw
                                     )
                                 )
                             )
-                            Single.just(result)
                         }
                 }
             } catch (e: Exception) {
                 safelyClose(inputStream)
-                Single.error(e)
+                if (e is CancellationException) {
+                    throw e
+                }
+                toFlowThrowable(e)
             }
         }
     }

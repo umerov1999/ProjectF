@@ -4,11 +4,11 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.db.Stores
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.LocalVideo
 import dev.ragnarok.fenrir.util.Objects.safeEquals
 import dev.ragnarok.fenrir.util.Utils.countOfSelection
 import dev.ragnarok.fenrir.util.Utils.getSelected
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import java.util.Locale
 
 class LocalVideosPresenter(savedInstanceState: Bundle?) :
@@ -20,11 +20,10 @@ class LocalVideosPresenter(savedInstanceState: Bundle?) :
     private fun loadData() {
         if (mLoadingNow) return
         changeLoadingState(true)
-        appendDisposable(Stores.instance
+        appendJob(Stores.instance
             .localMedia()
             .videos
-            .fromIOToMain()
-            .subscribe({ onDataLoaded(it) }) {
+            .fromIOToMain({ onDataLoaded(it) }) {
                 onLoadError()
             })
     }

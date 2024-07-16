@@ -13,11 +13,9 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.Constants
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.Repository.owners
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.DrawerCategory
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.SwitchableCategory
@@ -38,12 +36,13 @@ import dev.ragnarok.fenrir.util.Utils.dp
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
 import dev.ragnarok.fenrir.util.Utils.getVerifiedColor
 import dev.ragnarok.fenrir.util.Utils.setBackgroundTint
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
-import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
-    private val mCompositeDisposable = CompositeDisposable()
+    private val mCompositeJob = CompositeJob()
     private var mCallbacks: NavigationDrawerCallbacks? = null
     private var mDrawerLayout: DrawerLayout? = null
     private var ivHeaderAvatar: ImageView? = null
@@ -116,11 +115,10 @@ class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
             .recentChats()[mAccountId]
         mDrawerItems = ArrayList()
         mDrawerItems?.addAll(generateNavDrawerItems())
-        mCompositeDisposable.add(
+        mCompositeJob.add(
             Settings.get().sideDrawerSettings()
                 .observeChanges
-                .observeOn(provideMainThreadScheduler())
-                .subscribe { refreshNavigationItems(it) })
+                .sharedFlowToMain { refreshNavigationItems(it) })
         val inflater = LayoutInflater.from(context)
         val root = inflater.inflate(R.layout.fragment_side_navigation_drawer, this)
         val recyclerView: RecyclerView = root.findViewById(R.id.recycler_view)
@@ -207,7 +205,7 @@ class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
         if (isInEditMode) {
             return
         }
-        mCompositeDisposable.dispose()
+        mCompositeJob.cancel()
         mCallbacks = null
     }
 
@@ -227,14 +225,13 @@ class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
 
     private fun refreshUserInfo() {
         if (mAccountId != ISettings.IAccountsSettings.INVALID_ID) {
-            mCompositeDisposable.add(
+            mCompositeJob.add(
                 ownersRepository.getBaseOwnerInfo(
                     mAccountId,
                     mAccountId,
                     IOwnersRepository.MODE_ANY
                 )
-                    .fromIOToMain()
-                    .subscribe({ user -> refreshHeader(user) }, ignore())
+                    .fromIOToMain { user -> refreshHeader(user) }
             )
         }
     }

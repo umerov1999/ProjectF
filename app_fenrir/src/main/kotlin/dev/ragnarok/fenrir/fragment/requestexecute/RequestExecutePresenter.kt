@@ -11,7 +11,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.Apis.get
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.isMsgPack
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.AppPerms.hasReadWriteStoragePermission
@@ -21,9 +20,11 @@ import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.safelyClose
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.serializeble.json.Json
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import okhttp3.ResponseBody
 import java.io.File
@@ -67,9 +68,8 @@ class RequestExecutePresenter(accountId: Long, savedInstanceState: Bundle?) :
             }
         }
         setLoadingNow(true)
-        appendDisposable(executeSingle(accountId, trimmedMethod, params)
-            .fromIOToMain()
-            .subscribe({ onRequestResponse(it) }) { throwable ->
+        appendJob(executeSingle(accountId, trimmedMethod, params)
+            .fromIOToMain({ onRequestResponse(it) }) { throwable ->
                 onRequestError(
                     getCauseIfRuntime(throwable)
                 )
@@ -156,7 +156,7 @@ class RequestExecutePresenter(accountId: Long, savedInstanceState: Bundle?) :
         accountId: Long,
         method: String,
         params: Map<String, String>
-    ): Single<Pair<String?, String?>> {
+    ): Flow<Pair<String?, String?>> {
         return networker.vkDefault(accountId)
             .other()
             .rawRequest(method, params)

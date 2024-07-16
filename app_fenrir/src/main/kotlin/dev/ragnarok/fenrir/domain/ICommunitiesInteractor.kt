@@ -1,18 +1,17 @@
 package dev.ragnarok.fenrir.domain
 
 import dev.ragnarok.fenrir.model.Community
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface ICommunitiesInteractor {
-    fun getCachedData(accountId: Long, userId: Long): Single<List<Community>>
+    fun getCachedData(accountId: Long, userId: Long): Flow<List<Community>>
     fun getActual(
         accountId: Long,
         userId: Long,
         count: Int,
         offset: Int,
         store: Boolean
-    ): Single<List<Community>>
+    ): Flow<List<Community>>
 
     fun search(
         accountId: Long,
@@ -24,8 +23,8 @@ interface ICommunitiesInteractor {
         sort: Int?,
         count: Int,
         offset: Int
-    ): Single<List<Community>>
+    ): Flow<List<Community>>
 
-    fun join(accountId: Long, groupId: Long): Completable
-    fun leave(accountId: Long, groupId: Long): Completable
+    fun join(accountId: Long, groupId: Long): Flow<Boolean>
+    fun leave(accountId: Long, groupId: Long): Flow<Boolean>
 }

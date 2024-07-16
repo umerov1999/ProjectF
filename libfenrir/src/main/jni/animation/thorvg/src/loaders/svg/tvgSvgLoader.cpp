@@ -588,15 +588,15 @@ static bool _hslToRgb(float hue, float saturation, float brightness, uint8_t* re
     float _red = 0, _green = 0, _blue = 0;
     uint32_t i = 0;
 
-    if (mathZero(saturation))  _red = _green = _blue = brightness;
+    if (tvg::zero(saturation))  _red = _green = _blue = brightness;
     else {
-        if (mathEqual(hue, 360.0)) hue = 0.0f;
+        if (tvg::equal(hue, 360.0)) hue = 0.0f;
         hue /= 60.0f;
 
         v = (brightness <= 0.5f) ? (brightness * (1.0f + saturation)) : (brightness + saturation - (brightness * saturation));
         p = brightness + brightness - v;
 
-        if (!mathZero(v)) sv = (v - p) / v;
+        if (!tvg::zero(v)) sv = (v - p) / v;
         else sv = 0;
 
         i = static_cast<uint8_t>(hue);
@@ -647,9 +647,9 @@ static bool _hslToRgb(float hue, float saturation, float brightness, uint8_t* re
         }
     }
 
-    *red = static_cast<uint8_t>(roundf(_red * 255.0f));
-    *green = static_cast<uint8_t>(roundf(_green * 255.0f));
-    *blue = static_cast<uint8_t>(roundf(_blue * 255.0f));
+    *red = (uint8_t)nearbyint(_red * 255.0f);
+    *green = (uint8_t)nearbyint(_green * 255.0f);
+    *blue = (uint8_t)nearbyint(_blue * 255.0f);
 
     return true;
 }
@@ -857,8 +857,8 @@ static Matrix* _parseTransformationMatrix(const char* value)
             //Transform to signed.
             points[0] = fmodf(points[0], 360.0f);
             if (points[0] < 0) points[0] += 360.0f;
-            auto c = cosf(mathDeg2Rad(points[0]));
-            auto s = sinf(mathDeg2Rad(points[0]));
+            auto c = cosf(deg2rad(points[0]));
+            auto s = sinf(deg2rad(points[0]));
             if (ptCount == 1) {
                 Matrix tmp = { c, -s, 0, s, c, 0, 0, 0, 1 };
                 *matrix *= tmp;
@@ -881,12 +881,12 @@ static Matrix* _parseTransformationMatrix(const char* value)
             *matrix *= tmp;
         } else if (state == MatrixState::SkewX) {
             if (ptCount != 1) goto error;
-            auto deg = tanf(mathDeg2Rad(points[0]));
+            auto deg = tanf(deg2rad(points[0]));
             Matrix tmp = { 1, deg, 0, 0, 1, 0, 0, 0, 1 };
             *matrix *= tmp;
         } else if (state == MatrixState::SkewY) {
             if (ptCount != 1) goto error;
-            auto deg = tanf(mathDeg2Rad(points[0]));
+            auto deg = tanf(deg2rad(points[0]));
             Matrix tmp = { 1, 0, 0, deg, 1, 0, 0, 0, 1 };
             *matrix *= tmp;
         }
@@ -2123,7 +2123,72 @@ static SvgNode* _createUseNode(SvgLoaderData* loader, SvgNode* parent, const cha
 }
 
 
-//TODO: Implement 'text' primitive
+static constexpr struct
+{
+    const char* tag;
+    SvgParserLengthType type;
+    int sz;
+    size_t offset;
+} textTags[] = {
+        {"x", SvgParserLengthType::Horizontal, sizeof("x"), offsetof(SvgTextNode, x)},
+        {"y", SvgParserLengthType::Vertical, sizeof("y"), offsetof(SvgTextNode, y)},
+        {"font-size", SvgParserLengthType::Vertical, sizeof("font-size"), offsetof(SvgTextNode, fontSize)}
+};
+
+
+static bool _attrParseTextNode(void* data, const char* key, const char* value)
+{
+    SvgLoaderData* loader = (SvgLoaderData*)data;
+    SvgNode* node = loader->svgParse->node;
+    SvgTextNode* text = &(node->node.text);
+
+    unsigned char* array;
+    int sz = strlen(key);
+
+    array = (unsigned char*)text;
+    for (unsigned int i = 0; i < sizeof(textTags) / sizeof(textTags[0]); i++) {
+        if (textTags[i].sz - 1 == sz && !strncmp(textTags[i].tag, key, sz)) {
+            *((float*)(array + textTags[i].offset)) = _toFloat(loader->svgParse, value, textTags[i].type);
+            return true;
+        }
+    }
+
+    if (!strcmp(key, "font-family")) {
+        if (text->fontFamily && value) free(text->fontFamily);
+        text->fontFamily = strdup(value);
+    } else if (!strcmp(key, "style")) {
+        return simpleXmlParseW3CAttribute(value, strlen(value), _parseStyleAttr, loader);
+    } else if (!strcmp(key, "clip-path")) {
+        _handleClipPathAttr(loader, node, value);
+    } else if (!strcmp(key, "mask")) {
+        _handleMaskAttr(loader, node, value);
+    } else if (!strcmp(key, "id")) {
+        if (node->id && value) free(node->id);
+        node->id = _copyId(value);
+    } else if (!strcmp(key, "class")) {
+        _handleCssClassAttr(loader, node, value);
+    } else {
+        return _parseStyleAttr(loader, key, value, false);
+    }
+    return true;
+}
+
+
+static SvgNode* _createTextNode(SvgLoaderData* loader, SvgNode* parent, const char* buf, unsigned bufLength, parseAttributes func)
+{
+    loader->svgParse->node = _createNode(parent, SvgNodeType::Text);
+    if (!loader->svgParse->node) return nullptr;
+
+    //TODO: support the def font and size as used in a system?
+    loader->svgParse->node->node.text.fontSize = 10.0f;
+    loader->svgParse->node->node.text.fontFamily = nullptr;
+
+    func(buf, bufLength, _attrParseTextNode, loader);
+
+    return loader->svgParse->node;
+}
+
+
 static constexpr struct
 {
     const char* tag;
@@ -2138,7 +2203,8 @@ static constexpr struct
     {"rect", sizeof("rect"), _createRectNode},
     {"polyline", sizeof("polyline"), _createPolylineNode},
     {"line", sizeof("line"), _createLineNode},
-    {"image", sizeof("image"), _createImageNode}
+    {"image", sizeof("image"), _createImageNode},
+    {"text", sizeof("text"), _createTextNode}
 };
 
 
@@ -3126,6 +3192,20 @@ static void _copyAttr(SvgNode* to, const SvgNode* from)
             to->node.use.symbol = from->node.use.symbol;
             break;
         }
+        case SvgNodeType::Text: {
+            to->node.text.x = from->node.text.x;
+            to->node.text.y = from->node.text.y;
+            to->node.text.fontSize = from->node.text.fontSize;
+            if (from->node.text.text) {
+                if (to->node.text.text) free(to->node.text.text);
+                to->node.text.text = strdup(from->node.text.text);
+            }
+            if (from->node.text.fontFamily) {
+                if (to->node.text.fontFamily) free(to->node.text.fontFamily);
+                to->node.text.fontFamily = strdup(from->node.text.fontFamily);
+            }
+            break;
+        }
         default: {
             break;
         }
@@ -3178,19 +3258,34 @@ static void _clonePostponedNodes(Array<SvgNodeIdPair>* cloneNodes, SvgNode* doc)
 }
 
 
-static void _svgLoaderParserXmlClose(SvgLoaderData* loader, const char* content)
+static void _svgLoaderParserXmlClose(SvgLoaderData* loader, const char* content, unsigned int length)
 {
+    const char* itr = nullptr;
+    int sz = length;
+    char tagName[20] = "";
+
     content = _skipSpace(content, nullptr);
+    itr = content;
+    while ((itr != nullptr) && *itr != '>') itr++;
+
+    if (itr) {
+        sz = itr - content;
+        while ((sz > 0) && (isspace(content[sz - 1]))) sz--;
+        if ((unsigned int)sz >= sizeof(tagName)) sz = sizeof(tagName) - 1;
+        strncpy(tagName, content, sz);
+        tagName[sz] = '\0';
+    }
+    else return;
 
     for (unsigned int i = 0; i < sizeof(groupTags) / sizeof(groupTags[0]); i++) {
-        if (!strncmp(content, groupTags[i].tag, groupTags[i].sz - 1)) {
+        if (!strncmp(tagName, groupTags[i].tag, sz)) {
             loader->stack.pop();
             break;
         }
     }
 
     for (unsigned int i = 0; i < sizeof(graphicsTags) / sizeof(graphicsTags[0]); i++) {
-        if (!strncmp(content, graphicsTags[i].tag, graphicsTags[i].sz - 1)) {
+        if (!strncmp(tagName, graphicsTags[i].tag, sz)) {
             loader->currentGraphicsNode = nullptr;
             loader->stack.pop();
             break;
@@ -3243,12 +3338,12 @@ static void _svgLoaderParserXmlOpen(SvgLoaderData* loader, const char* content, 
             else parent = loader->doc;
             if (!strcmp(tagName, "style")) {
                 // TODO: For now only the first style node is saved. After the css id selector
-                // is introduced this if condition shouldin't be necessary any more
+                // is introduced this if condition shouldn't be necessary any more
                 if (!loader->cssStyle) {
                     node = method(loader, nullptr, attrs, attrsLength, simpleXmlParseAttributes);
                     loader->cssStyle = node;
                     loader->doc->node.doc.style = node;
-                    loader->style = true;
+                    loader->openedTag = OpenedTagType::Style;
                 }
             } else {
                 node = method(loader, parent, attrs, attrsLength, simpleXmlParseAttributes);
@@ -3264,9 +3359,12 @@ static void _svgLoaderParserXmlOpen(SvgLoaderData* loader, const char* content, 
         else parent = loader->doc;
         node = method(loader, parent, attrs, attrsLength, simpleXmlParseAttributes);
         if (node && !empty) {
-            auto defs = _createDefsNode(loader, nullptr, nullptr, 0, nullptr);
-            loader->stack.push(defs);
-            loader->currentGraphicsNode = node;
+            if (!strcmp(tagName, "text")) loader->openedTag = OpenedTagType::Text;
+            else {
+                auto defs = _createDefsNode(loader, nullptr, nullptr, 0, nullptr);
+                loader->stack.push(defs);
+                loader->currentGraphicsNode = node;
+            }
         }
     } else if ((gradientMethod = _findGradientFactory(tagName))) {
         SvgStyleGradient* gradient;
@@ -3296,6 +3394,15 @@ static void _svgLoaderParserXmlOpen(SvgLoaderData* loader, const char* content, 
     } else if (!isIgnoreUnsupportedLogElements(tagName)) {
         TVGLOG("SVG", "Unsupported elements used [Elements: %s]", tagName);
     }
+}
+
+
+static void _svgLoaderParserText(SvgLoaderData* loader, const char* content, unsigned int length)
+{
+    auto text = &loader->svgParse->node->node.text;
+    if (text->text) free(text->text);
+    text->text = strDuplicate(content, length);
+    loader->openedTag = OpenedTagType::Other;
 }
 
 
@@ -3331,7 +3438,7 @@ static void _svgLoaderParserXmlCssStyle(SvgLoaderData* loader, const char* conte
         free(tag);
         free(name);
     }
-    loader->style = false;
+    loader->openedTag = OpenedTagType::Other;
 }
 
 
@@ -3349,12 +3456,13 @@ static bool _svgLoaderParser(void* data, SimpleXMLType type, const char* content
             break;
         }
         case SimpleXMLType::Close: {
-            _svgLoaderParserXmlClose(loader, content);
+            _svgLoaderParserXmlClose(loader, content, length);
             break;
         }
         case SimpleXMLType::Data:
         case SimpleXMLType::CData: {
-            if (loader->style) _svgLoaderParserXmlCssStyle(loader, content, length);
+            if (loader->openedTag == OpenedTagType::Style) _svgLoaderParserXmlCssStyle(loader, content, length);
+            else if (loader->openedTag == OpenedTagType::Text) _svgLoaderParserText(loader, content, length);
             break;
         }
         case SimpleXMLType::DoctypeChild: {
@@ -3574,6 +3682,11 @@ static void _freeNode(SvgNode* node)
          }
          case SvgNodeType::Image: {
              free(node->node.image.href);
+             break;
+         }
+         case SvgNodeType::Text: {
+             free(node->node.text.text);
+             free(node->node.text.fontFamily);
              break;
          }
          default: {

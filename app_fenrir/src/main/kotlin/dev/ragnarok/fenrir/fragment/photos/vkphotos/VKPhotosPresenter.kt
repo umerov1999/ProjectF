@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.fragment.photos.vkphotos
 
 import android.os.Bundle
 import dev.ragnarok.fenrir.Includes
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.model.VKApiCommunity
 import dev.ragnarok.fenrir.db.Stores
@@ -12,7 +11,6 @@ import dev.ragnarok.fenrir.domain.IPhotosInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController
 import dev.ragnarok.fenrir.model.Community
@@ -40,10 +38,13 @@ import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils.findIndexById
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.getSelected
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.zip
 
 class VKPhotosPresenter(
     accountId: Long,
@@ -61,7 +62,7 @@ class VKPhotosPresenter(
     private val photos: MutableList<SelectablePhotoWrapper>
     private val uploads: MutableList<Upload>
     private val destination: UploadDestination
-    private val cacheDisposable = CompositeDisposable()
+    private val cacheDisposable = CompositeJob()
     private var album: PhotoAlbum? = null
     private var owner: Owner? = null
     private var requestNow = false
@@ -83,24 +84,22 @@ class VKPhotosPresenter(
 
     private fun refreshOwnerInfoIfNeed() {
         if (!isMy && owner == null) {
-            appendDisposable(
+            appendJob(
                 ownersRepository.getBaseOwnerInfo(
                     accountId,
                     ownerId,
                     IOwnersRepository.MODE_NET
                 )
-                    .fromIOToMain()
-                    .subscribe({ owner -> onActualOwnerInfoReceived(owner) }, ignore())
+                    .fromIOToMain { owner -> onActualOwnerInfoReceived(owner) }
             )
         }
     }
 
     private fun refreshAlbumInfoIfNeed() {
         if (album == null) {
-            appendDisposable(
+            appendJob(
                 interactor.getAlbumById(accountId, ownerId, albumId)
-                    .fromIOToMain()
-                    .subscribe({ album -> onAlbumInfoReceived(album) }, ignore())
+                    .fromIOToMain { album -> onAlbumInfoReceived(album) }
             )
         }
     }
@@ -178,8 +177,8 @@ class VKPhotosPresenter(
         }
     }
 
-    private fun onUploadProgressUpdate(updates: List<IProgressUpdate>) {
-        for (update in updates) {
+    private fun onUploadProgressUpdate(updates: IProgressUpdate?) {
+        updates?.let { update ->
             val index = findIndexById(uploads, update.id)
             if (index != -1) {
                 view?.notifyUploadProgressChanged(
@@ -224,21 +223,20 @@ class VKPhotosPresenter(
     private fun requestActualData(offset: Int) {
         setRequestNow(true)
         if (albumId != -9001 && albumId != -9000) {
-            appendDisposable(interactor[accountId, ownerId, albumId, COUNT, offset, !invertPhotoRev]
+            appendJob(interactor[accountId, ownerId, albumId, COUNT, offset, !invertPhotoRev]
                 .map { t ->
                     val wrap = wrappersOf(t)
                     MusicPlaybackController.tracksExist.markExistPhotos(wrap)
                     wrap
                 }
-                .fromIOToMain()
-                .subscribe({ photos ->
+                .fromIOToMain({ photos ->
                     onActualPhotosReceived(
                         offset,
                         photos
                     )
                 }) { t -> onActualDataGetError(t) })
         } else if (albumId == -9000) {
-            appendDisposable(interactor.getUsersPhoto(
+            appendJob(interactor.getUsersPhoto(
                 accountId,
                 ownerId,
                 1,
@@ -251,22 +249,20 @@ class VKPhotosPresenter(
                     MusicPlaybackController.tracksExist.markExistPhotos(wrap)
                     wrap
                 }
-                .fromIOToMain()
-                .subscribe({ photos ->
+                .fromIOToMain({ photos ->
                     onActualPhotosReceived(
                         offset,
                         photos
                     )
                 }) { t -> onActualDataGetError(t) })
         } else {
-            appendDisposable(interactor.getAll(accountId, ownerId, 1, 1, offset, COUNT)
+            appendJob(interactor.getAll(accountId, ownerId, 1, 1, offset, COUNT)
                 .map { t ->
                     val wrap = wrappersOf(t)
                     MusicPlaybackController.tracksExist.markExistPhotos(wrap)
                     wrap
                 }
-                .fromIOToMain()
-                .subscribe({ photos ->
+                .fromIOToMain({ photos ->
                     onActualPhotosReceived(
                         offset,
                         photos
@@ -312,7 +308,7 @@ class VKPhotosPresenter(
 
     private fun loadInitialData() {
         cacheDisposable.add(interactor.getAllCachedData(accountId, ownerId, albumId, invertPhotoRev)
-            .zipWith(
+            .zip(
                 uploadManager[accountId, destination]
             ) { first, second ->
                 Pair.create(
@@ -320,34 +316,32 @@ class VKPhotosPresenter(
                     second
                 )
             }
-            .fromIOToMain()
-            .subscribe { data -> onInitialDataReceived(data) })
+            .fromIOToMain { data -> onInitialDataReceived(data) })
     }
 
     fun updateInfo(position: Int, ptr: Long) {
         setRequestNow(true)
-        appendDisposable(
-            Single.create { v: SingleEmitter<List<SelectablePhotoWrapper>> ->
+        appendJob(
+            flow {
                 val st = wrappersOf(
                     ParcelNative.fromNative(ptr).readParcelableArrayList(Photo.NativeCreator)
-                        ?: return@create
+                        ?: return@flow
                 )
                 MusicPlaybackController.tracksExist.markExistPhotos(st)
-                v.onSuccess(
+                emit(
                     st
                 )
-            }.fromIOToMain()
-                .subscribe({
-                    setRequestNow(false)
-                    photos.clear()
-                    photos.addAll(it)
-                    photos[position].current = true
+            }.fromIOToMain({
+                setRequestNow(false)
+                photos.clear()
+                photos.addAll(it)
+                photos[position].current = true
 
-                    view?.let { op ->
-                        op.notifyDataSetChanged()
-                        op.scrollTo(position)
-                    }
-                }) { obj -> obj.printStackTrace() })
+                view?.let { op ->
+                    op.notifyDataSetChanged()
+                    op.scrollTo(position)
+                }
+            }) { obj -> obj.printStackTrace() })
     }
 
     private fun onInitialDataReceived(data: Pair<List<Photo>, List<Upload>>) {
@@ -361,7 +355,7 @@ class VKPhotosPresenter(
     }
 
     override fun onDestroyed() {
-        cacheDisposable.dispose()
+        cacheDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -473,7 +467,7 @@ class VKPhotosPresenter(
             }
             val finalIndex = Index
             val source = TmpSource(fireTempDataUsage(), 0)
-            appendDisposable(Stores.instance
+            appendJob(Stores.instance
                 .tempStore()
                 .putTemporaryData(
                     source.ownerId,
@@ -481,8 +475,7 @@ class VKPhotosPresenter(
                     photos_ret,
                     Serializers.PHOTOS_SERIALIZER
                 )
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain({
                     view?.displayGallery(
                         accountId,
                         albumId,
@@ -492,14 +485,14 @@ class VKPhotosPresenter(
                     )
                 }) { obj -> obj.printStackTrace() })
         } else {
-            appendDisposable(
-                Single.create { v: SingleEmitter<Pair<Long, Int>> ->
+            appendJob(
+                flow {
                     val mem = ParcelNative.create(ParcelFlags.NULL_LIST)
                     mem.writeInt(photos.size)
                     for (i in photos.indices) {
-                        if (v.isDisposed) {
+                        if (!isActive()) {
                             mem.forceDestroy()
-                            return@create
+                            return@flow
                         }
                         val photo = photos[i]
                         mem.writeParcelable(photo.photo)
@@ -508,21 +501,20 @@ class VKPhotosPresenter(
                             trig = true
                         }
                     }
-                    if (v.isDisposed) {
+                    if (!isActive()) {
                         mem.forceDestroy()
                     } else {
-                        v.onSuccess(Pair(mem.nativePointer, Index))
+                        emit(Pair(mem.nativePointer, Index))
                     }
-                }.fromIOToMain()
-                    .subscribe({
-                        view?.displayGalleryUnSafe(
-                            accountId,
-                            albumId,
-                            ownerId,
-                            it.first,
-                            it.second
-                        )
-                    }) { obj -> obj.printStackTrace() })
+                }.fromIOToMain({
+                    view?.displayGalleryUnSafe(
+                        accountId,
+                        albumId,
+                        ownerId,
+                        it.first,
+                        it.second
+                    )
+                }) { obj -> obj.printStackTrace() })
         }
     }
 
@@ -566,10 +558,9 @@ class VKPhotosPresenter(
     fun loadDownload() {
         isShowBDate = true
         setRequestNow(true)
-        appendDisposable(
+        appendJob(
             MusicPlaybackController.tracksExist.findLocalImages(photos)
-                .fromIOToMain()
-                .subscribe({ onCacheLoaded() }, ignore())
+                .fromIOToMain { onCacheLoaded() }
         )
     }
 
@@ -613,21 +604,16 @@ class VKPhotosPresenter(
             this.owner = ownerWrapper?.owner
         }
         loadInitialData()
-        appendDisposable(uploadManager.observeAdding()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onUploadQueueAdded(it) })
-        appendDisposable(uploadManager.observeDeleting(true)
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onUploadsRemoved(it) })
-        appendDisposable(uploadManager.observeResults()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onUploadResults(it) })
-        appendDisposable(uploadManager.observeStatus()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onUploadStatusUpdate(it) })
-        appendDisposable(uploadManager.observeProgress()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onUploadProgressUpdate(it) })
+        appendJob(uploadManager.observeAdding()
+            .sharedFlowToMain { onUploadQueueAdded(it) })
+        appendJob(uploadManager.observeDeleting(true)
+            .sharedFlowToMain { onUploadsRemoved(it) })
+        appendJob(uploadManager.observeResults()
+            .sharedFlowToMain { onUploadResults(it) })
+        appendJob(uploadManager.observeStatus()
+            .sharedFlowToMain { onUploadStatusUpdate(it) })
+        appendJob(uploadManager.observeProgress()
+            .sharedFlowToMain { onUploadProgressUpdate(it) })
         refreshOwnerInfoIfNeed()
         refreshAlbumInfoIfNeed()
     }

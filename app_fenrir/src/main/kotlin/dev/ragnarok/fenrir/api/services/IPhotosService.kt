@@ -15,14 +15,14 @@ import dev.ragnarok.fenrir.api.model.server.VKApiPhotoMessageServer
 import dev.ragnarok.fenrir.api.model.server.VKApiUploadServer
 import dev.ragnarok.fenrir.api.model.server.VKApiWallUploadServer
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class IPhotosService : IServiceRest() {
     //https://vk.com/dev/photos.deleteAlbum
     fun deleteAlbum(
         albumId: Int,
         groupId: Long?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "photos.deleteAlbum", form(
                 "album_id" to albumId,
@@ -35,7 +35,7 @@ class IPhotosService : IServiceRest() {
     fun restore(
         ownerId: Long?,
         photoId: Int
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "photos.restore", form(
                 "owner_id" to ownerId,
@@ -48,7 +48,7 @@ class IPhotosService : IServiceRest() {
     fun delete(
         ownerId: Long?,
         photoId: Int
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "photos.delete", form(
                 "owner_id" to ownerId,
@@ -61,7 +61,7 @@ class IPhotosService : IServiceRest() {
     fun deleteComment(
         ownerId: Long?,
         commentId: Int
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "photos.deleteComment", form(
                 "owner_id" to ownerId,
@@ -74,7 +74,7 @@ class IPhotosService : IServiceRest() {
     fun restoreComment(
         ownerId: Long?,
         commentId: Int
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "photos.restoreComment", form(
                 "owner_id" to ownerId,
@@ -95,7 +95,7 @@ class IPhotosService : IServiceRest() {
         accessKey: String?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<DefaultCommentsResponse>> {
+    ): Flow<BaseResponse<DefaultCommentsResponse>> {
         return rest.request(
             "photos.getComments",
             form(
@@ -139,7 +139,7 @@ class IPhotosService : IServiceRest() {
         commentId: Int,
         message: String?,
         attachments: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "photos.editComment", form(
                 "owner_id" to ownerId,
@@ -174,7 +174,7 @@ class IPhotosService : IServiceRest() {
         privacyComment: String?,
         uploadByAdminsOnly: Int?,
         commentsDisabled: Int?
-    ): Single<BaseResponse<VKApiPhotoAlbum>> {
+    ): Flow<BaseResponse<VKApiPhotoAlbum>> {
         return rest.request(
             "photos.createAlbum", form(
                 "title" to title,
@@ -214,7 +214,7 @@ class IPhotosService : IServiceRest() {
         privacyComment: String?,
         uploadByAdminsOnly: Int?,
         commentsDisabled: Int?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "photos.editAlbum", form(
                 "album_id" to albumId,
@@ -241,7 +241,7 @@ class IPhotosService : IServiceRest() {
         ownerId: Long,
         photoId: Int,
         accessKey: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "photos.copy", form(
                 "owner_id" to ownerId,
@@ -261,7 +261,7 @@ class IPhotosService : IServiceRest() {
         stickerId: Int?,
         accessKey: String?,
         generatedUniqueId: Int?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "photos.createComment", form(
                 "owner_id" to ownerId,
@@ -281,7 +281,7 @@ class IPhotosService : IServiceRest() {
         photos: String?,
         extended: Int?,
         photo_sizes: Int?
-    ): Single<BaseResponse<List<VKApiPhoto>>> {
+    ): Flow<BaseResponse<List<VKApiPhoto>>> {
         return rest.request(
             "photos.getById", form(
                 "photos" to photos,
@@ -294,7 +294,7 @@ class IPhotosService : IServiceRest() {
     fun getUploadServer(
         albumId: Int,
         groupId: Long?
-    ): Single<BaseResponse<VKApiUploadServer>> {
+    ): Flow<BaseResponse<VKApiUploadServer>> {
         return rest.request(
             "photos.getUploadServer", form(
                 "album_id" to albumId,
@@ -307,7 +307,7 @@ class IPhotosService : IServiceRest() {
         server: String?,
         hash: String?,
         photo: String?
-    ): Single<BaseResponse<UploadOwnerPhotoResponse>> {
+    ): Flow<BaseResponse<UploadOwnerPhotoResponse>> {
         return rest.request(
             "photos.saveOwnerPhoto",
             form(
@@ -319,7 +319,7 @@ class IPhotosService : IServiceRest() {
         )
     }
 
-    fun setChatPhoto(file: String?): Single<BaseResponse<UploadChatPhotoResponse>> {
+    fun setChatPhoto(file: String?): Flow<BaseResponse<UploadChatPhotoResponse>> {
         return rest.request(
             "messages.setChatPhoto",
             form("file" to file),
@@ -327,7 +327,7 @@ class IPhotosService : IServiceRest() {
         )
     }
 
-    fun getOwnerPhotoUploadServer(ownerId: Long?): Single<BaseResponse<VKApiOwnerPhotoUploadServer>> {
+    fun getOwnerPhotoUploadServer(ownerId: Long?): Flow<BaseResponse<VKApiOwnerPhotoUploadServer>> {
         return rest.request(
             "photos.getOwnerPhotoUploadServer",
             form("owner_id" to ownerId),
@@ -335,7 +335,7 @@ class IPhotosService : IServiceRest() {
         )
     }
 
-    fun getChatUploadServer(chat_id: Long?): Single<BaseResponse<VKApiChatPhotoUploadServer>> {
+    fun getChatUploadServer(chat_id: Long?): Flow<BaseResponse<VKApiChatPhotoUploadServer>> {
         return rest.request(
             "photos.getChatUploadServer",
             form("chat_id" to chat_id),
@@ -352,7 +352,7 @@ class IPhotosService : IServiceRest() {
         latitude: Double?,
         longitude: Double?,
         caption: String?
-    ): Single<BaseResponse<List<VKApiPhoto>>> {
+    ): Flow<BaseResponse<List<VKApiPhoto>>> {
         return rest.request(
             "photos.saveWallPhoto", form(
                 "user_id" to userId,
@@ -367,7 +367,7 @@ class IPhotosService : IServiceRest() {
         )
     }
 
-    fun getWallUploadServer(groupId: Long?): Single<BaseResponse<VKApiWallUploadServer>> {
+    fun getWallUploadServer(groupId: Long?): Flow<BaseResponse<VKApiWallUploadServer>> {
         return rest.request(
             "photos.getWallUploadServer",
             form("group_id" to groupId),
@@ -384,7 +384,7 @@ class IPhotosService : IServiceRest() {
         latitude: Double?,
         longitude: Double?,
         caption: String?
-    ): Single<BaseResponse<List<VKApiPhoto>>> {
+    ): Flow<BaseResponse<List<VKApiPhoto>>> {
         return rest.request(
             "photos.save", form(
                 "album_id" to albumId,
@@ -408,7 +408,7 @@ class IPhotosService : IServiceRest() {
         photoSizes: Int?,
         offset: Int?,
         count: Int?
-    ): Single<BaseResponse<Items<VKApiPhoto>>> {
+    ): Flow<BaseResponse<Items<VKApiPhoto>>> {
         return rest.request(
             "photos.get", form(
                 "owner_id" to ownerId,
@@ -429,7 +429,7 @@ class IPhotosService : IServiceRest() {
         sort: Int?,
         offset: Int?,
         count: Int?
-    ): Single<BaseResponse<Items<VKApiPhoto>>> {
+    ): Flow<BaseResponse<Items<VKApiPhoto>>> {
         return rest.request(
             "photos.getUserPhotos", form(
                 "user_id" to ownerId,
@@ -450,7 +450,7 @@ class IPhotosService : IServiceRest() {
         no_service_albums: Int?,
         need_hidden: Int?,
         skip_hidden: Int?
-    ): Single<BaseResponse<Items<VKApiPhoto>>> {
+    ): Flow<BaseResponse<Items<VKApiPhoto>>> {
         return rest.request(
             "photos.getAll", form(
                 "owner_id" to ownerId,
@@ -465,7 +465,7 @@ class IPhotosService : IServiceRest() {
         )
     }
 
-    val messagesUploadServer: Single<BaseResponse<VKApiPhotoMessageServer>>
+    val messagesUploadServer: Flow<BaseResponse<VKApiPhotoMessageServer>>
         get() = rest.request(
             "photos.getMessagesUploadServer",
             null,
@@ -476,7 +476,7 @@ class IPhotosService : IServiceRest() {
         server: Long?,
         photo: String?,
         hash: String?
-    ): Single<BaseResponse<List<VKApiPhoto>>> {
+    ): Flow<BaseResponse<List<VKApiPhoto>>> {
         return rest.request(
             "photos.saveMessagesPhoto", form(
                 "server" to server,
@@ -494,7 +494,7 @@ class IPhotosService : IServiceRest() {
         needSystem: Int?,
         needCovers: Int?,
         photoSizes: Int?
-    ): Single<BaseResponse<Items<VKApiPhotoAlbum>>> {
+    ): Flow<BaseResponse<Items<VKApiPhotoAlbum>>> {
         return rest.request(
             "photos.getAlbums", form(
                 "owner_id" to ownerId,
@@ -512,7 +512,7 @@ class IPhotosService : IServiceRest() {
         ownerId: Long?,
         photo_id: Int?,
         access_key: String?
-    ): Single<BaseResponse<List<VKApiPhotoTags>>> {
+    ): Flow<BaseResponse<List<VKApiPhotoTags>>> {
         return rest.request(
             "photos.getTags", form(
                 "owner_id" to ownerId,
@@ -528,7 +528,7 @@ class IPhotosService : IServiceRest() {
         need_likes: Int?,
         offset: Int?,
         count: Int?
-    ): Single<BaseResponse<Items<VKApiComment>>> {
+    ): Flow<BaseResponse<Items<VKApiComment>>> {
         return rest.request(
             "photos.getAllComments", form(
                 "owner_id" to ownerId,
@@ -550,7 +550,7 @@ class IPhotosService : IServiceRest() {
         end_time: Long?,
         offset: Int?,
         count: Int?
-    ): Single<BaseResponse<Items<VKApiPhoto>>> {
+    ): Flow<BaseResponse<Items<VKApiPhoto>>> {
         return rest.request(
             "photos.search", form(
                 "q" to q,

@@ -10,20 +10,20 @@ import dev.ragnarok.fenrir.api.model.response.StoriesResponse
 import dev.ragnarok.fenrir.api.model.response.StoryGetResponse
 import dev.ragnarok.fenrir.api.model.response.ViewersListResponse
 import dev.ragnarok.fenrir.api.model.server.VKApiStoryUploadServer
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IStoriesShortVideosApi {
     @CheckResult
     fun stories_getPhotoUploadServer(
         group_id: Long?,
         reply_to_story: String?
-    ): Single<VKApiStoryUploadServer>
+    ): Flow<VKApiStoryUploadServer>
 
     @CheckResult
     fun stories_getVideoUploadServer(
         group_id: Long?,
         reply_to_story: String?
-    ): Single<VKApiStoryUploadServer>
+    ): Flow<VKApiStoryUploadServer>
 
     @CheckResult
     fun getStoriesViewers(
@@ -31,26 +31,26 @@ interface IStoriesShortVideosApi {
         storyId: Int?,
         offset: Int?,
         count: Int?
-    ): Single<ViewersListResponse>
+    ): Flow<ViewersListResponse>
 
     @CheckResult
-    fun stories_delete(owner_id: Long, story_id: Int): Single<Int>
+    fun stories_delete(owner_id: Long, story_id: Int): Flow<Int>
 
     @CheckResult
-    fun stories_save(upload_results: String?): Single<Items<VKApiStory>>
+    fun stories_save(upload_results: String?): Flow<Items<VKApiStory>>
 
     @CheckResult
-    fun getStories(owner_id: Long?, extended: Int?, fields: String?): Single<StoriesResponse>
+    fun getStories(owner_id: Long?, extended: Int?, fields: String?): Flow<StoriesResponse>
 
     @CheckResult
-    fun getNarratives(owner_id: Long, offset: Int?, count: Int?): Single<Items<VKApiNarratives>>
+    fun getNarratives(owner_id: Long, offset: Int?, count: Int?): Flow<Items<VKApiNarratives>>
 
     @CheckResult
     fun getStoryById(
         stories: List<AccessIdPair>,
         extended: Int?,
         fields: String?
-    ): Single<StoryGetResponse>
+    ): Flow<StoryGetResponse>
 
     @CheckResult
     fun searchStories(
@@ -59,7 +59,7 @@ interface IStoriesShortVideosApi {
         count: Int?,
         extended: Int?,
         fields: String?
-    ): Single<StoriesResponse>
+    ): Flow<StoriesResponse>
 
     @CheckResult
     fun getShortVideos(
@@ -68,5 +68,5 @@ interface IStoriesShortVideosApi {
         count: Int?,
         extended: Int?,
         fields: String?
-    ): Single<ShortVideosResponse>
+    ): Flow<ShortVideosResponse>
 }

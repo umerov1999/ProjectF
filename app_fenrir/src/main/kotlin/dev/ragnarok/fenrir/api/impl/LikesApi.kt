@@ -6,7 +6,10 @@ import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.ILikesApi
 import dev.ragnarok.fenrir.api.model.response.LikesListResponse
 import dev.ragnarok.fenrir.api.services.ILikesService
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.checkIntOverZero
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 internal class LikesApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), ILikesApi {
@@ -14,14 +17,13 @@ internal class LikesApi(accountId: Long, provider: IServiceProvider) :
         type: String?, ownerId: Long?, itemId: Int?, pageUrl: String?,
         filter: String?, friendsOnly: Boolean?, offset: Int?,
         count: Int?, skipOwn: Boolean?, fields: String?
-    ): Single<LikesListResponse> {
+    ): Flow<LikesListResponse> {
         return provideService(ILikesService(), TokenType.USER, TokenType.SERVICE)
-            .flatMap { service ->
-                service
-                    .getList(
-                        type, ownerId, itemId, pageUrl, filter, integerFromBoolean(friendsOnly),
-                        1, offset, count, integerFromBoolean(skipOwn), fields
-                    )
+            .flatMapConcat {
+                it.getList(
+                    type, ownerId, itemId, pageUrl, filter, integerFromBoolean(friendsOnly),
+                    1, offset, count, integerFromBoolean(skipOwn), fields
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -31,30 +33,31 @@ internal class LikesApi(accountId: Long, provider: IServiceProvider) :
         ownerId: Long?,
         itemId: Int,
         accessKey: String?
-    ): Single<Int> {
+    ): Flow<Int> {
         return provideService(ILikesService(), TokenType.USER)
-            .flatMap { service ->
-                service.delete(type, ownerId, itemId, accessKey)
+            .flatMapConcat { s ->
+                s.delete(type, ownerId, itemId, accessKey)
                     .map(extractResponseWithErrorHandling())
                     .map { it.likes }
             }
     }
 
-    override fun add(type: String?, ownerId: Long?, itemId: Int, accessKey: String?): Single<Int> {
+    override fun add(type: String?, ownerId: Long?, itemId: Int, accessKey: String?): Flow<Int> {
         return provideService(ILikesService(), TokenType.USER)
-            .flatMap { service ->
-                service.add(type, ownerId, itemId, accessKey)
+            .flatMapConcat { s ->
+                s.add(type, ownerId, itemId, accessKey)
                     .map(extractResponseWithErrorHandling())
-                    .map { response -> response.likes }
+                    .map { it.likes }
             }
     }
 
-    override fun isLiked(type: String?, ownerId: Long?, itemId: Int): Single<Boolean> {
+    override fun isLiked(type: String?, ownerId: Long?, itemId: Int): Flow<Boolean> {
         return provideService(ILikesService(), TokenType.USER)
-            .flatMap { service ->
-                service.isLiked(type, ownerId, itemId)
+            .flatMapConcat { s ->
+                s.isLiked(type, ownerId, itemId)
                     .map(extractResponseWithErrorHandling())
-                    .map { it.liked != 0 }
+                    .map { it.liked }
+                    .checkIntOverZero()
             }
     }
 
@@ -63,10 +66,10 @@ internal class LikesApi(accountId: Long, provider: IServiceProvider) :
         ownerId: Long?,
         itemId: Int,
         accessKey: String?
-    ): Single<Int> {
+    ): Flow<Int> {
         return provideService(ILikesService(), TokenType.USER)
-            .flatMap { service ->
-                service.checkAndAddLike(
+            .flatMapConcat {
+                it.checkAndAddLike(
                     "var type = Args.type; var owner_id = Args.owner_id; var item_id = Args.item_id; var access_key = Args.access_key; if(API.likes.isLiked({\"v\":\"" + Constants.API_VERSION + "\", \"type\": type, \"owner_id\": owner_id, \"item_id\": item_id}).liked == 0) {return API.likes.add({\"v\":\"" + Constants.API_VERSION + "\", \"type\": type, \"owner_id\": owner_id, \"item_id\": item_id, \"access_key\": access_key}).likes;} return 0;",
                     type,
                     ownerId,

@@ -6,9 +6,9 @@ import dev.ragnarok.fenrir.domain.IPollInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.absownerslist.ISimpleOwnersView
 import dev.ragnarok.fenrir.fragment.absownerslist.SimpleOwnersPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.User
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class VotersPresenter(
     accountId: Long,
@@ -21,7 +21,7 @@ class VotersPresenter(
     SimpleOwnersPresenter<ISimpleOwnersView>(accountId, savedInstanceState) {
     private val pollsInteractor: IPollInteractor =
         InteractorFactory.createPollInteractor()
-    private val actualDataDisposable = CompositeDisposable()
+    private val actualDataDisposable = CompositeJob()
     private var endOfContent = false
     private var actualDataLoading = false
     private var doLoadTabs = false
@@ -57,8 +57,7 @@ class VotersPresenter(
             offset,
             200
         )
-            .fromIOToMain()
-            .subscribe({ users -> onDataReceived(users) }) { t ->
+            .fromIOToMain({ users -> onDataReceived(users) }) { t ->
                 onDataGetError(
                     t
                 )
@@ -103,7 +102,7 @@ class VotersPresenter(
     }
 
     override fun onDestroyed() {
-        actualDataDisposable.dispose()
+        actualDataDisposable.cancel()
         super.onDestroyed()
     }
 

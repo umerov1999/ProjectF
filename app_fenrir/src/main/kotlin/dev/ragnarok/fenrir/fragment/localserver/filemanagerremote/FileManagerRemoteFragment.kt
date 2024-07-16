@@ -24,7 +24,6 @@ import dev.ragnarok.fenrir.StubAnimatorListener
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.listener.BackPressCallback
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.listener.UpdatableNavigation
@@ -43,14 +42,13 @@ import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.MySearchView
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.disposables.Disposable
-import java.util.concurrent.TimeUnit
 
 class FileManagerRemoteFragment :
     BaseMvpFragment<FileManagerRemotePresenter, IFileManagerRemoteView>(),
@@ -63,7 +61,7 @@ class FileManagerRemoteFragment :
     private var mAdapter: FileManagerRemoteAdapter? = null
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
 
-    private var animationDispose = Disposable.disposed()
+    private var animationDispose = CancelableJob()
     private var mAnimationLoaded = false
     private var animLoad: ObjectAnimator? = null
     private var mySearchView: MySearchView? = null
@@ -81,7 +79,7 @@ class FileManagerRemoteFragment :
 
     override fun onDestroy() {
         super.onDestroy()
-        animationDispose.dispose()
+        animationDispose.cancel()
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?) =
@@ -195,15 +193,13 @@ class FileManagerRemoteFragment :
     }
 
     override fun resolveLoading(visible: Boolean) {
-        animationDispose.dispose()
+        animationDispose.cancel()
         if (mAnimationLoaded && !visible) {
             mAnimationLoaded = false
             animLoad?.start()
         } else if (!mAnimationLoaded && visible) {
             animLoad?.end()
-            animationDispose = Completable.create {
-                it.onComplete()
-            }.delay(300, TimeUnit.MILLISECONDS).fromIOToMain().subscribe({
+            animationDispose += delayTaskFlow(300).toMain {
                 mAnimationLoaded = true
                 loading?.visibility = View.VISIBLE
                 loading?.alpha = 1f
@@ -219,7 +215,7 @@ class FileManagerRemoteFragment :
                     )
                 )
                 loading?.playAnimation()
-            }, RxUtils.ignore())
+            }
         }
     }
 

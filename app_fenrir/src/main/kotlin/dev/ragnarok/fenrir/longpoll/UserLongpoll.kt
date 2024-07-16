@@ -1,32 +1,35 @@
 package dev.ragnarok.fenrir.longpoll
 
 import dev.ragnarok.fenrir.Constants
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.VKApiLongpollServer
 import dev.ragnarok.fenrir.api.model.longpoll.VKApiLongpollUpdates
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.nonNullNoEmpty
-import dev.ragnarok.fenrir.notDisposed
 import dev.ragnarok.fenrir.util.Logger.d
 import dev.ragnarok.fenrir.util.PersistentLogger.logThrowable
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.Disposable
-import java.util.concurrent.TimeUnit
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 internal class UserLongpoll(
     private val networker: INetworker,
     override val accountId: Long,
     private val callback: Callback
 ) : ILongpoll {
-    private val mDelayedObservable = Observable.interval(
-        DELAY_ON_ERROR.toLong(), DELAY_ON_ERROR.toLong(),
-        TimeUnit.MILLISECONDS, provideMainThreadScheduler()
-    )
+    private val delayedObservable: Flow<Boolean> = flow {
+        while (isActive()) {
+            delay(DELAY_ON_ERROR.toLong())
+            emit(true)
+        }
+    }
+    private val compositeJob = CompositeJob()
     private var key: String? = null
     private var server: String? = null
     private var ts: Long? = null
-    private var mCurrentUpdatesDisposable: Disposable? = null
 
     private fun resetServerAttrs() {
         server = null
@@ -36,7 +39,7 @@ internal class UserLongpoll(
 
     override fun shutdown() {
         d(TAG, "shutdown, aid: $accountId")
-        resetUpdatesDisposable()
+        compositeJob.cancel()
     }
 
     override fun connect() {
@@ -47,16 +50,7 @@ internal class UserLongpoll(
     }
 
     private val isListeningNow: Boolean
-        get() = mCurrentUpdatesDisposable?.notDisposed() == true
-
-    private fun resetUpdatesDisposable() {
-        if (mCurrentUpdatesDisposable != null) {
-            if (!(mCurrentUpdatesDisposable ?: return).isDisposed) {
-                (mCurrentUpdatesDisposable ?: return).dispose()
-            }
-            mCurrentUpdatesDisposable = null
-        }
-    }
+        get() = compositeJob.size() > 0
 
     private fun onServerInfoReceived(info: VKApiLongpollServer) {
         d(TAG, "onResponse, info: $info")
@@ -72,22 +66,21 @@ internal class UserLongpoll(
     }
 
     private fun get() {
-        resetUpdatesDisposable()
+        compositeJob.clear()
         val serverIsValid = server.nonNullNoEmpty() && key.nonNullNoEmpty() && ts != null
         if (!serverIsValid) {
-            setDisposable(
+            compositeJob.add(
                 networker.vkDefault(accountId)
                     .messages()
                     .getLongpollServer(true, V)
-                    .fromIOToMain()
-                    .subscribe({ info -> onServerInfoReceived(info) }) { throwable ->
+                    .fromIOToMain({ info -> onServerInfoReceived(info) }) { throwable ->
                         onServerGetError(
                             throwable
                         )
                     })
             return
         }
-        setDisposable(
+        compositeJob.add(
             networker.longpoll()
                 .getUpdates(
                     "https://$server",
@@ -97,16 +90,11 @@ internal class UserLongpoll(
                     MODE,
                     V
                 )
-                .fromIOToMain()
-                .subscribe({ updates -> onUpdates(updates) }) { throwable ->
+                .fromIOToMain({ updates -> onUpdates(updates) }) { throwable ->
                     onUpdatesGetError(
                         throwable
                     )
                 })
-    }
-
-    private fun setDisposable(disposable: Disposable) {
-        mCurrentUpdatesDisposable = disposable
     }
 
     private fun onUpdates(updates: VKApiLongpollUpdates) {
@@ -144,7 +132,7 @@ internal class UserLongpoll(
 
     private val withDelay: Unit
         get() {
-            setDisposable(mDelayedObservable.subscribe { get() })
+            compositeJob.add(delayedObservable.toMain { get() })
         }
 
     interface Callback {

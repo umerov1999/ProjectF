@@ -23,6 +23,7 @@ import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 
 class FriendAcceptedFCMMessage {
     // collapseKey: friend_accepted, extras: Bundle[{first_name=Андрей, uid=320891480, from=376771982493,
@@ -41,14 +42,13 @@ class FriendAcceptedFCMMessage {
         }
         val app = context.applicationContext
         getRx(app, accountId, uid)
-            .subscribeOn(INSTANCE)
-            .subscribe({ ownerInfo ->
+            .fromScopeToMain(INSTANCE) { ownerInfo ->
                 notifyImpl(
                     app,
                     ownerInfo.user,
                     ownerInfo.avatar
                 )
-            }) { }
+            }
     }
 
     private fun notifyImpl(context: Context, user: User, bitmap: Bitmap?) {

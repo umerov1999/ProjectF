@@ -4,19 +4,19 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IMessagesRepository
 import dev.ragnarok.fenrir.domain.Repository.messages
 import dev.ragnarok.fenrir.fragment.messages.AbsMessageListPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Message
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.getSelected
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
 
 class ImportantMessagesPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AbsMessageListPresenter<IImportantMessagesView>(accountId, savedInstanceState) {
     private val fInteractor: IMessagesRepository = messages
-    private val actualDataDisposable = CompositeDisposable()
+    private val actualDataDisposable = CompositeJob()
     private var actualDataReceived = false
     private var endOfContent = false
     private var actualDataLoading = false
@@ -24,8 +24,7 @@ class ImportantMessagesPresenter(accountId: Long, savedInstanceState: Bundle?) :
         actualDataLoading = true
         resolveRefreshingView()
         actualDataDisposable.add(fInteractor.getImportantMessages(accountId, 50, offset, null)
-            .fromIOToMain()
-            .subscribe({ data ->
+            .fromIOToMain({ data ->
                 onActualDataReceived(
                     offset,
                     data
@@ -35,9 +34,8 @@ class ImportantMessagesPresenter(accountId: Long, savedInstanceState: Bundle?) :
 
     fun fireMessageRestoreClick(message: Message) {
         val id = message.getObjectId()
-        appendDisposable(fInteractor.restoreMessage(accountId, accountId, id)
-            .fromIOToMain()
-            .subscribe({ onMessageRestoredSuccessfully(id) }) { t ->
+        appendJob(fInteractor.restoreMessage(accountId, accountId, id)
+            .fromIOToMain({ onMessageRestoredSuccessfully(id) }) { t ->
                 showError(getCauseIfRuntime(t))
             })
     }
@@ -103,21 +101,21 @@ class ImportantMessagesPresenter(accountId: Long, savedInstanceState: Bundle?) :
 
     override fun onActionModeDeleteClick() {
         super.onActionModeDeleteClick()
-        val ids = Observable.fromIterable(data)
-            .filter { it.isSelected }
-            .map { it.getObjectId() }
-            .toList()
-            .blockingGet()
+        val ids = ArrayList<Int>(data.size)
+        for (i in data) {
+            if (i.isSelected) {
+                ids.add(i.getObjectId())
+            }
+        }
         if (ids.nonNullNoEmpty()) {
-            appendDisposable(fInteractor.deleteMessages(
+            appendJob(fInteractor.deleteMessages(
                 accountId,
                 accountId,
                 ids,
                 forAll = false,
                 spam = false
             )
-                .fromIOToMain()
-                .subscribe({ onMessagesDeleteSuccessfully(ids) }) { t ->
+                .fromIOToMain({ onMessagesDeleteSuccessfully(ids) }) { t ->
                     showError(getCauseIfRuntime(t))
                 })
         }
@@ -125,18 +123,18 @@ class ImportantMessagesPresenter(accountId: Long, savedInstanceState: Bundle?) :
 
     override fun onActionModeSpamClick() {
         super.onActionModeDeleteClick()
-        val ids = Observable.fromIterable(data)
-            .filter { it.isSelected }
-            .map { it.getObjectId() }
-            .toList()
-            .blockingGet()
+        val ids = ArrayList<Int>(data.size)
+        for (i in data) {
+            if (i.isSelected) {
+                ids.add(i.getObjectId())
+            }
+        }
         if (ids.nonNullNoEmpty()) {
-            appendDisposable(fInteractor.deleteMessages(
+            appendJob(fInteractor.deleteMessages(
                 accountId, accountId, ids,
                 forAll = false, spam = true
             )
-                .fromIOToMain()
-                .subscribe({ onMessagesDeleteSuccessfully(ids) }) { t ->
+                .fromIOToMain({ onMessagesDeleteSuccessfully(ids) }) { t ->
                     showError(getCauseIfRuntime(t))
                 })
         }
@@ -177,14 +175,13 @@ class ImportantMessagesPresenter(accountId: Long, savedInstanceState: Bundle?) :
             return
         }
         val msg = data[position]
-        appendDisposable(fInteractor.markAsImportant(
+        appendJob(fInteractor.markAsImportant(
             accountId,
             msg.peerId,
             setOf(msg.getObjectId()),
             0
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 data.removeAt(position)
                 safeNotifyDataChanged()
             }) { })
@@ -197,9 +194,10 @@ class ImportantMessagesPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun fireTranscript(voiceMessageId: String?, messageId: Int) {
-        appendDisposable(fInteractor.recogniseAudioMessage(accountId, messageId, voiceMessageId)
-            .fromIOToMain()
-            .subscribe({ }) { })
+        appendJob(
+            fInteractor.recogniseAudioMessage(accountId, messageId, voiceMessageId)
+                .hiddenIO()
+        )
     }
 
     init {

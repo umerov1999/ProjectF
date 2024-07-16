@@ -1,17 +1,17 @@
 package dev.ragnarok.fenrir.fragment.base
 
 import androidx.fragment.app.Fragment
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import kotlinx.coroutines.Job
 
 open class BaseFragment : Fragment() {
-    private val mCompositeDisposable = CompositeDisposable()
-    protected fun appendDisposable(disposable: Disposable) {
-        mCompositeDisposable.add(disposable)
+    private val mCompositeJob = CompositeJob()
+    protected fun appendJob(job: Job) {
+        mCompositeJob.add(job)
     }
 
     override fun onDestroy() {
-        mCompositeDisposable.dispose()
+        mCompositeJob.cancel()
         super.onDestroy()
     }
 }

@@ -78,7 +78,7 @@ struct Shape::Impl
         auto method = shape->composite(&target);
         if (!target || method == CompositeMethod::ClipPath) return false;
         if (target->pImpl->opacity == 255 || target->pImpl->opacity == 0) {
-            if (target->identifier() == TVG_CLASS_ID_SHAPE) {
+            if (target->type() == Type::Shape) {
                 auto shape = static_cast<const Shape*>(target);
                 if (!shape->fill()) {
                     uint8_t r, g, b, a;
@@ -96,10 +96,12 @@ struct Shape::Impl
     }
 
     RenderData update(RenderMethod* renderer, const RenderTransform* transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag pFlag, bool clipper)
-    {     
+    {
+        if (static_cast<RenderUpdateFlag>(pFlag | flag) == RenderUpdateFlag::None) return rd;
+
         if ((needComp = needComposition(opacity))) {
             /* Overriding opacity value. If this scene is half-translucent,
-               It must do intermeidate composition with that opacity value. */ 
+               It must do intermediate composition with that opacity value. */ 
             this->opacity = opacity;
             opacity = 255;
         }
@@ -167,24 +169,18 @@ struct Shape::Impl
         memcpy(rs.path.pts.end(), pts, sizeof(Point) * ptsCnt);
         rs.path.cmds.count += cmdCnt;
         rs.path.pts.count += ptsCnt;
-
-        flag |= RenderUpdateFlag::Path;
     }
 
     void moveTo(float x, float y)
     {
         rs.path.cmds.push(PathCommand::MoveTo);
         rs.path.pts.push({x, y});
-
-        flag |= RenderUpdateFlag::Path;
     }
 
     void lineTo(float x, float y)
     {
         rs.path.cmds.push(PathCommand::LineTo);
         rs.path.pts.push({x, y});
-
-        flag |= RenderUpdateFlag::Path;
     }
 
     void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y)
@@ -193,8 +189,6 @@ struct Shape::Impl
         rs.path.pts.push({cx1, cy1});
         rs.path.pts.push({cx2, cy2});
         rs.path.pts.push({x, y});
-
-        flag |= RenderUpdateFlag::Path;
     }
 
     void close()
@@ -203,8 +197,6 @@ struct Shape::Impl
         if (rs.path.cmds.count > 0 && rs.path.cmds.last() == PathCommand::Close) return;
 
         rs.path.cmds.push(PathCommand::Close);
-
-        flag |= RenderUpdateFlag::Path;
     }
 
     void strokeWidth(float width)
@@ -221,7 +213,7 @@ struct Shape::Impl
             rs.stroke = new RenderStroke();
         }
 
-        if (mathEqual(rs.stroke->trim.begin, begin) && mathEqual(rs.stroke->trim.end, end) &&
+        if (tvg::equal(rs.stroke->trim.begin, begin) && tvg::equal(rs.stroke->trim.end, end) &&
             rs.stroke->trim.simultaneous == simultaneous) return;
 
         auto loop = true;
@@ -306,6 +298,7 @@ struct Shape::Impl
         if (!rs.stroke) rs.stroke = new RenderStroke();
         if (rs.stroke->fill && rs.stroke->fill != p) delete(rs.stroke->fill);
         rs.stroke->fill = p;
+        rs.stroke->color[3] = 0;
 
         flag |= RenderUpdateFlag::Stroke;
         flag |= RenderUpdateFlag::GradientStroke;

@@ -24,7 +24,8 @@ import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
+import kotlinx.coroutines.flow.zip
 import kotlin.math.abs
 
 class GroupInviteFCMMessage {
@@ -48,8 +49,7 @@ class GroupInviteFCMMessage {
         val app = context.applicationContext
         val group = getRx(app, accountId, -abs(group_id))
         val user = getRx(app, accountId, from_id)
-        Single.zip(
-            group,
+        group.zip(
             user
         ) { first, second ->
             Pair(
@@ -57,12 +57,11 @@ class GroupInviteFCMMessage {
                 second
             )
         }
-            .subscribeOn(INSTANCE)
-            .subscribe({
+            .fromScopeToMain(INSTANCE) {
                 val userInfo = it.second
                 val groupInfo = it.first
                 notifyImpl(app, userInfo.user, groupInfo.avatar, groupInfo.community)
-            }) { }
+            }
     }
 
     private fun notifyImpl(

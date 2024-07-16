@@ -23,6 +23,7 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.CoverSafeResize
 import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.UncompressDefaultInterceptor
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -234,6 +235,6 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
 
     init {
         proxySettings.observeActive
-            .subscribe { onProxyChanged() }
+            .sharedFlowToMain { onProxyChanged() }
     }
 }

@@ -6,7 +6,6 @@ import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.filegallery.Includes
 import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
-import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.model.FileRemote
 import dev.ragnarok.filegallery.model.FileType
@@ -14,6 +13,7 @@ import dev.ragnarok.filegallery.model.Photo
 import dev.ragnarok.filegallery.model.Video
 import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.util.Objects.safeEquals
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
 import java.util.Locale
 
 class FileManagerRemotePresenter : RxSupportPresenter<IFileManagerRemoteView>() {
@@ -109,7 +109,7 @@ class FileManagerRemotePresenter : RxSupportPresenter<IFileManagerRemoteView>() 
             view?.resolveEmptyText(fileList.isEmpty())
             return
         }
-        path.removeLast()
+        path.removeLastOrNull()
         view?.updatePathString(buildPath())
         loadFiles()
     }
@@ -141,8 +141,8 @@ class FileManagerRemotePresenter : RxSupportPresenter<IFileManagerRemoteView>() 
                 photo.setPhoto_url(i.url)
                 photo.setPreview_url(i.preview_url)
                 photo.setLocal(true)
-                photo.setGif(
-                    i.type == FileType.video || i.file_name.toString().endsWith("gif", true)
+                photo.setIsAnimation(
+                    i.type == FileType.video
                 )
                 photo.setText(i.file_name)
                 mem.writeParcelable(photo)
@@ -240,23 +240,22 @@ class FileManagerRemotePresenter : RxSupportPresenter<IFileManagerRemoteView>() 
         isLoading = true
         view?.resolveEmptyText(false)
         view?.resolveLoading(isLoading)
-        appendDisposable(
-            Includes.networkInterfaces.localServerApi().fsGet(buildPath()).fromIOToMain()
-                .subscribe({
-                    fileList.clear()
-                    fileList.addAll(it)
-                    isLoading = false
-                    view?.resolveEmptyText(fileList.isEmpty())
-                    view?.resolveLoading(isLoading)
-                    view?.notifyAllChanged()
-                    directoryScrollPositions.remove(buildPath())?.let { scroll ->
-                        view?.restoreScroll(scroll)
-                    } ?: view?.restoreScroll(LinearLayoutManager_SavedState())
-                }, {
-                    view?.showThrowable(it)
-                    isLoading = false
-                    view?.resolveLoading(isLoading)
-                })
+        appendJob(
+            Includes.networkInterfaces.localServerApi().fsGet(buildPath()).fromIOToMain({
+                fileList.clear()
+                fileList.addAll(it)
+                isLoading = false
+                view?.resolveEmptyText(fileList.isEmpty())
+                view?.resolveLoading(isLoading)
+                view?.notifyAllChanged()
+                directoryScrollPositions.remove(buildPath())?.let { scroll ->
+                    view?.restoreScroll(scroll)
+                } ?: view?.restoreScroll(LinearLayoutManager_SavedState())
+            }, {
+                view?.showThrowable(it)
+                isLoading = false
+                view?.resolveLoading(isLoading)
+            })
         )
     }
 

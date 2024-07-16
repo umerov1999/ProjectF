@@ -5,7 +5,7 @@ import dev.ragnarok.fenrir.api.model.VKApiValidationResponse
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.VKUrlResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class IAuthService : IServiceRest() {
     fun directLogin(
@@ -24,7 +24,7 @@ class IAuthService : IServiceRest() {
         device_id: String?,
         libverify_support: Int?,
         lang: String?
-    ): Single<LoginResponse> {
+    ): Flow<LoginResponse> {
         return rest.request(
             "token",
             form(
@@ -62,7 +62,7 @@ class IAuthService : IServiceRest() {
         gaid: String?,
         v: String?,
         lang: String?
-    ): Single<VKUrlResponse> {
+    ): Flow<VKUrlResponse> {
         return rest.requestAndGetURLFromRedirects(
             "auth_by_exchange_token",
             form(
@@ -90,7 +90,7 @@ class IAuthService : IServiceRest() {
         device_id: String?,
         libverify_support: Int?,
         lang: String?
-    ): Single<BaseResponse<VKApiValidationResponse>> {
+    ): Flow<BaseResponse<VKApiValidationResponse>> {
         return rest.request(
             "auth.validatePhone",
             form(

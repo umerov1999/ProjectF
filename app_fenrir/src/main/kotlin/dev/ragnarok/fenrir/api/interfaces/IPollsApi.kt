@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.api.interfaces
 import androidx.annotation.CheckResult
 import dev.ragnarok.fenrir.api.model.VKApiPoll
 import dev.ragnarok.fenrir.api.model.VKApiUser
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IPollsApi {
     @CheckResult
@@ -15,10 +15,10 @@ interface IPollsApi {
         backgroundId: Int?,
         ownerId: Long,
         addAnswers: List<String>
-    ): Single<VKApiPoll>
+    ): Flow<VKApiPoll>
 
     @CheckResult
-    fun deleteVote(ownerId: Long?, pollId: Int, answerId: Long, isBoard: Boolean?): Single<Boolean>
+    fun deleteVote(ownerId: Long?, pollId: Int, answerId: Long, isBoard: Boolean?): Flow<Boolean>
 
     @CheckResult
     fun addVote(
@@ -26,10 +26,10 @@ interface IPollsApi {
         pollId: Int,
         answerIds: Set<Long>,
         isBoard: Boolean?
-    ): Single<Boolean>
+    ): Flow<Boolean>
 
     @CheckResult
-    fun getById(ownerId: Long, isBoard: Boolean?, pollId: Int): Single<VKApiPoll>
+    fun getById(ownerId: Long, isBoard: Boolean?, pollId: Int): Flow<VKApiPoll>
 
     @CheckResult
     fun getVoters(
@@ -38,8 +38,8 @@ interface IPollsApi {
         isBoard: Int?,
         answer_ids: List<Long>,
         offset: Int?, count: Int?
-    ): Single<List<VKApiUser>>
+    ): Flow<List<VKApiUser>>
 
     @CheckResult
-    fun getBackgrounds(): Single<List<VKApiPoll.Background>>
+    fun getBackgrounds(): Flow<List<VKApiPoll.Background>>
 }

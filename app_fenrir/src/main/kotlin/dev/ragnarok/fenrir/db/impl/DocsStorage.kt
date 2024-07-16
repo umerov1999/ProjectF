@@ -21,14 +21,14 @@ import dev.ragnarok.fenrir.model.criteria.DocsCriteria
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Exestime.log
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 internal class DocsStorage(base: AppStorages) : AbsStorage(base), IDocsStorage {
-    override fun get(criteria: DocsCriteria): Single<List<DocumentDboEntity>> {
-        return Single.create { e: SingleEmitter<List<DocumentDboEntity>> ->
+    override fun get(criteria: DocsCriteria): Flow<List<DocumentDboEntity>> {
+        return flow {
             val start = System.currentTimeMillis()
             val uri = getDocsContentUriFor(criteria.accountId)
             val where: String
@@ -45,15 +45,15 @@ internal class DocsStorage(base: AppStorages) : AbsStorage(base), IDocsStorage {
             val data: MutableList<DocumentDboEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     data.add(map(cursor))
                 }
                 cursor.close()
             }
-            e.onSuccess(data)
             log("DocsStorage.get", start, "count: " + data.size)
+            emit(data)
         }
     }
 
@@ -62,8 +62,8 @@ internal class DocsStorage(base: AppStorages) : AbsStorage(base), IDocsStorage {
         ownerId: Long,
         entities: List<DocumentDboEntity>,
         clearBeforeInsert: Boolean
-    ): Completable {
-        return Completable.create { e ->
+    ): Flow<Boolean> {
+        return flow {
             val start = System.currentTimeMillis()
             val uri = getDocsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
@@ -122,17 +122,18 @@ internal class DocsStorage(base: AppStorages) : AbsStorage(base), IDocsStorage {
                 )
             }
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            e.onComplete()
             log("DocsStorage.store", start, "count: " + entities.size)
+            emit(true)
         }
     }
 
-    override fun delete(accountId: Long, docId: Int, ownerId: Long): Completable {
-        return Completable.fromAction {
+    override fun delete(accountId: Long, docId: Int, ownerId: Long): Flow<Boolean> {
+        return flow {
             val uri = getDocsContentUriFor(accountId)
             val where = DocsColumns.DOC_ID + " = ? AND " + DocsColumns.OWNER_ID + " = ?"
             val args = arrayOf(docId.toString(), ownerId.toString())
             contentResolver.delete(uri, where, args)
+            emit(true)
         }
     }
 

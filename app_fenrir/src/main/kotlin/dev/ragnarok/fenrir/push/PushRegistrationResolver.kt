@@ -12,9 +12,13 @@ import dev.ragnarok.fenrir.settings.VKPushRegistration
 import dev.ragnarok.fenrir.util.Logger.d
 import dev.ragnarok.fenrir.util.Utils.deviceName
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.schedulers.Schedulers
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.andThen
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.emptyTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.ignoreElement
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 import java.util.Locale
 
 class PushRegistrationResolver(
@@ -36,16 +40,15 @@ class PushRegistrationResolver(
         return can
     }
 
-    override fun resolvePushRegistration(): Completable {
+    override fun resolvePushRegistration(): Flow<Boolean> {
         return info
-            .observeOn(Schedulers.io())
-            .flatMapCompletable { data ->
+            .flatMapConcat { data ->
                 val available = settings.pushSettings().registrations
                 val accountId = settings.accounts().current
                 if (accountId == ISettings.IAccountsSettings.INVALID_ID && available.isEmpty() || accountId <= 0 || settings.accounts()
                         .getType(accountId) != Constants.DEFAULT_ACCOUNT_TYPE
                 ) {
-                    Completable.complete()
+                    emptyTaskFlow()
                 } else {
                     val needUnregister: MutableSet<VKPushRegistration> = HashSet(0)
                     var hasOk = false
@@ -61,9 +64,9 @@ class PushRegistrationResolver(
                     }
                     if (hasOk && !hasRemove && needUnregister.isEmpty()) {
                         d(TAG, "Has auth, valid registration, OK")
-                        Completable.complete()
+                        emptyTaskFlow()
                     } else {
-                        var completable = Completable.complete()
+                        var completable = emptyTaskFlow()
                         for (unregistered in needUnregister) {
                             completable = completable.andThen(unregister(unregistered))
                         }
@@ -83,17 +86,18 @@ class PushRegistrationResolver(
                             }
                         }
                         completable
-                            .doOnComplete {
+                            .map {
                                 settings.pushSettings().savePushRegistrations(target)
                                 d(TAG, "Register success")
+                                true
                             }
-                            .doOnError { d(TAG, "Register error, t: $it") }
+                            .catch { d(TAG, "Register error, t: $it") }
                     }
                 }
             }
     }
 
-    private fun register(registration: VKPushRegistration): Completable {
+    private fun register(registration: VKPushRegistration): Flow<Boolean> {
         //try {
         /*
             JSONArray fr_of_fr = new JSONArray();
@@ -161,22 +165,19 @@ class PushRegistrationResolver(
                 )
                 .ignoreElement()
         }
-        //} catch (JSONException e) {
-        //return Completable.error(e);
-        //}
     }
 
-    private fun unregister(registration: VKPushRegistration): Completable {
+    private fun unregister(registration: VKPushRegistration): Flow<Boolean> {
         return networker.vkManual(registration.userId, registration.vkAccessToken)
             .account()
             .unregisterDevice(registration.deviceId)
             .ignoreElement()
-            .onErrorResumeNext { t ->
-                val cause = getCauseIfRuntime(t)
+            .catch {
+                val cause = getCauseIfRuntime(it)
                 if (cause is ApiException && cause.error.errorCode == ApiErrorCodes.USER_AUTHORIZATION_FAILED) {
-                    return@onErrorResumeNext Completable.complete()
+                    return@catch emit(false)
                 }
-                Completable.error(t)
+                throw it
             }
     }
 
@@ -206,10 +207,9 @@ class PushRegistrationResolver(
         }
     }
 
-    private val info: Single<Data>
-        get() = FCMToken.fcmToken.flatMap { s ->
-            val data = Data(s, deviceIdProvider.deviceId)
-            Single.just(data)
+    private val info: Flow<Data>
+        get() = FCMToken.fcmToken.map {
+            Data(it, deviceIdProvider.deviceId)
         }
 
     private enum class Reason {

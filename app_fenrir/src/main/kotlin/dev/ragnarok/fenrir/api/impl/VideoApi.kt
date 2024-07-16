@@ -12,44 +12,46 @@ import dev.ragnarok.fenrir.api.model.response.DefaultCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.SearchVideoResponse
 import dev.ragnarok.fenrir.api.model.server.VKApiVideosUploadServer
 import dev.ragnarok.fenrir.api.services.IVideoService
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.checkInt
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 internal class VideoApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IVideoApi {
     override fun getComments(
         ownerId: Long?, videoId: Int, needLikes: Boolean?, startCommentId: Int?, offset: Int?,
         count: Int?, sort: String?, extended: Boolean?, fields: String?
-    ): Single<DefaultCommentsResponse> {
+    ): Flow<DefaultCommentsResponse> {
         return provideService(IVideoService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .getComments(
-                        ownerId,
-                        videoId,
-                        integerFromBoolean(needLikes),
-                        startCommentId,
-                        offset,
-                        count,
-                        sort,
-                        integerFromBoolean(extended),
-                        fields
-                    )
+            .flatMapConcat {
+                it.getComments(
+                    ownerId,
+                    videoId,
+                    integerFromBoolean(needLikes),
+                    startCommentId,
+                    offset,
+                    count,
+                    sort,
+                    integerFromBoolean(extended),
+                    fields
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun addVideo(targetId: Long?, videoId: Int?, ownerId: Long?): Single<Int> {
+    override fun addVideo(targetId: Long?, videoId: Int?, ownerId: Long?): Flow<Int> {
         return provideService(IVideoService(), TokenType.USER)
-            .flatMap { service ->
-                service.addVideo(targetId, videoId, ownerId)
+            .flatMapConcat {
+                it.addVideo(targetId, videoId, ownerId)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun deleteVideo(videoId: Int?, ownerId: Long?, targetId: Long?): Single<Int> {
+    override fun deleteVideo(videoId: Int?, ownerId: Long?, targetId: Long?): Flow<Int> {
         return provideService(IVideoService(), TokenType.USER)
-            .flatMap { service ->
-                service.deleteVideo(videoId, ownerId, targetId)
+            .flatMapConcat {
+                it.deleteVideo(videoId, ownerId, targetId)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -59,10 +61,10 @@ internal class VideoApi(accountId: Long, provider: IServiceProvider) :
         offset: Int?,
         count: Int?,
         needSystem: Boolean?
-    ): Single<Items<VKApiVideoAlbum>> {
+    ): Flow<Items<VKApiVideoAlbum>> {
         return provideService(IVideoService(), TokenType.USER)
-            .flatMap { service ->
-                service.getAlbums(ownerId, offset, count, 1, integerFromBoolean(needSystem))
+            .flatMapConcat {
+                it.getAlbums(ownerId, offset, count, 1, integerFromBoolean(needSystem))
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -71,10 +73,10 @@ internal class VideoApi(accountId: Long, provider: IServiceProvider) :
         target_id: Long?,
         owner_id: Long?,
         video_id: Int?
-    ): Single<Items<VKApiVideoAlbum>> {
+    ): Flow<Items<VKApiVideoAlbum>> {
         return provideService(IVideoService(), TokenType.USER)
-            .flatMap { service ->
-                service.getAlbumsByVideo(target_id, owner_id, video_id, 1)
+            .flatMapConcat {
+                it.getAlbumsByVideo(target_id, owner_id, video_id, 1)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -83,42 +85,41 @@ internal class VideoApi(accountId: Long, provider: IServiceProvider) :
         query: String?, sort: Int?, hd: Boolean?, adult: Boolean?,
         filters: String?, searchOwn: Boolean?, offset: Int?,
         longer: Int?, shorter: Int?, count: Int?, extended: Boolean?
-    ): Single<SearchVideoResponse> {
+    ): Flow<SearchVideoResponse> {
         return provideService(IVideoService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .search(
-                        query,
-                        sort,
-                        integerFromBoolean(hd),
-                        integerFromBoolean(adult),
-                        filters,
-                        integerFromBoolean(searchOwn),
-                        offset,
-                        longer,
-                        shorter,
-                        count,
-                        integerFromBoolean(extended)
-                    )
+            .flatMapConcat {
+                it.search(
+                    query,
+                    sort,
+                    integerFromBoolean(hd),
+                    integerFromBoolean(adult),
+                    filters,
+                    integerFromBoolean(searchOwn),
+                    offset,
+                    longer,
+                    shorter,
+                    count,
+                    integerFromBoolean(extended)
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun restoreComment(ownerId: Long?, commentId: Int): Single<Boolean> {
+    override fun restoreComment(ownerId: Long?, commentId: Int): Flow<Boolean> {
         return provideService(IVideoService(), TokenType.USER)
-            .flatMap { service ->
-                service.restoreComment(ownerId, commentId)
+            .flatMapConcat {
+                it.restoreComment(ownerId, commentId)
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
-    override fun deleteComment(ownerId: Long?, commentId: Int): Single<Boolean> {
+    override fun deleteComment(ownerId: Long?, commentId: Int): Flow<Boolean> {
         return provideService(IVideoService(), TokenType.USER)
-            .flatMap { service ->
-                service.deleteComment(ownerId, commentId)
+            .flatMapConcat {
+                it.deleteComment(ownerId, commentId)
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
@@ -126,12 +127,12 @@ internal class VideoApi(accountId: Long, provider: IServiceProvider) :
     operator fun get(
         ownerId: Long?, ids: Collection<AccessIdPair>?, albumId: Int?,
         count: Int?, offset: Int?, extended: Boolean?
-    ): Single<Items<VKApiVideo>> {
+    ): Flow<Items<VKApiVideo>> {
         val videos =
             join(ids, ",") { AccessIdPair.format(it) }
         return provideService(IVideoService(), TokenType.USER, TokenType.SERVICE)
-            .flatMap { service ->
-                service[ownerId, videos, albumId, count, offset, integerFromBoolean(extended)]
+            .flatMapConcat {
+                it[ownerId, videos, albumId, count, offset, integerFromBoolean(extended)]
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -140,17 +141,16 @@ internal class VideoApi(accountId: Long, provider: IServiceProvider) :
         ownerId: Long, videoId: Int, message: String?,
         attachments: Collection<IAttachmentToken>?, fromGroup: Boolean?,
         replyToComment: Int?, stickerId: Int?, uniqueGeneratedId: Int?
-    ): Single<Int> {
+    ): Flow<Int> {
         val atts = join(attachments, ",") {
             formatAttachmentToken(it)
         }
         return provideService(IVideoService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .createComment(
-                        ownerId, videoId, message, atts, integerFromBoolean(fromGroup),
-                        replyToComment, stickerId, uniqueGeneratedId
-                    )
+            .flatMapConcat {
+                it.createComment(
+                    ownerId, videoId, message, atts, integerFromBoolean(fromGroup),
+                    replyToComment, stickerId, uniqueGeneratedId
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -159,10 +159,10 @@ internal class VideoApi(accountId: Long, provider: IServiceProvider) :
     fun editComment(
         ownerId: Long, commentId: Int, message: String?,
         attachments: Collection<IAttachmentToken>?
-    ): Single<Boolean> {
+    ): Flow<Boolean> {
         return provideService(IVideoService(), TokenType.USER)
-            .flatMap { service ->
-                service.editComment(
+            .flatMapConcat { s ->
+                s.editComment(
                     ownerId,
                     commentId,
                     message,
@@ -171,17 +171,17 @@ internal class VideoApi(accountId: Long, provider: IServiceProvider) :
                         ","
                     ) { formatAttachmentToken(it) })
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
     override
-    fun edit(ownerId: Long, video_id: Int, name: String?, desc: String?): Single<Boolean> {
+    fun edit(ownerId: Long, video_id: Int, name: String?, desc: String?): Flow<Boolean> {
         return provideService(IVideoService(), TokenType.USER)
-            .flatMap { service ->
-                service.edit(ownerId, video_id, name, desc)
+            .flatMapConcat {
+                it.edit(ownerId, video_id, name, desc)
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
@@ -189,9 +189,9 @@ internal class VideoApi(accountId: Long, provider: IServiceProvider) :
         isPrivate: Int?,
         group_id: Long?,
         name: String?
-    ): Single<VKApiVideosUploadServer> {
+    ): Flow<VKApiVideosUploadServer> {
         return provideService(IVideoService(), TokenType.USER)
-            .flatMap { service ->
+            .flatMapConcat { s ->
                 var finalName = name
                 if (finalName?.startsWith("VID_", false) == true) {
                     finalName = "Telegram $finalName"
@@ -202,7 +202,7 @@ internal class VideoApi(accountId: Long, provider: IServiceProvider) :
                 ) {
                     finalName = "WhatsApp $finalName"
                 }
-                service.getVideoServer(isPrivate, group_id, finalName)
+                s.getVideoServer(isPrivate, group_id, finalName)
                     .map(extractResponseWithErrorHandling())
             }
     }

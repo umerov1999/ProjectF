@@ -12,8 +12,7 @@ import dev.ragnarok.fenrir.api.model.VKApiMarketAlbum
 import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.api.model.response.GroupByIdResponse
 import dev.ragnarok.fenrir.api.model.response.GroupLongpollServer
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IGroupsApi {
     @CheckResult
@@ -25,7 +24,7 @@ interface IGroupsApi {
         contactPosition: String?,
         contactEmail: String?,
         contactPhone: String?
-    ): Completable
+    ): Flow<Boolean>
 
     @CheckResult
     fun edit(
@@ -41,10 +40,10 @@ interface IGroupsApi {
         obscene_filter: Int?,
         obscene_stopwords: Int?,
         obscene_words: String?
-    ): Completable
+    ): Flow<Boolean>
 
     @CheckResult
-    fun unban(groupId: Long, ownerId: Long): Completable
+    fun unban(groupId: Long, ownerId: Long): Flow<Boolean>
 
     @CheckResult
     fun ban(
@@ -54,13 +53,13 @@ interface IGroupsApi {
         reason: Int?,
         comment: String?,
         commentVisible: Boolean?
-    ): Completable
+    ): Flow<Boolean>
 
     @CheckResult
-    fun getSettings(groupId: Long): Single<GroupSettingsDto>
+    fun getSettings(groupId: Long): Flow<GroupSettingsDto>
 
     @CheckResult
-    fun getMarketAlbums(owner_id: Long, offset: Int, count: Int): Single<Items<VKApiMarketAlbum>>
+    fun getMarketAlbums(owner_id: Long, offset: Int, count: Int): Flow<Items<VKApiMarketAlbum>>
 
     @CheckResult
     fun getMarket(
@@ -69,7 +68,7 @@ interface IGroupsApi {
         offset: Int,
         count: Int,
         extended: Int?
-    ): Single<Items<VKApiMarket>>
+    ): Flow<Items<VKApiMarket>>
 
     @CheckResult
     fun getMarketServices(
@@ -77,10 +76,10 @@ interface IGroupsApi {
         offset: Int,
         count: Int,
         extended: Int?
-    ): Single<Items<VKApiMarket>>
+    ): Flow<Items<VKApiMarket>>
 
     @CheckResult
-    fun getMarketById(ids: Collection<AccessIdPair>): Single<Items<VKApiMarket>>
+    fun getMarketById(ids: Collection<AccessIdPair>): Flow<Items<VKApiMarket>>
 
     @CheckResult
     fun getBanned(
@@ -89,44 +88,44 @@ interface IGroupsApi {
         count: Int?,
         fields: String?,
         userId: Long?
-    ): Single<Items<VKApiBanned>>
+    ): Flow<Items<VKApiBanned>>
 
     @CheckResult
-    fun getWallInfo(groupId: String?, fields: String?): Single<VKApiCommunity>
+    fun getWallInfo(groupId: String?, fields: String?): Flow<VKApiCommunity>
 
     @CheckResult
     fun getMembers(
         groupId: String?, sort: Int?, offset: Int?,
         count: Int?, fields: String?, filter: String?
-    ): Single<Items<VKApiUser>>
+    ): Flow<Items<VKApiUser>>
 
     @CheckResult
     fun search(
         query: String?, type: String?, filter: String?, countryId: Int?, cityId: Int?,
         future: Boolean?, market: Boolean?, sort: Int?, offset: Int?, count: Int?
-    ): Single<Items<VKApiCommunity>>
+    ): Flow<Items<VKApiCommunity>>
 
     @CheckResult
-    fun leave(groupId: Long): Single<Boolean>
+    fun leave(groupId: Long): Flow<Boolean>
 
     @CheckResult
-    fun join(groupId: Long, notSure: Int?): Single<Boolean>
+    fun join(groupId: Long, notSure: Int?): Flow<Boolean>
 
     @CheckResult
     operator fun get(
         userId: Long?, extended: Boolean?, filter: String?,
         fields: String?, offset: Int?, count: Int?
-    ): Single<Items<VKApiCommunity>>
+    ): Flow<Items<VKApiCommunity>>
 
     @CheckResult
     fun getById(
         ids: Collection<Long>, domains: Collection<String>?,
         groupId: String?, fields: String?
-    ): Single<GroupByIdResponse>
+    ): Flow<GroupByIdResponse>
 
     @CheckResult
-    fun getLongPollServer(groupId: Long): Single<GroupLongpollServer>
+    fun getLongPollServer(groupId: Long): Flow<GroupLongpollServer>
 
     @CheckResult
-    fun getChats(groupId: Long, offset: Int?, count: Int?): Single<Items<VKApiGroupChats>>
+    fun getChats(groupId: Long, offset: Int?, count: Int?): Flow<Items<VKApiGroupChats>>
 }

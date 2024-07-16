@@ -11,15 +11,15 @@ import android.os.RemoteException
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.createPublishSubject
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.myEmit
 import dev.ragnarok.fenrir.util.existfile.AbsFileExist
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.subjects.PublishSubject
+import kotlinx.coroutines.flow.SharedFlow
 import java.util.WeakHashMap
 
 object MusicPlaybackController {
     private val mConnectionMap: WeakHashMap<Context, ServiceBinder> = WeakHashMap()
-    private val SERVICE_BIND_PUBLISHER = PublishSubject.create<Int>()
-    private val TAG = MusicPlaybackController::class.simpleName.orEmpty()
+    private val SERVICE_BIND_PUBLISHER = createPublishSubject<Int>()
     var mService: IAudioPlayerService? = null
 
     lateinit var tracksExist: AbsFileExist
@@ -39,7 +39,7 @@ object MusicPlaybackController {
             MusicPlaybackService.META_CHANGED -> result = PlayerStatus.UPDATE_TRACK_INFO
             MusicPlaybackService.QUEUE_CHANGED -> result = PlayerStatus.UPDATE_PLAY_LIST
         }
-        SERVICE_BIND_PUBLISHER.onNext(result)
+        SERVICE_BIND_PUBLISHER.myEmit(result)
     }
 
     fun bindToServiceWithoutStart(
@@ -76,7 +76,7 @@ object MusicPlaybackController {
         }
     }
 
-    fun observeServiceBinding(): Observable<Int> {
+    fun observeServiceBinding(): SharedFlow<Int> {
         return SERVICE_BIND_PUBLISHER
     }
 
@@ -455,14 +455,14 @@ object MusicPlaybackController {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             mService = IAudioPlayerService.Stub.asInterface(service)
             mCallback?.onServiceConnected(className, service)
-            SERVICE_BIND_PUBLISHER.onNext(PlayerStatus.UPDATE_PLAY_LIST)
-            SERVICE_BIND_PUBLISHER.onNext(PlayerStatus.UPDATE_TRACK_INFO)
+            SERVICE_BIND_PUBLISHER.myEmit(PlayerStatus.UPDATE_PLAY_LIST)
+            SERVICE_BIND_PUBLISHER.myEmit(PlayerStatus.UPDATE_TRACK_INFO)
         }
 
         override fun onServiceDisconnected(className: ComponentName) {
             mCallback?.onServiceDisconnected(className)
             mService = null
-            SERVICE_BIND_PUBLISHER.onNext(PlayerStatus.SERVICE_KILLED)
+            SERVICE_BIND_PUBLISHER.myEmit(PlayerStatus.SERVICE_KILLED)
         }
     }
 

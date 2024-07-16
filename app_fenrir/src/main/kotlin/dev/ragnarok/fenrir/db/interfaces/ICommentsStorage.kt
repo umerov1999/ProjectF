@@ -7,10 +7,8 @@ import dev.ragnarok.fenrir.model.CommentUpdate
 import dev.ragnarok.fenrir.model.Commented
 import dev.ragnarok.fenrir.model.DraftComment
 import dev.ragnarok.fenrir.model.criteria.CommentsCriteria
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 
 interface ICommentsStorage : IStorage {
     fun insert(
@@ -21,12 +19,12 @@ interface ICommentsStorage : IStorage {
         dbos: List<CommentEntity>,
         owners: OwnerEntities?,
         clearBefore: Boolean
-    ): Single<IntArray>
+    ): Flow<IntArray>
 
-    fun getDbosByCriteria(criteria: CommentsCriteria): Single<List<CommentEntity>>
+    fun getDbosByCriteria(criteria: CommentsCriteria): Flow<List<CommentEntity>>
 
     @CheckResult
-    fun findEditingComment(accountId: Long, commented: Commented): Maybe<DraftComment>?
+    fun findEditingComment(accountId: Long, commented: Commented): Flow<DraftComment?>
 
     @CheckResult
     fun saveDraftComment(
@@ -35,9 +33,9 @@ interface ICommentsStorage : IStorage {
         text: String?,
         replyToUser: Long,
         replyToComment: Int
-    ): Single<Int>
+    ): Flow<Int>
 
-    fun commitMinorUpdate(update: CommentUpdate): Completable
-    fun observeMinorUpdates(): Observable<CommentUpdate>
-    fun deleteByDbid(accountId: Long, dbid: Int): Completable
+    fun commitMinorUpdate(update: CommentUpdate): Flow<Boolean>
+    fun observeMinorUpdates(): SharedFlow<CommentUpdate>
+    fun deleteByDbid(accountId: Long, dbid: Int): Flow<Boolean>
 }

@@ -6,6 +6,7 @@ import dev.ragnarok.filegallery.Includes
 import dev.ragnarok.filegallery.kJson
 import dev.ragnarok.filegallery.model.tags.TagFull
 import dev.ragnarok.filegallery.nonNullNoEmpty
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.syncSingleSafe
 import dev.ragnarok.filegallery.util.serializeble.json.JsonObject
 import dev.ragnarok.filegallery.util.serializeble.json.JsonObjectBuilder
 import dev.ragnarok.filegallery.util.serializeble.prefs.Preferences
@@ -75,7 +76,7 @@ class SettingsBackup {
                 preferences.decode(AppPreferencesList.serializer(), "")
             )
         )
-        val yu = Includes.stores.searchQueriesStore().getTagFull().blockingGet()
+        val yu = Includes.stores.searchQueriesStore().getTagFull().syncSingleSafe()
         if (yu.nonNullNoEmpty()) {
             ret.put("tags", kJson.encodeToJsonElement(ListSerializer(TagFull.serializer()), yu))
         }
@@ -103,7 +104,8 @@ class SettingsBackup {
                 for (i in tagsList) {
                     i.reverseList()
                 }
-                Includes.stores.searchQueriesStore().putTagFull(tagsList.reversed()).blockingAwait()
+                Includes.stores.searchQueriesStore().putTagFull(tagsList.reversed())
+                    .syncSingleSafe()
             }
         }
     }

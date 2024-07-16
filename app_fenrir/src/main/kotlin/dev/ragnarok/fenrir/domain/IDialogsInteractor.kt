@@ -1,8 +1,8 @@
 package dev.ragnarok.fenrir.domain
 
 import dev.ragnarok.fenrir.model.Chat
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IDialogsInteractor {
-    fun getChatById(accountId: Long, peerId: Long): Single<Chat>
+    fun getChatById(accountId: Long, peerId: Long): Flow<Chat>
 }

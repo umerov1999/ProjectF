@@ -4,9 +4,8 @@ import androidx.annotation.CheckResult
 import dev.ragnarok.fenrir.db.AttachToType
 import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.util.Pair
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 
 interface IAttachmentsRepository {
     @CheckResult
@@ -15,7 +14,7 @@ interface IAttachmentsRepository {
         @AttachToType type: Int,
         attachToId: Int,
         generatedAttachmentId: Int
-    ): Completable
+    ): Flow<Boolean>
 
     @CheckResult
     fun attach(
@@ -23,16 +22,16 @@ interface IAttachmentsRepository {
         @AttachToType attachToType: Int,
         attachToDbid: Int,
         models: List<AbsModel>
-    ): Completable
+    ): Flow<Boolean>
 
     fun getAttachmentsWithIds(
         accountId: Long,
         @AttachToType attachToType: Int,
         attachToDbid: Int
-    ): Single<List<Pair<Int, AbsModel>>>
+    ): Flow<List<Pair<Int, AbsModel>>>
 
-    fun observeAdding(): Observable<IAddEvent>
-    fun observeRemoving(): Observable<IRemoveEvent>
+    fun observeAdding(): SharedFlow<IAddEvent>
+    fun observeRemoving(): SharedFlow<IRemoveEvent>
     interface IBaseEvent {
         val accountId: Long
 

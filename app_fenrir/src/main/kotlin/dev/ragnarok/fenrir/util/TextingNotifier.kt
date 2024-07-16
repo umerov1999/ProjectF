@@ -1,29 +1,29 @@
 package dev.ragnarok.fenrir.util
 
 import dev.ragnarok.fenrir.api.Apis.get
-import dev.ragnarok.fenrir.fromIOToMain
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.disposables.Disposable
-import java.util.concurrent.TimeUnit
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayedFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.ignoreElement
+import kotlinx.coroutines.flow.Flow
 import kotlin.math.abs
 
 class TextingNotifier(private val accountId: Long) {
     private var lastNotifyTime: Long = 0
     private var isRequestNow = false
-    private var disposable = Disposable.disposed()
+    private var disposable = CancelableJob()
     fun notifyAboutTyping(peerId: Long) {
         if (!canNotifyNow()) {
             return
         }
         lastNotifyTime = System.currentTimeMillis()
         isRequestNow = true
-        disposable = createNotifier(accountId, peerId)
-            .fromIOToMain()
-            .subscribe({ isRequestNow = false }) { isRequestNow = false }
+        disposable += createNotifier(accountId, peerId)
+            .fromIOToMain({ isRequestNow = false }) { isRequestNow = false }
     }
 
     fun shutdown() {
-        disposable.dispose()
+        disposable.cancel()
     }
 
     private fun canNotifyNow(): Boolean {
@@ -31,12 +31,12 @@ class TextingNotifier(private val accountId: Long) {
     }
 
     companion object {
-        internal fun createNotifier(accountId: Long, peerId: Long): Completable {
+        internal fun createNotifier(accountId: Long, peerId: Long): Flow<Boolean> {
             return get()
                 .vkDefault(accountId)
                 .messages()
                 .setActivity(peerId, true)
-                .delay(5, TimeUnit.SECONDS)
+                .delayedFlow(5000)
                 .ignoreElement()
         }
     }

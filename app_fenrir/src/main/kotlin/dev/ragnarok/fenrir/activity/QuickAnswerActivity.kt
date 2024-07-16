@@ -25,7 +25,6 @@ import dev.ragnarok.fenrir.fragment.base.AttachmentsHolder
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder.OnAttachmentsActionCallback
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder.VoiceActionListener
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.link.LinkHelper
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
@@ -59,23 +58,23 @@ import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.theme.ThemeOverlay
-import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.TextingNotifier
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.emoji.BotKeyboardView
 import dev.ragnarok.fenrir.view.emoji.BotKeyboardView.BotKeyboardViewDelegate
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import java.util.concurrent.TimeUnit
 
 class QuickAnswerActivity : AppCompatActivity() {
-    private val mLiveSubscription = CompositeDisposable()
-    private val compositeDisposable = CompositeDisposable()
+    private val mLiveSubscription = CompositeJob()
+    private val compositeDisposable = CompositeJob()
     private val requestWritePermission = requestPermissionsAbs(
         arrayOf(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -160,8 +159,7 @@ class QuickAnswerActivity : AppCompatActivity() {
                         .setPayload(button.payload).setText(button.label)
                     compositeDisposable.add(
                         messagesRepository.put(builder)
-                            .fromIOToMain()
-                            .subscribe({ onMessageSaved() }) { throwable ->
+                            .fromIOToMain({ onMessageSaved() }) { throwable ->
                                 onSavingError(
                                     throwable
                                 )
@@ -289,19 +287,17 @@ class QuickAnswerActivity : AppCompatActivity() {
 
     private fun finishWithDelay() {
         mLiveSubscription.add(
-            Observable.just(Any())
-                .delay(1, TimeUnit.MINUTES)
-                .toMainThread()
-                .subscribe { finish() })
+            delayTaskFlow(60000)
+                .toMain { finish() })
     }
 
     internal fun cancelFinishWithDelay() {
-        mLiveSubscription.dispose()
+        mLiveSubscription.cancel()
     }
 
     override fun onDestroy() {
-        mLiveSubscription.dispose()
-        compositeDisposable.dispose()
+        mLiveSubscription.cancel()
+        compositeDisposable.cancel()
         super.onDestroy()
     }
 
@@ -336,8 +332,7 @@ class QuickAnswerActivity : AppCompatActivity() {
             .setKeyLocationPolicy(policy)
         compositeDisposable.add(
             messagesRepository.put(builder)
-                .fromIOToMain()
-                .subscribe({ onMessageSaved() }) { throwable ->
+                .fromIOToMain({ onMessageSaved() }) { throwable ->
                     onSavingError(
                         throwable
                     )
@@ -357,8 +352,7 @@ class QuickAnswerActivity : AppCompatActivity() {
     internal fun setMessageAsRead() {
         compositeDisposable.add(
             messagesRepository.markAsRead(accountId, msg.peerId, msg.getObjectId())
-                .fromIOToMain()
-                .subscribe(RxUtils.dummy(), RxUtils.ignore())
+                .hiddenIO()
         )
     }
 

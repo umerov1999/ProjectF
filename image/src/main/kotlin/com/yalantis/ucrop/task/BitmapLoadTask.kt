@@ -8,11 +8,15 @@ import android.graphics.Matrix
 import android.net.Uri
 import android.util.Log
 import com.yalantis.ucrop.callback.BitmapLoadCallback
-import com.yalantis.ucrop.io.AndroidSchedulers
 import com.yalantis.ucrop.model.ExifInfo
 import com.yalantis.ucrop.util.BitmapLoadUtils
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -45,96 +49,95 @@ class BitmapLoadTask(
 
     @SuppressLint("CheckResult")
     fun execute() {
-        doInBackground().fromIOToMain().subscribe(
-            { onPostExecute(it) }) {
-            onPostExecute(
-                BitmapWorkerResult(it)
-            )
+        CoroutineScope(Dispatchers.IO).launch {
+            doInBackground().catch {
+                if (isActive) {
+                    launch(Dispatchers.Main) {
+                        onPostExecute(
+                            BitmapWorkerResult(it)
+                        )
+                    }
+                }
+            }.collect {
+                if (isActive) {
+                    launch(Dispatchers.Main) {
+                        onPostExecute(it)
+                    }
+                }
+            }
         }
     }
 
-    private fun doInBackground(): Single<BitmapWorkerResult> {
+    private inline fun <reified T> errorFlow(throwable: Throwable): Flow<T> {
+        return flow {
+            throw throwable
+        }
+    }
+
+    private fun doInBackground(): Flow<BitmapWorkerResult> {
         val mInputUriS = mInputUri
-            ?: return Single.just(BitmapWorkerResult(NullPointerException("Input Uri cannot be null")))
-        try {
+            ?: return errorFlow(NullPointerException("Input Uri cannot be null"))
+
+        return flow {
             processInputUri()
-        } catch (e: NullPointerException) {
-            return Single.just(BitmapWorkerResult(e))
-        } catch (e: IOException) {
-            return Single.just(BitmapWorkerResult(e))
-        }
-        val options = BitmapFactory.Options()
-        options.inJustDecodeBounds = true
-        options.inSampleSize =
-            BitmapLoadUtils.calculateInSampleSize(options, mRequiredWidth, mRequiredHeight)
-        options.inJustDecodeBounds = false
-        var decodeSampledBitmap: Bitmap? = null
-        var decodeAttemptSuccess = false
-        while (!decodeAttemptSuccess) {
-            try {
-                val stream = mContext.contentResolver.openInputStream(
-                    mInputUriS
-                )
+            val options = BitmapFactory.Options()
+            options.inJustDecodeBounds = true
+            options.inSampleSize =
+                BitmapLoadUtils.calculateInSampleSize(options, mRequiredWidth, mRequiredHeight)
+            options.inJustDecodeBounds = false
+            var decodeSampledBitmap: Bitmap? = null
+            var decodeAttemptSuccess = false
+            while (!decodeAttemptSuccess) {
                 try {
-                    decodeSampledBitmap = BitmapFactory.decodeStream(stream, null, options)
-                    if (options.outWidth == -1 || options.outHeight == -1) {
-                        return Single.just(
-                            BitmapWorkerResult(
-                                IllegalArgumentException(
-                                    "Bounds for bitmap could not be retrieved from the Uri: [$mInputUriS]"
-                                )
-                            )
-                        )
+                    val stream = mContext.contentResolver.openInputStream(
+                        mInputUriS
+                    )
+                    try {
+                        decodeSampledBitmap = BitmapFactory.decodeStream(stream, null, options)
+                        if (options.outWidth == -1 || options.outHeight == -1) {
+                            throw IllegalArgumentException("Bounds for bitmap could not be retrieved from the Uri: [$mInputUriS]")
+                        }
+                    } finally {
+                        BitmapLoadUtils.close(stream)
                     }
-                } finally {
-                    BitmapLoadUtils.close(stream)
+                    if (checkSize(decodeSampledBitmap, options)) continue
+                    decodeAttemptSuccess = true
+                } catch (error: OutOfMemoryError) {
+                    Log.e(TAG, "doInBackground: BitmapFactory.decodeFileDescriptor: ", error)
+                    options.inSampleSize *= 2
+                } catch (e: IOException) {
+                    Log.e(TAG, "doInBackground: ImageDecoder.createSource: ", e)
+                    throw IllegalArgumentException(
+                        "Bitmap could not be decoded from the Uri: [$mInputUriS]",
+                        e
+                    )
                 }
-                if (checkSize(decodeSampledBitmap, options)) continue
-                decodeAttemptSuccess = true
-            } catch (error: OutOfMemoryError) {
-                Log.e(TAG, "doInBackground: BitmapFactory.decodeFileDescriptor: ", error)
-                options.inSampleSize *= 2
-            } catch (e: IOException) {
-                Log.e(TAG, "doInBackground: ImageDecoder.createSource: ", e)
-                return Single.just(
-                    BitmapWorkerResult(
-                        IllegalArgumentException(
-                            "Bitmap could not be decoded from the Uri: [$mInputUriS]", e
-                        )
-                    )
-                )
             }
-        }
-        if (decodeSampledBitmap == null) {
-            return Single.just(
-                BitmapWorkerResult(
-                    IllegalArgumentException(
-                        "Bitmap could not be decoded from the Uri: [$mInputUri]"
+            if (decodeSampledBitmap == null) {
+                throw IllegalArgumentException("Bitmap could not be decoded from the Uri: [$mInputUri]")
+            }
+            val exifOrientation = BitmapLoadUtils.getExifOrientation(mContext, mInputUriS)
+            val exifDegrees = BitmapLoadUtils.exifToDegrees(exifOrientation)
+            val exifTranslation = BitmapLoadUtils.exifToTranslation(exifOrientation)
+            val exifInfo = ExifInfo(exifOrientation, exifDegrees, exifTranslation)
+            val matrix = Matrix()
+            if (exifDegrees != 0) {
+                matrix.preRotate(exifDegrees.toFloat())
+            }
+            if (exifTranslation != 1) {
+                matrix.postScale(exifTranslation.toFloat(), 1f)
+            }
+            if (!matrix.isIdentity) {
+                emit(
+                    BitmapWorkerResult(
+                        BitmapLoadUtils.transformBitmap(
+                            decodeSampledBitmap,
+                            matrix
+                        ), exifInfo
                     )
                 )
-            )
+            } else emit(BitmapWorkerResult(decodeSampledBitmap, exifInfo))
         }
-        val exifOrientation = BitmapLoadUtils.getExifOrientation(mContext, mInputUriS)
-        val exifDegrees = BitmapLoadUtils.exifToDegrees(exifOrientation)
-        val exifTranslation = BitmapLoadUtils.exifToTranslation(exifOrientation)
-        val exifInfo = ExifInfo(exifOrientation, exifDegrees, exifTranslation)
-        val matrix = Matrix()
-        if (exifDegrees != 0) {
-            matrix.preRotate(exifDegrees.toFloat())
-        }
-        if (exifTranslation != 1) {
-            matrix.postScale(exifTranslation.toFloat(), 1f)
-        }
-        return if (!matrix.isIdentity) {
-            Single.just(
-                BitmapWorkerResult(
-                    BitmapLoadUtils.transformBitmap(
-                        decodeSampledBitmap,
-                        matrix
-                    ), exifInfo
-                )
-            )
-        } else Single.just(BitmapWorkerResult(decodeSampledBitmap, exifInfo))
     }
 
     @Throws(NullPointerException::class, IOException::class)
@@ -230,7 +233,5 @@ class BitmapLoadTask(
     companion object {
         private const val TAG = "BitmapWorkerTask"
         private const val MAX_BITMAP_SIZE = 100 * 1024 * 1024 // 100 MB
-        inline fun <reified T : Any> Single<T>.fromIOToMain(): Single<T> =
-            subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
     }
 }

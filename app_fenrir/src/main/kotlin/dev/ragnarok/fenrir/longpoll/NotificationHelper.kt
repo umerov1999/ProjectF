@@ -54,6 +54,7 @@ import dev.ragnarok.fenrir.util.Utils.hasFlag
 import dev.ragnarok.fenrir.util.Utils.hasNougat
 import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -111,45 +112,44 @@ object NotificationHelper {
     fun notifyNewMessage(context: Context, accountId: Long, message: Message) {
         if (Settings.get().main().isDisable_notifications) return
         ChatEntryFetcher.getRx(context, accountId, accountId)
-            .subscribeOn(NotificationScheduler.INSTANCE)
-            .subscribe({ account ->
+            .fromScopeToMain(NotificationScheduler.INSTANCE, { account ->
                 ChatEntryFetcher.getRx(context, accountId, message.peerId)
-                    .subscribeOn(NotificationScheduler.INSTANCE)
-                    .subscribe({ info ->
-                        if (Settings.get().main().isLoad_history_notif) {
-                            messages.getPeerMessages(
-                                accountId,
-                                message.peerId,
-                                10,
-                                1,
-                                null,
-                                cacheData = false,
-                                rev = false
-                            )
-                                .subscribeOn(NotificationScheduler.INSTANCE)
-                                .subscribe({
-                                    doShowNotification(
-                                        accountId,
-                                        context,
-                                        account,
-                                        info,
-                                        message,
-                                        it
-                                    )
-                                }) {
-                                    doShowNotification(
-                                        accountId,
-                                        context,
-                                        account,
-                                        info,
-                                        message,
-                                        null
-                                    )
-                                }
-                        } else {
-                            doShowNotification(accountId, context, account, info, message, null)
-                        }
-                    }) {
+                    .fromScopeToMain(NotificationScheduler.INSTANCE,
+                        { info ->
+                            if (Settings.get().main().isLoad_history_notif) {
+                                messages.getPeerMessages(
+                                    accountId,
+                                    message.peerId,
+                                    10,
+                                    1,
+                                    null,
+                                    cacheData = false,
+                                    rev = false
+                                )
+                                    .fromScopeToMain(NotificationScheduler.INSTANCE,
+                                        {
+                                            doShowNotification(
+                                                accountId,
+                                                context,
+                                                account,
+                                                info,
+                                                message,
+                                                it
+                                            )
+                                        }) {
+                                        doShowNotification(
+                                            accountId,
+                                            context,
+                                            account,
+                                            info,
+                                            message,
+                                            null
+                                        )
+                                    }
+                            } else {
+                                doShowNotification(accountId, context, account, info, message, null)
+                            }
+                        }) {
                         doShowNotification(
                             accountId,
                             context,

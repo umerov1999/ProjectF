@@ -14,7 +14,9 @@ import dev.ragnarok.fenrir.api.model.response.StoryGetResponse
 import dev.ragnarok.fenrir.api.model.response.ViewersListResponse
 import dev.ragnarok.fenrir.api.model.server.VKApiStoryUploadServer
 import dev.ragnarok.fenrir.api.services.IStoriesShortVideosService
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 internal class StoriesShortVideosApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IStoriesShortVideosApi {
@@ -23,10 +25,10 @@ internal class StoriesShortVideosApi(accountId: Long, provider: IServiceProvider
         owner_id: Long?,
         extended: Int?,
         fields: String?
-    ): Single<StoriesResponse> {
+    ): Flow<StoriesResponse> {
         return provideService(IStoriesShortVideosService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.getStories(owner_id, extended, fields)
+            .flatMapConcat {
+                it.getStories(owner_id, extended, fields)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -35,10 +37,10 @@ internal class StoriesShortVideosApi(accountId: Long, provider: IServiceProvider
         owner_id: Long,
         offset: Int?,
         count: Int?
-    ): Single<Items<VKApiNarratives>> {
+    ): Flow<Items<VKApiNarratives>> {
         return provideService(IStoriesShortVideosService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.getNarratives(owner_id, offset, count)
+            .flatMapConcat {
+                it.getNarratives(owner_id, offset, count)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -47,11 +49,11 @@ internal class StoriesShortVideosApi(accountId: Long, provider: IServiceProvider
         stories: List<AccessIdPair>,
         extended: Int?,
         fields: String?
-    ): Single<StoryGetResponse> {
+    ): Flow<StoryGetResponse> {
         val storyString = join(stories, ",") { AccessIdPair.format(it) }
         return provideService(IStoriesShortVideosService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.getStoryById(storyString, extended, fields)
+            .flatMapConcat {
+                it.getStoryById(storyString, extended, fields)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -60,13 +62,12 @@ internal class StoriesShortVideosApi(accountId: Long, provider: IServiceProvider
         ownerId: Long?,
         storyId: Int?,
         offset: Int?, count: Int?
-    ): Single<ViewersListResponse> {
+    ): Flow<ViewersListResponse> {
         return provideService(IStoriesShortVideosService(), TokenType.USER, TokenType.SERVICE)
-            .flatMap { service ->
-                service
-                    .getStoriesViewers(
-                        ownerId, storyId, offset, count, 1, Fields.FIELDS_BASE_USER
-                    )
+            .flatMapConcat {
+                it.getStoriesViewers(
+                    ownerId, storyId, offset, count, 1, Fields.FIELDS_BASE_USER
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -77,18 +78,18 @@ internal class StoriesShortVideosApi(accountId: Long, provider: IServiceProvider
         count: Int?,
         extended: Int?,
         fields: String?
-    ): Single<StoriesResponse> {
+    ): Flow<StoriesResponse> {
         return provideService(IStoriesShortVideosService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.searchStories(q, mentioned_id, count, extended, fields)
+            .flatMapConcat {
+                it.searchStories(q, mentioned_id, count, extended, fields)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun stories_delete(owner_id: Long, story_id: Int): Single<Int> {
+    override fun stories_delete(owner_id: Long, story_id: Int): Flow<Int> {
         return provideService(IStoriesShortVideosService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.stories_delete(owner_id, story_id)
+            .flatMapConcat {
+                it.stories_delete(owner_id, story_id)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -96,10 +97,10 @@ internal class StoriesShortVideosApi(accountId: Long, provider: IServiceProvider
     override fun stories_getPhotoUploadServer(
         group_id: Long?,
         reply_to_story: String?
-    ): Single<VKApiStoryUploadServer> {
+    ): Flow<VKApiStoryUploadServer> {
         return provideService(IStoriesShortVideosService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.stories_getPhotoUploadServer(1, group_id, reply_to_story)
+            .flatMapConcat {
+                it.stories_getPhotoUploadServer(1, group_id, reply_to_story)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -107,18 +108,18 @@ internal class StoriesShortVideosApi(accountId: Long, provider: IServiceProvider
     override fun stories_getVideoUploadServer(
         group_id: Long?,
         reply_to_story: String?
-    ): Single<VKApiStoryUploadServer> {
+    ): Flow<VKApiStoryUploadServer> {
         return provideService(IStoriesShortVideosService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.stories_getVideoUploadServer(1, group_id, reply_to_story)
+            .flatMapConcat {
+                it.stories_getVideoUploadServer(1, group_id, reply_to_story)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun stories_save(upload_results: String?): Single<Items<VKApiStory>> {
+    override fun stories_save(upload_results: String?): Flow<Items<VKApiStory>> {
         return provideService(IStoriesShortVideosService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.stories_save(upload_results)
+            .flatMapConcat {
+                it.stories_save(upload_results)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -129,11 +130,11 @@ internal class StoriesShortVideosApi(accountId: Long, provider: IServiceProvider
         count: Int?,
         extended: Int?,
         fields: String?
-    ): Single<ShortVideosResponse> {
+    ): Flow<ShortVideosResponse> {
         return if (ownerId != null) {
             provideService(IStoriesShortVideosService(), TokenType.USER, TokenType.COMMUNITY)
-                .flatMap { service ->
-                    service.getOwnerShortVideos(
+                .flatMapConcat {
+                    it.getOwnerShortVideos(
                         ownerId,
                         startFrom,
                         count,
@@ -144,8 +145,8 @@ internal class StoriesShortVideosApi(accountId: Long, provider: IServiceProvider
                 }
         } else {
             provideService(IStoriesShortVideosService(), TokenType.USER, TokenType.COMMUNITY)
-                .flatMap { service ->
-                    service.getTopShortVideos(
+                .flatMapConcat {
+                    it.getTopShortVideos(
                         startFrom,
                         count,
                         extended,

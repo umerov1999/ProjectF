@@ -377,4 +377,6 @@
     <string name="send_action">Send</string>
     <string name="instant_photo_display">Instant photo display</string>
     <string name="picasso_dispatcher" translatable="false">Picasso3 dispatcher</string>
+    <string name="cancelling">Cancel</string>
+    <string name="in_order">In queue</string>
 </resources>

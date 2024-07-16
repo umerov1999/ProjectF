@@ -4,17 +4,17 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IFaveInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Article
 import dev.ragnarok.fenrir.model.Photo
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class FaveArticlesPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IFaveArticlesView>(accountId, savedInstanceState) {
     private val faveInteractor: IFaveInteractor = InteractorFactory.createFaveInteractor()
     private val mArticles: ArrayList<Article> = ArrayList()
-    private val cacheDisposable = CompositeDisposable()
-    private val netDisposable = CompositeDisposable()
+    private val cacheDisposable = CompositeJob()
+    private val netDisposable = CompositeJob()
     private var mEndOfContent = false
     private var cacheLoadingNow = false
     private var netLoadingNow = false
@@ -39,8 +39,7 @@ class FaveArticlesPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun loadCachedData() {
         cacheLoadingNow = true
         cacheDisposable.add(faveInteractor.getCachedArticles(accountId)
-            .fromIOToMain()
-            .subscribe({ articles -> onCachedDataReceived(articles) }) { t ->
+            .fromIOToMain({ articles -> onCachedDataReceived(articles) }) { t ->
                 onCacheGetError(
                     t
                 )
@@ -60,8 +59,8 @@ class FaveArticlesPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     override fun onDestroyed() {
-        cacheDisposable.dispose()
-        netDisposable.dispose()
+        cacheDisposable.cancel()
+        netDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -69,8 +68,7 @@ class FaveArticlesPresenter(accountId: Long, savedInstanceState: Bundle?) :
         netLoadingNow = true
         resolveRefreshingView()
         netDisposable.add(faveInteractor.getArticles(accountId, COUNT_PER_REQUEST, offset)
-            .fromIOToMain()
-            .subscribe({ articles ->
+            .fromIOToMain({ articles ->
                 onNetDataReceived(
                     offset,
                     articles
@@ -129,9 +127,8 @@ class FaveArticlesPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun fireArticleDelete(index: Int, article: Article) {
-        appendDisposable(faveInteractor.removeArticle(accountId, article.ownerId, article.id)
-            .fromIOToMain()
-            .subscribe({
+        appendJob(faveInteractor.removeArticle(accountId, article.ownerId, article.id)
+            .fromIOToMain({
                 mArticles.removeAt(index)
                 view?.notifyDataSetChanged()
             }) { t -> onNetDataGetError(t) })

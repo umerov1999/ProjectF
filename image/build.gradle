@@ -37,7 +37,6 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:$fragmentVersion")
     implementation project(path: ":material")
     implementation("androidx.constraintlayout:constraintlayout:$constraintlayoutVersion")
-    implementation("io.reactivex.rxjava3:rxjava:$rxJavaVersion")
     implementation("androidx.exifinterface:exifinterface:$exifinterfaceVersion")
     implementation("androidx.transition:transition:$transitionVersion")
 }

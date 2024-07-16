@@ -10,14 +10,16 @@ import dev.ragnarok.fenrir.api.services.INotificationsService
 import dev.ragnarok.fenrir.model.FeedbackVKOfficialList
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 internal class NotificationsApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), INotificationsApi {
-    override fun markAsViewed(): Single<Int> {
+    override fun markAsViewed(): Flow<Int> {
         return provideService(INotificationsService(), TokenType.USER)
-            .flatMap { service ->
-                service.markAsViewed
+            .flatMapConcat {
+                it.markAsViewed
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -28,10 +30,10 @@ internal class NotificationsApi(accountId: Long, provider: IServiceProvider) :
         filters: String?,
         startTime: Long?,
         endTime: Long?
-    ): Single<NotificationsResponse> {
+    ): Flow<NotificationsResponse> {
         return provideService(INotificationsService(), TokenType.USER)
-            .flatMap { service ->
-                service[count, startFrom, filters, startTime, endTime]
+            .flatMapConcat { s ->
+                s[count, startFrom, filters, startTime, endTime]
                     .map(extractResponseWithErrorHandling())
                     .map { response ->
                         val realList: MutableList<VKApiBaseFeedback> =
@@ -57,10 +59,10 @@ internal class NotificationsApi(accountId: Long, provider: IServiceProvider) :
         filters: String?,
         startTime: Long?,
         endTime: Long?
-    ): Single<FeedbackVKOfficialList> {
+    ): Flow<FeedbackVKOfficialList> {
         return provideService(INotificationsService(), TokenType.USER)
-            .flatMap { service ->
-                service.getOfficial(
+            .flatMapConcat {
+                it.getOfficial(
                     count,
                     startFrom,
                     filters,
@@ -72,10 +74,10 @@ internal class NotificationsApi(accountId: Long, provider: IServiceProvider) :
             }
     }
 
-    override fun hide(query: String?): Single<Int> {
+    override fun hide(query: String?): Flow<Int> {
         return provideService(INotificationsService(), TokenType.USER)
-            .flatMap { service ->
-                service.hide(query)
+            .flatMapConcat {
+                it.hide(query)
                     .map(extractResponseWithErrorHandling())
             }
     }

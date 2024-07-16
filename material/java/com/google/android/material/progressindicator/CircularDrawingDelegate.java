@@ -326,6 +326,12 @@ final class CircularDrawingDelegate extends DrawingDelegate<CircularProgressIndi
         center.moveAcross(-adjustedRadius);
       } else {
         float centerDistance = centerDegree / 360 * activePathMeasure.getLength() / 2;
+        float amplitude = displayedAmplitude * amplitudeFraction;
+        if (adjustedRadius != cachedRadius || amplitude != cachedAmplitude) {
+          cachedAmplitude = amplitude;
+          cachedRadius = adjustedRadius;
+          invalidateCachedPaths();
+        }
         activePathMeasure.getPosTan(centerDistance, center.posVec, center.tanVec);
       }
       paint.setStyle(Style.FILL);
@@ -487,7 +493,7 @@ final class CircularDrawingDelegate extends DrawingDelegate<CircularProgressIndi
 
   private void appendCubicPerHalfCycle(
       @NonNull Path outPath, @NonNull PathPoint anchor1, @NonNull PathPoint anchor2) {
-    float controlLength = adjustedWavelength / 2 * SINE_WAVE_FORM_SMOOTHNESS;
+    float controlLength = adjustedWavelength / 2 * WAVE_SMOOTHNESS;
     PathPoint control1 = new PathPoint(anchor1);
     PathPoint control2 = new PathPoint(anchor2);
     control1.moveAlong(controlLength);
@@ -509,10 +515,10 @@ final class CircularDrawingDelegate extends DrawingDelegate<CircularProgressIndi
       float span,
       float amplitudeFraction,
       float phaseFraction) {
+    float amplitude = displayedAmplitude * amplitudeFraction;
     if (adjustedRadius != cachedRadius
-        || (pathMeasure == activePathMeasure
-            && displayedAmplitude * amplitudeFraction != cachedAmplitude)) {
-      cachedAmplitude = displayedAmplitude * amplitudeFraction;
+        || (pathMeasure == activePathMeasure && amplitude != cachedAmplitude)) {
+      cachedAmplitude = amplitude;
       cachedRadius = adjustedRadius;
       invalidateCachedPaths();
     }

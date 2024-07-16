@@ -43,10 +43,12 @@ import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.theme.ThemesController
 import dev.ragnarok.fenrir.toColor
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.inMainThread
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingleSafe
 import dev.ragnarok.fenrir.util.hls.M3U8
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import dev.ragnarok.fenrir.util.toast.CustomToast
+import kotlinx.coroutines.flow.map
 import okhttp3.Request
 import java.io.BufferedInputStream
 import java.io.File
@@ -623,7 +625,7 @@ object DownloadWorkUtils {
                     file_v.setFile(file_v.file + "." + file_v.ext)
                     result.renameTo(File(file_v.setExt("error").build()))
                 }
-                Utils.inMainThread {
+                inMainThread {
                     CustomToast.createCustomToast(applicationContext)
                         .showToastError(R.string.error_with_message, e.localizedMessage)
                 }
@@ -780,7 +782,7 @@ object DownloadWorkUtils {
                     file_v.setFile(file_v.file + "." + file_v.ext)
                     result.renameTo(File(file_v.setExt("error").build()))
                 }
-                Utils.inMainThread {
+                inMainThread {
                     CustomToast.createCustomToast(applicationContext)
                         .showToastError(R.string.error_with_message, e.localizedMessage)
                 }
@@ -886,7 +888,7 @@ object DownloadWorkUtils {
                     NotificationHelper.NOTIFICATION_DOWNLOAD,
                     NotificationHelper.NOTIFICATION_DOWNLOADING
                 )
-                Utils.inMainThread {
+                inMainThread {
                     CustomToast.createCustomToast(applicationContext)
                         .showToastBottom(R.string.saved)
                 }
@@ -918,14 +920,12 @@ object DownloadWorkUtils {
 
             val mode = audio.needRefresh()
             if (mode.first) {
-                val link: String? = RxUtils.blockingGetSingle(
-                    InteractorFactory
-                        .createAudioInteractor()
-                        .getByIdOld(account_id, listOf(audio), mode.second)
-                        .map { e ->
-                            e[0].url.nonNullNoEmpty({ l -> l }, { audio.url.orEmpty() })
-                        }, audio.url
-                )
+                val link: String? = InteractorFactory
+                    .createAudioInteractor()
+                    .getByIdOld(account_id, listOf(audio), mode.second)
+                    .map { e ->
+                        e[0].url.nonNullNoEmpty({ l -> l }, { audio.url.orEmpty() })
+                    }.syncSingleSafe(audio.url)
                 if (link.nonNullNoEmpty()) {
                     audio.setUrl(link)
                 }
@@ -956,10 +956,8 @@ object DownloadWorkUtils {
                             val pathCover = cover_file.build()
                             var ifGenre: String? = null
                             val commentText = if (audio.lyricsId != 0) {
-                                val LyricString: String? = RxUtils.blockingGetSingle(
-                                    InteractorFactory.createAudioInteractor()
-                                        .getLyrics(account_id, audio), null
-                                )
+                                val LyricString: String? = InteractorFactory.createAudioInteractor()
+                                    .getLyrics(account_id, audio).syncSingleSafe()
                                 if (LyricString.isNullOrEmpty()) {
                                     Audio.AudioCommentTag(audio.ownerId, audio.id).toText()
                                 } else {
@@ -991,7 +989,7 @@ object DownloadWorkUtils {
                             )
 
                         } catch (e: Throwable) {
-                            Utils.inMainThread {
+                            inMainThread {
                                 CustomToast.createCustomToast(applicationContext)
                                     .showToastError(
                                         R.string.error_with_message,
@@ -1057,7 +1055,7 @@ object DownloadWorkUtils {
                     NotificationHelper.NOTIFICATION_DOWNLOADING
                 )
                 MusicPlaybackController.tracksExist.addAudio(file_v.buildFilename())
-                Utils.inMainThread {
+                inMainThread {
                     CustomToast.createCustomToast(applicationContext)
                         .showToastBottom(if (updated_tag) R.string.tag_modified else R.string.saved)
                 }

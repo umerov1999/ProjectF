@@ -3,12 +3,10 @@ package dev.ragnarok.fenrir.dialog.base
 import android.Manifest
 import android.os.Bundle
 import dev.ragnarok.fenrir.Extra
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder.OnAttachmentsActionCallback
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.link.LinkHelper
 import dev.ragnarok.fenrir.media.music.MusicPlaybackService.Companion.startForPlayList
 import dev.ragnarok.fenrir.model.Article
@@ -51,12 +49,14 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getVKPhotosAlbumPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getVideoPreviewPlace
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.coroutines.Job
 
 abstract class AccountDependencyDialogFragment : BaseDialogFragment(), OnAttachmentsActionCallback {
-    private val mCompositeDisposable = CompositeDisposable()
+    private val mCompositeJob = CompositeJob()
     private val requestWritePermission = requestPermissionsAbs(
         arrayOf(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -72,12 +72,11 @@ abstract class AccountDependencyDialogFragment : BaseDialogFragment(), OnAttachm
         super.onCreate(savedInstanceState)
         require(requireArguments().containsKey(Extra.ACCOUNT_ID)) { "Fragments args does not contains Extra.ACCOUNT_ID" }
         accountId = requireArguments().getLong(Extra.ACCOUNT_ID)
-        mCompositeDisposable.add(
+        mCompositeJob.add(
             Settings.get()
                 .accounts()
                 .observeChanges
-                .observeOn(provideMainThreadScheduler())
-                .subscribe { fireAccountChange(it) })
+                .sharedFlowToMain { fireAccountChange(it) })
     }
 
     private fun fireAccountChange(newAid: Long) {
@@ -99,12 +98,12 @@ abstract class AccountDependencyDialogFragment : BaseDialogFragment(), OnAttachm
     }
 
     override fun onDestroy() {
-        mCompositeDisposable.dispose()
+        mCompositeJob.cancel()
         super.onDestroy()
     }
 
-    protected fun appendDisposable(disposable: Disposable) {
-        mCompositeDisposable.add(disposable)
+    protected fun appendJob(job: Job) {
+        mCompositeJob.add(job)
     }
 
     protected open fun afterAccountChange(oldAid: Long, newAid: Long) {}
@@ -172,19 +171,16 @@ abstract class AccountDependencyDialogFragment : BaseDialogFragment(), OnAttachm
     }
 
     override fun onNarrativeOpen(narratives: Narratives) {
-        appendDisposable(
+        appendJob(
             InteractorFactory.createStoriesInteractor()
                 .getStoryById(accountId, narratives.getStoriesIds())
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain {
                     if (it.nonNullNoEmpty()) {
                         getHistoryVideoPreviewPlace(accountId, ArrayList(it), 0).tryOpenWith(
                             requireActivity()
                         )
                     }
-                }, {
                 })
-        )
     }
 
     override fun onUrlPhotoOpen(url: String, prefix: String, photo_prefix: String) {

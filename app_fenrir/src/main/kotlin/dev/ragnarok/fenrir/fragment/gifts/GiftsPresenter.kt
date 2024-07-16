@@ -4,15 +4,15 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Gift
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class GiftsPresenter(accountId: Long, private val owner_id: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IGiftsView>(accountId, savedInstanceState) {
     private val ownersRepository: IOwnersRepository = owners
     private val mGifts: ArrayList<Gift> = ArrayList()
-    private val netDisposable = CompositeDisposable()
+    private val netDisposable = CompositeJob()
     private var mEndOfContent = false
     private var cacheLoadingNow = false
     private var netLoadingNow = false
@@ -21,7 +21,7 @@ class GiftsPresenter(accountId: Long, private val owner_id: Long, savedInstanceS
     }
 
     override fun onDestroyed() {
-        netDisposable.dispose()
+        netDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -29,8 +29,7 @@ class GiftsPresenter(accountId: Long, private val owner_id: Long, savedInstanceS
         netLoadingNow = true
         resolveRefreshingView()
         netDisposable.add(ownersRepository.getGifts(accountId, owner_id, COUNT_PER_REQUEST, offset)
-            .fromIOToMain()
-            .subscribe({ gifts ->
+            .fromIOToMain({ gifts ->
                 onNetDataReceived(
                     offset,
                     gifts

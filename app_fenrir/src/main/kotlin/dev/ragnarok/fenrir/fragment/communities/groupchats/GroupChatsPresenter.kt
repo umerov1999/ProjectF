@@ -6,17 +6,17 @@ import dev.ragnarok.fenrir.domain.IUtilsInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.GroupChats
 import dev.ragnarok.fenrir.model.LoadMoreState
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class GroupChatsPresenter(accountId: Long, private val groupId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IGroupChatsView>(accountId, savedInstanceState) {
     private val chats: MutableList<GroupChats> = ArrayList()
     private val utilsInteractor: IUtilsInteractor = InteractorFactory.createUtilsInteractor()
     private val owners: IOwnersRepository = Repository.owners
-    private val netDisposable = CompositeDisposable()
+    private val netDisposable = CompositeJob()
     private var endOfContent = false
     private var actualDataReceived = false
     private var cacheLoadingNow = false
@@ -28,8 +28,7 @@ class GroupChatsPresenter(accountId: Long, private val groupId: Long, savedInsta
         resolveRefreshingView()
         resolveLoadMoreFooter()
         netDisposable.add(owners.getGroupChats(accountId, groupId, offset, COUNT_PER_REQUEST)
-            .fromIOToMain()
-            .subscribe({ rec_chats ->
+            .fromIOToMain({ rec_chats ->
                 onActualDataReceived(
                     offset,
                     rec_chats
@@ -73,7 +72,7 @@ class GroupChatsPresenter(accountId: Long, private val groupId: Long, savedInsta
     }
 
     override fun onDestroyed() {
-        netDisposable.dispose()
+        netDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -115,8 +114,7 @@ class GroupChatsPresenter(accountId: Long, private val groupId: Long, savedInsta
 
     fun fireGroupChatsClick(chat: GroupChats) {
         netDisposable.add(utilsInteractor.joinChatByInviteLink(accountId, chat.invite_link)
-            .fromIOToMain()
-            .subscribe({ t ->
+            .fromIOToMain({ t ->
                 view?.goToChat(
                     accountId,
                     t.chat_id

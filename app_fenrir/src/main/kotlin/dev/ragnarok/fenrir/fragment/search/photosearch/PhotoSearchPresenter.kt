@@ -7,7 +7,6 @@ import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchPresenter
 import dev.ragnarok.fenrir.fragment.search.criteria.PhotoSearchCriteria
 import dev.ragnarok.fenrir.fragment.search.nextfrom.IntNextFrom
 import dev.ragnarok.fenrir.fragment.search.options.SimpleGPSOption
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.module.FenrirNative
@@ -17,8 +16,11 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 class PhotoSearchPresenter(
     accountId: Long,
@@ -45,7 +47,7 @@ class PhotoSearchPresenter(
         accountId: Long,
         criteria: PhotoSearchCriteria,
         startFrom: IntNextFrom
-    ): Single<Pair<List<Photo>, IntNextFrom>> {
+    ): Flow<Pair<List<Photo>, IntNextFrom>> {
         val offset = startFrom.offset
         val nextFrom = IntNextFrom(50 + offset)
         return photoInteractor.search(accountId, criteria, offset, 50)
@@ -76,31 +78,30 @@ class PhotoSearchPresenter(
         }
         val finalIndex = Index
         if (FenrirNative.isNativeLoaded && Settings.get().main().isNative_parcel_photo) {
-            appendDisposable(
-                Single.create { v: SingleEmitter<Long> ->
+            appendJob(
+                flow {
                     val mem = ParcelNative.create(ParcelFlags.NULL_LIST)
                     mem.writeInt(photos_ret.size)
                     for (i in photos_ret.indices) {
-                        if (v.isDisposed) {
+                        if (!isActive()) {
                             mem.forceDestroy()
-                            return@create
+                            return@flow
                         }
                         val photo = photos_ret[i]
                         mem.writeParcelable(photo)
                     }
-                    if (v.isDisposed) {
+                    if (!isActive()) {
                         mem.forceDestroy()
                     } else {
-                        v.onSuccess(mem.nativePointer)
+                        emit(mem.nativePointer)
                     }
-                }.fromIOToMain()
-                    .subscribe({
-                        view?.displayGalleryNative(
-                            accountId,
-                            it,
-                            finalIndex
-                        )
-                    }) { obj -> obj.printStackTrace() })
+                }.fromIOToMain({
+                    view?.displayGalleryNative(
+                        accountId,
+                        it,
+                        finalIndex
+                    )
+                }) { obj -> obj.printStackTrace() })
         } else {
             view?.displayGallery(
                 accountId,

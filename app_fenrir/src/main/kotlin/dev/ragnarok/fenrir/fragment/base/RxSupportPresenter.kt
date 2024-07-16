@@ -15,15 +15,15 @@ import dev.ragnarok.fenrir.fragment.base.core.IToastView
 import dev.ragnarok.fenrir.service.ErrorLocalizer
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
+import kotlinx.coroutines.Job
 import java.util.concurrent.atomic.AtomicLong
 
 abstract class RxSupportPresenter<V : IMvpView>(savedInstanceState: Bundle?) :
     AbsPresenter<V>() {
     private var generatedId = -1L
-    protected val compositeDisposable = CompositeDisposable()
+    protected val compositeJob = CompositeJob()
     var viewCreationCount = 0
         private set
 
@@ -45,20 +45,19 @@ abstract class RxSupportPresenter<V : IMvpView>(savedInstanceState: Bundle?) :
     }
 
     override fun onDestroyed() {
-        compositeDisposable.dispose()
+        compositeJob.cancel()
         if (generatedId >= 0) {
-            RxUtils.subscribeOnIOAndIgnore(
-                Stores.instance
-                    .tempStore()
-                    .deleteTemporaryData(generatedId)
-            )
+            Stores.instance
+                .tempStore()
+                .deleteTemporaryData(generatedId)
+                .hiddenIO()
             generatedId = -1
         }
         super.onDestroyed()
     }
 
-    fun appendDisposable(disposable: Disposable) {
-        compositeDisposable.add(disposable)
+    fun appendJob(job: Job) {
+        compositeJob.add(job)
     }
 
     protected fun showError(throwable: Throwable?) {

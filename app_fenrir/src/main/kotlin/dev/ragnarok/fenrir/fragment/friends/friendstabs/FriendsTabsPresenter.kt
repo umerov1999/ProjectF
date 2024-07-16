@@ -6,10 +6,10 @@ import dev.ragnarok.fenrir.domain.IRelationshipInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.FriendsCounters
 import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class FriendsTabsPresenter(
     accountId: Long,
@@ -23,13 +23,12 @@ class FriendsTabsPresenter(
     private var counters: FriendsCounters? = null
     private var owner: Owner? = null
     private fun requestOwnerInfo() {
-        appendDisposable(ownersRepository.getBaseOwnerInfo(
+        appendJob(ownersRepository.getBaseOwnerInfo(
             accountId,
             userId,
             IOwnersRepository.MODE_ANY
         )
-            .fromIOToMain()
-            .subscribe({ owner -> onOwnerInfoReceived(owner) }) { })
+            .fromIOToMain { owner -> onOwnerInfoReceived(owner) })
     }
 
     fun fireFriendsBirthday() {
@@ -48,9 +47,8 @@ class FriendsTabsPresenter(
     }
 
     private fun requestCounters() {
-        appendDisposable(relationshipInteractor.getFriendsCounters(accountId, userId)
-            .fromIOToMain()
-            .subscribe({ counters -> onCountersReceived(counters) }) { t ->
+        appendJob(relationshipInteractor.getFriendsCounters(accountId, userId)
+            .fromIOToMain({ counters -> onCountersReceived(counters) }) { t ->
                 onCountersGetError(
                     t
                 )

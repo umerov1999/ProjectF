@@ -99,7 +99,8 @@ class PostCreateFragment : AbsPostEditFragment<PostCreatePresenter, IPostCreateV
     }
 
     override fun onBackPressed(): Boolean {
-        return presenter?.onBackPresed() ?: false
+        presenter?.fireBackPressed()
+        return true
     }
 
     companion object {

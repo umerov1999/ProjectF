@@ -26,6 +26,7 @@ import dev.ragnarok.fenrir.settings.theme.ThemesController.currentStyle
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCream
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 import java.io.File
 
@@ -105,7 +106,6 @@ class LottieActivity : AppCompatActivity() {
         super.attachBaseContext(Utils.updateActivityContext(newBase))
     }
 
-    @Suppress("DEPRECATION")
     private fun startExportGif() {
         fManager.launch(
             FileManagerSelectActivity.makeFileManager(
@@ -135,11 +135,16 @@ class LottieActivity : AppCompatActivity() {
             }
             startExportGif()
         }
-        val w = window
-        w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        w.statusBarColor = CurrentTheme.getStatusBarColor(this)
-        w.navigationBarColor = CurrentTheme.getNavigationBarColor(this)
+        if (!hasVanillaIceCream()) {
+            val w = window
+            if (!Utils.hasMarshmallow()) {
+                w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            }
+
+            w.statusBarColor = CurrentTheme.getStatusBarColor(this)
+            w.navigationBarColor = CurrentTheme.getNavigationBarColor(this)
+        }
         if (savedInstanceState == null) {
             handleIntent(intent)
         }

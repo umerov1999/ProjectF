@@ -54,21 +54,24 @@ import dev.ragnarok.fenrir.util.DownloadWorkUtils.TrackIsDownloaded
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.doDownloadAudio
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.CustomSeekBar
 import dev.ragnarok.fenrir.view.media.*
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieShapeableImageView
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.coroutines.Job
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
 class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSeekBarListener {
@@ -103,13 +106,13 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
     private var ivBackground: View? = null
 
     // Handler used to update the current time
-    private var mRefreshDisposable = Disposable.disposed()
+    private var mRefreshJob = CancelableJob()
     private var mStartSeekPos: Long = 0
     private var mLastSeekEventTime: Long = 0
     private var coverAdapter: CoverAdapter? = null
     private lateinit var mPlayerProgressStrings: Array<String>
     private var currentPage = -1
-    private var playDispose = Disposable.disposed()
+    private var playDispose = CancelableJob()
     private var isDragging = false
 
     private val requestEqualizer = registerForActivityResult(
@@ -147,10 +150,10 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
     }
     private var mAudioInteractor: IAudioInteractor = InteractorFactory.createAudioInteractor()
     private var mAccountId = 0L
-    private val mBroadcastDisposable = CompositeDisposable()
-    private val mCompositeDisposable = CompositeDisposable()
-    private fun appendDisposable(disposable: Disposable) {
-        mCompositeDisposable.add(disposable)
+    private val mBroadcastJob = CompositeJob()
+    private val mCompositeJob = CompositeJob()
+    private fun appendJob(job: Job) {
+        mCompositeJob.add(job)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -372,11 +375,9 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                 super.onPageSelected(position)
                 if (currentPage != position) {
                     currentPage = position
-                    playDispose.dispose()
-                    playDispose = Observable.just(Object())
-                        .delay(400, TimeUnit.MILLISECONDS)
-                        .toMainThread()
-                        .subscribe { MusicPlaybackController.skip(position) }
+                    playDispose.cancel()
+                    playDispose += delayTaskFlow(400)
+                        .toMain { MusicPlaybackController.skip(position) }
                     ivCoverPager?.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                 }
             }
@@ -434,9 +435,8 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
 
         resolveAddButton()
 
-        appendDisposable(MusicPlaybackController.observeServiceBinding()
-            .toMainThread()
-            .subscribe { onServiceBindEvent(it) })
+        appendJob(MusicPlaybackController.observeServiceBinding()
+            .sharedFlowToMain { onServiceBindEvent(it) })
         return root
     }
 
@@ -554,10 +554,9 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
     }
 
     private fun add(accountId: Long, audio: Audio) {
-        appendDisposable(
+        appendJob(
             mAudioInteractor.add(accountId, audio, null)
-                .fromIOToMain()
-                .subscribe({ onAudioAdded() }) { showErrorInAdapter(it) })
+                .fromIOToMain({ onAudioAdded() }) { showErrorInAdapter(it) })
     }
 
     private fun onAudioAdded() {
@@ -568,10 +567,9 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
     private fun delete(accountId: Long, audio: Audio) {
         val id = audio.id
         val ownerId = audio.ownerId
-        appendDisposable(
+        appendJob(
             mAudioInteractor.delete(accountId, id, ownerId)
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain({
                     onAudioDeletedOrRestored(
                         id,
                         ownerId,
@@ -583,10 +581,9 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
     private fun restore(accountId: Long, audio: Audio) {
         val id = audio.id
         val ownerId = audio.ownerId
-        appendDisposable(
+        appendJob(
             mAudioInteractor.restore(accountId, id, ownerId)
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain({
                     onAudioDeletedOrRestored(
                         id,
                         ownerId,
@@ -596,10 +593,9 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
     }
 
     private fun get_lyrics(audio: Audio) {
-        appendDisposable(
+        appendJob(
             mAudioInteractor.getLyrics(mAccountId, audio)
-                .fromIOToMain()
-                .subscribe({ Text -> onAudioLyricsReceived(Text) }) { showErrorInAdapter(it) })
+                .fromIOToMain({ Text -> onAudioLyricsReceived(Text) }) { showErrorInAdapter(it) })
     }
 
     private fun onAudioLyricsReceived(Text: String) {
@@ -660,10 +656,10 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
      * {@inheritDoc}
      */
     override fun onDestroy() {
-        playDispose.dispose()
-        mCompositeDisposable.dispose()
-        mRefreshDisposable.dispose()
-        mBroadcastDisposable.dispose()
+        playDispose.cancel()
+        mCompositeJob.cancel()
+        mRefreshJob.cancel()
+        mBroadcastJob.cancel()
         PicassoInstance.with().cancelTag(PLAYER_TAG)
         super.onDestroy()
     }
@@ -823,7 +819,6 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         }
     }
 
-    @Suppress("deprecation")
     private val isEqualizerAvailable: Boolean
         get() {
             val intent = Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL)
@@ -865,11 +860,9 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
      * @param delay When to update
      */
     private fun queueNextRefresh(delay: Long) {
-        mRefreshDisposable.dispose()
-        mRefreshDisposable = Observable.just(Any())
-            .delay(delay, TimeUnit.MILLISECONDS)
-            .toMainThread()
-            .subscribe {
+        mRefreshJob.cancel()
+        mRefreshJob += delayTaskFlow(delay)
+            .toMain {
                 queueNextRefresh(refreshCurrentTime())
             }
     }

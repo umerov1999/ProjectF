@@ -4,8 +4,10 @@ import android.content.Context
 import android.util.Log
 import androidx.annotation.RawRes
 import dev.ragnarok.filegallery.Constants
+import okio.BufferedSource
+import okio.buffer
+import okio.sink
 import java.io.File
-import java.io.InputStream
 
 class AnimationNetworkCache(context: Context) {
     private val appContext = context.applicationContext
@@ -34,13 +36,12 @@ class AnimationNetworkCache(context: Context) {
         return File(parentResDir(appContext), filenameForRes(res, false)).exists()
     }
 
-    fun writeTempCacheFile(url: String, stream: InputStream): File {
+    fun writeTempCacheFile(url: String, source: BufferedSource): File {
         val fileName = filenameForUrl(url, true)
         val file = File(parentDir(appContext), fileName)
-        file.outputStream().use {
-            stream.copyTo(it)
-            it.flush()
-            it.close()
+
+        file.sink().buffer().use { output ->
+            output.writeAll(source)
         }
         return file
     }

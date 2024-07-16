@@ -14,12 +14,17 @@ import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.upload.UploadResult
 import dev.ragnarok.fenrir.upload.UploadUtils
 import dev.ragnarok.fenrir.util.Utils.safelyClose
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.safelyCloseAction
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.andThen
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlowThrowable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
+import kotlin.coroutines.cancellation.CancellationException
 
 class VideoToMessageUploadable(
     private val context: Context,
@@ -27,17 +32,18 @@ class VideoToMessageUploadable(
     private val attachmentsRepository: IAttachmentsRepository,
     private val messagesStorage: IMessagesStorage
 ) : IUploadable<Video> {
+    @Suppress("BlockingMethodInNonBlockingContext")
     override fun doUpload(
         upload: Upload,
         initialServer: UploadServer?,
         listener: PercentagePublisher?
-    ): Single<UploadResult<Video>> {
+    ): Flow<UploadResult<Video>> {
         val accountId = upload.accountId
         val messageId = upload.destination.id
         val serverSingle = networker.vkDefault(accountId)
             .video()
             .getVideoServer(1, null, UploadUtils.findFileName(context, upload.fileUri))
-        return serverSingle.flatMap { server ->
+        return serverSingle.flatMapConcat { server ->
             var inputStream: InputStream? = null
             try {
                 val uri = upload.fileUri
@@ -48,7 +54,7 @@ class VideoToMessageUploadable(
                     context.contentResolver.openInputStream(uri)
                 }
                 if (inputStream == null) {
-                    Single.error(
+                    toFlowThrowable(
                         NotFoundException(
                             "Unable to open InputStream, URI: $uri"
                         )
@@ -64,8 +70,8 @@ class VideoToMessageUploadable(
                             inputStream,
                             listener
                         )
-                        .doFinally(safelyCloseAction(inputStream))
-                        .flatMap { dto ->
+                        .onCompletion { safelyClose(inputStream) }
+                        .flatMapConcat { dto ->
                             val video =
                                 Video().setId(dto.video_id).setOwnerId(dto.owner_id).setTitle(
                                     UploadUtils.findFileName(
@@ -80,16 +86,20 @@ class VideoToMessageUploadable(
                                     accountId,
                                     messageId,
                                     video
-                                )
-                                    .andThen(Single.just(result))
+                                ).map {
+                                    result
+                                }
                             } else {
-                                Single.just(result)
+                                toFlow(result)
                             }
                         }
                 }
             } catch (e: Exception) {
                 safelyClose(inputStream)
-                Single.error(e)
+                if (e is CancellationException) {
+                    throw e
+                }
+                toFlowThrowable(e)
             }
         }
     }
@@ -98,7 +108,7 @@ class VideoToMessageUploadable(
         fun attachIntoDatabaseRx(
             repository: IAttachmentsRepository, storage: IMessagesStorage,
             accountId: Long, messageId: Int, video: Video
-        ): Completable {
+        ): Flow<Boolean> {
             return repository
                 .attach(accountId, AttachToType.MESSAGE, messageId, listOf(video))
                 .andThen(storage.notifyMessageHasAttachments(accountId, messageId))

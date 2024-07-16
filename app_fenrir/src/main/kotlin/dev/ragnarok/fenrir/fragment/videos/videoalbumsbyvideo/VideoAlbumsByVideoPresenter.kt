@@ -4,8 +4,8 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IVideosInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.VideoAlbum
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class VideoAlbumsByVideoPresenter(
     accountId: Long,
@@ -28,14 +28,13 @@ class VideoAlbumsByVideoPresenter(
     private fun requestActualData() {
         netLoadingNow = true
         resolveRefreshingView()
-        appendDisposable(videosInteractor.getAlbumsByVideo(
+        appendJob(videosInteractor.getAlbumsByVideo(
             accountId,
             ownerId,
             videoOwnerId,
             videoId
         )
-            .fromIOToMain()
-            .subscribe({ albums -> onActualDataReceived(albums) }) { t ->
+            .fromIOToMain({ albums -> onActualDataReceived(albums) }) { t ->
                 onActualDataGetError(
                     t
                 )

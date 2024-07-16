@@ -4,25 +4,24 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.Repository
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.BirthDay
 import dev.ragnarok.fenrir.model.User
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import java.util.Calendar
 
 class BirthDayPresenter(accountId: Long, private val ownerId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IBirthDayView>(accountId, savedInstanceState) {
     private val users: MutableList<BirthDay> = ArrayList()
     private val cacheInteractor: IOwnersRepository = Repository.owners
-    private val cacheDisposable = CompositeDisposable()
+    private val cacheDisposable = CompositeJob()
     private var cacheLoadingNow = false
     private fun loadCachedData() {
         cacheLoadingNow = true
         resolveRefreshingView()
         cacheDisposable.add(
             cacheInteractor.findFriendBirtday(ownerId)
-                .fromIOToMain()
-                .subscribe({ onCachedDataReceived(it) }, {
+                .fromIOToMain({ onCachedDataReceived(it) }, {
                     cacheLoadingNow = false
                     resolveRefreshingView()
                 })
@@ -60,7 +59,7 @@ class BirthDayPresenter(accountId: Long, private val ownerId: Long, savedInstanc
     }
 
     override fun onDestroyed() {
-        cacheDisposable.dispose()
+        cacheDisposable.cancel()
         super.onDestroyed()
     }
 

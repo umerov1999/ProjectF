@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.domain
 
 import dev.ragnarok.fenrir.model.Poll
 import dev.ragnarok.fenrir.model.User
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IPollInteractor {
     fun createPoll(
@@ -14,11 +14,11 @@ interface IPollInteractor {
         backgroundId: Int?,
         ownerId: Long,
         options: List<String>
-    ): Single<Poll>
+    ): Flow<Poll>
 
-    fun addVote(accountId: Long, poll: Poll, answerIds: Set<Long>): Single<Poll>
-    fun removeVote(accountId: Long, poll: Poll, answerId: Long): Single<Poll>
-    fun getPollById(accountId: Long, ownerId: Long, pollId: Int, isBoard: Boolean): Single<Poll>
+    fun addVote(accountId: Long, poll: Poll, answerIds: Set<Long>): Flow<Poll>
+    fun removeVote(accountId: Long, poll: Poll, answerId: Long): Flow<Poll>
+    fun getPollById(accountId: Long, ownerId: Long, pollId: Int, isBoard: Boolean): Flow<Poll>
     fun getVoters(
         accountId: Long,
         ownerId: Long,
@@ -27,7 +27,7 @@ interface IPollInteractor {
         answer_ids: List<Long>,
         offset: Int?,
         count: Int?
-    ): Single<List<User>>
+    ): Flow<List<User>>
 
-    fun getBackgrounds(accountId: Long): Single<List<Poll.PollBackground>>
+    fun getBackgrounds(accountId: Long): Flow<List<Poll.PollBackground>>
 }

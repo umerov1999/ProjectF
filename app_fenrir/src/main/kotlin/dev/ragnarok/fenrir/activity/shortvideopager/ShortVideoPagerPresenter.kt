@@ -7,7 +7,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IVideosInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.media.story.IStoryPlayer
 import dev.ragnarok.fenrir.media.story.IStoryPlayer.IStatusChangeListener
 import dev.ragnarok.fenrir.model.Commented
@@ -16,9 +15,9 @@ import dev.ragnarok.fenrir.model.VideoSize
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.hasReadWriteStoragePermission
-import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class ShortVideoPagerPresenter(
     accountId: Long,
@@ -56,15 +55,14 @@ class ShortVideoPagerPresenter(
     private fun receiveShortVideos() {
         loadingNow = true
         view?.displayListLoading(loadingNow)
-        appendDisposable(
-            shortVideosInteractor.getShortVideos(accountId, ownerId, nextFrom, 25).fromIOToMain()
-                .subscribe(
-                    { onActualShortVideosReceived(nextFrom, it.first, it.second) },
-                    {
-                        loadingNow = false
-                        view?.displayListLoading(loadingNow)
-                        view?.showThrowable(it)
-                    })
+        appendJob(
+            shortVideosInteractor.getShortVideos(accountId, ownerId, nextFrom, 25).fromIOToMain(
+                { onActualShortVideosReceived(nextFrom, it.first, it.second) },
+                {
+                    loadingNow = false
+                    view?.displayListLoading(loadingNow)
+                    view?.showThrowable(it)
+                })
         )
     }
 
@@ -275,16 +273,15 @@ class ShortVideoPagerPresenter(
         }
         mShortVideos[mCurrentIndex].let {
             val add = !it.isUserLikes
-            appendDisposable(interactor.likeOrDislike(
+            appendJob(interactor.likeOrDislike(
                 accountId,
                 it.ownerId,
                 it.id,
                 it.accessKey,
                 add
             )
-                .fromIOToMain()
-                .subscribe(
-                    { pair: Pair<Int, Boolean> ->
+                .fromIOToMain(
+                    { pair ->
                         onLikesResponse(
                             pair.first,
                             pair.second,

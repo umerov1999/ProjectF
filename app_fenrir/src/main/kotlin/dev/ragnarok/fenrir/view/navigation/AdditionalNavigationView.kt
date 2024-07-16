@@ -15,11 +15,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import dev.ragnarok.fenrir.Constants
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.Repository.owners
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.DrawerCategory
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.SwitchableCategory
@@ -33,11 +31,12 @@ import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 
 class AdditionalNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
-    private val mCompositeDisposable = CompositeDisposable()
+    private val mCompositeJob = CompositeJob()
     private var mCallbacks: NavigationDrawerCallbacks? = null
     private var mBottomSheetBehavior: BottomSheetBehavior<View>? = null
     private var ivHeaderAvatar: ImageView? = null
@@ -102,11 +101,10 @@ class AdditionalNavigationView : AbsNavigationView, MenuListAdapter.ActionListen
             .recentChats()[mAccountId]
         mDrawerItems = ArrayList()
         mDrawerItems?.addAll(generateNavDrawerItems())
-        mCompositeDisposable.add(
+        mCompositeJob.add(
             Settings.get().drawerSettings()
                 .observeChanges
-                .observeOn(provideMainThreadScheduler())
-                .subscribe { refreshNavigationItems(it) })
+                .sharedFlowToMain { refreshNavigationItems(it) })
 
         val root = LayoutInflater.from(context).inflate(R.layout.fragment_navigation_drawer, this)
         val recyclerView: RecyclerView = root.findViewById(R.id.recycler_view)
@@ -176,14 +174,13 @@ class AdditionalNavigationView : AbsNavigationView, MenuListAdapter.ActionListen
 
     private fun refreshUserInfo() {
         if (mAccountId != ISettings.IAccountsSettings.INVALID_ID) {
-            mCompositeDisposable.add(
+            mCompositeJob.add(
                 ownersRepository.getBaseOwnerInfo(
                     mAccountId,
                     mAccountId,
                     IOwnersRepository.MODE_ANY
                 )
-                    .fromIOToMain()
-                    .subscribe({ user -> refreshHeader(user) }, ignore())
+                    .fromIOToMain { user -> refreshHeader(user) }
             )
         }
     }
@@ -205,7 +202,7 @@ class AdditionalNavigationView : AbsNavigationView, MenuListAdapter.ActionListen
         if (isInEditMode) {
             return
         }
-        mCompositeDisposable.dispose()
+        mCompositeJob.cancel()
         mCallbacks = null
     }
 

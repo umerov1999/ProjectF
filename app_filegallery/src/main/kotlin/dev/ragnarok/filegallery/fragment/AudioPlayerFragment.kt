@@ -2,7 +2,11 @@ package dev.ragnarok.filegallery.fragment
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.*
+import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.Animatable
@@ -37,19 +41,25 @@ import dev.ragnarok.filegallery.picasso.transforms.BlurTransformation
 import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.toColor
-import dev.ragnarok.filegallery.toMainThread
 import dev.ragnarok.filegallery.util.DownloadWorkUtils.TrackIsDownloaded
 import dev.ragnarok.filegallery.util.DownloadWorkUtils.doDownloadAudio
 import dev.ragnarok.filegallery.util.Utils
+import dev.ragnarok.filegallery.util.coroutines.CancelableJob
+import dev.ragnarok.filegallery.util.coroutines.CompositeJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.filegallery.util.toast.CustomSnackbars
 import dev.ragnarok.filegallery.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.filegallery.view.CustomSeekBar
-import dev.ragnarok.filegallery.view.media.*
+import dev.ragnarok.filegallery.view.media.AudioPlayerBackgroundDrawable
+import dev.ragnarok.filegallery.view.media.AudioPlayerCoverDrawable
+import dev.ragnarok.filegallery.view.media.PlayPauseButton
+import dev.ragnarok.filegallery.view.media.RepeatButton
+import dev.ragnarok.filegallery.view.media.RepeatingImageButton
+import dev.ragnarok.filegallery.view.media.ShuffleButton
 import dev.ragnarok.filegallery.view.natives.rlottie.RLottieShapeableImageView
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.Job
 import kotlin.math.min
 
 class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSeekBarListener {
@@ -83,13 +93,13 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
     private var ivBackground: View? = null
 
     // Handler used to update the current time
-    private var mRefreshDisposable = Disposable.disposed()
+    private var mRefreshDisposable = CancelableJob()
     private var mStartSeekPos: Long = 0
     private var mLastSeekEventTime: Long = 0
     private var coverAdapter: CoverAdapter? = null
     private lateinit var mPlayerProgressStrings: Array<String>
     private var currentPage = -1
-    private var playDispose = Disposable.disposed()
+    private var playDispose = CancelableJob()
     private var isDragging = false
 
     private val requestEqualizer = registerForActivityResult(
@@ -121,9 +131,9 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         }
 
     }
-    private val mCompositeDisposable = CompositeDisposable()
-    private fun appendDisposable(disposable: Disposable) {
-        mCompositeDisposable.add(disposable)
+    private val mCompositeJob = CompositeJob()
+    private fun appendJob(job: Job) {
+        mCompositeJob.add(job)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -248,11 +258,10 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                 super.onPageSelected(position)
                 if (currentPage != position) {
                     currentPage = position
-                    playDispose.dispose()
-                    playDispose = Observable.just(Object())
-                        .delay(400, TimeUnit.MILLISECONDS)
-                        .toMainThread()
-                        .subscribe { MusicPlaybackController.skip(position) }
+                    playDispose.set(
+                        delayTaskFlow(400)
+                            .toMain { MusicPlaybackController.skip(position) }
+                    )
                     ivCoverPager?.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                 }
             }
@@ -289,9 +298,9 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
             )
         }
 
-        appendDisposable(MusicPlaybackController.observeServiceBinding()
-            .toMainThread()
-            .subscribe { onServiceBindEvent(it) })
+        appendJob(MusicPlaybackController.observeServiceBinding()
+            .sharedFlowToMain { onServiceBindEvent(it) }
+        )
         return root
     }
 
@@ -351,9 +360,9 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
      * {@inheritDoc}
      */
     override fun onDestroy() {
-        playDispose.dispose()
-        mCompositeDisposable.dispose()
-        mRefreshDisposable.dispose()
+        playDispose.cancel()
+        mCompositeJob.cancel()
+        mRefreshDisposable.cancel()
         PicassoInstance.with().cancelTag(PLAYER_TAG)
         super.onDestroy()
     }
@@ -494,7 +503,6 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         }
     }
 
-    @Suppress("deprecation")
     private val isEqualizerAvailable: Boolean
         get() {
             val intent = Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL)
@@ -510,13 +518,10 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
      * @param delay When to update
      */
     private fun queueNextRefresh(delay: Long) {
-        mRefreshDisposable.dispose()
-        mRefreshDisposable = Observable.just(Any())
-            .delay(delay, TimeUnit.MILLISECONDS)
-            .toMainThread()
-            .subscribe {
-                queueNextRefresh(refreshCurrentTime())
-            }
+        mRefreshDisposable.cancel()
+        mRefreshDisposable.set(delayTaskFlow(delay)
+            .toMain { queueNextRefresh(refreshCurrentTime()) }
+        )
     }
 
     private fun resolveControlViews() {

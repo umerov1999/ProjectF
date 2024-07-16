@@ -36,8 +36,9 @@ import dev.ragnarok.fenrir.model.criteria.PhotoCriteria
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import dev.ragnarok.fenrir.util.VKOwnIds
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 import kotlin.math.abs
 
 class PhotosInteractor(private val networker: INetworker, private val cache: IStorages) :
@@ -49,11 +50,11 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
         count: Int,
         offset: Int,
         rev: Boolean
-    ): Single<List<Photo>> {
+    ): Flow<List<Photo>> {
         return networker.vkDefault(accountId)
             .photos()[ownerId, albumId.toString(), null, rev, offset, count]
             .map { items -> listEmptyIfNull(items.items) }
-            .flatMap { dtos ->
+            .flatMapConcat { dtos ->
                 val photos: MutableList<Photo> = ArrayList(dtos.size)
                 val dbos: MutableList<PhotoDboEntity> = ArrayList(dtos.size)
                 for (dto in dtos) {
@@ -62,7 +63,9 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
                 }
                 cache.photos()
                     .insertPhotosRx(accountId, ownerId, albumId, dbos, offset == 0)
-                    .andThen(Single.just(photos))
+                    .map {
+                        photos
+                    }
             }
     }
 
@@ -73,12 +76,12 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
         sort: Int?,
         offset: Int?,
         count: Int?
-    ): Single<List<Photo>> {
+    ): Flow<List<Photo>> {
         return networker.vkDefault(accountId)
             .photos()
             .getUsersPhoto(ownerId, extended, sort, offset, count)
             .map { items -> listEmptyIfNull(items.items) }
-            .flatMap { dtos ->
+            .flatMapConcat { dtos ->
                 val photos: MutableList<Photo> = ArrayList(dtos.size)
                 val dbos: MutableList<PhotoDboEntity> = ArrayList(dtos.size)
                 for (dto in dtos) {
@@ -87,7 +90,9 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
                 }
                 cache.photos()
                     .insertPhotosExtendedRx(accountId, ownerId, -9000, dbos, offset == 0)
-                    .andThen(Single.just(photos))
+                    .map {
+                        photos
+                    }
             }
     }
 
@@ -98,12 +103,12 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
         photo_sizes: Int?,
         offset: Int?,
         count: Int?
-    ): Single<List<Photo>> {
+    ): Flow<List<Photo>> {
         return networker.vkDefault(accountId)
             .photos()
             .getAll(ownerId, extended, photo_sizes, offset, count)
             .map { items -> listEmptyIfNull(items.items) }
-            .flatMap { dtos ->
+            .flatMapConcat { dtos ->
                 val photos: MutableList<Photo> = ArrayList(dtos.size)
                 val dbos: MutableList<PhotoDboEntity> = ArrayList(dtos.size)
                 for (dto in dtos) {
@@ -112,7 +117,9 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
                 }
                 cache.photos()
                     .insertPhotosExtendedRx(accountId, ownerId, -9001, dbos, offset == 0)
-                    .andThen(Single.just(photos))
+                    .map {
+                        photos
+                    }
             }
     }
 
@@ -121,7 +128,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
         criteria: PhotoSearchCriteria,
         offset: Int?,
         count: Int?
-    ): Single<List<Photo>> {
+    ): Flow<List<Photo>> {
         val sortOption = criteria.findOptionByKey<SpinnerOption>(PhotoSearchCriteria.KEY_SORT)
         val sort = sortOption?.value?.id
         val radius = criteria.extractNumberValueFromOption(PhotoSearchCriteria.KEY_RADIUS)
@@ -144,12 +151,12 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
                 count
             )
             .map { items -> listEmptyIfNull(items.items) }
-            .flatMap { dtos ->
+            .map { dtos ->
                 val photos: MutableList<Photo> = ArrayList(dtos.size)
                 for (dto in dtos) {
                     photos.add(transform(dto))
                 }
-                Single.just(photos)
+                photos
             }
     }
 
@@ -158,7 +165,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
         ownerId: Long,
         albumId: Int,
         sortInvert: Boolean
-    ): Single<List<Photo>> {
+    ): Flow<List<Photo>> {
         val criteria = PhotoCriteria(accountId).setAlbumId(albumId).setOwnerId(ownerId)
             .setSortInvert(sortInvert)
         if (albumId == -9001 || albumId == -9000) {
@@ -180,7 +187,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
             }
     }
 
-    override fun getAlbumById(accountId: Long, ownerId: Long, albumId: Int): Single<PhotoAlbum> {
+    override fun getAlbumById(accountId: Long, ownerId: Long, albumId: Int): Flow<PhotoAlbum> {
         return networker.vkDefault(accountId)
             .photos()
             .getAlbums(ownerId, listOf(albumId), null, null, needSystem = true, needCovers = true)
@@ -203,7 +210,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
             }
     }
 
-    override fun getCachedAlbums(accountId: Long, ownerId: Long): Single<List<PhotoAlbum>> {
+    override fun getCachedAlbums(accountId: Long, ownerId: Long): Flow<List<PhotoAlbum>> {
         val criteria = PhotoAlbumsCriteria(accountId, ownerId)
         return cache.photoAlbums()
             .findAlbumsByCriteria(criteria)
@@ -219,7 +226,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
         ownerId: Long?,
         photo_id: Int?,
         access_key: String?
-    ): Single<List<PhotoTags>> {
+    ): Flow<List<PhotoTags>> {
         return networker.vkDefault(accountId)
             .photos().getTags(ownerId, photo_id, access_key).map { it1 ->
                 mapAll(
@@ -234,11 +241,11 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
         album_id: Int?,
         offset: Int,
         count: Int
-    ): Single<List<Comment>> {
+    ): Flow<List<Comment>> {
         return networker.vkDefault(accountId)
             .photos()
             .getAllComments(ownerId, album_id, 1, offset, count)
-            .flatMap { items ->
+            .flatMapConcat { items ->
                 val dtos = listEmptyIfNull(items.items)
                 val ownids = VKOwnIds()
                 for (dto in dtos) {
@@ -276,11 +283,11 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
         ownerId: Long,
         count: Int,
         offset: Int
-    ): Single<List<PhotoAlbum>> {
+    ): Flow<List<PhotoAlbum>> {
         return networker.vkDefault(accountId)
             .photos()
             .getAlbums(ownerId, null, offset, count, needSystem = true, needCovers = true)
-            .flatMap { items ->
+            .flatMapConcat { items ->
                 val dtos = listEmptyIfNull(items.items)
                 val dbos: MutableList<PhotoAlbumDboEntity> = ArrayList(dtos.size)
                 val albums: MutableList<PhotoAlbum> = ArrayList(dbos.size)
@@ -330,11 +337,13 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
                 }
                 cache.photoAlbums()
                     .store(accountId, ownerId, dbos, offset == 0)
-                    .andThen(Single.just(albums))
+                    .map {
+                        albums
+                    }
             }
     }
 
-    override fun isLiked(accountId: Long, ownerId: Long, photoId: Int): Single<Boolean> {
+    override fun isLiked(accountId: Long, ownerId: Long, photoId: Int): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .likes()
             .isLiked("photo", ownerId, photoId)
@@ -345,7 +354,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
         ownerId: Long,
         photoId: Int,
         accessKey: String?
-    ): Single<Int> {
+    ): Flow<Int> {
         return networker.vkDefault(accountId)
             .likes().checkAndAddLike("photo", ownerId, photoId, accessKey)
     }
@@ -356,8 +365,8 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
         photoId: Int,
         add: Boolean,
         accessKey: String?
-    ): Single<Int> {
-        val single: Single<Int> = if (add) {
+    ): Flow<Int> {
+        val single = if (add) {
             networker.vkDefault(accountId)
                 .likes()
                 .add("photo", ownerId, photoId, accessKey)
@@ -366,11 +375,13 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
                 .likes()
                 .delete("photo", ownerId, photoId, accessKey)
         }
-        return single.flatMap { count ->
+        return single.flatMapConcat { count ->
             val patch = PhotoPatch().setLike(Like(count, add))
             cache.photos()
                 .applyPatch(accountId, ownerId, photoId, patch)
-                .andThen(Single.just(count))
+                .map {
+                    count
+                }
         }
     }
 
@@ -379,38 +390,38 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
         ownerId: Long,
         photoId: Int,
         accessKey: String?
-    ): Single<Int> {
+    ): Flow<Int> {
         return networker.vkDefault(accountId)
             .photos()
             .copy(ownerId, photoId, accessKey)
     }
 
-    override fun removedAlbum(accountId: Long, ownerId: Long, albumId: Int): Completable {
+    override fun removedAlbum(accountId: Long, ownerId: Long, albumId: Int): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .photos()
             .deleteAlbum(albumId, if (ownerId < 0) abs(ownerId) else null)
-            .flatMapCompletable {
+            .flatMapConcat {
                 cache.photoAlbums()
                     .removeAlbumById(accountId, ownerId, albumId)
             }
     }
 
-    override fun deletePhoto(accountId: Long, ownerId: Long, photoId: Int): Completable {
+    override fun deletePhoto(accountId: Long, ownerId: Long, photoId: Int): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .photos()
             .delete(ownerId, photoId)
-            .flatMapCompletable {
+            .flatMapConcat {
                 val patch = PhotoPatch().setDeletion(PhotoPatch.Deletion(true))
                 cache.photos()
                     .applyPatch(accountId, ownerId, photoId, patch)
             }
     }
 
-    override fun restorePhoto(accountId: Long, ownerId: Long, photoId: Int): Completable {
+    override fun restorePhoto(accountId: Long, ownerId: Long, photoId: Int): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .photos()
             .restore(ownerId, photoId)
-            .flatMapCompletable {
+            .flatMapConcat {
                 val patch = PhotoPatch().setDeletion(PhotoPatch.Deletion(false))
                 cache.photos()
                     .applyPatch(accountId, ownerId, photoId, patch)
@@ -420,7 +431,7 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
     override fun getPhotosByIds(
         accountId: Long,
         ids: Collection<AccessIdPairModel>
-    ): Single<List<Photo>> {
+    ): Flow<List<Photo>> {
         val dtoPairs: MutableList<AccessIdPair> = ArrayList(ids.size)
         for (pair in ids) {
             dtoPairs.add(

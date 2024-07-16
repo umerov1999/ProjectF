@@ -7,14 +7,15 @@ import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchPresenter
 import dev.ragnarok.fenrir.fragment.search.criteria.AudioPlaylistSearchCriteria
 import dev.ragnarok.fenrir.fragment.search.nextfrom.IntNextFrom
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.AudioPlaylist
 import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class AudioPlaylistSearchPresenter(
     accountId: Long,
@@ -49,14 +50,14 @@ class AudioPlaylistSearchPresenter(
         accountId: Long,
         criteria: AudioPlaylistSearchCriteria,
         startFrom: IntNextFrom
-    ): Single<Pair<List<AudioPlaylist>, IntNextFrom>> {
+    ): Flow<Pair<List<AudioPlaylist>, IntNextFrom>> {
         val nextFrom = IntNextFrom(startFrom.offset + 50)
         return audioInteractor.searchPlaylists(accountId, criteria, startFrom.offset, 50)
             .map { audio -> create(audio, nextFrom) }
     }
 
     fun onAdd(album: AudioPlaylist, clone: Boolean) {
-        appendDisposable((if (clone) audioInteractor.clonePlaylist(
+        appendJob((if (clone) audioInteractor.clonePlaylist(
             accountId,
             album.id,
             album.owner_id
@@ -66,8 +67,7 @@ class AudioPlaylistSearchPresenter(
             album.owner_id,
             album.access_key
         ))
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 view?.customToast?.showToast(R.string.success)
             }) { throwable ->
                 showError(throwable)

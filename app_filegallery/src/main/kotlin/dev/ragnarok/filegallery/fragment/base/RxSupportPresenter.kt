@@ -11,12 +11,12 @@ import dev.ragnarok.filegallery.fragment.base.core.IMvpView
 import dev.ragnarok.filegallery.settings.Settings.get
 import dev.ragnarok.filegallery.util.ErrorLocalizer
 import dev.ragnarok.filegallery.util.Utils
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
+import dev.ragnarok.filegallery.util.coroutines.CompositeJob
+import kotlinx.coroutines.Job
 
 abstract class RxSupportPresenter<V : IMvpView> :
     AbsPresenter<V>() {
-    protected val compositeDisposable = CompositeDisposable()
+    protected val compositeJob = CompositeJob()
     var viewCreationCount = 0
         private set
 
@@ -26,12 +26,12 @@ abstract class RxSupportPresenter<V : IMvpView> :
     }
 
     override fun onDestroyed() {
-        compositeDisposable.dispose()
+        compositeJob.cancel()
         super.onDestroyed()
     }
 
-    fun appendDisposable(disposable: Disposable) {
-        compositeDisposable.add(disposable)
+    fun appendJob(job: Job) {
+        compositeJob.add(job)
     }
 
     protected fun showError(view: IErrorView?, throwable: Throwable?) {

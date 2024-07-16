@@ -13,7 +13,7 @@ import dev.ragnarok.fenrir.api.model.response.GroupByIdResponse
 import dev.ragnarok.fenrir.api.model.response.GroupLongpollServer
 import dev.ragnarok.fenrir.api.model.response.GroupWallInfoResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class IGroupsService : IServiceRest() {
     fun editManager(
@@ -24,7 +24,7 @@ class IGroupsService : IServiceRest() {
         contactPosition: String?,
         contactEmail: String?,
         contactPhone: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "groups.editManager", form(
                 "group_id" to groupId,
@@ -52,7 +52,7 @@ class IGroupsService : IServiceRest() {
         obscene_filter: Int?,
         obscene_stopwords: Int?,
         obscene_words: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "groups.edit", form(
                 "group_id" to groupId,
@@ -73,7 +73,7 @@ class IGroupsService : IServiceRest() {
     fun unban(
         groupId: Long,
         ownerId: Long
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "groups.unban", form(
                 "group_id" to groupId,
@@ -86,7 +86,7 @@ class IGroupsService : IServiceRest() {
         owner_id: Long,
         offset: Int,
         count: Int
-    ): Single<BaseResponse<Items<VKApiMarketAlbum>>> {
+    ): Flow<BaseResponse<Items<VKApiMarketAlbum>>> {
         return rest.request(
             "market.getAlbums", form(
                 "owner_id" to owner_id,
@@ -102,7 +102,7 @@ class IGroupsService : IServiceRest() {
         offset: Int,
         count: Int,
         extended: Int?
-    ): Single<BaseResponse<Items<VKApiMarket>>> {
+    ): Flow<BaseResponse<Items<VKApiMarket>>> {
         return rest.request(
             "market.get", form(
                 "owner_id" to owner_id,
@@ -119,7 +119,7 @@ class IGroupsService : IServiceRest() {
         offset: Int,
         count: Int,
         extended: Int?
-    ): Single<BaseResponse<Items<VKApiMarket>>> {
+    ): Flow<BaseResponse<Items<VKApiMarket>>> {
         return rest.request(
             "market.getServices", form(
                 "owner_id" to owner_id,
@@ -133,7 +133,7 @@ class IGroupsService : IServiceRest() {
     fun getMarketById(
         item_ids: String?,
         extended: Int?
-    ): Single<BaseResponse<Items<VKApiMarket>>> {
+    ): Flow<BaseResponse<Items<VKApiMarket>>> {
         return rest.request(
             "market.getById", form(
                 "item_ids" to item_ids,
@@ -149,7 +149,7 @@ class IGroupsService : IServiceRest() {
         reason: Int?,
         comment: String?,
         commentVisible: Int?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "groups.ban", form(
                 "group_id" to groupId,
@@ -162,7 +162,7 @@ class IGroupsService : IServiceRest() {
         )
     }
 
-    fun getSettings(groupId: Long): Single<BaseResponse<GroupSettingsDto>> {
+    fun getSettings(groupId: Long): Flow<BaseResponse<GroupSettingsDto>> {
         return rest.request(
             "groups.getSettings",
             form("group_id" to groupId),
@@ -177,7 +177,7 @@ class IGroupsService : IServiceRest() {
         count: Int?,
         fields: String?,
         userId: Long?
-    ): Single<BaseResponse<Items<VKApiBanned>>> {
+    ): Flow<BaseResponse<Items<VKApiBanned>>> {
         return rest.request(
             "groups.getBanned", form(
                 "group_id" to groupId,
@@ -193,7 +193,7 @@ class IGroupsService : IServiceRest() {
         code: String?,
         groupId: String?,
         fields: String?
-    ): Single<BaseResponse<GroupWallInfoResponse>> {
+    ): Flow<BaseResponse<GroupWallInfoResponse>> {
         return rest.request(
             "execute", form(
                 "code" to code,
@@ -210,7 +210,7 @@ class IGroupsService : IServiceRest() {
         count: Int?,
         fields: String?,
         filter: String?
-    ): Single<BaseResponse<Items<VKApiUser>>> {
+    ): Flow<BaseResponse<Items<VKApiUser>>> {
         return rest.request(
             "groups.getMembers", form(
                 "group_id" to groupId,
@@ -235,7 +235,7 @@ class IGroupsService : IServiceRest() {
         sort: Int?,
         offset: Int?,
         count: Int?
-    ): Single<BaseResponse<Items<VKApiCommunity>>> {
+    ): Flow<BaseResponse<Items<VKApiCommunity>>> {
         return rest.request(
             "groups.search", form(
                 "q" to query,
@@ -252,7 +252,7 @@ class IGroupsService : IServiceRest() {
         )
     }
 
-    fun getLongPollServer(groupId: Long): Single<BaseResponse<GroupLongpollServer>> {
+    fun getLongPollServer(groupId: Long): Flow<BaseResponse<GroupLongpollServer>> {
         return rest.request(
             "groups.getLongPollServer",
             form("group_id" to groupId),
@@ -261,7 +261,7 @@ class IGroupsService : IServiceRest() {
     }
 
     //https://vk.com/dev/groups.leave
-    fun leave(groupId: Long): Single<BaseResponse<Int>> {
+    fun leave(groupId: Long): Flow<BaseResponse<Int>> {
         return rest.request("groups.leave", form("group_id" to groupId), baseInt)
     }
 
@@ -269,7 +269,7 @@ class IGroupsService : IServiceRest() {
     fun join(
         groupId: Long,
         notSure: Int?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "groups.join", form(
                 "group_id" to groupId,
@@ -286,7 +286,7 @@ class IGroupsService : IServiceRest() {
         fields: String?,
         offset: Int?,
         count: Int?
-    ): Single<BaseResponse<Items<VKApiCommunity>>> {
+    ): Flow<BaseResponse<Items<VKApiCommunity>>> {
         return rest.request(
             "groups.get", form(
                 "user_id" to userId,
@@ -312,7 +312,7 @@ class IGroupsService : IServiceRest() {
         groupIds: String?,
         groupId: String?,
         fields: String?
-    ): Single<BaseResponse<GroupByIdResponse>> {
+    ): Flow<BaseResponse<GroupByIdResponse>> {
         return rest.request(
             "groups.getById", form(
                 "group_ids" to groupIds,
@@ -326,7 +326,7 @@ class IGroupsService : IServiceRest() {
         groupId: Long,
         offset: Int?,
         count: Int?
-    ): Single<BaseResponse<Items<VKApiGroupChats>>> {
+    ): Flow<BaseResponse<Items<VKApiGroupChats>>> {
         return rest.request(
             "groups.getChats", form(
                 "group_id" to groupId,

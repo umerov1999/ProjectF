@@ -10,8 +10,6 @@ import dev.ragnarok.filegallery.settings.ISettings
 import dev.ragnarok.filegallery.settings.SettingsImpl
 import dev.ragnarok.filegallery.upload.IUploadManager
 import dev.ragnarok.filegallery.upload.UploadManagerImpl
-import dev.ragnarok.filegallery.util.rxutils.io.AndroidSchedulers
-import io.reactivex.rxjava3.core.Scheduler
 
 object Includes {
     val networkInterfaces: INetworker by lazy {
@@ -24,10 +22,6 @@ object Includes {
 
     val settings: ISettings by lazy {
         SettingsImpl(instance)
-    }
-
-    fun provideMainThreadScheduler(): Scheduler {
-        return AndroidSchedulers.mainThread()
     }
 
     fun provideApplicationContext(): Context {

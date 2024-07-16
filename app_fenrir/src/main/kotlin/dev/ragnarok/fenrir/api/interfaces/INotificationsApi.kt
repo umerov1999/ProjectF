@@ -3,17 +3,17 @@ package dev.ragnarok.fenrir.api.interfaces
 import androidx.annotation.CheckResult
 import dev.ragnarok.fenrir.api.model.response.NotificationsResponse
 import dev.ragnarok.fenrir.model.FeedbackVKOfficialList
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface INotificationsApi {
     @CheckResult
-    fun markAsViewed(): Single<Int>
+    fun markAsViewed(): Flow<Int>
 
     @CheckResult
     operator fun get(
         count: Int?, startFrom: String?, filters: String?,
         startTime: Long?, endTime: Long?
-    ): Single<NotificationsResponse>
+    ): Flow<NotificationsResponse>
 
     @CheckResult
     fun getOfficial(
@@ -22,8 +22,8 @@ interface INotificationsApi {
         filters: String?,
         startTime: Long?,
         endTime: Long?
-    ): Single<FeedbackVKOfficialList>
+    ): Flow<FeedbackVKOfficialList>
 
     @CheckResult
-    fun hide(query: String?): Single<Int>
+    fun hide(query: String?): Flow<Int>
 }

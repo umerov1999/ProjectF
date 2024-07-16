@@ -7,14 +7,14 @@ import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.model.FileRemote
 import dev.ragnarok.filegallery.model.Photo
 import dev.ragnarok.filegallery.model.Video
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class ILocalServerService : IServiceRest() {
     fun getAudios(
         offset: Int?,
         count: Int?,
         reverse: Int?
-    ): Single<BaseResponse<Items<Audio>>> {
+    ): Flow<BaseResponse<Items<Audio>>> {
         return rest.request(
             "audio.get", form(
                 "offset" to offset,
@@ -28,7 +28,7 @@ class ILocalServerService : IServiceRest() {
         offset: Int?,
         count: Int?,
         reverse: Int?
-    ): Single<BaseResponse<Items<Audio>>> {
+    ): Flow<BaseResponse<Items<Audio>>> {
         return rest.request(
             "discography.get", form(
                 "offset" to offset,
@@ -42,7 +42,7 @@ class ILocalServerService : IServiceRest() {
         offset: Int?,
         count: Int?,
         reverse: Int?
-    ): Single<BaseResponse<Items<Photo>>> {
+    ): Flow<BaseResponse<Items<Photo>>> {
         return rest.request(
             "photos.get", form(
                 "offset" to offset,
@@ -56,7 +56,7 @@ class ILocalServerService : IServiceRest() {
         offset: Int?,
         count: Int?,
         reverse: Int?
-    ): Single<BaseResponse<Items<Video>>> {
+    ): Flow<BaseResponse<Items<Video>>> {
         return rest.request(
             "video.get", form(
                 "offset" to offset,
@@ -71,7 +71,7 @@ class ILocalServerService : IServiceRest() {
         offset: Int?,
         count: Int?,
         reverse: Int?
-    ): Single<BaseResponse<Items<Audio>>> {
+    ): Flow<BaseResponse<Items<Audio>>> {
         return rest.request(
             "audio.search", form(
                 "q" to query,
@@ -87,7 +87,7 @@ class ILocalServerService : IServiceRest() {
         offset: Int?,
         count: Int?,
         reverse: Int?
-    ): Single<BaseResponse<Items<Audio>>> {
+    ): Flow<BaseResponse<Items<Audio>>> {
         return rest.request(
             "discography.search", form(
                 "q" to query,
@@ -103,7 +103,7 @@ class ILocalServerService : IServiceRest() {
         offset: Int?,
         count: Int?,
         reverse: Int?
-    ): Single<BaseResponse<Items<Video>>> {
+    ): Flow<BaseResponse<Items<Video>>> {
         return rest.request(
             "video.search", form(
                 "q" to query,
@@ -119,7 +119,7 @@ class ILocalServerService : IServiceRest() {
         offset: Int?,
         count: Int?,
         reverse: Int?
-    ): Single<BaseResponse<Items<Photo>>> {
+    ): Flow<BaseResponse<Items<Photo>>> {
         return rest.request(
             "photos.search", form(
                 "q" to query,
@@ -130,22 +130,22 @@ class ILocalServerService : IServiceRest() {
         )
     }
 
-    fun update_time(hash: String?): Single<BaseResponse<Int>> {
+    fun update_time(hash: String?): Flow<BaseResponse<Int>> {
         return rest.request("update_time", form("hash" to hash), baseInt)
     }
 
-    fun delete_media(hash: String?): Single<BaseResponse<Int>> {
+    fun delete_media(hash: String?): Flow<BaseResponse<Int>> {
         return rest.request("delete_media", form("hash" to hash), baseInt)
     }
 
-    fun get_file_name(hash: String?): Single<BaseResponse<String>> {
+    fun get_file_name(hash: String?): Flow<BaseResponse<String>> {
         return rest.request("get_file_name", form("hash" to hash), baseString)
     }
 
     fun update_file_name(
         hash: String?,
         name: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "update_file_name", form(
                 "hash" to hash,
@@ -156,13 +156,13 @@ class ILocalServerService : IServiceRest() {
 
     fun fsGet(
         dir: String?
-    ): Single<BaseResponse<Items<FileRemote>>> {
+    ): Flow<BaseResponse<Items<FileRemote>>> {
         return rest.request("fs.get", form("dir" to dir), items(FileRemote.serializer()))
     }
 
     fun rebootPC(
         type: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request("rebootPC", form("type" to type), baseInt)
     }
 }

@@ -123,14 +123,13 @@ object CrashUtils {
         return false
     }
 
-    @Suppress("deprecation")
     private fun getVersionName(context: Context): String {
         return try {
             val packageInfo = if (Utils.hasTiramisu()) context.packageManager.getPackageInfo(
                 context.packageName,
                 PackageManager.PackageInfoFlags.of(0)
             ) else context.packageManager.getPackageInfo(context.packageName, 0)
-            packageInfo.versionName
+            packageInfo.versionName ?: "Unknown"
         } catch (e: Exception) {
             "Unknown"
         }

@@ -1,7 +1,9 @@
 package dev.ragnarok.filegallery.media.music
 
 import android.annotation.SuppressLint
-import android.app.*
+import android.app.Notification
+import android.app.NotificationManager
+import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -36,7 +38,11 @@ import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import com.squareup.picasso3.BitmapTarget
 import com.squareup.picasso3.Picasso.LoadedFrom
-import dev.ragnarok.filegallery.*
+import dev.ragnarok.filegallery.Constants
+import dev.ragnarok.filegallery.Extra
+import dev.ragnarok.filegallery.R
+import dev.ragnarok.filegallery.getParcelableArrayListExtraCompat
+import dev.ragnarok.filegallery.insertAfter
 import dev.ragnarok.filegallery.media.exo.ExoUtil
 import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.picasso.PicassoInstance
@@ -45,15 +51,15 @@ import dev.ragnarok.filegallery.util.AppPerms
 import dev.ragnarok.filegallery.util.Logger
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.Utils.makeMediaItem
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.Disposable
+import dev.ragnarok.filegallery.util.coroutines.CancelableJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.toMain
 import java.lang.ref.WeakReference
-import java.util.concurrent.TimeUnit
 
 class MusicPlaybackService : Service() {
     private val mBinder: IBinder = ServiceStub(this)
     private var mPlayer: MultiPlayer? = null
-    private var shutdownDelayedDisposable = Disposable.disposed()
+    private var shutdownDelayedDisposable = CancelableJob()
     var isPlaying = false
         private set
 
@@ -245,7 +251,7 @@ class MusicPlaybackService : Service() {
         }
 
     override fun onDestroy() {
-        shutdownDelayedDisposable.dispose()
+        shutdownDelayedDisposable.cancel()
         wakeLock?.release()
         wakeLock = null
         if (Constants.IS_DEBUG) Logger.d(TAG, "Destroying service")
@@ -368,12 +374,12 @@ class MusicPlaybackService : Service() {
     }
 
     private fun scheduleDelayedShutdown() {
-        shutdownDelayedDisposable.dispose()
+        shutdownDelayedDisposable.cancel()
         if (Constants.IS_DEBUG) Log.v(TAG, "Scheduling shutdown in $IDLE_DELAY ms")
-        shutdownDelayedDisposable = Observable.just(Any())
-            .delay(IDLE_DELAY.toLong(), TimeUnit.MILLISECONDS)
-            .toMainThread()
-            .subscribe { terminate() }
+        shutdownDelayedDisposable.set(
+            delayTaskFlow(IDLE_DELAY.toLong())
+                .toMain { terminate() }
+        )
     }
 
     private fun cancelShutdown() {
@@ -381,7 +387,7 @@ class MusicPlaybackService : Service() {
             TAG,
             "Cancelling delayed shutdown"
         )
-        shutdownDelayedDisposable.dispose()
+        shutdownDelayedDisposable.cancel()
     }
 
     /**

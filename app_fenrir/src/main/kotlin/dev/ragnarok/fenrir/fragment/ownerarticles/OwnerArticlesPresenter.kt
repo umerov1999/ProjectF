@@ -4,10 +4,10 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IFaveInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Article
 import dev.ragnarok.fenrir.model.Photo
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class OwnerArticlesPresenter(
     accountId: Long,
@@ -16,7 +16,7 @@ class OwnerArticlesPresenter(
 ) : AccountDependencyPresenter<IOwnerArticlesView>(accountId, savedInstanceState) {
     private val faveInteractor: IFaveInteractor = InteractorFactory.createFaveInteractor()
     private val mArticles: ArrayList<Article> = ArrayList()
-    private val netDisposable = CompositeDisposable()
+    private val netDisposable = CompositeJob()
     private var mEndOfContent = false
     private var netLoadingNow = false
     private fun resolveRefreshingView() {
@@ -26,7 +26,7 @@ class OwnerArticlesPresenter(
     }
 
     override fun onDestroyed() {
-        netDisposable.dispose()
+        netDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -39,8 +39,7 @@ class OwnerArticlesPresenter(
             COUNT_PER_REQUEST,
             offset
         )
-            .fromIOToMain()
-            .subscribe({ articles ->
+            .fromIOToMain({ articles ->
                 onNetDataReceived(
                     offset,
                     articles
@@ -97,18 +96,16 @@ class OwnerArticlesPresenter(
     }
 
     fun fireArticleDelete(index: Int, article: Article) {
-        appendDisposable(faveInteractor.removeArticle(accountId, article.ownerId, article.id)
-            .fromIOToMain()
-            .subscribe({
+        appendJob(faveInteractor.removeArticle(accountId, article.ownerId, article.id)
+            .fromIOToMain({
                 mArticles[index].setIsFavorite(false)
                 view?.notifyDataSetChanged()
             }) { t -> onNetDataGetError(t) })
     }
 
     fun fireArticleAdd(index: Int, article: Article) {
-        appendDisposable(faveInteractor.addArticle(accountId, article.uRL)
-            .fromIOToMain()
-            .subscribe({
+        appendJob(faveInteractor.addArticle(accountId, article.uRL)
+            .fromIOToMain({
                 mArticles[index].setIsFavorite(true)
                 view?.notifyDataSetChanged()
             }) { t -> onNetDataGetError(t) })

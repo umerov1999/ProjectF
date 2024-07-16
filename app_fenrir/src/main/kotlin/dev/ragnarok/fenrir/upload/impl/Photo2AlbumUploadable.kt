@@ -18,10 +18,14 @@ import dev.ragnarok.fenrir.upload.UploadResult
 import dev.ragnarok.fenrir.upload.UploadUtils
 import dev.ragnarok.fenrir.util.ExifGeoDegree
 import dev.ragnarok.fenrir.util.Utils.safelyClose
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.safelyCloseAction
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.andThen
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlowThrowable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.onCompletion
 import java.io.InputStream
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.math.abs
 
 class Photo2AlbumUploadable(
@@ -34,25 +38,24 @@ class Photo2AlbumUploadable(
         upload: Upload,
         initialServer: UploadServer?,
         listener: PercentagePublisher?
-    ): Single<UploadResult<Photo>> {
+    ): Flow<UploadResult<Photo>> {
         val accountId = upload.accountId
         val albumId = upload.destination.id
         val groupId =
             if (upload.destination.ownerId < 0) abs(upload.destination.ownerId) else null
-        val serverSingle: Single<UploadServer> = if (initialServer != null) {
-            Single.just(initialServer)
+        val serverSingle = if (initialServer != null) {
+            toFlow(initialServer)
         } else {
             networker.vkDefault(accountId)
                 .photos()
                 .getUploadServer(albumId, groupId)
-                .map { it }
         }
-        return serverSingle.flatMap { server ->
+        return serverSingle.flatMapConcat { server ->
             var inputStream: InputStream? = null
             try {
                 inputStream = UploadUtils.openStream(context, upload.fileUri, upload.size)
                 if (inputStream == null) {
-                    Single.error(
+                    toFlowThrowable(
                         NotFoundException(
                             "Unable to open InputStream, URI: ${upload.fileUri}"
                         )
@@ -64,8 +67,8 @@ class Photo2AlbumUploadable(
                             inputStream,
                             listener
                         )
-                        .doFinally(safelyCloseAction(inputStream))
-                        .flatMap { dto ->
+                        .onCompletion { safelyClose(inputStream) }
+                        .flatMapConcat { dto ->
                             var latitude: Double? = null
                             var longitude: Double? = null
                             try {
@@ -86,7 +89,7 @@ class Photo2AlbumUploadable(
                             } catch (ignored: Exception) {
                             }
                             if (dto.photos_list.isNullOrEmpty()) {
-                                Single.error(NotFoundException("VK doesn't upload this file"))
+                                toFlowThrowable(NotFoundException("VK doesn't upload this file"))
                             } else {
                                 networker
                                     .vkDefault(accountId)
@@ -101,15 +104,15 @@ class Photo2AlbumUploadable(
                                         longitude,
                                         null
                                     )
-                                    .flatMap { photos ->
+                                    .flatMapConcat { photos ->
                                         if (photos.isEmpty()) {
-                                            Single.error(
+                                            toFlowThrowable(
                                                 NotFoundException()
                                             )
                                         } else {
                                             val entity = Dto2Entity.mapPhoto(photos[0])
                                             val photo = Dto2Model.transform(photos[0])
-                                            val result = Single.just(UploadResult(server, photo))
+                                            val result = toFlow(UploadResult(server, photo))
                                             if (upload.isAutoCommit) commit(
                                                 storage,
                                                 upload,
@@ -124,7 +127,10 @@ class Photo2AlbumUploadable(
                 }
             } catch (e: Exception) {
                 safelyClose(inputStream)
-                Single.error(e)
+                if (e is CancellationException) {
+                    throw e
+                }
+                toFlowThrowable(e)
             }
         }
     }
@@ -133,7 +139,7 @@ class Photo2AlbumUploadable(
         storage: IPhotosStorage,
         upload: Upload,
         entity: PhotoDboEntity
-    ): Completable {
+    ): Flow<Boolean> {
         return storage.insertPhotosRx(
             upload.accountId,
             entity.ownerId,

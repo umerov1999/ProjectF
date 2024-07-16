@@ -5,11 +5,10 @@ import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.filegallery.Includes.networkInterfaces
 import dev.ragnarok.filegallery.api.interfaces.ILocalServerApi
-import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.model.Photo
 import dev.ragnarok.filegallery.util.Utils
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
+import kotlinx.coroutines.flow.flow
 
 class PhotoAlbumPagerPresenter(
     index: Int, source: Long, invertPhotoRev: Boolean
@@ -20,9 +19,8 @@ class PhotoAlbumPagerPresenter(
     private fun loadData() {
         if (!canLoad) return
         changeLoadingNowState(true)
-        appendDisposable(photosInteractor.getPhotos(mPhotos.size, COUNT_PER_LOAD, invertPhotoRev)
-            .fromIOToMain()
-            .subscribe({ data -> onActualPhotosReceived(data) }) { t ->
+        appendJob(photosInteractor.getPhotos(mPhotos.size, COUNT_PER_LOAD, invertPhotoRev)
+            .fromIOToMain({ onActualPhotosReceived(it) }) { t ->
                 onActualDataGetError(
                     t
                 )
@@ -68,16 +66,15 @@ class PhotoAlbumPagerPresenter(
 
     private fun loadDataFromParcelNative(parcelNative: Long) {
         changeLoadingNowState(true)
-        appendDisposable(
-            Single.create { v: SingleEmitter<ArrayList<Photo>> ->
-                v.onSuccess(
+        appendJob(
+            flow {
+                emit(
                     ParcelNative.loadParcelableArrayList(
                         parcelNative, Photo.NativeCreator, ParcelFlags.MUTABLE_LIST
                     ) ?: ArrayList()
                 )
             }
-                .fromIOToMain()
-                .subscribe({ onInitialLoadingFinished(it) }) {
+                .fromIOToMain({ onInitialLoadingFinished(it) }) {
                     it.printStackTrace()
                 })
     }

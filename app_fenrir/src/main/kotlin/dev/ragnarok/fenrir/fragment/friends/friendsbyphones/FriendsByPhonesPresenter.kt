@@ -9,11 +9,11 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IAccountsInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.model.ContactConversation
 import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.serializeble.json.Json
 import dev.ragnarok.fenrir.util.serializeble.json.decodeFromBufferedSource
 import kotlinx.serialization.builtins.ListSerializer
@@ -40,9 +40,8 @@ class FriendsByPhonesPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun requestActualData() {
         netLoadingNow = true
         resolveRefreshingView()
-        appendDisposable(accountsInteractor.getContactList(accountId, 0, 1000)
-            .fromIOToMain()
-            .subscribe({ owners -> onActualDataReceived(owners) }) { t ->
+        appendJob(accountsInteractor.getContactList(accountId, 0, 1000)
+            .fromIOToMain({ owners -> onActualDataReceived(owners) }) { t ->
                 onActualDataGetError(
                     t
                 )
@@ -130,9 +129,8 @@ class FriendsByPhonesPresenter(accountId: Long, savedInstanceState: Bundle?) :
         }
         netLoadingNow = true
         resolveRefreshingView()
-        appendDisposable(accountsInteractor.importMessagesContacts(accountId, context, 0, 1000)
-            .fromIOToMain()
-            .subscribe({ owners -> onActualDataReceived(owners) }) { t ->
+        appendJob(accountsInteractor.importMessagesContacts(accountId, context, 0, 1000)
+            .fromIOToMain({ owners -> onActualDataReceived(owners) }) { t ->
                 onActualDataGetError(
                     t
                 )
@@ -145,9 +143,8 @@ class FriendsByPhonesPresenter(accountId: Long, savedInstanceState: Bundle?) :
         }
         netLoadingNow = true
         resolveRefreshingView()
-        appendDisposable(accountsInteractor.resetMessagesContacts(accountId, 0, 1000)
-            .fromIOToMain()
-            .subscribe({ owners -> onActualDataReceived(owners) }) { t ->
+        appendJob(accountsInteractor.resetMessagesContacts(accountId, 0, 1000)
+            .fromIOToMain({ owners -> onActualDataReceived(owners) }) { t ->
                 onActualDataGetError(
                     t
                 )

@@ -7,9 +7,8 @@ import dev.ragnarok.fenrir.model.EditingPostType
 import dev.ragnarok.fenrir.model.IdPair
 import dev.ragnarok.fenrir.model.Post
 import dev.ragnarok.fenrir.util.Pair
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 
 interface IWallsRepository {
     @CheckResult
@@ -18,7 +17,7 @@ interface IWallsRepository {
         attachments: List<AbsModel>?, services: String?,
         signed: Boolean?, publishDate: Long?, latitude: Double?,
         longitude: Double?, placeId: Int?, markAsAds: Boolean?
-    ): Completable
+    ): Flow<Boolean>
 
     fun search(
         accountId: Long,
@@ -27,7 +26,7 @@ interface IWallsRepository {
         ownersPostOnly: Boolean,
         count: Int,
         offset: Int
-    ): Single<Pair<List<Post>, Int>>
+    ): Flow<Pair<List<Post>, Int>>
 
     fun post(
         accountId: Long,
@@ -46,10 +45,10 @@ interface IWallsRepository {
         guid: Int?,
         markAsAds: Boolean?,
         adsPromotedStealth: Boolean?
-    ): Single<Post>
+    ): Flow<Post>
 
-    fun like(accountId: Long, ownerId: Long, postId: Int, add: Boolean): Single<Int>
-    fun isLiked(accountId: Long, ownerId: Long, postId: Int): Single<Boolean>
+    fun like(accountId: Long, ownerId: Long, postId: Int, add: Boolean): Flow<Int>
+    fun isLiked(accountId: Long, ownerId: Long, postId: Int): Flow<Boolean>
     fun getWall(
         accountId: Long,
         ownerId: Long,
@@ -57,7 +56,7 @@ interface IWallsRepository {
         count: Int,
         wallFilter: Int,
         needStore: Boolean
-    ): Single<List<Post>>
+    ): Flow<List<Post>>
 
     fun getWallNoCache(
         accountId: Long,
@@ -65,32 +64,32 @@ interface IWallsRepository {
         offset: Int,
         count: Int,
         wallFilter: Int
-    ): Single<List<Post>>
+    ): Flow<List<Post>>
 
-    fun checkAndAddLike(accountId: Long, ownerId: Long, postId: Int): Single<Int>
-    fun getCachedWall(accountId: Long, ownerId: Long, wallFilter: Int): Single<List<Post>>
-    fun delete(accountId: Long, ownerId: Long, postId: Int): Completable
-    fun restore(accountId: Long, ownerId: Long, postId: Int): Completable
-    fun reportPost(accountId: Long, owner_id: Long, post_id: Int, reason: Int): Single<Int>
-    fun subscribe(accountId: Long, owner_id: Long): Single<Int>
-    fun unsubscribe(accountId: Long, owner_id: Long): Single<Int>
-    fun getById(accountId: Long, ownerId: Long, postId: Int): Single<Post>
-    fun pinUnpin(accountId: Long, ownerId: Long, postId: Int, pin: Boolean): Completable
+    fun checkAndAddLike(accountId: Long, ownerId: Long, postId: Int): Flow<Int>
+    fun getCachedWall(accountId: Long, ownerId: Long, wallFilter: Int): Flow<List<Post>>
+    fun delete(accountId: Long, ownerId: Long, postId: Int): Flow<Boolean>
+    fun restore(accountId: Long, ownerId: Long, postId: Int): Flow<Boolean>
+    fun reportPost(accountId: Long, owner_id: Long, post_id: Int, reason: Int): Flow<Int>
+    fun subscribe(accountId: Long, owner_id: Long): Flow<Int>
+    fun unsubscribe(accountId: Long, owner_id: Long): Flow<Int>
+    fun getById(accountId: Long, ownerId: Long, postId: Int): Flow<Post>
+    fun pinUnpin(accountId: Long, ownerId: Long, postId: Int, pin: Boolean): Flow<Boolean>
 
     /**
      * Ability to observe minor post changes (likes, deleted, pin state, etc.)
      */
-    fun observeMinorChanges(): Observable<PostUpdate>
+    fun observeMinorChanges(): SharedFlow<PostUpdate>
 
     /**
      *
      */
-    fun observeChanges(): Observable<Post>
+    fun observeChanges(): SharedFlow<Post>
 
     /**
      * @return onNext в том случае, если пост перестал существовать
      */
-    fun observePostInvalidation(): Observable<IdPair>
+    fun observePostInvalidation(): SharedFlow<IdPair>
 
     /**
      * Получить пост-черновик
@@ -106,16 +105,16 @@ interface IWallsRepository {
         ownerId: Long,
         @EditingPostType type: Int,
         withAttachments: Boolean
-    ): Single<Post>
+    ): Flow<Post>
 
-    fun post(accountId: Long, post: Post, fromGroup: Boolean, showSigner: Boolean): Single<Post>
+    fun post(accountId: Long, post: Post, fromGroup: Boolean, showSigner: Boolean): Flow<Post>
     fun repost(
         accountId: Long,
         postId: Int,
         ownerId: Long,
         groupId: Long?,
         message: String?
-    ): Single<Post>
+    ): Flow<Post>
 
     /**
      * Сохранить пост в базу с тем же локальным идентификатором
@@ -124,7 +123,7 @@ interface IWallsRepository {
      * @param post      пост
      * @return Single с локальным идентификатором
      */
-    fun cachePostWithIdSaving(accountId: Long, post: Post): Single<Int>
+    fun cachePostWithIdSaving(accountId: Long, post: Post): Flow<Int>
 
     /**
      * Удалить пост из кеша (используется только для "черновиков"
@@ -134,5 +133,5 @@ interface IWallsRepository {
      * @return Completable
      */
     @CheckResult
-    fun deleteFromCache(accountId: Long, postDbid: Int): Completable
+    fun deleteFromCache(accountId: Long, postDbid: Int): Flow<Boolean>
 }

@@ -21,8 +21,7 @@ import dev.ragnarok.fenrir.api.model.response.MessageDeleteResponse
 import dev.ragnarok.fenrir.api.model.response.MessageHistoryResponse
 import dev.ragnarok.fenrir.api.model.response.MessageImportantResponse
 import dev.ragnarok.fenrir.api.model.response.SendMessageResponse
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IMessagesApi {
     @CheckResult
@@ -33,16 +32,16 @@ interface IMessagesApi {
         attachments: List<IAttachmentToken>?,
         keepFwd: Boolean,
         keepSnippets: Boolean?
-    ): Completable
+    ): Flow<Boolean>
 
     @CheckResult
-    fun removeChatMember(chatId: Long, memberId: Long): Single<Boolean>
+    fun removeChatMember(chatId: Long, memberId: Long): Flow<Boolean>
 
     @CheckResult
-    fun deleteChatPhoto(chatId: Long): Single<Boolean>
+    fun deleteChatPhoto(chatId: Long): Flow<Boolean>
 
     @CheckResult
-    fun addChatUser(chatId: Long, userId: Long): Single<Boolean>
+    fun addChatUser(chatId: Long, userId: Long): Flow<Boolean>
 
     @CheckResult
     fun getChat(
@@ -50,47 +49,47 @@ interface IMessagesApi {
         chatIds: Collection<Long>?,
         fields: String?,
         name_case: String?
-    ): Single<List<VKApiChat>>
+    ): Flow<List<VKApiChat>>
 
     @CheckResult
     fun getConversationMembers(
         peer_id: Long?,
         fields: String?
-    ): Single<ConversationMembersResponse>
+    ): Flow<ConversationMembersResponse>
 
     @CheckResult
-    fun editChat(chatId: Long, title: String?): Single<Boolean>
+    fun editChat(chatId: Long, title: String?): Flow<Boolean>
 
     @CheckResult
-    fun createChat(userIds: Collection<Long>, title: String?): Single<Long>
+    fun createChat(userIds: Collection<Long>, title: String?): Flow<Long>
 
     @CheckResult
-    fun deleteDialog(peerId: Long): Single<ConversationDeleteResult>
+    fun deleteDialog(peerId: Long): Flow<ConversationDeleteResult>
 
     @CheckResult
-    fun restore(messageId: Int): Single<Boolean>
+    fun restore(messageId: Int): Flow<Boolean>
 
     @CheckResult
     fun delete(
         messageIds: Collection<Int>,
         deleteForAll: Boolean?,
         spam: Boolean?
-    ): Single<List<MessageDeleteResponse>>
+    ): Flow<List<MessageDeleteResponse>>
 
     @CheckResult
-    fun markAsRead(peerId: Long?, startMessageId: Int?): Single<Boolean>
+    fun markAsRead(peerId: Long?, startMessageId: Int?): Flow<Boolean>
 
     @CheckResult
-    fun setActivity(peerId: Long, typing: Boolean): Single<Boolean>
+    fun setActivity(peerId: Long, typing: Boolean): Flow<Boolean>
 
     @CheckResult
     fun search(
         query: String?, peerId: Long?, date: Long?, previewLength: Int?,
         offset: Int?, count: Int?
-    ): Single<Items<VKApiMessage>>
+    ): Flow<Items<VKApiMessage>>
 
     @CheckResult
-    fun markAsImportant(messageIds: Collection<Int>, important: Int?): Single<List<Int>>
+    fun markAsImportant(messageIds: Collection<Int>, important: Int?): Flow<List<Int>>
 
     @CheckResult
     fun getLongPollHistory(
@@ -98,7 +97,7 @@ interface IMessagesApi {
         onlines: Boolean?, fields: String?,
         eventsLimit: Int?, msgsLimit: Int?,
         max_msg_id: Int?
-    ): Single<LongpollHistoryResponse>
+    ): Flow<LongpollHistoryResponse>
 
     @CheckResult
     fun getHistoryAttachments(
@@ -110,14 +109,14 @@ interface IMessagesApi {
         max_forwards_level: Int?,
         count: Int?,
         fields: String?
-    ): Single<AttachmentsHistoryResponse>
+    ): Flow<AttachmentsHistoryResponse>
 
     @CheckResult
     fun send(
         randomId: Long?, peerId: Long?, domain: String?, message: String?,
         latitude: Double?, longitude: Double?, attachments: Collection<IAttachmentToken>?,
         forwardMessages: Collection<Int>?, stickerId: Int?, payload: String?, reply_to: Int?
-    ): Single<SendMessageResponse>
+    ): Flow<SendMessageResponse>
 
     @CheckResult
     fun getDialogs(
@@ -126,17 +125,17 @@ interface IMessagesApi {
         startMessageId: Int?,
         extended: Boolean?,
         fields: String?
-    ): Single<DialogsResponse>
+    ): Flow<DialogsResponse>
 
     @CheckResult
     fun getConversations(
         peers: List<Long>,
         extended: Boolean?,
         fields: String?
-    ): Single<ItemsProfilesGroupsResponse<VKApiConversation>>
+    ): Flow<ItemsProfilesGroupsResponse<VKApiConversation>>
 
     @CheckResult
-    fun getById(identifiers: Collection<Int>?): Single<List<VKApiMessage>>
+    fun getById(identifiers: Collection<Int>?): Flow<List<VKApiMessage>>
 
     @CheckResult
     fun getHistory(
@@ -147,10 +146,10 @@ interface IMessagesApi {
         rev: Boolean?,
         extended: Boolean?,
         fields: String?
-    ): Single<MessageHistoryResponse>
+    ): Flow<MessageHistoryResponse>
 
     @CheckResult
-    fun getJsonHistory(offset: Int?, count: Int?, peerId: Long): Single<Items<VKApiJsonString>>
+    fun getJsonHistory(offset: Int?, count: Int?, peerId: Long): Flow<Items<VKApiJsonString>>
 
     @CheckResult
     fun getImportantMessages(
@@ -159,10 +158,10 @@ interface IMessagesApi {
         startMessageId: Int?,
         extended: Boolean?,
         fields: String?
-    ): Single<MessageImportantResponse>
+    ): Flow<MessageImportantResponse>
 
     @CheckResult
-    fun getLongpollServer(needPts: Boolean, lpVersion: Int): Single<VKApiLongpollServer>
+    fun getLongpollServer(needPts: Boolean, lpVersion: Int): Flow<VKApiLongpollServer>
 
     @CheckResult
     fun searchConversations(
@@ -170,29 +169,29 @@ interface IMessagesApi {
         count: Int?,
         extended: Int?,
         fields: String?
-    ): Single<ConversationsResponse>
+    ): Flow<ConversationsResponse>
 
     @CheckResult
-    fun pin(peerId: Long, messageId: Int): Completable
+    fun pin(peerId: Long, messageId: Int): Flow<Boolean>
 
     @CheckResult
-    fun unpin(peerId: Long): Completable
+    fun unpin(peerId: Long): Flow<Boolean>
 
     @CheckResult
-    fun pinUnPinConversation(peerId: Long, peen: Boolean): Completable
+    fun pinUnPinConversation(peerId: Long, peen: Boolean): Flow<Boolean>
 
     @CheckResult
-    fun markAsListened(message_id: Int): Completable
+    fun markAsListened(message_id: Int): Flow<Boolean>
 
     @CheckResult
-    fun recogniseAudioMessage(message_id: Int?, audio_message_id: String?): Single<Int>
+    fun recogniseAudioMessage(message_id: Int?, audio_message_id: String?): Flow<Int>
 
     @CheckResult
-    fun setMemberRole(peer_id: Long?, member_id: Long?, role: String?): Single<Int>
+    fun setMemberRole(peer_id: Long?, member_id: Long?, role: String?): Flow<Int>
 
     @CheckResult
-    fun sendOrDeleteReaction(peer_id: Long, cmid: Int, reaction_id: Int?): Single<Int>
+    fun sendOrDeleteReaction(peer_id: Long, cmid: Int, reaction_id: Int?): Flow<Int>
 
     @CheckResult
-    fun getReactionsAssets(): Single<Assets<VKApiReactionAsset>>
+    fun getReactionsAssets(): Flow<Assets<VKApiReactionAsset>>
 }

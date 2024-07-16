@@ -17,7 +17,6 @@ import dev.ragnarok.fenrir.domain.Repository.walls
 import dev.ragnarok.fenrir.domain.impl.GroupSettingsInteractor
 import dev.ragnarok.fenrir.fragment.wall.AbsWallPresenter
 import dev.ragnarok.fenrir.fragment.wall.groupwall.IGroupWallView.IOptionMenuView
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Community
 import dev.ragnarok.fenrir.model.CommunityDetails
 import dev.ragnarok.fenrir.model.Owner
@@ -31,7 +30,7 @@ import dev.ragnarok.fenrir.settings.ISettings.IAccountsSettings
 import dev.ragnarok.fenrir.util.ShortcutUtils.createWallShortcutRx
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import kotlin.math.abs
 
 class GroupWallPresenter(
@@ -78,28 +77,26 @@ class GroupWallPresenter(
     }
 
     private fun refreshInfo() {
-        appendDisposable(
+        appendJob(
             ownersRepository.getFullCommunityInfo(
                 accountId,
                 abs(ownerId),
                 IOwnersRepository.MODE_CACHE
             )
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain {
                     onFullInfoReceived(it.first, it.second)
                     requestActualFullInfo()
-                }, ignore())
+                }
         )
     }
 
     private fun requestActualFullInfo() {
-        appendDisposable(ownersRepository.getFullCommunityInfo(
+        appendJob(ownersRepository.getFullCommunityInfo(
             accountId,
             abs(ownerId),
             IOwnersRepository.MODE_NET
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 onFullInfoReceived(
                     it.first,
                     it.second
@@ -203,18 +200,16 @@ class GroupWallPresenter(
 
     private fun leaveCommunity() {
         val groupId = abs(ownerId)
-        appendDisposable(communitiesInteractor.leave(accountId, groupId)
-            .fromIOToMain()
-            .subscribe({ onLeaveResult() }) { t ->
+        appendJob(communitiesInteractor.leave(accountId, groupId)
+            .fromIOToMain({ onLeaveResult() }) { t ->
                 showError(getCauseIfRuntime(t))
             })
     }
 
     private fun joinCommunity() {
         val groupId = abs(ownerId)
-        appendDisposable(communitiesInteractor.join(accountId, groupId)
-            .fromIOToMain()
-            .subscribe({ onJoinResult() }) { t ->
+        appendJob(communitiesInteractor.join(accountId, groupId)
+            .fromIOToMain({ onJoinResult() }) { t ->
                 showError(getCauseIfRuntime(t))
             })
     }
@@ -460,10 +455,9 @@ class GroupWallPresenter(
         val groupId = abs(ownerId)
         val interactor =
             GroupSettingsInteractor(Includes.networkInterfaces, Includes.stores.owners(), owners)
-        appendDisposable(
+        appendJob(
             interactor.getGroupSettings(accountId, groupId)
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain({
                     view?.goToCommunityControl(accountId, community, it)
                 }, {
                     view?.goToCommunityControl(
@@ -507,27 +501,23 @@ class GroupWallPresenter(
     }
 
     fun fireSubscribe() {
-        appendDisposable(wallsRepository.subscribe(accountId, ownerId)
-            .fromIOToMain()
-            .subscribe({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(wallsRepository.subscribe(accountId, ownerId)
+            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     fun fireUnSubscribe() {
-        appendDisposable(wallsRepository.unsubscribe(accountId, ownerId)
-            .fromIOToMain()
-            .subscribe({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(wallsRepository.unsubscribe(accountId, ownerId)
+            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     fun fireAddToBookmarksClick() {
-        appendDisposable(faveInteractor.addPage(accountId, ownerId)
-            .fromIOToMain()
-            .subscribe({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(faveInteractor.addPage(accountId, ownerId)
+            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     fun fireRemoveFromBookmarks() {
-        appendDisposable(faveInteractor.removePage(accountId, ownerId, false)
-            .fromIOToMain()
-            .subscribe({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(faveInteractor.removePage(accountId, ownerId, false)
+            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     fun fireMentions() {
@@ -556,7 +546,7 @@ class GroupWallPresenter(
     }
 
     override fun fireAddToShortcutClick(context: Context) {
-        appendDisposable(
+        appendJob(
             createWallShortcutRx(
                 context,
                 accountId,
@@ -564,7 +554,7 @@ class GroupWallPresenter(
                 community.fullName,
                 community.maxSquareAvatar
             )
-                .fromIOToMain().subscribe({
+                .fromIOToMain({
                     view?.showSnackbar(
                         R.string.success,
                         true
@@ -575,13 +565,12 @@ class GroupWallPresenter(
     }
 
     override fun searchStory(ByName: Boolean) {
-        appendDisposable(storiesInteractor.searchStories(
+        appendJob(storiesInteractor.searchStories(
             accountId,
             if (ByName) community.fullName else null,
             if (ByName) null else ownerId
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain {
                 if (it.nonNullNoEmpty()) {
                     stories.clear()
                     stories.addAll(it)
@@ -589,7 +578,7 @@ class GroupWallPresenter(
                         stories
                     )
                 }
-            }) { })
+            })
     }
 
     override fun getOwner(): Owner {

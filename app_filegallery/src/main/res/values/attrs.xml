@@ -18,6 +18,19 @@
     <attr name="toolbarElevation" format="reference" />
     <attr name="statusBarNonColoredColor" format="color" />
 
+    <declare-styleable name="CircleRoadProgress">
+        <attr name="circleCenterPointX" format="float" />
+        <attr name="circleCenterPointY" format="float" />
+
+        <attr name="roadColor" format="color" />
+        <attr name="roadStrokeWidth" format="dimension" />
+        <attr name="roadRadius" format="float" />
+
+        <attr name="arcLoadingColor" format="color" />
+        <attr name="arcLoadingStrokeWidth" format="dimension" />
+        <attr name="arcLoadingStartAngle" format="float" />
+    </declare-styleable>
+
     <declare-styleable name="KeyboardView">
         <attr name="keyboard_theme" format="enum">
             <enum name="fullscreen" value="0" />

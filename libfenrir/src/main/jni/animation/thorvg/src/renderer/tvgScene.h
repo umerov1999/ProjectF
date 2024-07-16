@@ -96,7 +96,7 @@ struct Scene::Impl
         //If scene has several children or only scene, it may require composition.
         //OPTIMIZE: the bitmap type of the picture would not need the composition.
         //OPTIMIZE: a single paint of a scene would not need the composition.
-        if (paints.size() == 1 && paints.front()->identifier() == TVG_CLASS_ID_SHAPE) return false;
+        if (paints.size() == 1 && paints.front()->type() == Type::Shape) return false;
 
         return true;
     }
@@ -105,7 +105,7 @@ struct Scene::Impl
     {
         if ((needComp = needComposition(opacity))) {
             /* Overriding opacity value. If this scene is half-translucent,
-               It must do intermeidate composition with that opacity value. */
+               It must do intermediate composition with that opacity value. */
             this->opacity = opacity;
             opacity = 255;
         }

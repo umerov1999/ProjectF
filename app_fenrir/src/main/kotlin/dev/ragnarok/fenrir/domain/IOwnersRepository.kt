@@ -17,39 +17,38 @@ import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.model.UserDetails
 import dev.ragnarok.fenrir.model.UserUpdate
 import dev.ragnarok.fenrir.util.Pair
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 
 interface IOwnersRepository {
-    fun findFriendBirtday(accountId: Long): Single<List<User>>
+    fun findFriendBirtday(accountId: Long): Flow<List<User>>
     fun findBaseOwnersDataAsList(
         accountId: Long,
         ids: Collection<Long>,
         mode: Int
-    ): Single<List<Owner>>
+    ): Flow<List<Owner>>
 
     fun findBaseOwnersDataAsBundle(
         accountId: Long,
         ids: Collection<Long>,
         mode: Int
-    ): Single<IOwnersBundle>
+    ): Flow<IOwnersBundle>
 
     fun findBaseOwnersDataAsBundle(
         accountId: Long,
         ids: Collection<Long>,
         mode: Int,
         alreadyExists: Collection<Owner>?
-    ): Single<IOwnersBundle>
+    ): Flow<IOwnersBundle>
 
-    fun getBaseOwnerInfo(accountId: Long, ownerId: Long, mode: Int): Single<Owner>
-    fun getFullUserInfo(accountId: Long, userId: Long, mode: Int): Single<Pair<User?, UserDetails?>>
+    fun getBaseOwnerInfo(accountId: Long, ownerId: Long, mode: Int): Flow<Owner>
+    fun getFullUserInfo(accountId: Long, userId: Long, mode: Int): Flow<Pair<User?, UserDetails?>>
     fun getMarketAlbums(
         accountId: Long,
         owner_id: Long,
         offset: Int,
         count: Int
-    ): Single<List<MarketAlbum>>
+    ): Flow<List<MarketAlbum>>
 
     fun getMarket(
         accountId: Long,
@@ -58,49 +57,49 @@ interface IOwnersRepository {
         offset: Int,
         count: Int,
         isService: Boolean
-    ): Single<List<Market>>
+    ): Flow<List<Market>>
 
-    fun getGifts(accountId: Long, user_id: Long, count: Int, offset: Int): Single<List<Gift>>
-    fun getMarketById(accountId: Long, ids: Collection<AccessIdPair>): Single<List<Market>>
+    fun getGifts(accountId: Long, user_id: Long, count: Int, offset: Int): Flow<List<Gift>>
+    fun getMarketById(accountId: Long, ids: Collection<AccessIdPair>): Flow<List<Market>>
     fun getFullCommunityInfo(
         accountId: Long,
         communityId: Long,
         mode: Int
-    ): Single<Pair<Community?, CommunityDetails?>>
+    ): Flow<Pair<Community?, CommunityDetails?>>
 
-    fun cacheActualOwnersData(accountId: Long, ids: Collection<Long>): Completable
+    fun cacheActualOwnersData(accountId: Long, ids: Collection<Long>): Flow<Boolean>
     fun getCommunitiesWhereAdmin(
         accountId: Long,
         admin: Boolean,
         editor: Boolean,
         moderator: Boolean
-    ): Single<List<Owner>>
+    ): Flow<List<Owner>>
 
     fun searchPeoples(
         accountId: Long,
         criteria: PeopleSearchCriteria,
         count: Int,
         offset: Int
-    ): Single<List<User>>
+    ): Flow<List<User>>
 
-    fun insertOwners(accountId: Long, entities: OwnerEntities): Completable
-    fun handleStatusChange(accountId: Long, userId: Long, status: String?): Completable
+    fun insertOwners(accountId: Long, entities: OwnerEntities): Flow<Boolean>
+    fun handleStatusChange(accountId: Long, userId: Long, status: String?): Flow<Boolean>
     fun handleOnlineChanges(
         accountId: Long,
         offlineUpdates: List<UserIsOfflineUpdate>?,
         onlineUpdates: List<UserIsOnlineUpdate>?
-    ): Completable
+    ): Flow<Boolean>
 
-    fun observeUpdates(): Flowable<List<UserUpdate>>
-    fun report(accountId: Long, userId: Long, type: String?, comment: String?): Single<Int>
-    fun checkAndAddFriend(accountId: Long, userId: Long): Single<Int>
+    fun observeUpdates(): SharedFlow<List<UserUpdate>>
+    fun report(accountId: Long, userId: Long, type: String?, comment: String?): Flow<Int>
+    fun checkAndAddFriend(accountId: Long, userId: Long): Flow<Int>
 
     fun getGroupChats(
         accountId: Long,
         groupId: Long,
         offset: Int?,
         count: Int?
-    ): Single<List<GroupChats>>
+    ): Flow<List<GroupChats>>
 
     companion object {
         const val MODE_ANY = 1

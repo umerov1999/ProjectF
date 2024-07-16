@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+#include <algorithm>
 #include "tvgMath.h"
 #include "tvgSwCommon.h"
 #include "tvgTaskScheduler.h"
@@ -64,8 +65,8 @@ struct SwTask : Task
     }
 
     virtual void dispose() = 0;
-    virtual bool clip(SwRleData* target) = 0;
-    virtual SwRleData* rle() = 0;
+    virtual bool clip(SwRle* target) = 0;
+    virtual SwRle* rle() = 0;
 
     virtual ~SwTask()
     {
@@ -86,7 +87,7 @@ struct SwShapeTask : SwTask
        Additionally, the stroke style should not be dashed. */
     bool antialiasing(float strokeWidth)
     {
-        return strokeWidth < 2.0f || rshape->stroke->dashCnt > 0 || rshape->stroke->strokeFirst;
+        return strokeWidth < 2.0f || rshape->stroke->dashCnt > 0 || rshape->stroke->strokeFirst || rshape->strokeTrim() || rshape->stroke->color[3] < 255;;
     }
 
     float validStrokeWidth()
@@ -94,17 +95,17 @@ struct SwShapeTask : SwTask
         if (!rshape->stroke) return 0.0f;
 
         auto width = rshape->stroke->width;
-        if (mathZero(width)) return 0.0f;
+        if (tvg::zero(width)) return 0.0f;
 
         if (!rshape->stroke->fill && (MULTIPLY(rshape->stroke->color[3], opacity) == 0)) return 0.0f;
-        if (mathZero(rshape->stroke->trim.begin - rshape->stroke->trim.end)) return 0.0f;
+        if (tvg::zero(rshape->stroke->trim.begin - rshape->stroke->trim.end)) return 0.0f;
 
         if (transform) return (width * sqrt(transform->e11 * transform->e11 + transform->e12 * transform->e12));
         else return width;
     }
 
 
-    bool clip(SwRleData* target) override
+    bool clip(SwRle* target) override
     {
         if (shape.fastTrack) rleClipRect(target, &bbox);
         else if (shape.rle) rleClipPath(target, shape.rle);
@@ -113,7 +114,7 @@ struct SwShapeTask : SwTask
         return true;
     }
 
-    SwRleData* rle() override
+    SwRle* rle() override
     {
         if (!shape.rle && shape.fastTrack) {
             shape.rle = rleRender(&shape.bbox);
@@ -147,7 +148,7 @@ struct SwShapeTask : SwTask
             }
         }
         //Fill
-        if (flags & (RenderUpdateFlag::Gradient | RenderUpdateFlag::Transform | RenderUpdateFlag::Color)) {
+        if (flags & (RenderUpdateFlag::Path |RenderUpdateFlag::Gradient | RenderUpdateFlag::Transform | RenderUpdateFlag::Color)) {
             if (visibleFill || clipper) {
                 if (!shapeGenRle(&shape, rshape, antialiasing(strokeWidth))) goto err;
             }
@@ -160,7 +161,7 @@ struct SwShapeTask : SwTask
             }
         }
         //Stroke
-        if (flags & (RenderUpdateFlag::Stroke | RenderUpdateFlag::Transform)) {
+        if (flags & (RenderUpdateFlag::Path | RenderUpdateFlag::Stroke | RenderUpdateFlag::Transform)) {
             if (strokeWidth > 0.0f) {
                 shapeResetStroke(&shape, rshape, transform);
                 if (!shapeGenStrokeRle(&shape, rshape, transform, clipRegion, bbox, mpool, tid)) goto err;
@@ -205,9 +206,9 @@ struct SwShapeTask : SwTask
 struct SwSceneTask : SwTask
 {
     Array<RenderData> scene;    //list of paints render data (SwTask)
-    SwRleData* sceneRle = nullptr;
+    SwRle* sceneRle = nullptr;
 
-    bool clip(SwRleData* target) override
+    bool clip(SwRle* target) override
     {
         //Only one shape
         if (scene.count == 1) {
@@ -221,15 +222,15 @@ struct SwSceneTask : SwTask
         return true;
     }
 
-    SwRleData* rle() override
+    SwRle* rle() override
     {
         return sceneRle;
     }
 
     void run(unsigned tid) override
     {
-        //TODO: Skip the run if the scene hans't changed.
-        if (!sceneRle) sceneRle = static_cast<SwRleData*>(calloc(1, sizeof(SwRleData)));
+        //TODO: Skip the run if the scene hasn't changed.
+        if (!sceneRle) sceneRle = static_cast<SwRle*>(calloc(1, sizeof(SwRle)));
         else rleReset(sceneRle);
 
         //Merge shapes if it has more than one shapes
@@ -261,13 +262,13 @@ struct SwImageTask : SwTask
     Surface* source;                            //Image source
     const RenderMesh* mesh = nullptr;           //Should be valid ptr in action
 
-    bool clip(SwRleData* target) override
+    bool clip(SwRle* target) override
     {
         TVGERR("SW_ENGINE", "Image is used as ClipPath?");
         return true;
     }
 
-    SwRleData* rle() override
+    SwRle* rle() override
     {
         TVGERR("SW_ENGINE", "Image is used as Scene ClipPath?");
         return nullptr;
@@ -335,7 +336,7 @@ static void _renderFill(SwShapeTask* task, SwSurface* surface, uint8_t opacity)
 {
     uint8_t r, g, b, a;
     if (auto fill = task->rshape->fill) {
-        rasterGradientShape(surface, &task->shape, fill->identifier());
+        rasterGradientShape(surface, &task->shape, fill->type());
     } else {
         task->rshape->fillColor(&r, &g, &b, &a);
         a = MULTIPLY(opacity, a);
@@ -347,7 +348,7 @@ static void _renderStroke(SwShapeTask* task, SwSurface* surface, uint8_t opacity
 {
     uint8_t r, g, b, a;
     if (auto strokeFill = task->rshape->strokeFill()) {
-        rasterGradientStroke(surface, &task->shape, strokeFill->identifier());
+        rasterGradientStroke(surface, &task->shape, strokeFill->type());
     } else {
         if (task->rshape->strokeFill(&r, &g, &b, &a)) {
             a = MULTIPLY(opacity, a);
@@ -713,9 +714,6 @@ void* SwRenderer::prepareCommon(SwTask* task, const RenderTransform* transform, 
     if (!surface) return task;
     if (flags == RenderUpdateFlag::None) return task;
 
-    //Finish previous task if it has duplicated request.
-    task->done();
-
     //TODO: Failed threading them. It would be better if it's possible.
     //See: https://github.com/thorvg/thorvg/issues/1409
     //Guarantee composition targets get ready.
@@ -743,10 +741,10 @@ void* SwRenderer::prepareCommon(SwTask* task, const RenderTransform* transform, 
     task->surface = surface;
     task->mpool = mpool;
     task->flags = flags;
-    task->bbox.min.x = mathMax(static_cast<SwCoord>(0), static_cast<SwCoord>(vport.x));
-    task->bbox.min.y = mathMax(static_cast<SwCoord>(0), static_cast<SwCoord>(vport.y));
-    task->bbox.max.x = mathMin(static_cast<SwCoord>(surface->w), static_cast<SwCoord>(vport.x + vport.w));
-    task->bbox.max.y = mathMin(static_cast<SwCoord>(surface->h), static_cast<SwCoord>(vport.y + vport.h));
+    task->bbox.min.x = std::max(static_cast<SwCoord>(0), static_cast<SwCoord>(vport.x));
+    task->bbox.min.y = std::max(static_cast<SwCoord>(0), static_cast<SwCoord>(vport.y));
+    task->bbox.max.x = std::min(static_cast<SwCoord>(surface->w), static_cast<SwCoord>(vport.x + vport.w));
+    task->bbox.max.y = std::min(static_cast<SwCoord>(surface->h), static_cast<SwCoord>(vport.y + vport.h));
 
     if (!task->pushed) {
         task->pushed = true;
@@ -764,8 +762,11 @@ RenderData SwRenderer::prepare(Surface* surface, const RenderMesh* mesh, RenderD
     //prepare task
     auto task = static_cast<SwImageTask*>(data);
     if (!task) task = new SwImageTask;
+    else task->done();
+
     task->source = surface;
     task->mesh = mesh;
+
     return prepareCommon(task, transform, clips, opacity, flags);
 }
 
@@ -775,6 +776,8 @@ RenderData SwRenderer::prepare(const Array<RenderData>& scene, RenderData data, 
     //prepare task
     auto task = static_cast<SwSceneTask*>(data);
     if (!task) task = new SwSceneTask;
+    else task->done();
+
     task->scene = scene;
 
     //TODO: Failed threading them. It would be better if it's possible.
@@ -783,6 +786,7 @@ RenderData SwRenderer::prepare(const Array<RenderData>& scene, RenderData data, 
     for (auto task = scene.begin(); task < scene.end(); ++task) {
         static_cast<SwTask*>(*task)->done();
     }
+
     return prepareCommon(task, transform, clips, opacity, flags);
 }
 
@@ -791,10 +795,10 @@ RenderData SwRenderer::prepare(const RenderShape& rshape, RenderData data, const
 {
     //prepare task
     auto task = static_cast<SwShapeTask*>(data);
-    if (!task) {
-        task = new SwShapeTask;
-        task->rshape = &rshape;
-    }
+    if (!task) task = new SwShapeTask;
+    else task->done();
+
+    task->rshape = &rshape;
     task->clipper = clipper;
 
     return prepareCommon(task, transform, clips, opacity, flags);

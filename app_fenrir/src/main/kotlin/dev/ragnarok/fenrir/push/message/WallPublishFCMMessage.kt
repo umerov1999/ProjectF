@@ -26,6 +26,7 @@ import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.PersistentLogger.logThrowable
 import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 import kotlin.math.abs
 
 class WallPublishFCMMessage {
@@ -50,14 +51,13 @@ class WallPublishFCMMessage {
         }
         val app = context.applicationContext
         getRx(app, accountId, -abs(group_id))
-            .subscribeOn(INSTANCE)
-            .subscribe({ ownerInfo ->
+            .fromScopeToMain(INSTANCE) { ownerInfo ->
                 notifyImpl(
                     app,
                     ownerInfo.community,
                     ownerInfo.avatar
                 )
-            }) { }
+            }
     }
 
     private fun notifyImpl(context: Context, community: Community, bitmap: Bitmap?) {

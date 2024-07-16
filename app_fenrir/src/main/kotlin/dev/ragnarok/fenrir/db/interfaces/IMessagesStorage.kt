@@ -9,9 +9,7 @@ import dev.ragnarok.fenrir.model.MessageStatus
 import dev.ragnarok.fenrir.model.criteria.MessagesCriteria
 import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Pair
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IMessagesStorage : IStorage {
     fun insertPeerDbos(
@@ -19,28 +17,28 @@ interface IMessagesStorage : IStorage {
         peerId: Long,
         dbos: List<MessageDboEntity>,
         clearHistory: Boolean
-    ): Completable
+    ): Flow<Boolean>
 
-    fun insert(accountId: Long, dbos: List<MessageDboEntity>): Single<IntArray>
+    fun insert(accountId: Long, dbos: List<MessageDboEntity>): Flow<IntArray>
     fun getByCriteria(
         criteria: MessagesCriteria,
         withAtatchments: Boolean,
         withForwardMessages: Boolean
-    ): Single<List<MessageDboEntity>>
+    ): Flow<List<MessageDboEntity>>
 
-    fun insert(accountId: Long, peerId: Long, patch: MessageEditEntity): Single<Int>
-    fun applyPatch(accountId: Long, messageId: Int, patch: MessageEditEntity): Single<Int>
-
-    @CheckResult
-    fun findDraftMessage(accountId: Long, peerId: Long): Maybe<DraftMessage>
+    fun insert(accountId: Long, peerId: Long, patch: MessageEditEntity): Flow<Int>
+    fun applyPatch(accountId: Long, messageId: Int, patch: MessageEditEntity): Flow<Int>
 
     @CheckResult
-    fun saveDraftMessageBody(accountId: Long, peerId: Long, text: String?): Single<Int>
+    fun findDraftMessage(accountId: Long, peerId: Long): Flow<DraftMessage?>
+
+    @CheckResult
+    fun saveDraftMessageBody(accountId: Long, peerId: Long, text: String?): Flow<Int>
 
     //@CheckResult
     //Maybe<Integer> getDraftMessageId(int accountId, int peerId);
-    fun getMessageStatus(accountId: Long, dbid: Int): Single<Int>
-    fun applyPatches(accountId: Long, patches: Collection<MessagePatch>): Completable
+    fun getMessageStatus(accountId: Long, dbid: Int): Flow<Int>
+    fun applyPatches(accountId: Long, patches: Collection<MessagePatch>): Flow<Boolean>
 
     @CheckResult
     fun changeMessageStatus(
@@ -49,34 +47,34 @@ interface IMessagesStorage : IStorage {
         @MessageStatus status: Int,
         vkid: Int?,
         cmid: Int?
-    ): Completable
+    ): Flow<Boolean>
 
     @CheckResult
     fun changeMessagesStatus(
         accountId: Long,
         ids: Collection<Int>,
         @MessageStatus status: Int
-    ): Completable
+    ): Flow<Boolean>
 
     //@CheckResult
     //Completable updateMessageFlag(int accountId, int messageId, Collection<Pair<Integer, Boolean>> values);
     @CheckResult
-    fun deleteMessage(accountId: Long, messageId: Int): Single<Boolean>
-    fun findLastSentMessageIdForPeer(accountId: Long, peerId: Long): Single<Optional<Int>>
+    fun deleteMessage(accountId: Long, messageId: Int): Flow<Boolean>
+    fun findLastSentMessageIdForPeer(accountId: Long, peerId: Long): Flow<Optional<Int>>
     fun findMessagesByIds(
         accountId: Long,
         ids: List<Int>,
         withAttachments: Boolean,
         withForwardMessages: Boolean
-    ): Single<List<MessageDboEntity>>
+    ): Flow<List<MessageDboEntity>>
 
     fun findFirstUnsentMessage(
         accountIds: Collection<Long>,
         withAttachments: Boolean,
         withForwardMessages: Boolean
-    ): Single<Optional<Pair<Long, MessageDboEntity>>>
+    ): Flow<Optional<Pair<Long, MessageDboEntity>>>
 
-    fun notifyMessageHasAttachments(accountId: Long, messageId: Int): Completable
+    fun notifyMessageHasAttachments(accountId: Long, messageId: Int): Flow<Boolean>
 
     ///**
     // * Получить список сообщений, которые "приаттаччены" к сообщению с идентификатором attachTo
@@ -96,11 +94,11 @@ interface IMessagesStorage : IStorage {
         accountId: Long,
         attachTo: Int,
         pair: Long
-    ): Single<Pair<Boolean, List<Int>>>
+    ): Flow<Pair<Boolean, List<Int>>>
 
     //Observable<MessageUpdate> observeMessageUpdates();
-    fun getMissingMessages(accountId: Long, ids: Collection<Int>): Single<List<Int>>
+    fun getMissingMessages(accountId: Long, ids: Collection<Int>): Flow<List<Int>>
 
     @CheckResult
-    fun deleteMessages(accountId: Long, ids: Collection<Int>): Single<Boolean>
+    fun deleteMessages(accountId: Long, ids: Collection<Int>): Flow<Boolean>
 }

@@ -19,14 +19,14 @@ import dev.ragnarok.fenrir.ifNonNull
 import dev.ragnarok.fenrir.model.VideoCriteria
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 internal class VideoStorage(base: AppStorages) : AbsStorage(base), IVideoStorage {
-    override fun findByCriteria(criteria: VideoCriteria): Single<List<VideoDboEntity>> {
-        return Single.create { e: SingleEmitter<List<VideoDboEntity>> ->
+    override fun findByCriteria(criteria: VideoCriteria): Flow<List<VideoDboEntity>> {
+        return flow {
             val uri = getVideosContentUriFor(criteria.accountId)
             val where: String
             val args: Array<String>
@@ -53,14 +53,14 @@ internal class VideoStorage(base: AppStorages) : AbsStorage(base), IVideoStorage
             val videos = ArrayList<VideoDboEntity>(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     videos.add(mapVideo(cursor))
                 }
                 cursor.close()
             }
-            e.onSuccess(videos)
+            emit(videos)
         }
     }
 
@@ -141,8 +141,8 @@ internal class VideoStorage(base: AppStorages) : AbsStorage(base), IVideoStorage
         albumId: Int,
         videos: List<VideoDboEntity>,
         invalidateBefore: Boolean
-    ): Completable {
-        return Completable.create { e ->
+    ): Flow<Boolean> {
+        return flow {
             val operations = ArrayList<ContentProviderOperation>()
             val uri = getVideosContentUriFor(accountId)
             if (invalidateBefore) {
@@ -179,7 +179,7 @@ internal class VideoStorage(base: AppStorages) : AbsStorage(base), IVideoStorage
                 )
             }
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            e.onComplete()
+            emit(true)
         }
     }
 

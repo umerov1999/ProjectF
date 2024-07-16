@@ -4,10 +4,10 @@ import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.NotificationsResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
 import dev.ragnarok.fenrir.model.FeedbackVKOfficialList
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class INotificationsService : IServiceRest() {
-    val markAsViewed: Single<BaseResponse<Int>>
+    val markAsViewed: Flow<BaseResponse<Int>>
         get() = rest.request("notifications.markAsViewed", null, baseInt)
 
     operator fun get(
@@ -16,7 +16,7 @@ class INotificationsService : IServiceRest() {
         filters: String?,
         startTime: Long?,
         endTime: Long?
-    ): Single<BaseResponse<NotificationsResponse>> {
+    ): Flow<BaseResponse<NotificationsResponse>> {
         return rest.request(
             "notifications.get", form(
                 "count" to count,
@@ -35,7 +35,7 @@ class INotificationsService : IServiceRest() {
         startTime: Long?,
         endTime: Long?,
         fields: String?
-    ): Single<BaseResponse<FeedbackVKOfficialList>> {
+    ): Flow<BaseResponse<FeedbackVKOfficialList>> {
         return rest.request(
             "notifications.get", form(
                 "count" to count,
@@ -48,7 +48,7 @@ class INotificationsService : IServiceRest() {
         )
     }
 
-    fun hide(query: String?): Single<BaseResponse<Int>> {
+    fun hide(query: String?): Flow<BaseResponse<Int>> {
         return rest.request("notifications.hide", form("query" to query), baseInt)
     }
 }

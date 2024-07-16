@@ -27,7 +27,6 @@ import dev.ragnarok.fenrir.domain.Repository.walls
 import dev.ragnarok.fenrir.fragment.friends.friendstabs.FriendsTabsFragment
 import dev.ragnarok.fenrir.fragment.wall.AbsWallPresenter
 import dev.ragnarok.fenrir.fragment.wall.IWallView
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.ifNonNullNoEmpty
 import dev.ragnarok.fenrir.model.FriendsCounters
 import dev.ragnarok.fenrir.model.Owner
@@ -45,15 +44,17 @@ import dev.ragnarok.fenrir.util.ShortcutUtils.createWallShortcutRx
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.text.DateFormat
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
+import kotlin.coroutines.cancellation.CancellationException
 
 class UserWallPresenter(
     accountId: Long,
@@ -118,14 +119,13 @@ class UserWallPresenter(
     }
 
     private fun refreshUserDetails() {
-        appendDisposable(
+        appendJob(
             ownersRepository.getFullUserInfo(
                 accountId,
                 ownerId,
                 IOwnersRepository.MODE_CACHE
             )
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain({
                     onFullInfoReceived(it.first, it.second)
                     requestActualFullInfo()
                 }, { t -> onDetailsGetError(t) })
@@ -133,13 +133,12 @@ class UserWallPresenter(
     }
 
     private fun requestActualFullInfo() {
-        appendDisposable(ownersRepository.getFullUserInfo(
+        appendJob(ownersRepository.getFullUserInfo(
             accountId,
             ownerId,
             IOwnersRepository.MODE_NET
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 onFullInfoReceived(
                     it.first,
                     it.second
@@ -423,17 +422,15 @@ class UserWallPresenter(
     }
 
     fun fireDeleteFromFriends() {
-        appendDisposable(relationshipInteractor.deleteFriends(accountId, ownerId)
-            .fromIOToMain()
-            .subscribe({ responseCode -> onFriendsDeleteResult(responseCode) }) { t ->
+        appendJob(relationshipInteractor.deleteFriends(accountId, ownerId)
+            .fromIOToMain({ responseCode -> onFriendsDeleteResult(responseCode) }) { t ->
                 showError(getCauseIfRuntime(t))
             })
     }
 
     fun fireNewStatusEntered(newValue: String?) {
-        appendDisposable(accountInteractor.changeStatus(accountId, newValue)
-            .fromIOToMain()
-            .subscribe({ onStatusChanged(newValue) }) { t ->
+        appendJob(accountInteractor.changeStatus(accountId, newValue)
+            .fromIOToMain({ onStatusChanged(newValue) }) { t ->
                 showError(
                     getCauseIfRuntime(t)
                 )
@@ -470,33 +467,28 @@ class UserWallPresenter(
     }
 
     fun fireAddToBookmarks() {
-        appendDisposable(faveInteractor.addPage(accountId, ownerId)
-            .fromIOToMain()
-            .subscribe({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(faveInteractor.addPage(accountId, ownerId)
+            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     fun fireRemoveFromBookmarks() {
-        appendDisposable(faveInteractor.removePage(accountId, ownerId, true)
-            .fromIOToMain()
-            .subscribe({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(faveInteractor.removePage(accountId, ownerId, true)
+            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     fun fireSubscribe() {
-        appendDisposable(wallsRepository.subscribe(accountId, ownerId)
-            .fromIOToMain()
-            .subscribe({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(wallsRepository.subscribe(accountId, ownerId)
+            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     fun fireUnSubscribe() {
-        appendDisposable(wallsRepository.unsubscribe(accountId, ownerId)
-            .fromIOToMain()
-            .subscribe({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(wallsRepository.unsubscribe(accountId, ownerId)
+            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     private fun executeAddToFriendsRequest(text: String?, follow: Boolean) {
-        appendDisposable(relationshipInteractor.addFriend(accountId, ownerId, text, follow)
-            .fromIOToMain()
-            .subscribe({ resultCode -> onAddFriendResult(resultCode) }) { t ->
+        appendJob(relationshipInteractor.addFriend(accountId, ownerId, text, follow)
+            .fromIOToMain({ resultCode -> onAddFriendResult(resultCode) }) { t ->
                 showError(getCauseIfRuntime(t))
             })
     }
@@ -540,9 +532,8 @@ class UserWallPresenter(
 
     private fun prepareUserAvatarsAndShow() {
         setLoadingAvatarPhotosNow(true)
-        appendDisposable(photosInteractor[accountId, ownerId, -6, 100, 0, true]
-            .fromIOToMain()
-            .subscribe({ photos -> DisplayUserProfileAlbum(photos) }) { t ->
+        appendJob(photosInteractor[accountId, ownerId, -6, 100, 0, true]
+            .fromIOToMain({ photos -> DisplayUserProfileAlbum(photos) }) { t ->
                 onAvatarAlbumPrepareFailed(
                     t
                 )
@@ -609,8 +600,8 @@ class UserWallPresenter(
         } else null
     }
 
-    private fun getRegistrationDate(owner_id: Long): Single<RegistrationInfoResult> {
-        return Single.create { emitter ->
+    private fun getRegistrationDate(owner_id: Long): Flow<RegistrationInfoResult> {
+        return flow {
             val builder: OkHttpClient.Builder = OkHttpClient.Builder()
                 .readTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
                 .connectTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
@@ -628,79 +619,74 @@ class UserWallPresenter(
                 .url("https://vk.com/foaf.php?id=$owner_id").build()
 
             val call = builder.build().newCall(request)
-            emitter.setCancellable { call.cancel() }
             try {
                 val response = call.execute()
                 if (!response.isSuccessful) {
-                    emitter.tryOnError(HttpException(response.code))
+                    throw HttpException(response.code)
                 } else {
                     val resp = response.body.string()
                     val locale = Utils.appLocale
-                    try {
-                        var registered: String? = null
-                        var auth: String? = null
-                        var changes: String? = null
-                        var tmp =
-                            parseResponse(
-                                resp,
-                                Pattern.compile("ya:created dc:date=\"(.*?)\"")
+                    var registered: String? = null
+                    var auth: String? = null
+                    var changes: String? = null
+                    var tmp =
+                        parseResponse(
+                            resp,
+                            Pattern.compile("ya:created dc:date=\"(.*?)\"")
+                        )
+                    if (tmp.nonNullNoEmpty()) {
+                        registered = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", locale).parse(
+                            tmp
+                        )?.let {
+                            DateFormat.getDateInstance(1).format(
+                                it
                             )
-                        if (tmp.nonNullNoEmpty()) {
-                            registered = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", locale).parse(
-                                tmp
-                            )?.let {
-                                DateFormat.getDateInstance(1).format(
-                                    it
-                                )
-                            }
                         }
-                        tmp = parseResponse(
-                            resp,
-                            Pattern.compile("ya:lastLoggedIn dc:date=\"(.*?)\"")
-                        )
-                        if (tmp.nonNullNoEmpty()) {
-                            auth = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", locale).parse(
-                                tmp
-                            )?.let {
-                                DateFormat.getDateInstance(1).format(
-                                    it
-                                )
-                            }
-                        }
-                        tmp = parseResponse(
-                            resp,
-                            Pattern.compile("ya:modified dc:date=\"(.*?)\"")
-                        )
-                        if (tmp.nonNullNoEmpty()) {
-                            changes = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", locale).parse(
-                                tmp
-                            )?.let {
-                                DateFormat.getDateInstance(1).format(
-                                    it
-                                )
-                            }
-                        }
-                        emitter.onSuccess(
-                            RegistrationInfoResult().setRegistered(registered).setAuth(auth)
-                                .setChanges(changes)
-                        )
-                    } catch (e: ParseException) {
-                        emitter.tryOnError(e)
                     }
+                    tmp = parseResponse(
+                        resp,
+                        Pattern.compile("ya:lastLoggedIn dc:date=\"(.*?)\"")
+                    )
+                    if (tmp.nonNullNoEmpty()) {
+                        auth = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", locale).parse(
+                            tmp
+                        )?.let {
+                            DateFormat.getDateInstance(1).format(
+                                it
+                            )
+                        }
+                    }
+                    tmp = parseResponse(
+                        resp,
+                        Pattern.compile("ya:modified dc:date=\"(.*?)\"")
+                    )
+                    if (tmp.nonNullNoEmpty()) {
+                        changes = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", locale).parse(
+                            tmp
+                        )?.let {
+                            DateFormat.getDateInstance(1).format(
+                                it
+                            )
+                        }
+                    }
+                    emit(
+                        RegistrationInfoResult().setRegistered(registered).setAuth(auth)
+                            .setChanges(changes)
+                    )
                 }
                 response.close()
-            } catch (e: Exception) {
-                emitter.tryOnError(e)
+            } catch (e: CancellationException) {
+                call.cancel()
+                throw e
             }
         }
     }
 
     fun fireGetRegistrationDate() {
-        appendDisposable(
-            getRegistrationDate(ownerId).fromIOToMain()
-                .subscribe({
-                    view?.showRegistrationDate(it)
-                }, { showError(it) })
+        appendJob(
+            getRegistrationDate(ownerId).fromIOToMain({
+                view?.showRegistrationDate(it)
+            }, { showError(it) })
         )
     }
 
@@ -716,9 +702,8 @@ class UserWallPresenter(
             .setTitle(R.string.report)
             .setItems(items) { dialog, item ->
                 val report = values[item].toString()
-                appendDisposable(ownersRepository.report(accountId, ownerId, report, null)
-                    .fromIOToMain()
-                    .subscribe({ p ->
+                appendJob(ownersRepository.report(accountId, ownerId, report, null)
+                    .fromIOToMain({ p ->
                         if (p == 1) view?.customToast?.showToast(
                             R.string.success
                         )
@@ -745,7 +730,7 @@ class UserWallPresenter(
     }
 
     override fun fireAddToShortcutClick(context: Context) {
-        appendDisposable(
+        appendJob(
             createWallShortcutRx(
                 context,
                 accountId,
@@ -753,7 +738,7 @@ class UserWallPresenter(
                 user.fullName,
                 user.maxSquareAvatar
             )
-                .fromIOToMain().subscribe({
+                .fromIOToMain({
                     view?.showSnackbar(
                         R.string.success,
                         true
@@ -764,13 +749,12 @@ class UserWallPresenter(
     }
 
     override fun searchStory(ByName: Boolean) {
-        appendDisposable(storiesInteractor.searchStories(
+        appendJob(storiesInteractor.searchStories(
             accountId,
             if (ByName) user.fullName else null,
             if (ByName) null else ownerId
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 if (it.nonNullNoEmpty()) {
                     stories.clear()
                     stories.addAll(it)

@@ -18,22 +18,24 @@ import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2Block
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2List
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2Section
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.ignoreElement
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
-    override fun add(accountId: Long, orig: Audio, groupId: Long?): Completable {
+    override fun add(accountId: Long, orig: Audio, groupId: Long?): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .audio()
             .add(orig.id, orig.ownerId, groupId, orig.accessKey)
-            .ignoreElement()
+            .map {
+                it != 0
+            }
     }
 
-    override fun delete(accountId: Long, audioId: Int, ownerId: Long): Completable {
+    override fun delete(accountId: Long, audioId: Int, ownerId: Long): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .audio()
             .delete(audioId, ownerId)
-            .ignoreElement()
     }
 
     override fun edit(
@@ -42,14 +44,16 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         audioId: Int,
         artist: String?,
         title: String?
-    ): Completable {
+    ): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .audio()
             .edit(ownerId, audioId, artist, title)
-            .ignoreElement()
+            .map {
+                it != 0
+            }
     }
 
-    override fun restore(accountId: Long, audioId: Int, ownerId: Long): Completable {
+    override fun restore(accountId: Long, audioId: Int, ownerId: Long): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .audio()
             .restore(audioId, ownerId)
@@ -62,7 +66,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         audioId: Int,
         accessKey: String?,
         targetIds: Collection<Long>
-    ): Completable {
+    ): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .audio()
             .setBroadcast(AccessIdPair(audioId, audioOwnerId, accessKey), targetIds)
@@ -76,7 +80,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         offset: Int,
         count: Int,
         accessKey: String?
-    ): Single<List<Audio>> {
+    ): Flow<List<Audio>> {
         return networker.vkDefault(accountId)
             .audio()[playlist_id, ownerId, offset, count, accessKey]
             .map {
@@ -91,7 +95,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
             }
     }
 
-    override fun getPlaylistsCustom(accountId: Long, code: String?): Single<List<AudioPlaylist>> {
+    override fun getPlaylistsCustom(accountId: Long, code: String?): Flow<List<AudioPlaylist>> {
         return networker.vkDefault(accountId)
             .audio()
             .getPlaylistsCustom(code)
@@ -108,7 +112,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         artist_id: String?,
         offset: Int,
         count: Int
-    ): Single<List<Audio>> {
+    ): Flow<List<Audio>> {
         return networker.vkDefault(accountId)
             .audio()
             .getAudiosByArtist(artist_id, offset, count)
@@ -124,7 +128,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
             }
     }
 
-    override fun getById(accountId: Long, audios: List<Audio>): Single<List<Audio>> {
+    override fun getById(accountId: Long, audios: List<Audio>): Flow<List<Audio>> {
         return networker.vkDefault(accountId)
             .audio()
             .getById(audios)
@@ -139,7 +143,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         accountId: Long,
         audios: List<Audio>,
         old: Boolean
-    ): Single<List<Audio>> {
+    ): Flow<List<Audio>> {
         return if (!old) {
             getById(accountId, audios)
         } else networker.vkDefault(accountId)
@@ -152,12 +156,12 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
             }
     }
 
-    override fun getLyrics(accountId: Long, audio: Audio): Single<String> {
+    override fun getLyrics(accountId: Long, audio: Audio): Flow<String> {
         return networker.vkDefault(accountId)
             .audio().getLyrics(audio).map { it.text.orEmpty() }
     }
 
-    override fun getArtistById(accountId: Long, artist_id: String): Single<ArtistInfo> {
+    override fun getArtistById(accountId: Long, artist_id: String): Flow<ArtistInfo> {
         return networker.vkDefault(accountId)
             .audio().getArtistById(artist_id).map { it }
     }
@@ -167,7 +171,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         foreign: Int,
         genre: Int,
         count: Int
-    ): Single<List<Audio>> {
+    ): Flow<List<Audio>> {
         return networker.vkDefault(accountId)
             .audio()
             .getPopular(foreign, genre, count)
@@ -182,7 +186,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         accountId: Long,
         audioOwnerId: Long,
         count: Int
-    ): Single<List<Audio>> {
+    ): Flow<List<Audio>> {
         return networker.vkDefault(accountId)
             .audio()
             .getRecommendations(audioOwnerId, count)
@@ -202,7 +206,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         accountId: Long,
         audio: String?,
         count: Int
-    ): Single<List<Audio>> {
+    ): Flow<List<Audio>> {
         return networker.vkDefault(accountId)
             .audio()
             .getRecommendationsByAudio(audio, count)
@@ -223,7 +227,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         owner_id: Long,
         offset: Int,
         count: Int
-    ): Single<List<AudioPlaylist>> {
+    ): Flow<List<AudioPlaylist>> {
         return networker.vkDefault(accountId)
             .audio()
             .getPlaylists(owner_id, offset, count)
@@ -244,7 +248,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         ownerId: Long,
         title: String?,
         description: String?
-    ): Single<AudioPlaylist> {
+    ): Flow<AudioPlaylist> {
         return networker.vkDefault(accountId)
             .audio()
             .createPlaylist(ownerId, title, description)
@@ -257,7 +261,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         playlist_id: Int,
         title: String?,
         description: String?
-    ): Single<Int> {
+    ): Flow<Int> {
         return networker.vkDefault(accountId)
             .audio()
             .editPlaylist(ownerId, playlist_id, title, description)
@@ -269,7 +273,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         ownerId: Long,
         playlist_id: Int,
         audio_ids: Collection<AccessIdPair>
-    ): Single<Int> {
+    ): Flow<Int> {
         return networker.vkDefault(accountId)
             .audio()
             .removeFromPlaylist(ownerId, playlist_id, audio_ids)
@@ -280,7 +284,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         ownerId: Long,
         playlist_id: Int,
         audio_ids: Collection<AccessIdPair>
-    ): Single<List<AddToPlaylistResponse>> {
+    ): Flow<List<AddToPlaylistResponse>> {
         return networker.vkDefault(accountId)
             .audio()
             .addToPlaylist(ownerId, playlist_id, audio_ids)
@@ -292,7 +296,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         playlist_id: Int,
         ownerId: Long,
         accessKey: String?
-    ): Single<AudioPlaylist> {
+    ): Flow<AudioPlaylist> {
         return networker.vkDefault(accountId)
             .audio()
             .followPlaylist(playlist_id, ownerId, accessKey)
@@ -303,7 +307,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         accountId: Long,
         playlist_id: Int,
         ownerId: Long
-    ): Single<AudioPlaylist> {
+    ): Flow<AudioPlaylist> {
         return networker.vkDefault(accountId)
             .audio()
             .clonePlaylist(playlist_id, ownerId)
@@ -315,7 +319,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         playlist_id: Int,
         ownerId: Long,
         accessKey: String?
-    ): Single<AudioPlaylist> {
+    ): Flow<AudioPlaylist> {
         return networker.vkDefault(accountId)
             .audio()
             .getPlaylistById(playlist_id, ownerId, accessKey)
@@ -328,7 +332,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         audio_id: Int,
         before: Int?,
         after: Int?
-    ): Single<Int> {
+    ): Flow<Int> {
         return networker.vkDefault(accountId)
             .audio()
             .reorder(ownerId, audio_id, before, after)
@@ -336,7 +340,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
     }
 
     @SuppressLint("DefaultLocale")
-    override fun trackEvents(accountId: Long, audio: Audio): Completable {
+    override fun trackEvents(accountId: Long, audio: Audio): Flow<Boolean> {
         val events = String.format(
             "[{\"e\":\"audio_play\",\"audio_id\":\"%s\",\"source\":\"%s\",\"uuid\":%s,\"duration\":%d,\"start_time\":%d}]",
             audio.ownerId.toString() + "_" + audio.id,
@@ -351,7 +355,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
             .ignoreElement()
     }
 
-    override fun deletePlaylist(accountId: Long, playlist_id: Int, ownerId: Long): Single<Int> {
+    override fun deletePlaylist(accountId: Long, playlist_id: Int, ownerId: Long): Flow<Int> {
         return networker.vkDefault(accountId)
             .audio()
             .deletePlaylist(playlist_id, ownerId)
@@ -362,7 +366,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         criteria: AudioSearchCriteria,
         offset: Int,
         count: Int
-    ): Single<List<Audio>> {
+    ): Flow<List<Audio>> {
         val isMyAudio = criteria.extractBoleanValueFromOption(AudioSearchCriteria.KEY_SEARCH_ADDED)
         val isbyArtist =
             criteria.extractBoleanValueFromOption(AudioSearchCriteria.KEY_SEARCH_BY_ARTIST)
@@ -393,7 +397,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         criteria: ArtistSearchCriteria,
         offset: Int,
         count: Int
-    ): Single<List<VKApiArtist>> {
+    ): Flow<List<VKApiArtist>> {
         return networker.vkDefault(accountId)
             .audio()
             .searchArtists(criteria.query, offset, count)
@@ -409,7 +413,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         criteria: AudioPlaylistSearchCriteria,
         offset: Int,
         count: Int
-    ): Single<List<AudioPlaylist>> {
+    ): Flow<List<AudioPlaylist>> {
         return networker.vkDefault(accountId)
             .audio()
             .searchPlaylists(criteria.query, offset, count)
@@ -432,7 +436,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
         url: String?,
         query: String?,
         context: String?
-    ): Single<CatalogV2List> {
+    ): Flow<CatalogV2List> {
         return networker.vkDefault(accountId)
             .audio()
             .getCatalogV2Sections(owner_id, artist_id, url, query, context)
@@ -441,7 +445,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
 
     override fun getCatalogV2Section(
         accountId: Long, section_id: String, start_from: String?
-    ): Single<CatalogV2Section> {
+    ): Flow<CatalogV2Section> {
         return networker.vkDefault(accountId)
             .audio()
             .getCatalogV2Section(section_id, start_from)
@@ -450,7 +454,7 @@ class AudioInteractor(private val networker: INetworker) : IAudioInteractor {
 
     override fun getCatalogV2BlockItems(
         accountId: Long, block_id: String, start_from: String?
-    ): Single<CatalogV2Block> {
+    ): Flow<CatalogV2Block> {
         return networker.vkDefault(accountId)
             .audio()
             .getCatalogV2BlockItems(block_id, start_from)

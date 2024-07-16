@@ -238,7 +238,7 @@ static void _outside(SwStroke& stroke, int32_t side, SwFixed lineLength)
     } else {
         //this is a mitered (pointed) or beveled (truncated) corner
         auto rotate = SIDE_TO_ROTATE(side);
-        auto bevel = (stroke.join == StrokeJoin::Bevel) ? true : false;
+        auto bevel = stroke.join == StrokeJoin::Bevel;
         SwFixed phi = 0;
         SwFixed thcos = 0;
 
@@ -662,7 +662,7 @@ static void _beginSubPath(SwStroke& stroke, const SwPoint& to, bool closed)
     /* Determine if we need to check whether the border radius is greater
        than the radius of curvature of a curve, to handle this case specially.
        This is only required if bevel joins or butt caps may be created because
-       round & miter joins and round & square caps cover the nagative sector
+       round & miter joins and round & square caps cover the negative sector
        created with wide strokes. */
     if ((stroke.join != StrokeJoin::Round) || (!stroke.closedSubPath && stroke.cap == StrokeCap::Butt))
         stroke.handleWideStrokes = true;
@@ -715,7 +715,7 @@ static void _endSubPath(SwStroke& stroke)
         _addCap(stroke, stroke.subPathAngle + SW_ANGLE_PI, 0);
 
         /* now end the right subpath accordingly. The left one is rewind
-           and deosn't need further processing */
+           and doesn't need further processing */
         _borderClose(right, false);
     }
 }
@@ -816,7 +816,7 @@ void strokeReset(SwStroke* stroke, const RenderShape* rshape, const Matrix* tran
 
     stroke->width = HALF_STROKE(rshape->strokeWidth());
     stroke->cap = rshape->strokeCap();
-    stroke->miterlimit = static_cast<SwFixed>(rshape->strokeMiterlimit()) << 16;
+    stroke->miterlimit = static_cast<SwFixed>(rshape->strokeMiterlimit() * 65536.0f);
 
     //Save line join: it can be temporarily changed when stroking curves...
     stroke->joinSaved = stroke->join = rshape->strokeJoin();
@@ -859,7 +859,7 @@ bool strokeParseOutline(SwStroke* stroke, const SwOutline& outline)
             ++pt;
             ++types;
 
-            //emit a signel line_to
+            //emit a single line_to
             if (types[0] == SW_CURVE_TYPE_POINT) {
                 _lineTo(*stroke, *pt);
             //types cubic

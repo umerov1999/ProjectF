@@ -10,7 +10,6 @@ import dev.ragnarok.fenrir.Includes.voicePlayerFactory
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.Repository
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.media.voice.IVoicePlayer
 import dev.ragnarok.fenrir.media.voice.IVoicePlayer.IPlayerStatusListener
 import dev.ragnarok.fenrir.model.Audio
@@ -21,7 +20,7 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Lookup
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 abstract class AbsMessageListPresenter<V : IBasicMessageListView> internal constructor(
     accountId: Long,
@@ -232,13 +231,12 @@ abstract class AbsMessageListPresenter<V : IBasicMessageListView> internal const
             if (messageChanged) {
                 if (!voiceMessage.was_listened) {
                     if (!Utils.isHiddenCurrent && Settings.get().main().isMarkListenedVoice) {
-                        appendDisposable(
+                        appendJob(
                             Repository.messages.markAsListened(accountId, messageId)
-                                .fromIOToMain()
-                                .subscribe({
+                                .fromIOToMain {
                                     voiceMessage.setWasListened(true)
                                     resolveVoiceMessagePlayingState()
-                                }, RxUtils.ignore())
+                                }
                         )
                     }
                 }

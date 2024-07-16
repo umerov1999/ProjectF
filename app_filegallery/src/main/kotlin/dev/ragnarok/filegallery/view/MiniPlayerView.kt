@@ -22,17 +22,17 @@ import dev.ragnarok.filegallery.picasso.transforms.RoundTransformation
 import dev.ragnarok.filegallery.place.PlaceFactory
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.toColor
-import dev.ragnarok.filegallery.toMainThread
 import dev.ragnarok.filegallery.util.Utils
+import dev.ragnarok.filegallery.util.coroutines.CancelableJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.filegallery.view.media.MediaActionDrawable
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.Disposable
-import java.util.concurrent.TimeUnit
 
 class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
-    private var mPlayerDisposable = Disposable.disposed()
-    private var mAccountDisposable = Disposable.disposed()
-    private var mRefreshDisposable = Disposable.disposed()
+    private var mPlayerDisposable = CancelableJob()
+    private var mAccountDisposable = CancelableJob()
+    private var mRefreshDisposable = CancelableJob()
     private lateinit var visual: ImageView
     private lateinit var playCover: ImageView
     private lateinit var title: TextView
@@ -105,14 +105,13 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
     }
 
     private fun queueNextRefresh() {
-        mRefreshDisposable.dispose()
-        mRefreshDisposable = Observable.just(Any())
-            .delay(500, TimeUnit.MILLISECONDS)
-            .toMainThread()
-            .subscribe {
+        mRefreshDisposable.cancel()
+        mRefreshDisposable.set(delayTaskFlow(500)
+            .toMain {
                 refreshCurrentTime()
                 queueNextRefresh()
             }
+        )
     }
 
     private val transformCover: Transformation
@@ -234,9 +233,8 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         receiveFullAudioInfo()
         refreshCurrentTime()
         queueNextRefresh()
-        mPlayerDisposable = MusicPlaybackController.observeServiceBinding()
-            .toMainThread()
-            .subscribe { onServiceBindEvent(it) }
+        mPlayerDisposable.set(MusicPlaybackController.observeServiceBinding()
+            .sharedFlowToMain { onServiceBindEvent(it) })
     }
 
     override fun onDetachedFromWindow() {
@@ -244,9 +242,9 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         if (isInEditMode) {
             return
         }
-        mPlayerDisposable.dispose()
-        mAccountDisposable.dispose()
-        mRefreshDisposable.dispose()
+        mPlayerDisposable.cancel()
+        mAccountDisposable.cancel()
+        mRefreshDisposable.cancel()
     }
 
     override fun onSeekBarDrag(position: Long) {

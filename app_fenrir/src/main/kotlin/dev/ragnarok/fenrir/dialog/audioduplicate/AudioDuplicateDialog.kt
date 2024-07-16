@@ -218,7 +218,6 @@ class AudioDuplicateDialog :
     companion object {
         const val REQUEST_CODE_AUDIO_DUPLICATE = "request_audio_duplicate"
 
-        @Suppress("DEPRECATION")
         private fun getAudioContent(context: Context, filePath: String, accountId: Long): Audio? {
             val AUDIO_PROJECTION = arrayOf(
                 BaseColumns._ID,

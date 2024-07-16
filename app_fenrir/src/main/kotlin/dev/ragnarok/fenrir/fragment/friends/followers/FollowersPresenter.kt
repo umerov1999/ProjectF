@@ -5,15 +5,14 @@ import dev.ragnarok.fenrir.domain.IAccountsInteractor
 import dev.ragnarok.fenrir.domain.IRelationshipInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.absownerslist.SimpleOwnersPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.indexOf
 import dev.ragnarok.fenrir.util.Utils.indexOfOwner
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class FollowersPresenter(accountId: Long, private val userId: Long, savedInstanceState: Bundle?) :
     SimpleOwnersPresenter<IFollowersView>(accountId, savedInstanceState) {
@@ -21,8 +20,8 @@ class FollowersPresenter(accountId: Long, private val userId: Long, savedInstanc
         InteractorFactory.createRelationshipInteractor()
     private val accountsInteractor: IAccountsInteractor =
         InteractorFactory.createAccountInteractor()
-    private val actualDataDisposable = CompositeDisposable()
-    private val cacheDisposable = CompositeDisposable()
+    private val actualDataDisposable = CompositeJob()
+    private val cacheDisposable = CompositeJob()
     private val isNotFriendShow: Boolean = Settings.get().main().isOwnerInChangesMonitor(userId)
     private var actualDataLoading = false
     private var actualDataReceived = false
@@ -39,8 +38,7 @@ class FollowersPresenter(accountId: Long, private val userId: Long, savedInstanc
             if (isNotFriendShow) 1000 else 200,
             offset
         )
-            .fromIOToMain()
-            .subscribe({ users ->
+            .fromIOToMain({ users ->
                 onActualDataReceived(
                     users,
                     do_scan
@@ -49,10 +47,9 @@ class FollowersPresenter(accountId: Long, private val userId: Long, savedInstanc
     }
 
     fun removeFollower(owner: Owner) {
-        appendDisposable(
+        appendJob(
             accountsInteractor.banOwners(accountId, listOf(owner))
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain {
                     val pos = indexOfOwner(data, owner)
                     if (pos >= 0) {
                         data.removeAt(pos)
@@ -60,7 +57,7 @@ class FollowersPresenter(accountId: Long, private val userId: Long, savedInstanc
                             pos
                         )
                     }
-                }, ignore())
+                }
         )
     }
 
@@ -150,8 +147,7 @@ class FollowersPresenter(accountId: Long, private val userId: Long, savedInstanc
     private fun loadAllCacheData() {
         cacheLoadingNow = true
         cacheDisposable.add(relationshipInteractor.getCachedFollowers(accountId, userId)
-            .fromIOToMain()
-            .subscribe({ users -> onCachedDataReceived(users) }) { t ->
+            .fromIOToMain({ users -> onCachedDataReceived(users) }) { t ->
                 onCacheDataGetError(
                     t
                 )
@@ -178,8 +174,8 @@ class FollowersPresenter(accountId: Long, private val userId: Long, savedInstanc
     }
 
     override fun onDestroyed() {
-        cacheDisposable.dispose()
-        actualDataDisposable.dispose()
+        cacheDisposable.cancel()
+        actualDataDisposable.cancel()
         super.onDestroyed()
     }
 

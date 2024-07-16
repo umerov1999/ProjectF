@@ -11,14 +11,14 @@ import dev.ragnarok.fenrir.api.model.response.ContactsResponse
 import dev.ragnarok.fenrir.api.model.response.PushSettingsResponse
 import dev.ragnarok.fenrir.api.model.response.VKResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class IAccountService : IServiceRest() {
-    fun ban(owner_id: Long): Single<BaseResponse<Int>> {
+    fun ban(owner_id: Long): Flow<BaseResponse<Int>> {
         return rest.request("account.ban", form("owner_id" to owner_id), baseInt)
     }
 
-    fun unban(owner_id: Long): Single<BaseResponse<Int>> {
+    fun unban(owner_id: Long): Flow<BaseResponse<Int>> {
         return rest.request("account.unban", form("owner_id" to owner_id), baseInt)
     }
 
@@ -26,7 +26,7 @@ class IAccountService : IServiceRest() {
         count: Int?,
         offset: Int?,
         fields: String?
-    ): Single<BaseResponse<AccountsBannedResponse>> {
+    ): Flow<BaseResponse<AccountsBannedResponse>> {
         return rest.request(
             "account.getBanned",
             form("count" to count, "offset" to offset, "fields" to fields),
@@ -48,7 +48,7 @@ class IAccountService : IServiceRest() {
      * sdk — запросы в мобильных играх;
      * app_requests — уведомления от приложений.
      */
-    fun getCounters(filter: String?): Single<BaseResponse<CountersDto>> {
+    fun getCounters(filter: String?): Flow<BaseResponse<CountersDto>> {
         return rest.request(
             "account.getCounters",
             form("filter" to filter),
@@ -57,7 +57,7 @@ class IAccountService : IServiceRest() {
     }
 
     //https://vk.com/dev/account.unregisterDevice
-    fun unregisterDevice(deviceId: String?): Single<BaseResponse<Int>> {
+    fun unregisterDevice(deviceId: String?): Flow<BaseResponse<Int>> {
         return rest.request("account.unregisterDevice", form("device_id" to deviceId), baseInt)
     }
 
@@ -73,7 +73,7 @@ class IAccountService : IServiceRest() {
         deviceId: String?,
         systemVersion: String?,
         settings: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "account.registerDevice",
             form(
@@ -96,13 +96,13 @@ class IAccountService : IServiceRest() {
      *
      * @return In case of success returns 1.
      */
-    val setOffline: Single<BaseResponse<Int>>
+    val setOffline: Flow<BaseResponse<Int>>
         get() = rest.request("account.setOffline", null, baseInt)
 
-    val profileInfo: Single<BaseResponse<VKApiProfileInfo>>
+    val profileInfo: Flow<BaseResponse<VKApiProfileInfo>>
         get() = rest.request("account.getProfileInfo", null, base(VKApiProfileInfo.serializer()))
 
-    val pushSettings: Single<BaseResponse<PushSettingsResponse>>
+    val pushSettings: Flow<BaseResponse<PushSettingsResponse>>
         get() = rest.request(
             "account.getPushSettings",
             null,
@@ -117,7 +117,7 @@ class IAccountService : IServiceRest() {
         bdate: String?,
         home_town: String?,
         sex: Int?
-    ): Single<BaseResponse<VKApiProfileInfoResponse>> {
+    ): Flow<BaseResponse<VKApiProfileInfoResponse>> {
         return rest.request(
             "account.saveProfileInfo",
             form(
@@ -137,7 +137,7 @@ class IAccountService : IServiceRest() {
         receipt2: String?,
         nonce: String?,
         timestamp: Long?
-    ): Single<BaseResponse<RefreshToken>> {
+    ): Flow<BaseResponse<RefreshToken>> {
         return rest.request(
             "auth.refreshToken",
             form(
@@ -150,7 +150,7 @@ class IAccountService : IServiceRest() {
         )
     }
 
-    fun getExchangeToken(): Single<BaseResponse<RefreshToken>> {
+    fun getExchangeToken(): Flow<BaseResponse<RefreshToken>> {
         return rest.request(
             "auth.getExchangeToken",
             null,
@@ -158,12 +158,12 @@ class IAccountService : IServiceRest() {
         )
     }
 
-    val resetMessagesContacts: Single<BaseResponse<Int>>
+    val resetMessagesContacts: Flow<BaseResponse<Int>>
         get() = rest.request("account.resetMessagesContacts", null, baseInt)
 
     fun importMessagesContacts(
         contacts: String?
-    ): Single<VKResponse> {
+    ): Flow<VKResponse> {
         return rest.request(
             "account.importMessagesContacts",
             form("contacts" to contacts),
@@ -174,7 +174,7 @@ class IAccountService : IServiceRest() {
     fun processAuthCode(
         auth_code: String,
         action: Int
-    ): Single<BaseResponse<VKApiProcessAuthCode>> {
+    ): Flow<BaseResponse<VKApiProcessAuthCode>> {
         return rest.request(
             "auth.processAuthCode",
             form("auth_code" to auth_code, "action" to action),
@@ -187,7 +187,7 @@ class IAccountService : IServiceRest() {
         count: Int?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<ContactsResponse>> {
+    ): Flow<BaseResponse<ContactsResponse>> {
         return rest.request(
             "account.getContactList",
             form("offset" to offset, "count" to count, "extended" to extended, "fields" to fields),

@@ -13,25 +13,25 @@ import dev.ragnarok.fenrir.api.model.response.AccountsBannedResponse
 import dev.ragnarok.fenrir.api.model.response.ContactsResponse
 import dev.ragnarok.fenrir.api.model.response.PushSettingsResponse
 import dev.ragnarok.fenrir.api.services.IAccountService
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.checkInt
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 internal class AccountApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IAccountApi {
-    override fun ban(ownerId: Long): Single<Int> {
+    override fun ban(ownerId: Long): Flow<Int> {
         return provideService(IAccountService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service
-                    .ban(ownerId)
+            .flatMapConcat {
+                it.ban(ownerId)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun unban(ownerId: Long): Single<Int> {
+    override fun unban(ownerId: Long): Flow<Int> {
         return provideService(IAccountService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service
-                    .unban(ownerId)
+            .flatMapConcat {
+                it.unban(ownerId)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -40,21 +40,20 @@ internal class AccountApi(accountId: Long, provider: IServiceProvider) :
         count: Int?,
         offset: Int?,
         fields: String?
-    ): Single<AccountsBannedResponse> {
+    ): Flow<AccountsBannedResponse> {
         return provideService(IAccountService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service
-                    .getBanned(count, offset, fields)
+            .flatMapConcat {
+                it.getBanned(count, offset, fields)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun unregisterDevice(deviceId: String?): Single<Boolean> {
+    override fun unregisterDevice(deviceId: String?): Flow<Boolean> {
         return provideService(IAccountService(), TokenType.USER)
-            .flatMap { service ->
-                service.unregisterDevice(deviceId)
+            .flatMapConcat {
+                it.unregisterDevice(deviceId)
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
@@ -69,49 +68,45 @@ internal class AccountApi(accountId: Long, provider: IServiceProvider) :
         deviceId: String?,
         systemVersion: String?,
         settings: String?
-    ): Single<Boolean> {
+    ): Flow<Boolean> {
         return provideService(IAccountService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .registerDevice(
-                        token,
-                        pushes_granted,
-                        app_version,
-                        push_provider,
-                        companion_apps,
-                        type,
-                        deviceModel,
-                        deviceId,
-                        systemVersion,
-                        settings
-                    )
+            .flatMapConcat {
+                it.registerDevice(
+                    token,
+                    pushes_granted,
+                    app_version,
+                    push_provider,
+                    companion_apps,
+                    type,
+                    deviceModel,
+                    deviceId,
+                    systemVersion,
+                    settings
+                )
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
-    override fun setOffline(): Single<Boolean> {
+    override fun setOffline(): Flow<Boolean> {
         return provideService(IAccountService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .setOffline
+            .flatMapConcat {
+                it.setOffline
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
-    override val profileInfo: Single<VKApiProfileInfo>
+    override val profileInfo: Flow<VKApiProfileInfo>
         get() = provideService(IAccountService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .profileInfo
+            .flatMapConcat {
+                it.profileInfo
                     .map(extractResponseWithErrorHandling())
             }
-    override val pushSettings: Single<PushSettingsResponse>
+    override val pushSettings: Flow<PushSettingsResponse>
         get() = provideService(IAccountService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .pushSettings
+            .flatMapConcat {
+                it.pushSettings
                     .map(extractResponseWithErrorHandling())
             }
 
@@ -123,28 +118,26 @@ internal class AccountApi(accountId: Long, provider: IServiceProvider) :
         bdate: String?,
         home_town: String?,
         sex: Int?
-    ): Single<VKApiProfileInfoResponse> {
+    ): Flow<VKApiProfileInfoResponse> {
         return provideService(IAccountService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .saveProfileInfo(
-                        first_name,
-                        last_name,
-                        maiden_name,
-                        screen_name,
-                        bdate,
-                        home_town,
-                        sex
-                    )
+            .flatMapConcat {
+                it.saveProfileInfo(
+                    first_name,
+                    last_name,
+                    maiden_name,
+                    screen_name,
+                    bdate,
+                    home_town,
+                    sex
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getCounters(filter: String?): Single<CountersDto> {
+    override fun getCounters(filter: String?): Flow<CountersDto> {
         return provideService(IAccountService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .getCounters(filter)
+            .flatMapConcat {
+                it.getCounters(filter)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -154,57 +147,51 @@ internal class AccountApi(accountId: Long, provider: IServiceProvider) :
         receipt2: String?,
         nonce: String?,
         timestamp: Long?
-    ): Single<RefreshToken> {
+    ): Flow<RefreshToken> {
         return provideService(IAccountService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .refreshToken(receipt, receipt2, nonce, timestamp)
+            .flatMapConcat {
+                it.refreshToken(receipt, receipt2, nonce, timestamp)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getExchangeToken(): Single<RefreshToken> {
+    override fun getExchangeToken(): Flow<RefreshToken> {
         return provideService(IAccountService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .getExchangeToken()
+            .flatMapConcat {
+                it.getExchangeToken()
                     .map(AuthApi.extractResponseWithErrorHandling())
             }
     }
 
-    override fun importMessagesContacts(contacts: String?): Completable {
+    override fun importMessagesContacts(contacts: String?): Flow<Boolean> {
         return provideService(IAccountService(), TokenType.USER)
-            .flatMapCompletable { service ->
-                service
-                    .importMessagesContacts(contacts)
-                    .flatMapCompletable(checkResponseWithErrorHandling())
+            .flatMapConcat {
+                it.importMessagesContacts(contacts)
+                    .map(checkResponseWithErrorHandling())
             }
     }
 
-    override fun processAuthCode(auth_code: String, action: Int): Single<VKApiProcessAuthCode> {
+    override fun processAuthCode(auth_code: String, action: Int): Flow<VKApiProcessAuthCode> {
         return provideService(IAccountService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .processAuthCode(auth_code, action)
+            .flatMapConcat {
+                it.processAuthCode(auth_code, action)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getContactList(offset: Int?, count: Int?): Single<ContactsResponse> {
+    override fun getContactList(offset: Int?, count: Int?): Flow<ContactsResponse> {
         return provideService(IAccountService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .getContactList(offset, count, 1, Fields.FIELDS_FULL_USER)
+            .flatMapConcat {
+                it.getContactList(offset, count, 1, Fields.FIELDS_FULL_USER)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun resetMessagesContacts(): Completable {
+    override fun resetMessagesContacts(): Flow<Boolean> {
         return provideService(IAccountService(), TokenType.USER)
-            .flatMapCompletable { service ->
-                service
-                    .resetMessagesContacts
-                    .flatMapCompletable(checkResponseWithErrorHandling())
+            .flatMapConcat {
+                it.resetMessagesContacts
+                    .map(checkResponseWithErrorHandling())
             }
     }
 }

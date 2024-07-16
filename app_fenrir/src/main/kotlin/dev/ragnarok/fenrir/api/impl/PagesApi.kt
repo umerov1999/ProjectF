@@ -5,7 +5,9 @@ import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.IPagesApi
 import dev.ragnarok.fenrir.api.model.VKApiWikiPage
 import dev.ragnarok.fenrir.api.services.IPagesService
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 internal class PagesApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IPagesApi {
@@ -17,10 +19,10 @@ internal class PagesApi(accountId: Long, provider: IServiceProvider) :
         title: String?,
         needSource: Boolean?,
         needHtml: Boolean?
-    ): Single<VKApiWikiPage> {
+    ): Flow<VKApiWikiPage> {
         return provideService(IPagesService(), TokenType.USER)
-            .flatMap { service ->
-                service[ownerId, pageId, integerFromBoolean(global), integerFromBoolean(sitePreview), title, integerFromBoolean(
+            .flatMapConcat {
+                it[ownerId, pageId, integerFromBoolean(global), integerFromBoolean(sitePreview), title, integerFromBoolean(
                     needSource
                 ), integerFromBoolean(needHtml)]
                     .map(extractResponseWithErrorHandling())

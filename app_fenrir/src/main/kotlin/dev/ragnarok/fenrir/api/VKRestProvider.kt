@@ -5,7 +5,9 @@ import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.api.rest.SimplePostHttp
 import dev.ragnarok.fenrir.settings.IProxySettings
 import dev.ragnarok.fenrir.settings.Settings
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import okhttp3.OkHttpClient
 import java.util.Collections
 
@@ -30,37 +32,39 @@ class VKRestProvider(
         }
     }
 
-    override fun provideNormalRest(accountId: Long): Single<SimplePostHttp> {
-        return Single.fromCallable {
+    override fun provideNormalRest(accountId: Long): Flow<SimplePostHttp> {
+        return flow {
             var rest: SimplePostHttp?
             synchronized(restCacheLock) {
-                restCache[accountId]?.let {
-                    return@fromCallable it
+                val tmp = restCache[accountId]
+                if (tmp != null) {
+                    rest = tmp
+                } else {
+                    val client = clientFactory.createDefaultVkHttpClient(
+                        accountId,
+                        proxyManager.activeProxy
+                    )
+                    rest = createDefaultVkApiRest(client)
+                    restCache.put(accountId, rest)
                 }
-                val client = clientFactory.createDefaultVkHttpClient(
-                    accountId,
-                    proxyManager.activeProxy
-                )
-                rest = createDefaultVkApiRest(client)
-                restCache.put(accountId, rest)
             }
-            rest!!
+            emit(rest ?: return@flow)
         }
     }
 
-    override fun provideCustomRest(accountId: Long, token: String): Single<SimplePostHttp> {
-        return Single.fromCallable {
+    override fun provideCustomRest(accountId: Long, token: String): Flow<SimplePostHttp> {
+        return flow {
             val client = clientFactory.createCustomVkHttpClient(
                 accountId,
                 token,
                 proxyManager.activeProxy
             )
-            createDefaultVkApiRest(client)
+            emit(createDefaultVkApiRest(client))
         }
     }
 
-    override fun provideServiceRest(): Single<SimplePostHttp> {
-        return Single.fromCallable {
+    override fun provideServiceRest(): Flow<SimplePostHttp> {
+        return flow {
             if (serviceRest == null) {
                 synchronized(serviceRestLock) {
                     if (serviceRest == null) {
@@ -71,15 +75,17 @@ class VKRestProvider(
                     }
                 }
             }
-            serviceRest!!
+            emit(serviceRest ?: return@flow)
         }
     }
 
-    override fun provideNormalHttpClient(accountId: Long): Single<OkHttpClient.Builder> {
-        return Single.fromCallable {
-            clientFactory.createDefaultVkHttpClient(
-                accountId,
-                proxyManager.activeProxy
+    override fun provideNormalHttpClient(accountId: Long): Flow<OkHttpClient.Builder> {
+        return flow {
+            emit(
+                clientFactory.createDefaultVkHttpClient(
+                    accountId,
+                    proxyManager.activeProxy
+                )
             )
         }
     }
@@ -87,12 +93,14 @@ class VKRestProvider(
     override fun provideRawHttpClient(
         @AccountType type: Int,
         customDeviceName: String?
-    ): Single<OkHttpClient.Builder> {
-        return Single.fromCallable {
-            clientFactory.createRawVkApiOkHttpClient(
-                type,
-                customDeviceName,
-                proxyManager.activeProxy
+    ): Flow<OkHttpClient.Builder> {
+        return flow {
+            emit(
+                clientFactory.createRawVkApiOkHttpClient(
+                    type,
+                    customDeviceName,
+                    proxyManager.activeProxy
+                )
             )
         }
     }
@@ -106,6 +114,6 @@ class VKRestProvider(
 
     init {
         proxyManager.observeActive
-            .subscribe { onProxySettingsChanged() }
+            .sharedFlowToMain { onProxySettingsChanged() }
     }
 }

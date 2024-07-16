@@ -1,12 +1,12 @@
 package dev.ragnarok.fenrir.util
 
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.nonNullNoEmpty
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import kotlinx.coroutines.flow.Flow
 
 abstract class FindAtWithContent<T>(
-    private val disposable: CompositeDisposable,
+    private val disposable: CompositeJob,
     private val visibleCount: Int,
     private val searchCount: Int
 ) {
@@ -15,7 +15,7 @@ abstract class FindAtWithContent<T>(
     private var ended = false
     private var needSearchInCache: Boolean
     private var offset = 0
-    protected abstract fun search(offset: Int, count: Int): Single<List<T>>
+    protected abstract fun search(offset: Int, count: Int): Flow<List<T>>
     protected abstract fun onError(e: Throwable)
     protected abstract fun onResult(data: MutableList<T>)
     protected abstract fun updateLoading(loading: Boolean)
@@ -59,30 +59,29 @@ abstract class FindAtWithContent<T>(
 
     private fun progress(searched: Int) {
         disposable.add(
-            search(offset, searchCount).fromIOToMain()
-                .subscribe({
-                    offset += searchCount
-                    if (it.isEmpty()) {
-                        ended = true
-                        updateLoading(false)
-                    } else {
-                        cached.addAll(it)
-                        val result: MutableList<T> = ArrayList()
-                        for (i in it) {
-                            if (compare(i, q ?: return@subscribe)) {
-                                result.add(i)
-                            }
-                        }
-                        if (result.isNotEmpty()) {
-                            onResult(result)
-                        }
-                        if (searched + result.size >= visibleCount) {
-                            updateLoading(false)
-                        } else {
-                            progress(searched + result.size)
+            search(offset, searchCount).fromIOToMain({
+                offset += searchCount
+                if (it.isEmpty()) {
+                    ended = true
+                    updateLoading(false)
+                } else {
+                    cached.addAll(it)
+                    val result: MutableList<T> = ArrayList()
+                    for (i in it) {
+                        if (compare(i, q ?: return@fromIOToMain)) {
+                            result.add(i)
                         }
                     }
-                }, { e -> onError(e) })
+                    if (result.isNotEmpty()) {
+                        onResult(result)
+                    }
+                    if (searched + result.size >= visibleCount) {
+                        updateLoading(false)
+                    } else {
+                        progress(searched + result.size)
+                    }
+                }
+            }, { e -> onError(e) })
         )
     }
 

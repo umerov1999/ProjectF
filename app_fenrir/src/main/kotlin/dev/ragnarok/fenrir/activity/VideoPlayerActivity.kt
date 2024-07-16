@@ -21,7 +21,6 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -40,7 +39,6 @@ import dev.ragnarok.fenrir.activity.slidr.Slidr.attach
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrConfig
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrListener
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrPosition
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.getParcelableExtraCompat
 import dev.ragnarok.fenrir.listener.AppStyleable
@@ -57,21 +55,26 @@ import dev.ragnarok.fenrir.picasso.transforms.CropTransformation
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.push.OwnerInfo
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.settings.CurrentTheme.getNavigationBarColor
+import dev.ragnarok.fenrir.settings.CurrentTheme.getStatusBarColor
+import dev.ragnarok.fenrir.settings.CurrentTheme.getStatusBarNonColored
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.theme.ThemesController.currentStyle
 import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCream
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.ExpandableSurfaceView
 import dev.ragnarok.fenrir.view.VideoControllerView
 import dev.ragnarok.fenrir.view.natives.animation.AnimatedShapeableImageView
-import io.reactivex.rxjava3.disposables.CompositeDisposable
 import kotlin.math.floor
 
 class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
     VideoControllerView.MediaPlayerControl, IVideoPlayer.IVideoSizeChangeListener, AppStyleable {
-    private val mCompositeDisposable = CompositeDisposable()
+    private val mCompositeJob = CompositeJob()
     private var mDecorView: View? = null
     private var mPlaySpeed: ImageView? = null
     private var mItemTimelineImage: AnimatedShapeableImageView? = null
@@ -125,13 +128,12 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         actionBar?.title = video?.title
         actionBar?.subtitle = video?.description
         if (!isLocal && video != null) {
-            mCompositeDisposable.add(OwnerInfo.getRx(
+            mCompositeJob.add(OwnerInfo.getRx(
                 this,
                 Settings.get().accounts().current,
                 (video ?: return).ownerId
             )
-                .fromIOToMain()
-                .subscribe({ userInfo ->
+                .fromIOToMain({ userInfo ->
                     val av =
                         findViewById<ImageView>(R.id.toolbar_avatar)
                     av.setImageBitmap(userInfo.avatar)
@@ -191,13 +193,12 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
             actionBar?.title = video?.title
             actionBar?.subtitle = video?.description
             if (!isLocal && video != null) {
-                mCompositeDisposable.add(OwnerInfo.getRx(
+                mCompositeJob.add(OwnerInfo.getRx(
                     this,
                     Settings.get().accounts().current,
                     (video ?: return).ownerId
                 )
-                    .fromIOToMain()
-                    .subscribe({ userInfo ->
+                    .fromIOToMain({ userInfo ->
                         val av =
                             findViewById<ImageView>(R.id.toolbar_avatar)
                         av.setImageBitmap(userInfo.avatar)
@@ -351,6 +352,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
 
     override fun onDestroy() {
         mPlayer?.release()
+        mCompositeJob.cancel()
         super.onDestroy()
     }
 
@@ -628,13 +630,15 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
 
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val statusBarNonColored = CurrentTheme.getStatusBarNonColored(this)
-        val statusBarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.statusBarColor = if (colored) statusBarColored else statusBarNonColored
-        @ColorInt val navigationColor =
-            if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
-        w.navigationBarColor = navigationColor
+        if (!hasVanillaIceCream()) {
+            w.statusBarColor =
+                if (colored) getStatusBarColor(this) else getStatusBarNonColored(
+                    this
+                )
+            w.navigationBarColor =
+                if (colored) getNavigationBarColor(this) else Color.BLACK
+        }
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons

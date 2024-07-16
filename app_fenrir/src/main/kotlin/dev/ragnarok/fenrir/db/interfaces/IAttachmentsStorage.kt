@@ -3,8 +3,7 @@ package dev.ragnarok.fenrir.db.interfaces
 import dev.ragnarok.fenrir.db.AttachToType
 import dev.ragnarok.fenrir.db.model.entity.DboEntity
 import dev.ragnarok.fenrir.util.Pair
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IAttachmentsStorage : IStorage {
     fun remove(
@@ -12,23 +11,23 @@ interface IAttachmentsStorage : IStorage {
         @AttachToType attachToType: Int,
         attachToDbid: Int,
         generatedAttachmentId: Int
-    ): Completable
+    ): Flow<Boolean>
 
     fun attachDbos(
         accountId: Long,
         @AttachToType attachToType: Int,
         attachToDbid: Int,
         entities: List<DboEntity>
-    ): Single<IntArray>
+    ): Flow<IntArray>
 
-    fun getCount(accountId: Long, @AttachToType attachToType: Int, attachToDbid: Int): Single<Int>
+    fun getCount(accountId: Long, @AttachToType attachToType: Int, attachToDbid: Int): Flow<Int>
     fun getAttachmentsDbosWithIds(
         accountId: Long,
         @AttachToType attachToType: Int,
         attachToDbid: Int
-    ): Single<List<Pair<Int, DboEntity>>>
+    ): Flow<List<Pair<Int, DboEntity>>>
 
-    fun getAttachmentsDbosSync(
+    suspend fun getAttachmentsDbosSync(
         accountId: Long,
         @AttachToType attachToType: Int,
         attachToDbid: Int,

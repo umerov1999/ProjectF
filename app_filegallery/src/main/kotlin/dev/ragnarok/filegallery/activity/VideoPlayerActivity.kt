@@ -19,7 +19,6 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -48,6 +47,7 @@ import dev.ragnarok.filegallery.settings.theme.ThemesController.currentStyle
 import dev.ragnarok.filegallery.toColor
 import dev.ragnarok.filegallery.util.Logger
 import dev.ragnarok.filegallery.util.Utils
+import dev.ragnarok.filegallery.util.Utils.hasVanillaIceCream
 import dev.ragnarok.filegallery.util.toast.CustomToast
 import dev.ragnarok.filegallery.view.ExpandableSurfaceView
 import dev.ragnarok.filegallery.view.VideoControllerView
@@ -450,13 +450,15 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
 
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val statusBarNonColored = getStatusBarNonColored(this)
-        val statusBarColored = getStatusBarColor(this)
         val w = window
-        w.statusBarColor = if (colored) statusBarColored else statusBarNonColored
-        @ColorInt val navigationColor =
-            if (colored) getNavigationBarColor(this) else Color.BLACK
-        w.navigationBarColor = navigationColor
+        if (!hasVanillaIceCream()) {
+            w.statusBarColor =
+                if (colored) getStatusBarColor(this) else getStatusBarNonColored(
+                    this
+                )
+            w.navigationBarColor =
+                if (colored) getNavigationBarColor(this) else Color.BLACK
+        }
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons

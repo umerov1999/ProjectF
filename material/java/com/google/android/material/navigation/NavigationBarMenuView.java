@@ -63,7 +63,7 @@ import java.util.HashSet;
  */
 @RestrictTo(LIBRARY_GROUP)
 public abstract class NavigationBarMenuView extends ViewGroup implements MenuView {
-  private static final int ITEM_POOL_SIZE = 5;
+  private static final int ITEM_POOL_SIZE = 7;
   private static final int NO_PADDING = -1;
 
   private static final int[] CHECKED_STATE_SET = {android.R.attr.state_checked};
@@ -110,6 +110,7 @@ public abstract class NavigationBarMenuView extends ViewGroup implements MenuVie
 
   private NavigationBarPresenter presenter;
   private MenuBuilder menu;
+  private boolean measurePaddingFromLabelBaseline;
 
   public NavigationBarMenuView(@NonNull Context context) {
     super(context);
@@ -365,6 +366,15 @@ public abstract class NavigationBarMenuView extends ViewGroup implements MenuVie
     if (buttons != null) {
       for (NavigationBarItemView item : buttons) {
         item.setItemPaddingBottom(paddingBottom);
+      }
+    }
+  }
+
+  public void setMeasurePaddingFromLabelBaseline(boolean measurePaddingFromLabelBaseline) {
+    this.measurePaddingFromLabelBaseline = measurePaddingFromLabelBaseline;
+    if (buttons != null) {
+      for (NavigationBarItemView item : buttons) {
+        item.setMeasureBottomPaddingFromLabelBaseline(measurePaddingFromLabelBaseline);
       }
     }
   }
@@ -778,6 +788,7 @@ public abstract class NavigationBarMenuView extends ViewGroup implements MenuVie
       if (itemPaddingBottom != NO_PADDING) {
         child.setItemPaddingBottom(itemPaddingBottom);
       }
+      child.setMeasureBottomPaddingFromLabelBaseline(measurePaddingFromLabelBaseline);
       if (itemActiveIndicatorLabelPadding != NO_PADDING) {
         child.setActiveIndicatorLabelPadding(itemActiveIndicatorLabelPadding);
       }

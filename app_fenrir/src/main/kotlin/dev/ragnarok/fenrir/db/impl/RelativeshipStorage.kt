@@ -21,9 +21,9 @@ import dev.ragnarok.fenrir.getInt
 import dev.ragnarok.fenrir.getLong
 import dev.ragnarok.fenrir.getString
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlin.math.abs
 
 internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelativeshipStorage {
@@ -31,8 +31,8 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
         accountId: Long,
         userId: Long,
         data: Collection<FriendListEntity>
-    ): Completable {
-        return Completable.create { e ->
+    ): Flow<Boolean> {
+        return flow {
             val uri = getFriendListsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>(data.size)
             operations.add(
@@ -54,7 +54,7 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
                 )
             }
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            e.onComplete()
+            emit(true)
         }
     }
 
@@ -63,7 +63,7 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
         users: List<UserEntity>,
         objectId: Long,
         clearBeforeStore: Boolean
-    ): Completable {
+    ): Flow<Boolean> {
         return completableStoreForType(
             accountId,
             users,
@@ -79,8 +79,8 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
         objectId: Long,
         relationType: Int,
         clear: Boolean
-    ): Completable {
-        return Completable.create { emitter ->
+    ): Flow<Boolean> {
+        return flow {
             val uri = getRelativeshipContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             if (clear) {
@@ -89,7 +89,7 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
             appendInsertHeaders(uri, operations, objectId, userEntities, relationType)
             appendUsersInsertOperation(operations, accountId, userEntities)
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            emitter.onComplete()
+            emit(true)
         }
     }
 
@@ -98,7 +98,7 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
         users: List<UserEntity>,
         objectId: Long,
         clearBeforeStore: Boolean
-    ): Completable {
+    ): Flow<Boolean> {
         return completableStoreForType(
             accountId,
             users,
@@ -113,7 +113,7 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
         users: List<UserEntity>,
         objectId: Long,
         clearBeforeStore: Boolean
-    ): Completable {
+    ): Flow<Boolean> {
         return completableStoreForType(
             accountId,
             users,
@@ -128,7 +128,7 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
         users: List<UserEntity>,
         objectId: Long,
         clearBeforeStore: Boolean
-    ): Completable {
+    ): Flow<Boolean> {
         return completableStoreForType(
             accountId,
             users,
@@ -138,46 +138,46 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
         )
     }
 
-    override fun getGroupMembers(accountId: Long, groupId: Long): Single<List<UserEntity>> {
+    override fun getGroupMembers(accountId: Long, groupId: Long): Flow<List<UserEntity>> {
         return getUsersForType(accountId, groupId, RelationshipsColumns.TYPE_GROUP_MEMBER)
     }
 
-    override fun getFriends(accountId: Long, objectId: Long): Single<List<UserEntity>> {
+    override fun getFriends(accountId: Long, objectId: Long): Flow<List<UserEntity>> {
         return getUsersForType(accountId, objectId, RelationshipsColumns.TYPE_FRIEND)
     }
 
-    override fun getFollowers(accountId: Long, objectId: Long): Single<List<UserEntity>> {
+    override fun getFollowers(accountId: Long, objectId: Long): Flow<List<UserEntity>> {
         return getUsersForType(accountId, objectId, RelationshipsColumns.TYPE_FOLLOWER)
     }
 
-    override fun getRequests(accountId: Long): Single<List<UserEntity>> {
+    override fun getRequests(accountId: Long): Flow<List<UserEntity>> {
         return getUsersForType(accountId, accountId, RelationshipsColumns.TYPE_REQUESTS)
     }
 
-    override fun getCommunities(accountId: Long, ownerId: Long): Single<List<CommunityEntity>> {
-        return Single.create { emitter: SingleEmitter<List<CommunityEntity>> ->
+    override fun getCommunities(accountId: Long, ownerId: Long): Flow<List<CommunityEntity>> {
+        return flow {
             val cursor = getCursorForType(accountId, ownerId, RelationshipsColumns.TYPE_MEMBER)
             val dbos: MutableList<CommunityEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (emitter.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     dbos.add(mapCommunity(cursor))
                 }
                 cursor.close()
             }
-            emitter.onSuccess(dbos)
+            emit(dbos)
         }
     }
 
-    override fun storeComminities(
+    override fun storeCommunities(
         accountId: Long,
         communities: List<CommunityEntity>,
         userId: Long,
         invalidateBefore: Boolean
-    ): Completable {
-        return Completable.create { emitter ->
+    ): Flow<Boolean> {
+        return flow {
             val uri = getRelativeshipContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>(communities.size * 2 + 1)
             if (invalidateBefore) {
@@ -198,7 +198,7 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
             }
             appendCommunitiesInsertOperation(operations, accountId, communities)
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            emitter.onComplete()
+            emit(true)
         }
     }
 
@@ -214,20 +214,20 @@ internal class RelativeshipStorage(base: AppStorages) : AbsStorage(base), IRelat
         accountId: Long,
         objectId: Long,
         relationType: Int
-    ): Single<List<UserEntity>> {
-        return Single.create { emitter: SingleEmitter<List<UserEntity>> ->
+    ): Flow<List<UserEntity>> {
+        return flow {
             val cursor = getCursorForType(accountId, objectId, relationType)
             val dbos: MutableList<UserEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (emitter.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     dbos.add(mapDbo(cursor))
                 }
                 cursor.close()
             }
-            emitter.onSuccess(dbos)
+            emit(dbos)
         }
     }
 

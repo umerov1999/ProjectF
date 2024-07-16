@@ -41,6 +41,8 @@ import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.hasOreo
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.inMainThread
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingle
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import java.io.File
 import java.io.FileOutputStream
@@ -115,13 +117,13 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
                     accountId,
                     id,
                     IOwnersRepository.MODE_NET
-                ).blockingGet()
+                ).syncSingle()
             } else {
                 ownersRepository.getFullCommunityInfo(
                     accountId,
                     abs(id),
                     IOwnersRepository.MODE_NET
-                ).blockingGet()
+                ).syncSingle()
             }
         } catch (e: Exception) {
             log.append("+++++++++++++++FULL_OWNER_INFO++++++++++++++++++\r\n")
@@ -135,7 +137,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
         }
         Thread.sleep(500)
         try {
-            wallRepository.getWall(accountId, id, 0, 20, WallCriteria.MODE_ALL, true).blockingGet()
+            wallRepository.getWall(accountId, id, 0, 20, WallCriteria.MODE_ALL, true).syncSingle()
         } catch (e: Exception) {
             log.append("+++++++++++++++WALL++++++++++++++++++++++++++++\r\n")
             log.append(
@@ -155,7 +157,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
                         id,
                         null,
                         0
-                    ).blockingGet()
+                    ).syncSingle()
                 } catch (e: Exception) {
                     log.append("+++++++++++++++ACTUAL_FRIENDS++++++++++++++++++++++++++++\r\n")
                     log.append(
@@ -173,7 +175,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
                         id,
                         1000,
                         0
-                    ).blockingGet()
+                    ).syncSingle()
                 } catch (e: Exception) {
                     log.append("+++++++++++++++FOLLOWERS++++++++++++++++++++++++++++\r\n")
                     log.append(
@@ -191,7 +193,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
                         id,
                         1000,
                         0
-                    ).blockingGet()
+                    ).syncSingle()
                 } catch (e: Exception) {
                     log.append("+++++++++++++++MUTUAL++++++++++++++++++++++++++++\r\n")
                     log.append(
@@ -210,7 +212,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
                         1000,
                         0,
                         true
-                    ).blockingGet()
+                    ).syncSingle()
                 } catch (e: Exception) {
                     log.append("+++++++++++++++COMMUNITIES++++++++++++++++++++++++++++\r\n")
                     log.append(
@@ -228,7 +230,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
                         abs(id),
                         0,
                         1000, null
-                    ).blockingGet()
+                    ).syncSingle()
                 } catch (e: Exception) {
                     log.append("+++++++++++++++MEMBERS++++++++++++++++++++++++++++\r\n")
                     log.append(
@@ -246,7 +248,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
                         id,
                         20,
                         0
-                    ).blockingGet()
+                    ).syncSingle()
                 } catch (e: Exception) {
                     log.append("+++++++++++++++TOPICS++++++++++++++++++++++++++++\r\n")
                     log.append(
@@ -264,7 +266,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
                         id,
                         25,
                         0
-                    ).blockingGet()
+                    ).syncSingle()
                 } catch (e: Exception) {
                     log.append("+++++++++++++++ARTICLES++++++++++++++++++++++++++++\r\n")
                     log.append(
@@ -277,7 +279,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
                 }
                 Thread.sleep(500)
                 try {
-                    docsInteractor.request(accountId, id, DocFilter.Type.ALL).blockingGet()
+                    docsInteractor.request(accountId, id, DocFilter.Type.ALL).syncSingle()
                 } catch (e: Exception) {
                     log.append("+++++++++++++++DOCS++++++++++++++++++++++++++++\r\n")
                     log.append(
@@ -292,7 +294,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
         }
         Thread.sleep(500)
         try {
-            photosInteractor.getActualAlbums(accountId, id, 50, 0).blockingGet()
+            photosInteractor.getActualAlbums(accountId, id, 50, 0).syncSingle()
         } catch (e: Exception) {
             log.append("+++++++++++++++PHOTO_ALBUMS++++++++++++++++++++++++++++\r\n")
             log.append(
@@ -306,7 +308,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
         Thread.sleep(500)
         try {
             photosInteractor[accountId, id, -7, 100, 0, !Settings.get()
-                .main().isInvertPhotoRev].blockingGet()
+                .main().isInvertPhotoRev].syncSingle()
         } catch (e: Exception) {
             log.append("+++++++++++++++PHOTO_FROM_WALL++++++++++++++++++++++++++++\r\n")
             log.append(
@@ -326,7 +328,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
                 1,
                 0,
                 100
-            ).blockingGet()
+            ).syncSingle()
         } catch (e: Exception) {
             log.append("+++++++++++++++PHOTO_ALL++++++++++++++++++++++++++++\r\n")
             log.append(
@@ -346,12 +348,12 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
                 if (Settings.get().main().isInvertPhotoRev) 1 else 0,
                 0,
                 100
-            ).blockingGet()
+            ).syncSingle()
         } catch (_: Exception) {
         }
         Thread.sleep(500)
         try {
-            videointeractor[accountId, id, -1, 50, 0].blockingGet()
+            videointeractor[accountId, id, -1, 50, 0].syncSingle()
         } catch (e: Exception) {
             log.append("+++++++++++++++VIDEOS-1++++++++++++++++++++++++++++\r\n")
             log.append(
@@ -364,7 +366,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
         }
         Thread.sleep(500)
         try {
-            videointeractor[accountId, id, -2, 50, 0].blockingGet()
+            videointeractor[accountId, id, -2, 50, 0].syncSingle()
         } catch (e: Exception) {
             log.append("+++++++++++++++VIDEOS-2++++++++++++++++++++++++++++\r\n")
             log.append(
@@ -448,7 +450,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
         while (true) {
             try {
                 Thread.sleep(500)
-                val pdg = faves.getPages(accountId, FAVE_GET_COUNT, tmpOffset, true).blockingGet()
+                val pdg = faves.getPages(accountId, FAVE_GET_COUNT, tmpOffset, true).syncSingle()
                 tmpOffset += FAVE_GET_COUNT
                 favesList.addAll(pdg)
                 if (Utils.safeCountOf(pdg) < FAVE_GET_COUNT) {
@@ -469,7 +471,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
         while (true) {
             try {
                 Thread.sleep(500)
-                val pdg = faves.getPages(accountId, FAVE_GET_COUNT, tmpOffset, false).blockingGet()
+                val pdg = faves.getPages(accountId, FAVE_GET_COUNT, tmpOffset, false).syncSingle()
                 tmpOffset += FAVE_GET_COUNT
                 favesList.addAll(pdg)
                 if (Utils.safeCountOf(pdg) < FAVE_GET_COUNT) {
@@ -487,7 +489,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
             }
         }
         try {
-            shortcutList.addAll(shortcuts.getShortcutAll().blockingGet())
+            shortcutList.addAll(shortcuts.getShortcutAll().syncSingle())
         } catch (e: Exception) {
             log.append("+++++++++++++++SHORTCUT++++++++++++++++++++++++\r\n")
             log.append(
@@ -571,7 +573,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
             NotificationHelper.NOTIFICATION_DOWNLOAD,
             NotificationHelper.NOTIFICATION_DOWNLOADING
         )
-        Utils.inMainThread {
+        inMainThread {
             CustomToast.createCustomToast(applicationContext)
                 .showToastBottom(R.string.success)
         }

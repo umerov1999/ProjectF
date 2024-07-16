@@ -10,7 +10,8 @@ import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class PeopleSearchPresenter(
     accountId: Long,
@@ -37,7 +38,7 @@ class PeopleSearchPresenter(
         accountId: Long,
         criteria: PeopleSearchCriteria,
         startFrom: IntNextFrom
-    ): Single<Pair<List<User>, IntNextFrom>> {
+    ): Flow<Pair<List<User>, IntNextFrom>> {
         val offset = startFrom.offset
         val nextOffset = offset + 50
         return ownersRepository.searchPeoples(accountId, criteria, 50, offset)

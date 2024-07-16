@@ -29,7 +29,6 @@ import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.domain.IUtilsInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.BaseFragment
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.link.LinkHelper.openLinkInBrowser
 import dev.ragnarok.fenrir.link.LinkHelper.openVKLink
 import dev.ragnarok.fenrir.link.VKLinkParser.parse
@@ -43,6 +42,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.Logger.d
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import java.io.File
 import java.net.URL
@@ -316,10 +316,9 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
                 return true
             }
             if (link is DomainLink) {
-                appendDisposable(
+                appendJob(
                     mUtilsInteractor.resolveDomain(mAccountId, link.domain)
-                        .fromIOToMain()
-                        .subscribe({ optionalOwner ->
+                        .fromIOToMain({ optionalOwner ->
                             if (optionalOwner.isEmpty) {
                                 view.loadUrl(url)
                             } else {

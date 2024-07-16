@@ -5,21 +5,21 @@ import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.filegallery.Includes.networkInterfaces
 import dev.ragnarok.filegallery.api.interfaces.ILocalServerApi
 import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
-import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.model.Photo
 import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.util.FindAt
 import dev.ragnarok.filegallery.util.Utils
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.disposables.Disposable
-import java.util.concurrent.TimeUnit
+import dev.ragnarok.filegallery.util.coroutines.CancelableJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.toMain
+import kotlinx.coroutines.flow.flow
 
 class PhotosLocalServerPresenter :
     RxSupportPresenter<IPhotosLocalServerView>() {
     private val photos: MutableList<Photo> = ArrayList()
     private val fInteractor: ILocalServerApi = networkInterfaces.localServerApi()
-    private var actualDataDisposable = Disposable.disposed()
+    private var actualDataDisposable = CancelableJob()
     private var Foffset = 0
     private var actualDataReceived = false
     private var endOfContent = false
@@ -40,9 +40,8 @@ class PhotosLocalServerPresenter :
     private fun loadActualData(offset: Int) {
         actualDataLoading = true
         resolveRefreshingView()
-        appendDisposable(fInteractor.getPhotos(offset, GET_COUNT, reverse)
-            .fromIOToMain()
-            .subscribe({
+        appendJob(fInteractor.getPhotos(offset, GET_COUNT, reverse)
+            .fromIOToMain({
                 onActualDataReceived(
                     offset,
                     it
@@ -99,7 +98,7 @@ class PhotosLocalServerPresenter :
     }
 
     override fun onDestroyed() {
-        actualDataDisposable.dispose()
+        actualDataDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -118,17 +117,16 @@ class PhotosLocalServerPresenter :
     private fun doSearch() {
         actualDataLoading = true
         resolveRefreshingView()
-        appendDisposable(fInteractor.searchPhotos(
+        appendJob(fInteractor.searchPhotos(
             search_at.getQuery(),
             search_at.getOffset(),
             SEARCH_COUNT,
             reverse
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 onSearched(
                     FindAt(
-                        search_at.getQuery() ?: return@subscribe,
+                        search_at.getQuery() ?: return@fromIOToMain,
                         search_at.getOffset() + SEARCH_COUNT,
                         it.size < SEARCH_COUNT
                     ), it
@@ -164,11 +162,9 @@ class PhotosLocalServerPresenter :
             doSearch()
             return
         }
-        actualDataDisposable.dispose()
-        actualDataDisposable = Single.just(Any())
-            .delay(WEB_SEARCH_DELAY.toLong(), TimeUnit.MILLISECONDS)
-            .fromIOToMain()
-            .subscribe({ doSearch() }) { onActualDataGetError(it) }
+        actualDataDisposable.cancel()
+        actualDataDisposable.set(delayTaskFlow(WEB_SEARCH_DELAY.toLong())
+            .toMain { doSearch() })
     }
 
     fun fireSearchRequestChanged(q: String?) {
@@ -176,7 +172,7 @@ class PhotosLocalServerPresenter :
         if (!search_at.do_compare(query)) {
             actualDataLoading = false
             if (query.isNullOrEmpty()) {
-                actualDataDisposable.dispose()
+                actualDataDisposable.cancel()
                 fireRefresh(false)
             } else {
                 fireRefresh(true)
@@ -188,23 +184,22 @@ class PhotosLocalServerPresenter :
         actualDataLoading = true
         resolveRefreshingView()
 
-        appendDisposable(
-            Single.create { v: SingleEmitter<List<Photo>> ->
+        appendJob(
+            flow {
                 val p = ParcelNative.fromNative(ptr).readParcelableList(Photo.NativeCreator)
-                    ?: return@create
-                v.onSuccess(
+                    ?: return@flow
+                emit(
                     p
                 )
-            }.fromIOToMain()
-                .subscribe({
-                    actualDataLoading = false
-                    resolveRefreshingView()
-                    photos.clear()
-                    photos.addAll(it)
-                    view?.scrollTo(
-                        position
-                    )
-                }) { obj -> obj.printStackTrace() })
+            }.fromIOToMain({
+                actualDataLoading = false
+                resolveRefreshingView()
+                photos.clear()
+                photos.addAll(it)
+                view?.scrollTo(
+                    position
+                )
+            }) { obj -> obj.printStackTrace() })
     }
 
     fun firePhotoClick(wrapper: Photo) {

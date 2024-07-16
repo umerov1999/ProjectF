@@ -11,11 +11,11 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.Repository.owners
-import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingle
 
 object Accounts {
     @Suppress("DEPRECATION")
@@ -29,10 +29,10 @@ object Accounts {
         if (aid == ISettings.IAccountsSettings.INVALID_ID) {
             return
         }
-        val user: User = try {
+        val user = try {
             owners
                 .getBaseOwnerInfo(aid, aid, IOwnersRepository.MODE_CACHE)
-                .blockingGet() as User
+                .syncSingle()
         } catch (e: Exception) {
             // NotFountException
             return

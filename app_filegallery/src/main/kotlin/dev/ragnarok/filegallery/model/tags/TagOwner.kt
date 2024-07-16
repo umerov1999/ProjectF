@@ -4,7 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 
 class TagOwner : Parcelable {
-    var id = 0
+    var id = 0L
         private set
     var name: String? = null
         private set
@@ -13,7 +13,7 @@ class TagOwner : Parcelable {
 
     constructor()
     constructor(parcel: Parcel) {
-        id = parcel.readInt()
+        id = parcel.readLong()
         name = parcel.readString()
         count = parcel.readInt()
     }
@@ -23,7 +23,7 @@ class TagOwner : Parcelable {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(id)
+        parcel.writeLong(id)
         parcel.writeString(name)
         parcel.writeInt(count)
     }
@@ -33,7 +33,7 @@ class TagOwner : Parcelable {
         return this
     }
 
-    fun setId(id: Int): TagOwner {
+    fun setId(id: Long): TagOwner {
         this.id = id
         return this
     }

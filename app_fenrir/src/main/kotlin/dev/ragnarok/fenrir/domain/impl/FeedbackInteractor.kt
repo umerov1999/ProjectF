@@ -28,19 +28,21 @@ import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import dev.ragnarok.fenrir.util.VKOwnIds
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.ignoreElement
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 class FeedbackInteractor(
     private val cache: IStorages,
     private val networker: INetworker,
     private val ownersRepository: IOwnersRepository
 ) : IFeedbackInteractor {
-    override fun getCachedFeedbacks(accountId: Long): Single<List<Feedback>> {
+    override fun getCachedFeedbacks(accountId: Long): Flow<List<Feedback>> {
         val criteria = NotificationsCriteria(accountId)
         return cache.notifications()
             .findByCriteria(criteria)
-            .flatMap { dbos ->
+            .flatMapConcat { dbos ->
                 val ownIds = VKOwnIds()
                 for (dbo in dbos) {
                     populateOwnerIds(ownIds, dbo)
@@ -60,14 +62,14 @@ class FeedbackInteractor(
             }
     }
 
-    override fun getCachedFeedbacksOfficial(accountId: Long): Single<FeedbackVKOfficialList> {
+    override fun getCachedFeedbacksOfficial(accountId: Long): Flow<FeedbackVKOfficialList> {
         val criteria = NotificationsCriteria(accountId)
         return cache.notifications()
             .findByCriteriaOfficial(criteria)
-            .flatMap { dbos ->
+            .map { dbos ->
                 val ret = FeedbackVKOfficialList()
                 ret.items = ArrayList(dbos)
-                Single.just(ret)
+                ret
             }
     }
 
@@ -75,11 +77,11 @@ class FeedbackInteractor(
         accountId: Long,
         count: Int?,
         startFrom: Int?
-    ): Single<FeedbackVKOfficialList> {
+    ): Flow<FeedbackVKOfficialList> {
         return networker.vkDefault(accountId)
             .notifications()
             .getOfficial(count, startFrom, null, null, null)
-            .flatMap { uit ->
+            .flatMapConcat { uit ->
                 cache.notifications()
                     .insertOfficial(accountId, uit.items.orEmpty(), startFrom?.orZero() == 0)
                     .map {
@@ -88,7 +90,7 @@ class FeedbackInteractor(
             }
     }
 
-    override fun hide(accountId: Long, query: String?): Completable {
+    override fun hide(accountId: Long, query: String?): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .notifications()
             .hide(query)
@@ -99,10 +101,10 @@ class FeedbackInteractor(
         accountId: Long,
         count: Int,
         startFrom: String?
-    ): Single<Pair<List<Feedback>, String?>> {
+    ): Flow<Pair<List<Feedback>, String?>> {
         return networker.vkDefault(accountId)
             .notifications()[count, startFrom, null, null, null]
-            .flatMap { response ->
+            .flatMapConcat { response ->
                 val dtos = listEmptyIfNull(response.notifications)
                 val dbos: MutableList<FeedbackEntity> = ArrayList(dtos.size)
                 val ownIds = VKOwnIds()
@@ -115,7 +117,7 @@ class FeedbackInteractor(
                 val owners = transformOwners(response.profiles, response.groups)
                 cache.notifications()
                     .insert(accountId, dbos, ownerEntities, startFrom.isNullOrEmpty())
-                    .flatMap {
+                    .flatMapConcat {
                         ownersRepository
                             .findBaseOwnersDataAsBundle(
                                 accountId,
@@ -134,7 +136,7 @@ class FeedbackInteractor(
             }
     }
 
-    override fun markAsViewed(accountId: Long): Single<Boolean> {
+    override fun markAsViewed(accountId: Long): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .notifications()
             .markAsViewed()

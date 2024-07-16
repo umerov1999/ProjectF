@@ -1,12 +1,12 @@
 package dev.ragnarok.fenrir.fragment.proxymanager
 
 import android.os.Bundle
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.Includes.proxySettings
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
 import dev.ragnarok.fenrir.model.ProxyConfig
 import dev.ragnarok.fenrir.settings.IProxySettings
 import dev.ragnarok.fenrir.util.Utils.findIndexById
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 
 class ProxyManagerPresenter(savedInstanceState: Bundle?) :
     RxSupportPresenter<IProxyManagerView>(savedInstanceState) {
@@ -59,14 +59,11 @@ class ProxyManagerPresenter(savedInstanceState: Bundle?) :
     }
 
     init {
-        appendDisposable(settings.observeAdding
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onProxyAdded(it) })
-        appendDisposable(settings.observeRemoving
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onProxyDeleted(it) })
-        appendDisposable(settings.observeActive
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onActiveChanged(it.get()) })
+        appendJob(settings.observeAdding
+            .sharedFlowToMain { onProxyAdded(it) })
+        appendJob(settings.observeRemoving
+            .sharedFlowToMain { onProxyDeleted(it) })
+        appendJob(settings.observeActive
+            .sharedFlowToMain { onActiveChanged(it.get()) })
     }
 }

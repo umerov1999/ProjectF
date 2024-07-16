@@ -25,7 +25,11 @@ object ImageHelper {
             obj = Picture()
             canvas = obj.beginRecording(bitmapWidth, bitmapHeight)
         } else {
-            output = Bitmap.createBitmap(bitmapWidth, bitmapHeight, workBitmap.config)
+            output = Bitmap.createBitmap(
+                bitmapWidth,
+                bitmapHeight,
+                workBitmap.config ?: Bitmap.Config.ARGB_8888
+            )
             canvas = Canvas(output)
         }
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
@@ -55,7 +59,11 @@ object ImageHelper {
             obj = Picture()
             canvas = obj.beginRecording(bitmapWidth, bitmapHeight)
         } else {
-            output = Bitmap.createBitmap(bitmapWidth, bitmapHeight, workBitmap.config)
+            output = Bitmap.createBitmap(
+                bitmapWidth,
+                bitmapHeight,
+                workBitmap.config ?: Bitmap.Config.ARGB_8888
+            )
             canvas = Canvas(output)
         }
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)

@@ -17,6 +17,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toFile
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -31,7 +32,6 @@ import dev.ragnarok.filegallery.fragment.filemanager.FileManagerAdapter.ClickLis
 import dev.ragnarok.filegallery.fragment.tagowner.TagOwnerBottomSheet
 import dev.ragnarok.filegallery.fragment.tagowner.TagOwnerBottomSheet.Companion.REQUEST_TAG
 import dev.ragnarok.filegallery.fragment.tagowner.TagOwnerBottomSheetSelected
-import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.getParcelableCompat
 import dev.ragnarok.filegallery.getParcelableExtraCompat
 import dev.ragnarok.filegallery.listener.BackPressCallback
@@ -51,19 +51,20 @@ import dev.ragnarok.filegallery.place.PlaceFactory.getPhotoLocalPlace
 import dev.ragnarok.filegallery.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.settings.Settings
+import dev.ragnarok.filegallery.upload.Upload
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.ViewUtils
-import dev.ragnarok.filegallery.util.rxutils.RxUtils
+import dev.ragnarok.filegallery.util.coroutines.CancelableJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.filegallery.view.MySearchView
 import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.disposables.Disposable
 import java.io.File
 import java.util.Calendar
-import java.util.concurrent.TimeUnit
 
 class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerView>(),
-    IFileManagerView, ClickListener, BackPressCallback, CanBackPressedCallback {
+    IFileManagerView, ClickListener, BackPressCallback, CanBackPressedCallback,
+    DocsUploadAdapter.ActionListener {
     private var mRecyclerView: RecyclerView? = null
     private var mLayoutManager: GridLayoutManager? = null
     private var empty: TextView? = null
@@ -73,11 +74,14 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
     private var mSelected: FloatingActionButton? = null
 
-    private var animationDispose = Disposable.disposed()
+    private var animationDispose = CancelableJob()
     private var mAnimationLoaded = false
     private var animLoad: ObjectAnimator? = null
     private var mySearchView: MySearchView? = null
     private var musicButton: FloatingActionButton? = null
+
+    private var mUploadAdapter: DocsUploadAdapter? = null
+    private var mUploadRoot: View? = null
 
     private val requestPhotoUpdate = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -97,7 +101,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
 
     override fun onDestroy() {
         super.onDestroy()
-        animationDispose.dispose()
+        animationDispose.cancel()
     }
 
     override fun onResume() {
@@ -166,6 +170,14 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
                 return false
             }
         })
+
+        val uploadRecyclerView: RecyclerView = root.findViewById(R.id.uploads_recycler_view)
+        uploadRecyclerView.layoutManager =
+            LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
+        mUploadAdapter = DocsUploadAdapter(emptyList(), this)
+        uploadRecyclerView.adapter = mUploadAdapter
+        mUploadRoot = root.findViewById(R.id.uploads_root)
+
         val columns = resources.getInteger(R.integer.files_column_count)
         mLayoutManager = GridLayoutManager(requireActivity(), columns, RecyclerView.VERTICAL, false)
         mRecyclerView?.layoutManager = mLayoutManager
@@ -406,15 +418,13 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
     }
 
     override fun resolveLoading(visible: Boolean) {
-        animationDispose.dispose()
+        animationDispose.cancel()
         if (mAnimationLoaded && !visible) {
             mAnimationLoaded = false
             animLoad?.start()
         } else if (!mAnimationLoaded && visible) {
             animLoad?.end()
-            animationDispose = Completable.create {
-                it.onComplete()
-            }.delay(300, TimeUnit.MILLISECONDS).fromIOToMain().subscribe({
+            animationDispose.set(delayTaskFlow(300).toMain {
                 mAnimationLoaded = true
                 loading?.visibility = View.VISIBLE
                 loading?.alpha = 1f
@@ -430,7 +440,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
                     )
                 )
                 loading?.playAnimation()
-            }, RxUtils.ignore())
+            })
         }
     }
 
@@ -485,5 +495,35 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
 
     override fun canBackPressed(): Boolean {
         return presenter?.canLoadUp() == true
+    }
+
+    override fun onRemoveClick(upload: Upload) {
+        presenter?.fireRemoveClick(
+            upload
+        )
+    }
+
+    override fun setUploadDataVisible(visible: Boolean) {
+        mUploadRoot?.visibility = if (visible) View.VISIBLE else View.GONE
+    }
+
+    override fun displayUploads(data: List<Upload>) {
+        mUploadAdapter?.setData(data)
+    }
+
+    override fun notifyUploadItemsAdded(position: Int, count: Int) {
+        mUploadAdapter?.notifyItemRangeInserted(position, count)
+    }
+
+    override fun notifyUploadItemChanged(position: Int) {
+        mUploadAdapter?.notifyItemChanged(position)
+    }
+
+    override fun notifyUploadItemRemoved(position: Int) {
+        mUploadAdapter?.notifyItemRemoved(position)
+    }
+
+    override fun notifyUploadProgressChanged(position: Int, progress: Int, smoothly: Boolean) {
+        mUploadAdapter?.changeUploadProgress(position, progress, smoothly)
     }
 }

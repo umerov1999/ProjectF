@@ -4,19 +4,19 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IFeedbackInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.FeedbackVKOfficialList
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class FeedbackVKOfficialPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IFeedbackVKOfficialView>(accountId, savedInstanceState) {
     private val pages: FeedbackVKOfficialList = FeedbackVKOfficialList()
     private val fInteractor: IFeedbackInteractor
-    private val actualDataDisposable = CompositeDisposable()
+    private val actualDataDisposable = CompositeJob()
     private var actualDataReceived = false
     private var endOfContent = false
     private var actualDataLoading = false
@@ -29,8 +29,7 @@ class FeedbackVKOfficialPresenter(accountId: Long, savedInstanceState: Bundle?) 
         actualDataLoading = true
         resolveRefreshingView()
         actualDataDisposable.add(fInteractor.getActualFeedbacksOfficial(accountId, COUNT, offset)
-            .fromIOToMain()
-            .subscribe({ data ->
+            .fromIOToMain({ data ->
                 onActualDataReceived(
                     offset,
                     data
@@ -42,8 +41,7 @@ class FeedbackVKOfficialPresenter(accountId: Long, savedInstanceState: Bundle?) 
         actualDataLoading = true
         resolveRefreshingView()
         actualDataDisposable.add(fInteractor.getCachedFeedbacksOfficial(accountId)
-            .fromIOToMain()
-            .subscribe({ data ->
+            .fromIOToMain({ data ->
                 onCachedDataReceived(
                     data
                 )
@@ -61,8 +59,7 @@ class FeedbackVKOfficialPresenter(accountId: Long, savedInstanceState: Bundle?) 
             return
         }
         actualDataDisposable.add(fInteractor.hide(accountId, query)
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 pages.items?.removeAt(position)
                 view?.notifyItemRemoved(
                     position
@@ -116,7 +113,7 @@ class FeedbackVKOfficialPresenter(accountId: Long, savedInstanceState: Bundle?) 
     }
 
     override fun onDestroyed() {
-        actualDataDisposable.dispose()
+        actualDataDisposable.cancel()
         super.onDestroyed()
     }
 

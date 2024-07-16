@@ -5,7 +5,6 @@ import dev.ragnarok.fenrir.domain.IMessagesRepository
 import dev.ragnarok.fenrir.domain.Mode
 import dev.ragnarok.fenrir.domain.Repository.messages
 import dev.ragnarok.fenrir.fragment.messages.AbsMessageListPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Conversation
 import dev.ragnarok.fenrir.model.LoadMoreState
 import dev.ragnarok.fenrir.model.Message
@@ -17,8 +16,9 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.getSelected
 import dev.ragnarok.fenrir.util.Utils.indexOf
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.dummy
-import io.reactivex.rxjava3.core.Observable
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.dummy
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
 
 class MessagesLookPresenter(
     accountId: Long,
@@ -33,14 +33,13 @@ class MessagesLookPresenter(
     private var mFocusMessageId = 0
 
     private fun fetchConversationThenActual() {
-        appendDisposable(
+        appendJob(
             messagesInteractor.getConversationSingle(
                 accountId,
                 peer.id,
                 Mode.ANY
             )
-                .fromIOToMain()
-                .subscribe({ onConversationFetched(it) }, { onConversationFetchFail(it) })
+                .fromIOToMain({ onConversationFetched(it) }, { onConversationFetchFail(it) })
         )
     }
 
@@ -100,7 +99,7 @@ class MessagesLookPresenter(
     }
 
     private fun initRequest() {
-        appendDisposable(messagesInteractor.getPeerMessages(
+        appendJob(messagesInteractor.getPeerMessages(
             accountId,
             peer.id,
             COUNT,
@@ -109,8 +108,7 @@ class MessagesLookPresenter(
             cacheData = false,
             rev = false
         )
-            .fromIOToMain()
-            .subscribe({ messages -> onInitDataLoaded(messages) }) { t ->
+            .fromIOToMain({ messages -> onInitDataLoaded(messages) }) { t ->
                 onDataGetError(
                     t
                 )
@@ -138,12 +136,11 @@ class MessagesLookPresenter(
     }
 
     private fun deleteSentImpl(ids: Collection<Int>) {
-        appendDisposable(messagesInteractor.deleteMessages(
+        appendJob(messagesInteractor.deleteMessages(
             accountId, peer.id, ids,
             forAll = false, spam = false
         )
-            .fromIOToMain()
-            .subscribe(dummy()) { t ->
+            .fromIOToMain(dummy()) { t ->
                 showError(t)
             })
     }
@@ -161,7 +158,7 @@ class MessagesLookPresenter(
         val firstMessageId = firstMessageId ?: return
         loadingState.headerLoading()
         val targetMessageId = firstMessageId
-        appendDisposable(messagesInteractor.getPeerMessages(
+        appendJob(messagesInteractor.getPeerMessages(
             accountId,
             peer.id,
             COUNT,
@@ -170,8 +167,7 @@ class MessagesLookPresenter(
             cacheData = false,
             rev = false
         )
-            .fromIOToMain()
-            .subscribe({ onDownDataLoaded(it) }) { t ->
+            .fromIOToMain({ onDownDataLoaded(it) }) { t ->
                 onDownDataGetError(
                     t
                 )
@@ -180,21 +176,21 @@ class MessagesLookPresenter(
 
     override fun onActionModeDeleteClick() {
         super.onActionModeDeleteClick()
-        val ids = Observable.fromIterable(data)
-            .filter { it.isSelected }
-            .map { it.getObjectId() }
-            .toList()
-            .blockingGet()
+        val ids = ArrayList<Int>(data.size)
+        for (i in data) {
+            if (i.isSelected) {
+                ids.add(i.getObjectId())
+            }
+        }
         if (ids.nonNullNoEmpty()) {
-            appendDisposable(messagesInteractor.deleteMessages(
+            appendJob(messagesInteractor.deleteMessages(
                 accountId,
                 peer.id,
                 ids,
                 forAll = false,
                 spam = false
             )
-                .fromIOToMain()
-                .subscribe({ onMessagesDeleteSuccessfully(ids) }) { t ->
+                .fromIOToMain({ onMessagesDeleteSuccessfully(ids) }) { t ->
                     showError(getCauseIfRuntime(t))
                 })
         }
@@ -202,18 +198,18 @@ class MessagesLookPresenter(
 
     override fun onActionModeSpamClick() {
         super.onActionModeDeleteClick()
-        val ids = Observable.fromIterable(data)
-            .filter { it.isSelected }
-            .map { it.getObjectId() }
-            .toList()
-            .blockingGet()
+        val ids = ArrayList<Int>(data.size)
+        for (i in data) {
+            if (i.isSelected) {
+                ids.add(i.getObjectId())
+            }
+        }
         if (ids.nonNullNoEmpty()) {
-            appendDisposable(messagesInteractor.deleteMessages(
+            appendJob(messagesInteractor.deleteMessages(
                 accountId, peer.id, ids,
                 forAll = false, spam = true
             )
-                .fromIOToMain()
-                .subscribe({ onMessagesDeleteSuccessfully(ids) }) { t ->
+                .fromIOToMain({ onMessagesDeleteSuccessfully(ids) }) { t ->
                     showError(getCauseIfRuntime(t))
                 })
         }
@@ -224,7 +220,7 @@ class MessagesLookPresenter(
         val lastMessageId = lastMessageId ?: return
         loadingState.footerLoading()
         val targetLastMessageId = lastMessageId
-        appendDisposable(messagesInteractor.getPeerMessages(
+        appendJob(messagesInteractor.getPeerMessages(
             accountId,
             peer.id,
             COUNT,
@@ -233,8 +229,7 @@ class MessagesLookPresenter(
             cacheData = false,
             rev = false
         )
-            .fromIOToMain()
-            .subscribe({ onUpDataLoaded(it) }) { t ->
+            .fromIOToMain({ onUpDataLoaded(it) }) { t ->
                 onUpDataGetError(
                     t
                 )
@@ -259,9 +254,8 @@ class MessagesLookPresenter(
 
     fun fireMessageRestoreClick(message: Message) {
         val id = message.getObjectId()
-        appendDisposable(messagesInteractor.restoreMessage(accountId, peer.id, id)
-            .fromIOToMain()
-            .subscribe({ onMessageRestoredSuccessfully(id) }) { t ->
+        appendJob(messagesInteractor.restoreMessage(accountId, peer.id, id)
+            .fromIOToMain({ onMessageRestoredSuccessfully(id) }) { t ->
                 showError(getCauseIfRuntime(t))
             })
     }
@@ -380,10 +374,10 @@ class MessagesLookPresenter(
     }
 
     fun fireTranscript(voiceMessageId: String?, messageId: Int) {
-        appendDisposable(
+        appendJob(
             messages.recogniseAudioMessage(accountId, messageId, voiceMessageId)
-                .fromIOToMain()
-                .subscribe({ }) { })
+                .hiddenIO()
+        )
     }
 
     companion object {

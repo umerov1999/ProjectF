@@ -67,6 +67,7 @@ android {
         jvmTarget = "1.8"
         freeCompilerArgs = ["-opt-in=kotlin.contracts.ExperimentalContracts",
                             "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
+                            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
                             "-opt-in=kotlinx.serialization.internal.CoreFriendModuleApi",
                             "-opt-in=kotlinx.serialization.InternalSerializationApi",
                             "-opt-in=kotlin.RequiresOptIn", "-opt-in=kotlin.ExperimentalStdlibApi"]
@@ -107,7 +108,6 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:$swiperefreshlayoutVersion")
     implementation("androidx.browser:browser:$browserVersion")
     implementation("androidx.exifinterface:exifinterface:$exifinterfaceVersion")
-    implementation("io.reactivex.rxjava3:rxjava:$rxJavaVersion")
     //implementation project(path: ":libfenrir")
     implementation project(path: ":picasso3")
     implementation project(path: ":recyclerview")

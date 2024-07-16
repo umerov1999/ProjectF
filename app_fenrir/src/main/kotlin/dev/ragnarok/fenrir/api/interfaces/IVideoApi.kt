@@ -9,7 +9,7 @@ import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
 import dev.ragnarok.fenrir.api.model.response.DefaultCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.SearchVideoResponse
 import dev.ragnarok.fenrir.api.model.server.VKApiVideosUploadServer
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IVideoApi {
     @CheckResult
@@ -17,13 +17,13 @@ interface IVideoApi {
         ownerId: Long?, videoId: Int, needLikes: Boolean?,
         startCommentId: Int?, offset: Int?, count: Int?, sort: String?,
         extended: Boolean?, fields: String?
-    ): Single<DefaultCommentsResponse>
+    ): Flow<DefaultCommentsResponse>
 
     @CheckResult
-    fun addVideo(targetId: Long?, videoId: Int?, ownerId: Long?): Single<Int>
+    fun addVideo(targetId: Long?, videoId: Int?, ownerId: Long?): Flow<Int>
 
     @CheckResult
-    fun deleteVideo(videoId: Int?, ownerId: Long?, targetId: Long?): Single<Int>
+    fun deleteVideo(videoId: Int?, ownerId: Long?, targetId: Long?): Flow<Int>
 
     @CheckResult
     fun getAlbums(
@@ -31,40 +31,40 @@ interface IVideoApi {
         offset: Int?,
         count: Int?,
         needSystem: Boolean?
-    ): Single<Items<VKApiVideoAlbum>>
+    ): Flow<Items<VKApiVideoAlbum>>
 
     @CheckResult
     fun getAlbumsByVideo(
         target_id: Long?,
         owner_id: Long?,
         video_id: Int?
-    ): Single<Items<VKApiVideoAlbum>>
+    ): Flow<Items<VKApiVideoAlbum>>
 
     @CheckResult
     fun search(
         query: String?, sort: Int?, hd: Boolean?, adult: Boolean?, filters: String?,
         searchOwn: Boolean?, offset: Int?, longer: Int?, shorter: Int?,
         count: Int?, extended: Boolean?
-    ): Single<SearchVideoResponse>
+    ): Flow<SearchVideoResponse>
 
     @CheckResult
-    fun restoreComment(ownerId: Long?, commentId: Int): Single<Boolean>
+    fun restoreComment(ownerId: Long?, commentId: Int): Flow<Boolean>
 
     @CheckResult
-    fun deleteComment(ownerId: Long?, commentId: Int): Single<Boolean>
+    fun deleteComment(ownerId: Long?, commentId: Int): Flow<Boolean>
 
     @CheckResult
     operator fun get(
         ownerId: Long?, ids: Collection<AccessIdPair>?, albumId: Int?,
         count: Int?, offset: Int?, extended: Boolean?
-    ): Single<Items<VKApiVideo>>
+    ): Flow<Items<VKApiVideo>>
 
     @CheckResult
     fun createComment(
         ownerId: Long, videoId: Int, message: String?,
         attachments: Collection<IAttachmentToken>?, fromGroup: Boolean?,
         replyToComment: Int?, stickerId: Int?, uniqueGeneratedId: Int?
-    ): Single<Int>
+    ): Flow<Int>
 
     @CheckResult
     fun editComment(
@@ -72,15 +72,15 @@ interface IVideoApi {
         commentId: Int,
         message: String?,
         attachments: Collection<IAttachmentToken>?
-    ): Single<Boolean>
+    ): Flow<Boolean>
 
     @CheckResult
-    fun edit(ownerId: Long, video_id: Int, name: String?, desc: String?): Single<Boolean>
+    fun edit(ownerId: Long, video_id: Int, name: String?, desc: String?): Flow<Boolean>
 
     @CheckResult
     fun getVideoServer(
         isPrivate: Int?,
         group_id: Long?,
         name: String?
-    ): Single<VKApiVideosUploadServer>
+    ): Flow<VKApiVideosUploadServer>
 }

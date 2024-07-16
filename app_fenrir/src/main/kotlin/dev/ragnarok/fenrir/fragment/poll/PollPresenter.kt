@@ -5,9 +5,9 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IPollInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Poll
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class PollPresenter(accountId: Long, private var mPoll: Poll, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IPollView>(accountId, savedInstanceState) {
@@ -22,14 +22,13 @@ class PollPresenter(accountId: Long, private var mPoll: Poll, savedInstanceState
     private fun refreshPollData() {
         if (loadingNow) return
         setLoadingNow(true)
-        appendDisposable(pollInteractor.getPollById(
+        appendJob(pollInteractor.getPollById(
             accountId,
             mPoll.ownerId,
             mPoll.id,
             mPoll.isBoard
         )
-            .fromIOToMain()
-            .subscribe({ poll -> onPollInfoUpdated(poll) }) { t ->
+            .fromIOToMain({ poll -> onPollInfoUpdated(poll) }) { t ->
                 onLoadingError(
                     t
                 )
@@ -113,9 +112,8 @@ class PollPresenter(accountId: Long, private var mPoll: Poll, savedInstanceState
         if (loadingNow) return
         val voteIds: Set<Long> = HashSet(mTempCheckedId)
         setLoadingNow(true)
-        appendDisposable(pollInteractor.addVote(accountId, mPoll, voteIds)
-            .fromIOToMain()
-            .subscribe({ onPollInfoUpdated(it) }) {
+        appendJob(pollInteractor.addVote(accountId, mPoll, voteIds)
+            .fromIOToMain({ onPollInfoUpdated(it) }) {
                 onLoadingError(it)
             })
     }
@@ -139,9 +137,8 @@ class PollPresenter(accountId: Long, private var mPoll: Poll, savedInstanceState
     private fun removeVote() {
         val answerId = mPoll.myAnswerIds?.get(0) ?: return
         setLoadingNow(true)
-        appendDisposable(pollInteractor.removeVote(accountId, mPoll, answerId)
-            .fromIOToMain()
-            .subscribe({ poll -> onPollInfoUpdated(poll) }) { t ->
+        appendJob(pollInteractor.removeVote(accountId, mPoll, answerId)
+            .fromIOToMain({ poll -> onPollInfoUpdated(poll) }) { t ->
                 onLoadingError(
                     t
                 )

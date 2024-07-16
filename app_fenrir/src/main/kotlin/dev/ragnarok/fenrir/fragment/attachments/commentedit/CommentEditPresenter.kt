@@ -2,14 +2,12 @@ package dev.ragnarok.fenrir.fragment.attachments.commentedit
 
 import android.os.Bundle
 import dev.ragnarok.fenrir.Includes.networkInterfaces
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.Includes.stores
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.ICommentsInteractor
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.domain.impl.CommentsInteractor
 import dev.ragnarok.fenrir.fragment.attachments.absattachmentsedit.AbsAttachmentsEditPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.model.AttachmentEntry
 import dev.ragnarok.fenrir.model.Comment
@@ -22,6 +20,8 @@ import dev.ragnarok.fenrir.upload.UploadResult
 import dev.ragnarok.fenrir.upload.UploadUtils
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils.copyToArrayListWithPredicate
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 
 class CommentEditPresenter(
     comment: Comment,
@@ -121,7 +121,7 @@ class CommentEditPresenter(
         val commented = orig.commented
         val commentId = orig.getObjectId()
         val body = getTextBody()
-        appendDisposable(commentsInteractor.edit(
+        appendJob(commentsInteractor.edit(
             accountId,
             commented,
             commentId,
@@ -129,8 +129,7 @@ class CommentEditPresenter(
             CommentThread,
             models
         )
-            .fromIOToMain()
-            .subscribe({ comment -> onEditComplete(comment) }) { t ->
+            .fromIOToMain({ comment -> onEditComplete(comment) }) { t ->
                 onEditError(
                     t
                 )
@@ -186,35 +185,29 @@ class CommentEditPresenter(
             setTextBody(orig.text)
             initialPopulateEntries()
         }
-        appendDisposable(uploadManager[accountId, destination]
-            .fromIOToMain()
-            .subscribe { uploads -> onUploadsReceived(uploads) })
-        appendDisposable(uploadManager.observeAdding()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { it ->
+        appendJob(uploadManager[accountId, destination]
+            .fromIOToMain { uploads -> onUploadsReceived(uploads) })
+        appendJob(uploadManager.observeAdding()
+            .sharedFlowToMain { it ->
                 onUploadQueueUpdates(
                     it
                 ) { it.accountId == accountId && destination.compareTo(it.destination) }
             })
-        appendDisposable(uploadManager.observeDeleting(false)
-            .observeOn(provideMainThreadScheduler())
-            .subscribe {
+        appendJob(uploadManager.observeDeleting(false)
+            .sharedFlowToMain {
                 onUploadObjectRemovedFromQueue(
                     it
                 )
             })
-        appendDisposable(uploadManager.observeStatus()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe {
+        appendJob(uploadManager.observeStatus()
+            .sharedFlowToMain {
                 onUploadStatusUpdate(
                     it
                 )
             })
-        appendDisposable(uploadManager.observeProgress()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onUploadProgressUpdate(it) })
-        appendDisposable(uploadManager.observeResults()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onUploadsQueueChanged(it) })
+        appendJob(uploadManager.observeProgress()
+            .sharedFlowToMain { onUploadProgressUpdate(it) })
+        appendJob(uploadManager.observeResults()
+            .sharedFlowToMain { onUploadsQueueChanged(it) })
     }
 }

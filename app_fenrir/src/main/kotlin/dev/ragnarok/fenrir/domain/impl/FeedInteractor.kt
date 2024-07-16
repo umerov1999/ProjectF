@@ -31,7 +31,9 @@ import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import dev.ragnarok.fenrir.util.VKOwnIds
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 import java.util.Locale
 
 class FeedInteractor(
@@ -76,7 +78,7 @@ class FeedInteractor(
         filters: String?,
         maxPhotos: Int?,
         sourceIds: String?
-    ): Single<Pair<List<News>, String?>> {
+    ): Flow<Pair<List<News>, String?>> {
         return when (sourceIds) {
             "likes", "recommendation", "top" -> {
                 when (sourceIds) {
@@ -108,7 +110,7 @@ class FeedInteractor(
                             count,
                             Fields.FIELDS_BASE_OWNER
                         )
-                }.flatMap { response ->
+                }.flatMapConcat { response ->
                     val nextFrom = response.nextFrom
                     val owners = transformOwners(response.profiles, response.groups)
                     val feed = listEmptyIfNull(response.items)
@@ -124,7 +126,7 @@ class FeedInteractor(
                     val ownerEntities = mapOwners(response.profiles, response.groups)
                     stores.feed()
                         .store(accountId, dbos, ownerEntities, startFrom.isNullOrEmpty())
-                        .flatMap {
+                        .flatMapConcat {
                             mainSettings.storeFeedNextFrom(accountId, nextFrom)
                             mainSettings.setFeedSourceIds(accountId, sourceIds)
                             ownersRepository.findBaseOwnersDataAsBundle(
@@ -156,7 +158,7 @@ class FeedInteractor(
                         "updates_audios"
                     ).contains(sourceIds)
                 ) null else sourceIds, startFrom, count, Fields.FIELDS_BASE_OWNER]
-                    .flatMap { response ->
+                    .flatMapConcat { response ->
                         val blockAds = mainSettings.isAd_block_story_news
                         val needStripRepost = mainSettings.isStrip_news_repost
                         val rgx = mainSettings.isBlock_news_by_words
@@ -179,7 +181,7 @@ class FeedInteractor(
                         val ownerEntities = mapOwners(response.profiles, response.groups)
                         stores.feed()
                             .store(accountId, dbos, ownerEntities, startFrom.isNullOrEmpty())
-                            .flatMap {
+                            .flatMapConcat {
                                 mainSettings.storeFeedNextFrom(accountId, nextFrom)
                                 mainSettings.setFeedSourceIds(accountId, sourceIds)
                                 ownersRepository.findBaseOwnersDataAsBundle(
@@ -215,7 +217,7 @@ class FeedInteractor(
         criteria: NewsFeedCriteria,
         count: Int,
         startFrom: String?
-    ): Single<Pair<List<Post>, String?>> {
+    ): Flow<Pair<List<Post>, String?>> {
         val gpsOption = criteria.findOptionByKey<SimpleGPSOption>(NewsFeedCriteria.KEY_GPS)
         val startDateOption =
             criteria.findOptionByKey<SimpleDateOption>(NewsFeedCriteria.KEY_START_TIME)
@@ -234,7 +236,7 @@ class FeedInteractor(
                 startFrom,
                 Fields.FIELDS_BASE_OWNER
             )
-            .flatMap { response ->
+            .flatMapConcat { response ->
                 val dtos = listEmptyIfNull(response.items)
                 val owners = transformOwners(response.profiles, response.groups)
                 val ownIds = VKOwnIds()
@@ -254,29 +256,29 @@ class FeedInteractor(
             }
     }
 
-    override fun saveList(accountId: Long, title: String?, listIds: Collection<Long>): Single<Int> {
+    override fun saveList(accountId: Long, title: String?, listIds: Collection<Long>): Flow<Int> {
         return networker.vkDefault(accountId)
             .newsfeed().saveList(title, listIds)
     }
 
-    override fun addBan(accountId: Long, listIds: Collection<Long>): Single<Int> {
+    override fun addBan(accountId: Long, listIds: Collection<Long>): Flow<Int> {
         return networker.vkDefault(accountId)
             .newsfeed().addBan(listIds)
     }
 
-    override fun deleteBan(accountId: Long, listIds: Collection<Long>): Single<Int> {
+    override fun deleteBan(accountId: Long, listIds: Collection<Long>): Flow<Int> {
         return networker.vkDefault(accountId)
             .newsfeed().deleteBan(listIds)
     }
 
-    override fun getBanned(accountId: Long): Single<List<Owner>> {
+    override fun getBanned(accountId: Long): Flow<List<Owner>> {
         return networker.vkDefault(accountId)
             .newsfeed().getBanned().map { response ->
                 transformOwners(response.profiles, response.groups)
             }
     }
 
-    override fun deleteList(accountId: Long, list_id: Int?): Single<Int> {
+    override fun deleteList(accountId: Long, list_id: Int?): Flow<Int> {
         return networker.vkDefault(accountId)
             .newsfeed().deleteList(list_id)
     }
@@ -286,12 +288,12 @@ class FeedInteractor(
         type: String?,
         owner_id: Long?,
         item_id: Int?
-    ): Single<IgnoreItemResponse> {
+    ): Flow<IgnoreItemResponse> {
         return networker.vkDefault(accountId)
             .newsfeed().ignoreItem(type, owner_id, item_id)
     }
 
-    override fun getCachedFeedLists(accountId: Long): Single<List<FeedList>> {
+    override fun getCachedFeedLists(accountId: Long): Flow<List<FeedList>> {
         val criteria = FeedSourceCriteria(accountId)
         return stores.feed()
             .getAllLists(criteria)
@@ -304,7 +306,7 @@ class FeedInteractor(
             }
     }
 
-    override fun getActualFeedLists(accountId: Long): Single<List<FeedList>> {
+    override fun getActualFeedLists(accountId: Long): Flow<List<FeedList>> {
         return networker.vkDefault(accountId)
             .newsfeed()
             .getLists(null)
@@ -313,7 +315,7 @@ class FeedInteractor(
                     items.items
                 )
             }
-            .flatMap { dtos ->
+            .flatMapConcat { dtos ->
                 val entities: MutableList<FeedListEntity> = ArrayList(dtos.size)
                 val lists: MutableList<FeedList> = ArrayList()
                 for (dto in dtos) {
@@ -326,15 +328,17 @@ class FeedInteractor(
                 }
                 stores.feed()
                     .storeLists(accountId, entities)
-                    .andThen(Single.just(lists))
+                    .map {
+                        lists
+                    }
             }
     }
 
-    override fun getCachedFeed(accountId: Long): Single<List<News>> {
+    override fun getCachedFeed(accountId: Long): Flow<List<News>> {
         val criteria = FeedCriteria(accountId)
         return stores.feed()
             .findByCriteria(criteria)
-            .flatMap { dbos ->
+            .flatMapConcat { dbos ->
                 val ownIds = VKOwnIds()
                 for (dbo in dbos) {
                     fillOwnerIds(ownIds, dbo)

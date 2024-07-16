@@ -3,18 +3,19 @@ package dev.ragnarok.fenrir.longpoll
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.longpoll.VKApiGroupLongpollUpdates
 import dev.ragnarok.fenrir.api.model.longpoll.VKApiLongpollUpdates
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.realtime.IRealtimeMessagesProcessor
 import dev.ragnarok.fenrir.util.Logger.d
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.processors.PublishProcessor
-import io.reactivex.rxjava3.schedulers.Schedulers
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.createPublishSubject
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.myEmit
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.flow.SharedFlow
 import java.lang.ref.WeakReference
 import java.util.concurrent.Executors
 
@@ -23,16 +24,16 @@ class AndroidLongpollManager internal constructor(
     private val messagesProcessor: IRealtimeMessagesProcessor
 ) : ILongpollManager, UserLongpoll.Callback, GroupLongpoll.Callback {
     private val map: HashMap<Long, LongpollEntry> = HashMap(1)
-    private val keepAlivePublisher: PublishProcessor<Long> = PublishProcessor.create()
-    private val actionsPublisher: PublishProcessor<VKApiLongpollUpdates> = PublishProcessor.create()
+    private val keepAlivePublisher = createPublishSubject<Long>()
+    private val actionsPublisher = createPublishSubject<VKApiLongpollUpdates>()
     private val lock = Any()
-    private val compositeDisposable = CompositeDisposable()
-    override fun observe(): Flowable<VKApiLongpollUpdates> {
-        return actionsPublisher.onBackpressureBuffer()
+    private val compositeJob = CompositeJob()
+    override fun observe(): SharedFlow<VKApiLongpollUpdates> {
+        return actionsPublisher
     }
 
-    override fun observeKeepAlive(): Flowable<Long> {
-        return keepAlivePublisher.onBackpressureBuffer()
+    override fun observeKeepAlive(): SharedFlow<Long> {
+        return keepAlivePublisher
     }
 
     private fun createLongpoll(accountId: Long): ILongpoll {
@@ -69,7 +70,7 @@ class AndroidLongpollManager internal constructor(
 
     internal fun notifyPreDestroy(entry: LongpollEntry) {
         d(TAG, "pre-destroy, accountId: " + entry.accountId)
-        keepAlivePublisher.onNext(entry.accountId)
+        keepAlivePublisher.myEmit(entry.accountId)
     }
 
     override fun onUpdates(aid: Long, updates: VKApiLongpollUpdates) {
@@ -92,18 +93,18 @@ class AndroidLongpollManager internal constructor(
             messagesProcessor.process(aid, it)
         }
         if (!updates.isOnlyAddMessages()) {
-            compositeDisposable.add(
+            compositeJob.add(
                 LongPollEventSaver()
                     .save(aid, updates)
-                    .subscribeOn(MONO_SCHEDULER)
-                    .observeOn(provideMainThreadScheduler())
-                    .subscribe({ onUpdatesSaved(updates) }, ignore())
+                    .fromScopeToMain(MONO_SCHEDULER) {
+                        onUpdatesSaved(updates)
+                    }
             )
         }
     }
 
     private fun onUpdatesSaved(updates: VKApiLongpollUpdates) {
-        actionsPublisher.onNext(updates)
+        actionsPublisher.myEmit(updates)
     }
 
     override fun onUpdates(groupId: Long, updates: VKApiGroupLongpollUpdates) {}
@@ -180,7 +181,8 @@ class AndroidLongpollManager internal constructor(
 
     companion object {
         private val TAG = AndroidLongpollManager::class.simpleName.orEmpty()
-        private val MONO_SCHEDULER = Schedulers.from(Executors.newFixedThreadPool(1))
+        private val MONO_SCHEDULER =
+            CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher())
     }
 
 }

@@ -42,29 +42,30 @@ import dev.ragnarok.fenrir.model.criteria.FavePostsCriteria
 import dev.ragnarok.fenrir.model.criteria.FaveProductsCriteria
 import dev.ragnarok.fenrir.model.criteria.FaveVideosCriteria
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.single
 import kotlin.math.abs
 
 internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mRepositoryContext),
     IFaveStorage {
-    override fun getFavePosts(criteria: FavePostsCriteria): Single<List<PostDboEntity>> {
-        return Single.create { e: SingleEmitter<List<PostDboEntity>> ->
+    override fun getFavePosts(criteria: FavePostsCriteria): Flow<List<PostDboEntity>> {
+        return flow {
             val uri = getFavePostsContentUriFor(criteria.accountId)
             val cursor = context.contentResolver.query(uri, null, null, null, null)
             val dbos: MutableList<PostDboEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     dbos.add(mapFavePosts(cursor))
                 }
                 cursor.close()
             }
-            e.onSuccess(dbos)
+            emit(dbos)
         }
     }
 
@@ -73,8 +74,8 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
         posts: List<PostDboEntity>,
         owners: OwnerEntities?,
         clearBeforeStore: Boolean
-    ): Completable {
-        return Completable.create { e ->
+    ): Flow<Boolean> {
+        return flow {
             val uri = getFavePostsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             if (clearBeforeStore) {
@@ -103,34 +104,35 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
                 OwnersStorage.appendOwnersInsertOperations(operations, accountId, owners)
             }
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            e.onComplete()
+            emit(true)
         }
     }
 
-    override fun getFaveLinks(accountId: Long): Single<List<FaveLinkEntity>> {
-        return Single.create { e: SingleEmitter<List<FaveLinkEntity>> ->
+    override fun getFaveLinks(accountId: Long): Flow<List<FaveLinkEntity>> {
+        return flow {
             val uri = getFaveLinksContentUriFor(accountId)
             val cursor = contentResolver.query(uri, null, null, null, null)
             val data: MutableList<FaveLinkEntity> = ArrayList()
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     data.add(mapFaveLink(cursor))
                 }
                 cursor.close()
             }
-            e.onSuccess(data)
+            emit(data)
         }
     }
 
-    override fun removeLink(accountId: Long, id: String?): Completable {
-        return Completable.fromAction {
+    override fun removeLink(accountId: Long, id: String?): Flow<Boolean> {
+        return flow {
             val uri = getFaveLinksContentUriFor(accountId)
             val where = FaveLinksColumns.LINK_ID + " LIKE ?"
             val args = arrayOf(id)
             contentResolver.delete(uri, where, args)
+            emit(true)
         }
     }
 
@@ -138,8 +140,8 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
         accountId: Long,
         entities: List<FaveLinkEntity>,
         clearBefore: Boolean
-    ): Completable {
-        return Completable.create { emitter ->
+    ): Flow<Boolean> {
+        return flow {
             val uri = getFaveLinksContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             if (clearBefore) {
@@ -173,12 +175,12 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
                 )
             }
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            emitter.onComplete()
+            emit(true)
         }
     }
 
-    override fun removePage(accountId: Long, ownerId: Long, isUser: Boolean): Completable {
-        return Completable.fromAction {
+    override fun removePage(accountId: Long, ownerId: Long, isUser: Boolean): Flow<Boolean> {
+        return flow {
             val uri =
                 if (isUser) getFaveUsersContentUriFor(accountId) else getFaveGroupsContentUriFor(
                     accountId
@@ -186,42 +188,43 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
             val where = BaseColumns._ID + " = ?"
             val args = arrayOf(ownerId.toString())
             contentResolver.delete(uri, where, args)
+            emit(true)
         }
     }
 
-    override fun getFaveUsers(accountId: Long): Single<List<FavePageEntity>> {
-        return Single.create { e: SingleEmitter<List<FavePageEntity>> ->
+    override fun getFaveUsers(accountId: Long): Flow<List<FavePageEntity>> {
+        return flow {
             val uri = getFaveUsersContentUriFor(accountId)
             val cursor = contentResolver.query(uri, null, null, null, null)
             val dbos: MutableList<FavePageEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     dbos.add(mapFaveUserDbo(cursor, accountId))
                 }
                 cursor.close()
             }
-            e.onSuccess(dbos)
+            emit(dbos)
         }
     }
 
-    override fun getFaveGroups(accountId: Long): Single<List<FavePageEntity>> {
-        return Single.create { e: SingleEmitter<List<FavePageEntity>> ->
+    override fun getFaveGroups(accountId: Long): Flow<List<FavePageEntity>> {
+        return flow {
             val uri = getFaveGroupsContentUriFor(accountId)
             val cursor = contentResolver.query(uri, null, null, null, null)
             val dbos: MutableList<FavePageEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     dbos.add(mapFaveGroupDbo(cursor, accountId))
                 }
                 cursor.close()
             }
-            e.onSuccess(dbos)
+            emit(dbos)
         }
     }
 
@@ -229,8 +232,8 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
         accountId: Long,
         photos: List<PhotoDboEntity>,
         clearBeforeStore: Boolean
-    ): Single<IntArray> {
-        return Single.create { e: SingleEmitter<IntArray> ->
+    ): Flow<IntArray> {
+        return flow {
             val operations = ArrayList<ContentProviderOperation>()
             val uri = getFavePhotosContentUriFor(accountId)
             if (clearBeforeStore) {
@@ -269,12 +272,12 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
                 val result = results[index]
                 ids[i] = extractId(result)
             }
-            e.onSuccess(ids)
+            emit(ids)
         }
     }
 
-    override fun getPhotos(criteria: FavePhotosCriteria): Single<List<PhotoDboEntity>> {
-        return Single.create { e: SingleEmitter<List<PhotoDboEntity>> ->
+    override fun getPhotos(criteria: FavePhotosCriteria): Flow<List<PhotoDboEntity>> {
+        return flow {
             val where: String?
             val args: Array<String>?
             val uri = getFavePhotosContentUriFor(criteria.accountId)
@@ -290,19 +293,19 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
             val dbos: MutableList<PhotoDboEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     mapFavePhoto(cursor)?.let { dbos.add(it) }
                 }
                 cursor.close()
             }
-            e.onSuccess(dbos)
+            emit(dbos)
         }
     }
 
-    override fun getVideos(criteria: FaveVideosCriteria): Single<List<VideoDboEntity>> {
-        return Single.create { e: SingleEmitter<List<VideoDboEntity>> ->
+    override fun getVideos(criteria: FaveVideosCriteria): Flow<List<VideoDboEntity>> {
+        return flow {
             val uri = getFaveVideosContentUriFor(criteria.accountId)
             val where: String?
             val args: Array<String>?
@@ -318,14 +321,14 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
             val dbos: MutableList<VideoDboEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     dbos.add(mapVideo(cursor))
                 }
                 cursor.close()
             }
-            e.onSuccess(dbos)
+            emit(dbos)
         }
     }
 
@@ -334,8 +337,8 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
         return MsgPack.decodeFromByteArrayEx(VideoDboEntity.serializer(), json)
     }
 
-    override fun getArticles(criteria: FaveArticlesCriteria): Single<List<ArticleDboEntity>> {
-        return Single.create { e: SingleEmitter<List<ArticleDboEntity>> ->
+    override fun getArticles(criteria: FaveArticlesCriteria): Flow<List<ArticleDboEntity>> {
+        return flow {
             val uri = getFaveArticlesContentUriFor(criteria.accountId)
             val where: String?
             val args: Array<String>?
@@ -351,19 +354,19 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
             val dbos: MutableList<ArticleDboEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     dbos.add(mapArticle(cursor))
                 }
                 cursor.close()
             }
-            e.onSuccess(dbos)
+            emit(dbos)
         }
     }
 
-    override fun getProducts(criteria: FaveProductsCriteria): Single<List<MarketDboEntity>> {
-        return Single.create { e: SingleEmitter<List<MarketDboEntity>> ->
+    override fun getProducts(criteria: FaveProductsCriteria): Flow<List<MarketDboEntity>> {
+        return flow {
             val uri = getFaveProductsContentUriFor(criteria.accountId)
             val where: String?
             val args: Array<String>?
@@ -379,14 +382,14 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
             val dbos: MutableList<MarketDboEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     dbos.add(mapProduct(cursor))
                 }
                 cursor.close()
             }
-            e.onSuccess(dbos)
+            emit(dbos)
         }
     }
 
@@ -404,8 +407,8 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
         accountId: Long,
         videos: List<VideoDboEntity>,
         clearBeforeStore: Boolean
-    ): Single<IntArray> {
-        return Single.create { e: SingleEmitter<IntArray> ->
+    ): Flow<IntArray> {
+        return flow {
             val uri = getFaveVideosContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             if (clearBeforeStore) {
@@ -440,7 +443,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
                 val result = results[index]
                 ids[i] = extractId(result)
             }
-            e.onSuccess(ids)
+            emit(ids)
         }
     }
 
@@ -448,8 +451,8 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
         accountId: Long,
         articles: List<ArticleDboEntity>,
         clearBeforeStore: Boolean
-    ): Single<IntArray> {
-        return Single.create { e: SingleEmitter<IntArray> ->
+    ): Flow<IntArray> {
+        return flow {
             val uri = getFaveArticlesContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             if (clearBeforeStore) {
@@ -484,7 +487,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
                 val result = results[index]
                 ids[i] = extractId(result)
             }
-            e.onSuccess(ids)
+            emit(ids)
         }
     }
 
@@ -492,8 +495,8 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
         accountId: Long,
         products: List<MarketDboEntity>,
         clearBeforeStore: Boolean
-    ): Single<IntArray> {
-        return Single.create { e: SingleEmitter<IntArray> ->
+    ): Flow<IntArray> {
+        return flow {
             val uri = getFaveProductsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             if (clearBeforeStore) {
@@ -528,7 +531,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
                 val result = results[index]
                 ids[i] = extractId(result)
             }
-            e.onSuccess(ids)
+            emit(ids)
         }
     }
 
@@ -536,8 +539,8 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
         accountId: Long,
         users: List<FavePageEntity>,
         clearBeforeStore: Boolean
-    ): Completable {
-        return Completable.create { e ->
+    ): Flow<Boolean> {
+        return flow {
             val uri = getFaveUsersContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             if (clearBeforeStore) {
@@ -560,7 +563,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
             if (operations.isNotEmpty()) {
                 contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
             }
-            e.onComplete()
+            emit(true)
         }
     }
 
@@ -568,8 +571,8 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
         accountId: Long,
         groups: List<FavePageEntity>,
         clearBeforeStore: Boolean
-    ): Completable {
-        return Completable.create { e ->
+    ): Flow<Boolean> {
+        return flow {
             val uri = getFaveGroupsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             if (clearBeforeStore) {
@@ -592,7 +595,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
             if (operations.isNotEmpty()) {
                 contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
             }
-            e.onComplete()
+            emit(true)
         }
     }
 
@@ -620,15 +623,15 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
             return cv
         }
 
-        private fun mapUser(accountId: Long, id: Long): UserEntity? {
-            return stores.owners().findUserDboById(accountId, id).blockingGet().get()
+        private suspend fun mapUser(accountId: Long, id: Long): UserEntity? {
+            return stores.owners().findUserDboById(accountId, id).single().get()
         }
 
-        private fun mapGroup(accountId: Long, id: Long): CommunityEntity? {
-            return stores.owners().findCommunityDboById(accountId, abs(id)).blockingGet().get()
+        private suspend fun mapGroup(accountId: Long, id: Long): CommunityEntity? {
+            return stores.owners().findCommunityDboById(accountId, abs(id)).single().get()
         }
 
-        internal fun mapFaveUserDbo(cursor: Cursor, accountId: Long): FavePageEntity {
+        internal suspend fun mapFaveUserDbo(cursor: Cursor, accountId: Long): FavePageEntity {
             return FavePageEntity(cursor.getLong(BaseColumns._ID))
                 .setDescription(cursor.getString(FavePagesColumns.DESCRIPTION))
                 .setUpdateDate(cursor.getLong(FavePagesColumns.UPDATED_TIME))
@@ -641,7 +644,7 @@ internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mReposi
                 )
         }
 
-        internal fun mapFaveGroupDbo(cursor: Cursor, accountId: Long): FavePageEntity {
+        internal suspend fun mapFaveGroupDbo(cursor: Cursor, accountId: Long): FavePageEntity {
             return FavePageEntity(cursor.getLong(BaseColumns._ID))
                 .setDescription(cursor.getString(FavePagesColumns.DESCRIPTION))
                 .setUpdateDate(cursor.getLong(FavePagesColumns.UPDATED_TIME))

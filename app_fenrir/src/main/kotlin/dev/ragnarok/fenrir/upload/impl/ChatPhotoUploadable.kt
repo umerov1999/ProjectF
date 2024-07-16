@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.upload.impl
 
-import android.annotation.SuppressLint
 import android.content.Context
 import dev.ragnarok.fenrir.api.PercentagePublisher
 import dev.ragnarok.fenrir.api.interfaces.INetworker
@@ -12,33 +11,37 @@ import dev.ragnarok.fenrir.upload.UploadResult
 import dev.ragnarok.fenrir.upload.UploadUtils
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
 import dev.ragnarok.fenrir.util.Utils.safelyClose
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlowThrowable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import java.io.InputStream
+import kotlin.coroutines.cancellation.CancellationException
 
 class ChatPhotoUploadable(private val context: Context, private val networker: INetworker) :
     IUploadable<String> {
-    @SuppressLint("CheckResult")
     override fun doUpload(
         upload: Upload,
         initialServer: UploadServer?,
         listener: PercentagePublisher?
-    ): Single<UploadResult<String>> {
+    ): Flow<UploadResult<String>> {
         val accountId = upload.accountId
         val chat_id = upload.destination.ownerId
-        val serverSingle: Single<UploadServer> = if (initialServer == null) {
+        val serverSingle = if (initialServer == null) {
             networker.vkDefault(accountId)
                 .photos()
                 .getChatUploadServer(chat_id)
-                .map { it }
         } else {
-            Single.just(initialServer)
+            toFlow(initialServer)
         }
-        return serverSingle.flatMap { server ->
+        return serverSingle.flatMapConcat { server ->
             var inputStream: InputStream? = null
             try {
                 inputStream = UploadUtils.openStream(context, upload.fileUri, upload.size)
                 if (inputStream == null) {
-                    Single.error(
+                    toFlowThrowable(
                         NotFoundException(
                             "Unable to open InputStream, URI: ${upload.fileUri}"
                         )
@@ -50,29 +53,25 @@ class ChatPhotoUploadable(private val context: Context, private val networker: I
                             inputStream,
                             listener
                         )
-                        .doFinally { safelyClose(inputStream) }
-                        .flatMap { dto ->
+                        .onCompletion { safelyClose(inputStream) }
+                        .flatMapConcat { dto ->
                             if (dto.response.isNullOrEmpty()) {
-                                Single.error(NotFoundException("VK doesn't upload this file"))
+                                toFlowThrowable(NotFoundException("VK doesn't upload this file"))
                             } else {
                                 networker.vkDefault(accountId)
                                     .photos()
                                     .setChatPhoto(dto.response)
-                                    .flatMap { response ->
+                                    .map { response ->
                                         if (response.message_id == 0 || response.chat == null) {
-                                            Single.error(
-                                                NotFoundException("message_id=0")
-                                            )
+                                            throw NotFoundException("message_id=0")
                                         } else {
-                                            Single.just(
-                                                UploadResult(
-                                                    server,
-                                                    firstNonEmptyString(
-                                                        response.chat?.photo_200,
-                                                        response.chat?.photo_100,
-                                                        response.chat?.photo_50
-                                                    ) ?: ""
-                                                )
+                                            UploadResult(
+                                                server,
+                                                firstNonEmptyString(
+                                                    response.chat?.photo_200,
+                                                    response.chat?.photo_100,
+                                                    response.chat?.photo_50
+                                                ) ?: ""
                                             )
                                         }
                                     }
@@ -81,7 +80,10 @@ class ChatPhotoUploadable(private val context: Context, private val networker: I
                 }
             } catch (e: Exception) {
                 safelyClose(inputStream)
-                Single.error(e)
+                if (e is CancellationException) {
+                    throw e
+                }
+                toFlowThrowable(e)
             }
         }
     }

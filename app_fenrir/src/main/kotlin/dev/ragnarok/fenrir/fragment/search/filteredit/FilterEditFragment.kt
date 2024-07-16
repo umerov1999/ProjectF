@@ -45,13 +45,11 @@ import dev.ragnarok.fenrir.util.InputTextDialog
 import dev.ragnarok.fenrir.util.Utils.hasMarshmallow
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.DateTimePicker
-import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.util.Calendar
 import java.util.Timer
 import java.util.TimerTask
 
 class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
-    private val mCompositeDisposable = CompositeDisposable()
     private val requestGPSPermission = requestPermissionsAbs(
         arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -407,11 +405,6 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
             }
         }
         return null
-    }
-
-    override fun onDestroy() {
-        mCompositeDisposable.dispose()
-        super.onDestroy()
     }
 
     interface LocationResult {

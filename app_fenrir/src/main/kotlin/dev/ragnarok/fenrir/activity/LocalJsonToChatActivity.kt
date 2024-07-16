@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.os.IBinder
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import androidx.annotation.ColorInt
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -33,6 +32,7 @@ import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCream
 import dev.ragnarok.fenrir.util.ViewUtils
 
 class LocalJsonToChatActivity : NoMainActivity(), PlaceProvider, AppStyleable, ServiceConnection {
@@ -199,13 +199,15 @@ class LocalJsonToChatActivity : NoMainActivity(), PlaceProvider, AppStyleable, S
 
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val statusBarNonColored = CurrentTheme.getStatusBarNonColored(this)
-        val statusBarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.statusBarColor = if (colored) statusBarColored else statusBarNonColored
-        @ColorInt val navigationColor =
-            if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
-        w.navigationBarColor = navigationColor
+        if (!hasVanillaIceCream()) {
+            w.statusBarColor =
+                if (colored) CurrentTheme.getStatusBarColor(this) else CurrentTheme.getStatusBarNonColored(
+                    this
+                )
+            w.navigationBarColor =
+                if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
+        }
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons

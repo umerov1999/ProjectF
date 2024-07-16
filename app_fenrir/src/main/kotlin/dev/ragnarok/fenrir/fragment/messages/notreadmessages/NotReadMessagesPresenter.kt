@@ -5,7 +5,6 @@ import dev.ragnarok.fenrir.domain.IMessagesRepository
 import dev.ragnarok.fenrir.domain.Mode
 import dev.ragnarok.fenrir.domain.Repository.messages
 import dev.ragnarok.fenrir.fragment.messages.AbsMessageListPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.LoadMoreState
 import dev.ragnarok.fenrir.model.Message
 import dev.ragnarok.fenrir.model.Peer
@@ -17,8 +16,9 @@ import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.getSelected
 import dev.ragnarok.fenrir.util.Utils.indexOf
 import dev.ragnarok.fenrir.util.Utils.isHiddenAccount
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.dummy
-import io.reactivex.rxjava3.core.Observable
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.dummy
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
 
 class NotReadMessagesPresenter(
     accountId: Long,
@@ -43,7 +43,7 @@ class NotReadMessagesPresenter(
     }
 
     private fun initRequest() {
-        appendDisposable(messagesInteractor.getPeerMessages(
+        appendJob(messagesInteractor.getPeerMessages(
             accountId,
             peer.id,
             COUNT,
@@ -52,8 +52,7 @@ class NotReadMessagesPresenter(
             cacheData = false,
             rev = false
         )
-            .fromIOToMain()
-            .subscribe({ messages -> onInitDataLoaded(messages) }) { t ->
+            .fromIOToMain({ messages -> onInitDataLoaded(messages) }) { t ->
                 onDataGetError(
                     t
                 )
@@ -81,13 +80,12 @@ class NotReadMessagesPresenter(
     }
 
     private fun deleteSentImpl(ids: Collection<Int>) {
-        appendDisposable(messagesInteractor.deleteMessages(
+        appendJob(messagesInteractor.deleteMessages(
             accountId, peer.id, ids,
             forAll = false,
             spam = false
         )
-            .fromIOToMain()
-            .subscribe(dummy()) { t ->
+            .fromIOToMain(dummy()) { t ->
                 showError(t)
             })
     }
@@ -105,7 +103,7 @@ class NotReadMessagesPresenter(
         val firstMessageId = firstMessageId
         loadingState.headerLoading()
         val targetMessageId = firstMessageId
-        appendDisposable(messagesInteractor.getPeerMessages(
+        appendJob(messagesInteractor.getPeerMessages(
             accountId,
             peer.id,
             COUNT,
@@ -114,8 +112,7 @@ class NotReadMessagesPresenter(
             cacheData = false,
             rev = false
         )
-            .fromIOToMain()
-            .subscribe({ onDownDataLoaded(it) }) { t ->
+            .fromIOToMain({ onDownDataLoaded(it) }) { t ->
                 onDownDataGetError(
                     t
                 )
@@ -124,21 +121,21 @@ class NotReadMessagesPresenter(
 
     override fun onActionModeDeleteClick() {
         super.onActionModeDeleteClick()
-        val ids = Observable.fromIterable(data)
-            .filter { it.isSelected }
-            .map { it.getObjectId() }
-            .toList()
-            .blockingGet()
+        val ids = ArrayList<Int>(data.size)
+        for (i in data) {
+            if (i.isSelected) {
+                ids.add(i.getObjectId())
+            }
+        }
         if (ids.nonNullNoEmpty()) {
-            appendDisposable(messagesInteractor.deleteMessages(
+            appendJob(messagesInteractor.deleteMessages(
                 accountId,
                 peer.id,
                 ids,
                 forAll = false,
                 spam = false
             )
-                .fromIOToMain()
-                .subscribe({ onMessagesDeleteSuccessfully(ids) }) { t ->
+                .fromIOToMain({ onMessagesDeleteSuccessfully(ids) }) { t ->
                     showError(getCauseIfRuntime(t))
                 })
         }
@@ -146,18 +143,18 @@ class NotReadMessagesPresenter(
 
     override fun onActionModeSpamClick() {
         super.onActionModeDeleteClick()
-        val ids = Observable.fromIterable(data)
-            .filter { it.isSelected }
-            .map { it.getObjectId() }
-            .toList()
-            .blockingGet()
+        val ids = ArrayList<Int>(data.size)
+        for (i in data) {
+            if (i.isSelected) {
+                ids.add(i.getObjectId())
+            }
+        }
         if (ids.nonNullNoEmpty()) {
-            appendDisposable(messagesInteractor.deleteMessages(
+            appendJob(messagesInteractor.deleteMessages(
                 accountId, peer.id, ids,
                 forAll = false, spam = true
             )
-                .fromIOToMain()
-                .subscribe({ onMessagesDeleteSuccessfully(ids) }) { t ->
+                .fromIOToMain({ onMessagesDeleteSuccessfully(ids) }) { t ->
                     showError(getCauseIfRuntime(t))
                 })
         }
@@ -168,7 +165,7 @@ class NotReadMessagesPresenter(
         val lastMessageId = lastMessageId ?: return
         loadingState.footerLoading()
         val targetLastMessageId = lastMessageId
-        appendDisposable(messagesInteractor.getPeerMessages(
+        appendJob(messagesInteractor.getPeerMessages(
             accountId,
             peer.id,
             COUNT,
@@ -177,8 +174,7 @@ class NotReadMessagesPresenter(
             cacheData = false,
             rev = false
         )
-            .fromIOToMain()
-            .subscribe({ onUpDataLoaded(it) }) { t ->
+            .fromIOToMain({ onUpDataLoaded(it) }) { t ->
                 onUpDataGetError(
                     t
                 )
@@ -203,9 +199,8 @@ class NotReadMessagesPresenter(
 
     fun fireMessageRestoreClick(message: Message) {
         val id = message.getObjectId()
-        appendDisposable(messagesInteractor.restoreMessage(accountId, peer.id, id)
-            .fromIOToMain()
-            .subscribe({ onMessageRestoredSuccessfully(id) }) { t ->
+        appendJob(messagesInteractor.restoreMessage(accountId, peer.id, id)
+            .fromIOToMain({ onMessageRestoredSuccessfully(id) }) { t ->
                 showError(getCauseIfRuntime(t))
             })
     }
@@ -290,15 +285,13 @@ class NotReadMessagesPresenter(
         if (!message.isOut && message.originalId > lastReadId.incoming) {
             lastReadId.incoming = message.originalId
             view?.notifyDataChanged()
-            appendDisposable(messagesInteractor.markAsRead(accountId, peer.id, message.originalId)
-                .fromIOToMain()
-                .subscribe({
-                    appendDisposable(messagesInteractor.getConversationSingle(
+            appendJob(messagesInteractor.markAsRead(accountId, peer.id, message.originalId)
+                .fromIOToMain({
+                    appendJob(messagesInteractor.getConversationSingle(
                         accountId,
                         peer.id, Mode.NET
                     )
-                        .fromIOToMain()
-                        .subscribe({ e ->
+                        .fromIOToMain({ e ->
                             unreadCount = e.unreadCount
                             resolveUnreadCount()
                         }) { s ->
@@ -411,10 +404,10 @@ class NotReadMessagesPresenter(
     }
 
     fun fireTranscript(voiceMessageId: String?, messageId: Int) {
-        appendDisposable(
+        appendJob(
             messages.recogniseAudioMessage(accountId, messageId, voiceMessageId)
-                .fromIOToMain()
-                .subscribe({ }) { })
+                .hiddenIO()
+        )
     }
 
     companion object {

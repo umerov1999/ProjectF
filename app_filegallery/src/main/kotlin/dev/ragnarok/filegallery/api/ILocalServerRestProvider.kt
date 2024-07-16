@@ -1,8 +1,8 @@
 package dev.ragnarok.filegallery.api
 
 import dev.ragnarok.filegallery.api.rest.SimplePostHttp
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface ILocalServerRestProvider {
-    fun provideLocalServerRest(): Single<SimplePostHttp>
+    fun provideLocalServerRest(): Flow<SimplePostHttp>
 }

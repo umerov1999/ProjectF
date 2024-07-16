@@ -32,7 +32,8 @@ import dev.ragnarok.fenrir.api.interfaces.IWallApi
 import dev.ragnarok.fenrir.api.rest.IServiceRest
 import dev.ragnarok.fenrir.api.rest.SimplePostHttp
 import dev.ragnarok.fenrir.util.Utils
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 internal class VKApies private constructor(
     accountId: Long,
@@ -184,7 +185,7 @@ internal class VKApies private constructor(
                 accountId: Long,
                 serviceClass: T,
                 vararg tokenTypes: Int
-            ): Single<T> {
+            ): Flow<T> {
                 return provideRest(
                     accountId,
                     *tokenTypes
@@ -194,7 +195,7 @@ internal class VKApies private constructor(
                 }
             }
 
-            fun provideRest(aid: Long, vararg tokenPolicy: Int): Single<SimplePostHttp> {
+            fun provideRest(aid: Long, vararg tokenPolicy: Int): Flow<SimplePostHttp> {
                 if (useCustomToken) {
                     return provider.provideCustomRest(aid, customAccessToken!!)
                 }
@@ -210,11 +211,7 @@ internal class VKApies private constructor(
                         }
 
                         else -> {
-                            Single.error(
-                                UnsupportedOperationException(
-                                    "Unsupported account_id: $aid with token_policy: " + tokenPolicy.contentToString()
-                                )
-                            )
+                            throw UnsupportedOperationException("Unsupported account_id: $aid with token_policy: " + tokenPolicy.contentToString())
                         }
                     }
                 } else {
@@ -228,10 +225,8 @@ internal class VKApies private constructor(
                         }
 
                         else -> {
-                            Single.error(
-                                UnsupportedOperationException(
-                                    "Unsupported account_id: " + aid + " with token_policy: " + tokenPolicy.contentToString()
-                                )
+                            throw UnsupportedOperationException(
+                                "Unsupported account_id: " + aid + " with token_policy: " + tokenPolicy.contentToString()
                             )
                         }
                     }

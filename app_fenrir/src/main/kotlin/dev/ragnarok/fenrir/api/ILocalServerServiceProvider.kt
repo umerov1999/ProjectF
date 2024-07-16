@@ -1,8 +1,8 @@
 package dev.ragnarok.fenrir.api
 
 import dev.ragnarok.fenrir.api.services.ILocalServerService
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface ILocalServerServiceProvider {
-    fun provideLocalServerService(): Single<ILocalServerService>
+    fun provideLocalServerService(): Flow<ILocalServerService>
 }

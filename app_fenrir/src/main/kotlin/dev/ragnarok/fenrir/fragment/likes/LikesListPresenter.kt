@@ -5,11 +5,11 @@ import dev.ragnarok.fenrir.domain.ILikesInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.absownerslist.ISimpleOwnersView
 import dev.ragnarok.fenrir.fragment.absownerslist.SimpleOwnersPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class LikesListPresenter(
     accountId: Long,
@@ -20,7 +20,7 @@ class LikesListPresenter(
     savedInstanceState: Bundle?
 ) : SimpleOwnersPresenter<ISimpleOwnersView>(accountId, savedInstanceState) {
     private val likesInteractor: ILikesInteractor = InteractorFactory.createLikesInteractor()
-    private val netDisposable = CompositeDisposable()
+    private val netDisposable = CompositeJob()
     private var endOfContent = false
     private var loadingNow = false
 
@@ -38,8 +38,7 @@ class LikesListPresenter(
             50,
             offset
         )
-            .fromIOToMain()
-            .subscribe({ owners ->
+            .fromIOToMain({ owners ->
                 onDataReceived(
                     offset,
                     owners
@@ -83,7 +82,7 @@ class LikesListPresenter(
     }
 
     override fun onDestroyed() {
-        netDisposable.dispose()
+        netDisposable.cancel()
         super.onDestroyed()
     }
 

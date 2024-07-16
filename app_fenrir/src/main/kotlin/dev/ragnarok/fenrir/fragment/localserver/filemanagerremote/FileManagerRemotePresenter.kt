@@ -5,7 +5,6 @@ import android.os.Parcelable
 import androidx.recyclerview.widget.LinearLayoutManager_SavedState
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.model.FileRemote
 import dev.ragnarok.fenrir.model.FileType
@@ -18,8 +17,9 @@ import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Objects.safeEquals
 import dev.ragnarok.fenrir.util.Pair
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
+import kotlinx.coroutines.flow.flow
 import java.util.Locale
 
 class FileManagerRemotePresenter(
@@ -117,7 +117,7 @@ class FileManagerRemotePresenter(
             view?.resolveEmptyText(fileList.isEmpty())
             return
         }
-        path.removeLast()
+        path.removeLastOrNull()
         view?.updatePathString(buildPath())
         loadFiles()
     }
@@ -134,16 +134,16 @@ class FileManagerRemotePresenter(
             if (!FenrirNative.isNativeLoaded) {
                 return
             }
-            appendDisposable(
-                Single.create { v: SingleEmitter<Pair<Long, Int>> ->
+            appendJob(
+                flow {
                     val list = if (q == null) fileList else fileListSearch
                     var index = 0
                     var o = 0
                     val mem = ParcelNative.create(ParcelFlags.NULL_LIST)
                     for (i in list) {
-                        if (v.isDisposed) {
+                        if (!isActive()) {
                             mem.forceDestroy()
-                            return@create
+                            return@flow
                         }
                         if (i.type != FileType.photo) {
                             continue
@@ -165,17 +165,16 @@ class FileManagerRemotePresenter(
                         o++
                     }
                     mem.writeFirstInt(o)
-                    if (v.isDisposed) {
+                    if (!isActive()) {
                         mem.forceDestroy()
                     } else {
-                        v.onSuccess(Pair(mem.nativePointer, index))
+                        emit(Pair(mem.nativePointer, index))
                     }
-                }.fromIOToMain()
-                    .subscribe({
-                        view?.displayGalleryUnSafe(
-                            it.first, it.second, false
-                        )
-                    }) { obj -> obj.printStackTrace() })
+                }.fromIOToMain({
+                    view?.displayGalleryUnSafe(
+                        it.first, it.second, false
+                    )
+                }) { obj -> obj.printStackTrace() })
         } else if (item.type == FileType.video) {
             val v = Video()
             v.setId(item.id)
@@ -268,23 +267,22 @@ class FileManagerRemotePresenter(
         isLoading = true
         view?.resolveEmptyText(false)
         view?.resolveLoading(isLoading)
-        appendDisposable(
-            InteractorFactory.createLocalServerInteractor().fsGet(buildPath()).fromIOToMain()
-                .subscribe({
-                    fileList.clear()
-                    fileList.addAll(it)
-                    isLoading = false
-                    view?.resolveEmptyText(fileList.isEmpty())
-                    view?.resolveLoading(isLoading)
-                    view?.notifyAllChanged()
-                    directoryScrollPositions.remove(buildPath())?.let { scroll ->
-                        view?.restoreScroll(scroll)
-                    } ?: view?.restoreScroll(LinearLayoutManager_SavedState())
-                }, {
-                    view?.onError(it)
-                    isLoading = false
-                    view?.resolveLoading(isLoading)
-                })
+        appendJob(
+            InteractorFactory.createLocalServerInteractor().fsGet(buildPath()).fromIOToMain({
+                fileList.clear()
+                fileList.addAll(it)
+                isLoading = false
+                view?.resolveEmptyText(fileList.isEmpty())
+                view?.resolveLoading(isLoading)
+                view?.notifyAllChanged()
+                directoryScrollPositions.remove(buildPath())?.let { scroll ->
+                    view?.restoreScroll(scroll)
+                } ?: view?.restoreScroll(LinearLayoutManager_SavedState())
+            }, {
+                view?.onError(it)
+                isLoading = false
+                view?.resolveLoading(isLoading)
+            })
         )
     }
 

@@ -12,7 +12,8 @@ import dev.ragnarok.fenrir.model.Community
 import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class CommunitiesSearchPresenter(
     accountId: Long,
@@ -40,7 +41,7 @@ class CommunitiesSearchPresenter(
         accountId: Long,
         criteria: GroupSearchCriteria,
         startFrom: IntNextFrom
-    ): Single<Pair<List<Community>, IntNextFrom>> {
+    ): Flow<Pair<List<Community>, IntNextFrom>> {
         val type = extractTypeFromCriteria(criteria)
         val countryId = criteria.extractDatabaseEntryValueId(GroupSearchCriteria.KEY_COUNTRY)
         val cityId = criteria.extractDatabaseEntryValueId(GroupSearchCriteria.KEY_CITY)

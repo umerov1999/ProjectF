@@ -4,11 +4,11 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IStoriesShortVideosInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class StoriesViewPresenter(
     accountId: Long,
@@ -19,7 +19,7 @@ class StoriesViewPresenter(
     val data: MutableList<Pair<Owner, Boolean>> = ArrayList()
     private val storiesInteractor: IStoriesShortVideosInteractor =
         InteractorFactory.createStoriesInteractor()
-    private val netDisposable = CompositeDisposable()
+    private val netDisposable = CompositeJob()
     private var endOfContent = false
     private var loadingNow = false
 
@@ -52,8 +52,7 @@ class StoriesViewPresenter(
             50,
             offset
         )
-            .fromIOToMain()
-            .subscribe({ owners ->
+            .fromIOToMain({ owners ->
                 onDataReceived(
                     offset,
                     owners
@@ -97,7 +96,7 @@ class StoriesViewPresenter(
     }
 
     override fun onDestroyed() {
-        netDisposable.dispose()
+        netDisposable.cancel()
         super.onDestroyed()
     }
 

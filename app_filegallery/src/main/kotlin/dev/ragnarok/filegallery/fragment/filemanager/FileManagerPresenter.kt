@@ -10,7 +10,6 @@ import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.filegallery.Includes
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
-import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.model.FileItem
 import dev.ragnarok.filegallery.model.FileType
@@ -19,12 +18,19 @@ import dev.ragnarok.filegallery.model.Video
 import dev.ragnarok.filegallery.model.tags.TagOwner
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.upload.IUploadManager
+import dev.ragnarok.filegallery.upload.Upload
 import dev.ragnarok.filegallery.upload.UploadDestination
 import dev.ragnarok.filegallery.upload.UploadDestination.Companion.forRemotePlay
 import dev.ragnarok.filegallery.upload.UploadIntent
+import dev.ragnarok.filegallery.upload.UploadResult
 import dev.ragnarok.filegallery.util.Objects.safeEquals
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.filegallery.util.Pair
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.single
 import java.io.File
 import java.io.FilenameFilter
 import java.util.Locale
@@ -42,13 +48,13 @@ class FileManagerPresenter(
     private val uploadManager: IUploadManager = Includes.uploadManager
 
     private var selectedOwner: TagOwner? = null
+    private val uploadsData: MutableList<Upload> = ArrayList(0)
 
     fun setSelectedOwner(selectedOwner: TagOwner?) {
         this.selectedOwner = selectedOwner
         view?.updateSelectedMode(selectedOwner != null)
     }
 
-    @Suppress("DEPRECATION")
     private val filter: FilenameFilter = FilenameFilter { dir, filename ->
         val sel = File(dir, filename)
         if (sel.absolutePath == File(
@@ -131,14 +137,14 @@ class FileManagerPresenter(
                 isLoading = true
                 view?.resolveEmptyText(false)
                 view?.resolveLoading(isLoading)
-                appendDisposable(rxSearchFiles().fromIOToMain().subscribe({
+                appendJob(rxSearchFiles().fromIOToMain({
                     fileListSearch.clear()
                     fileListSearch.addAll(it)
                     isLoading = false
                     view?.resolveEmptyText(fileListSearch.isEmpty())
                     view?.resolveLoading(isLoading)
                     view?.displayData(fileListSearch)
-                    view?.updatePathString(q ?: return@subscribe)
+                    view?.updatePathString(q ?: return@fromIOToMain)
                 }, {
                     view?.showThrowable(it)
                     isLoading = false
@@ -155,6 +161,90 @@ class FileManagerPresenter(
         viewHost.resolveEmptyText(if (q == null) fileList.isEmpty() else fileListSearch.isEmpty())
         viewHost.resolveLoading(isLoading)
         viewHost.updateSelectedMode(selectedOwner != null)
+        viewHost.displayUploads(uploadsData)
+        resolveUploadDataVisibility()
+    }
+
+    private fun resolveUploadDataVisibility() {
+        view?.setUploadDataVisible(uploadsData.isNotEmpty())
+    }
+
+    private fun onUploadsDataReceived(data: List<Upload>) {
+        uploadsData.clear()
+        uploadsData.addAll(data)
+        resolveUploadDataVisibility()
+    }
+
+    private fun onUploadResults(pair: Pair<Upload, UploadResult<*>>) {
+        val obj = pair.second.result as Audio
+        if (obj.id == 0) {
+            view?.showError(R.string.error)
+        } else {
+            view?.showMessage(R.string.success)
+        }
+    }
+
+    private fun findIndexById(data: List<Upload>?, id: Int): Int {
+        data ?: return -1
+        for (i in data.indices) {
+            if (data[i].id == id) {
+                return i
+            }
+        }
+        return -1
+    }
+
+    private fun onProgressUpdates(update: IUploadManager.IProgressUpdate?) {
+        update?.let {
+            val index = findIndexById(uploadsData, it.id)
+            if (index != -1) {
+                view?.notifyUploadProgressChanged(
+                    index,
+                    it.progress,
+                    true
+                )
+            }
+        }
+    }
+
+    private fun onUploadStatusUpdate(upload: Upload) {
+        val index = findIndexById(uploadsData, upload.id)
+        if (index != -1) {
+            view?.notifyUploadItemChanged(
+                index
+            )
+        }
+    }
+
+    private fun onUploadsAdded(added: List<Upload>) {
+        for (u in added) {
+            if (remotePlay.compareTo(u.destination)) {
+                val index = uploadsData.size
+                uploadsData.add(u)
+                view?.notifyUploadItemsAdded(
+                    index,
+                    1
+                )
+            }
+        }
+        resolveUploadDataVisibility()
+    }
+
+    private fun onUploadDeleted(ids: IntArray) {
+        for (id in ids) {
+            val index = findIndexById(uploadsData, id)
+            if (index != -1) {
+                uploadsData.removeAt(index)
+                view?.notifyUploadItemRemoved(
+                    index
+                )
+            }
+        }
+        resolveUploadDataVisibility()
+    }
+
+    fun fireRemoveClick(upload: Upload) {
+        uploadManager.cancel(upload.id)
     }
 
     private class ItemModificationComparator : Comparator<FileItem> {
@@ -221,32 +311,30 @@ class FileManagerPresenter(
         isLoading = true
         view?.resolveEmptyText(false)
         view?.resolveLoading(isLoading)
-        appendDisposable(
-            Includes.stores.searchQueriesStore().getFiles(path.absolutePath).fromIOToMain()
-                .subscribe({
-                    fileList.clear()
-                    fileList.addAll(it)
-                    view?.resolveEmptyText(fileList.isEmpty())
-                    view?.notifyAllChanged()
-                    directoryScrollPositions.remove(path.absolutePath)?.let { scroll ->
-                        view?.restoreScroll(scroll)
-                    } ?: view?.restoreScroll(LinearLayoutManager_SavedState())
-                    if (back && fileList.isEmpty() || !back) {
-                        loadFiles(
-                            back = false, caches = false, fromCache = true
-                        )
-                    } else {
-                        isLoading = false
-                        view?.resolveLoading(isLoading)
-                    }
-                }, {
-                    view?.restoreScroll(LinearLayoutManager_SavedState())
-                    view?.showThrowable(it)
-                    loadFiles(
-                        back = false, caches = false, fromCache = true
-                    )
-                })
-        )
+
+        appendJob(Includes.stores.searchQueriesStore().getFiles(path.absolutePath).fromIOToMain({
+            fileList.clear()
+            fileList.addAll(it)
+            view?.resolveEmptyText(fileList.isEmpty())
+            view?.notifyAllChanged()
+            directoryScrollPositions.remove(path.absolutePath)?.let { scroll ->
+                view?.restoreScroll(scroll)
+            } ?: view?.restoreScroll(LinearLayoutManager_SavedState())
+            if (back && fileList.isEmpty() || !back) {
+                loadFiles(
+                    back = false, caches = false, fromCache = true
+                )
+            } else {
+                isLoading = false
+                view?.resolveLoading(isLoading)
+            }
+        }, {
+            view?.restoreScroll(LinearLayoutManager_SavedState())
+            view?.showThrowable(it)
+            loadFiles(
+                back = false, caches = false, fromCache = true
+            )
+        }))
     }
 
     fun loadFiles(back: Boolean, caches: Boolean, fromCache: Boolean) {
@@ -262,7 +350,7 @@ class FileManagerPresenter(
             isLoading = true
             view?.resolveLoading(isLoading)
         }
-        appendDisposable(rxLoadFileList().fromIOToMain().subscribe({
+        appendJob(rxLoadFileList().fromIOToMain({
             fileList.clear()
             fileList.addAll(it)
             isLoading = false
@@ -276,8 +364,8 @@ class FileManagerPresenter(
         }))
     }
 
-    private fun rxSearchFiles(): Single<ArrayList<FileItem>> {
-        return Single.create {
+    private fun rxSearchFiles(): Flow<ArrayList<FileItem>> {
+        return flow {
             val fileListTmp = ArrayList<FileItem>()
             searchFile(fileListTmp, path)
             val dirsList = ArrayList<FileItem>()
@@ -290,7 +378,7 @@ class FileManagerPresenter(
             fileListTmp.clear()
             fileListTmp.addAll(dirsList)
             fileListTmp.addAll(flsList)
-            it.onSuccess(fileListTmp)
+            emit(fileListTmp)
         }
     }
 
@@ -335,8 +423,8 @@ class FileManagerPresenter(
         return file.list()?.size?.toLong() ?: -1
     }
 
-    private fun rxLoadFileList(): Single<ArrayList<FileItem>> {
-        return Single.create {
+    private fun rxLoadFileList(): Flow<ArrayList<FileItem>> {
+        return flow {
             val fileListTmp = ArrayList<FileItem>()
             if (path.exists() && path.canRead()) {
                 val fList = path.list(filter)
@@ -374,8 +462,8 @@ class FileManagerPresenter(
                 }
             }
             Includes.stores.searchQueriesStore().insertFiles(path.absolutePath, fileListTmp)
-                .blockingAwait()
-            it.onSuccess(fileListTmp)
+                .single()
+            emit(fileListTmp)
         }
     }
 
@@ -426,10 +514,10 @@ class FileManagerPresenter(
         }
     }
 
-    private fun fixDirTimeRx(dir: String): Completable {
-        return Completable.create {
+    private fun fixDirTimeRx(dir: String): Flow<Boolean> {
+        return flow {
             doFixDirTime(dir, true)
-            it.onComplete()
+            emit(true)
         }
     }
 
@@ -440,7 +528,7 @@ class FileManagerPresenter(
         }
         isLoading = true
         view?.resolveLoading(isLoading)
-        fixDirTimeRx(dir).fromIOToMain().subscribe({
+        fixDirTimeRx(dir).fromIOToMain({
             view?.showMessage(R.string.success)
             isLoading = false
             loadFiles(back = false, caches = false, fromCache = false)
@@ -453,9 +541,9 @@ class FileManagerPresenter(
         }
         if (item.isHasTag) {
             item.file_path?.let { op ->
-                appendDisposable(
+                appendJob(
                     Includes.stores.searchQueriesStore().deleteTagDirByPath(op)
-                        .fromIOToMain().subscribe({
+                        .fromIOToMain({
                             item.checkTag()
                             val list = if (q == null) fileList else fileListSearch
                             view?.notifyItemChanged(list.indexOf(item))
@@ -465,10 +553,10 @@ class FileManagerPresenter(
                 )
             }
         } else {
-            appendDisposable(
+            appendJob(
                 Includes.stores.searchQueriesStore()
                     .insertTagDir((selectedOwner ?: return).id, item)
-                    .fromIOToMain().subscribe({
+                    .fromIOToMain({
                         item.checkTag()
                         val list = if (q == null) fileList else fileListSearch
                         view?.notifyItemChanged(list.indexOf(item))
@@ -481,9 +569,9 @@ class FileManagerPresenter(
 
     fun fireRemoveDirTag(item: FileItem) {
         item.file_path?.let { op ->
-            appendDisposable(
+            appendJob(
                 Includes.stores.searchQueriesStore().deleteTagDirByPath(op)
-                    .fromIOToMain().subscribe({
+                    .fromIOToMain({
                         item.checkTag()
                         val list = if (q == null) fileList else fileListSearch
                         view?.notifyItemChanged(list.indexOf(item))
@@ -508,9 +596,9 @@ class FileManagerPresenter(
             item.checkTag()
             if (item.isHasTag) {
                 item.file_path?.let { op ->
-                    appendDisposable(
+                    appendJob(
                         Includes.stores.searchQueriesStore().deleteTagDirByPath(op)
-                            .fromIOToMain().subscribe({
+                            .fromIOToMain({
                                 item.checkTag()
                                 val list = if (q == null) fileList else fileListSearch
                                 view?.notifyItemChanged(list.indexOf(item))
@@ -520,10 +608,10 @@ class FileManagerPresenter(
                     )
                 }
             } else {
-                appendDisposable(
+                appendJob(
                     Includes.stores.searchQueriesStore()
                         .insertTagDir((selectedOwner ?: return).id, item)
-                        .fromIOToMain().subscribe({
+                        .fromIOToMain({
                             item.checkTag()
                             val list = if (q == null) fileList else fileListSearch
                             view?.notifyItemChanged(list.indexOf(item))
@@ -553,8 +641,8 @@ class FileManagerPresenter(
                 photo.setPhoto_url("file://" + i.file_path)
                 photo.setPreview_url("thumb_file://" + i.file_path)
                 photo.setLocal(true)
-                photo.setGif(
-                    i.type == FileType.video || i.file_name.toString().endsWith("gif", true)
+                photo.setIsAnimation(
+                    i.type == FileType.video
                 )
                 photo.setText(i.file_name)
                 mem.writeParcelable(photo)
@@ -634,30 +722,29 @@ class FileManagerPresenter(
     fun fireDelete(item: FileItem) {
         isLoading = true
         view?.resolveLoading(isLoading)
-        Completable.create {
+        flow {
             if (item.type != FileType.folder) {
                 if (item.file_path?.let { it1 -> File(it1).delete() } == true) {
-                    it.onComplete()
+                    emit(true)
                 } else {
-                    it.tryOnError(Throwable("Can't Delete File"))
+                    throw Throwable("Can't Delete File")
                 }
             } else {
                 item.file_path?.let { it1 -> deleteRecursive(it1) }
                 if (item.file_path?.let { it1 -> File(it1).delete() } == true) {
-                    it.onComplete()
+                    emit(true)
                 } else {
-                    it.tryOnError(Throwable("Can't Delete Folder"))
+                    throw Throwable("Can't Delete Folder")
                 }
             }
-        }.fromIOToMain()
-            .subscribe({
-                isLoading = false
-                view?.resolveLoading(isLoading)
-                view?.showMessage(R.string.success)
-                loadFiles(back = false, caches = false, fromCache = false)
-            }, {
-                view?.showThrowable(it)
-            })
+        }.fromIOToMain({
+            isLoading = false
+            view?.resolveLoading(isLoading)
+            view?.showMessage(R.string.success)
+            loadFiles(back = false, caches = false, fromCache = false)
+        }, {
+            view?.showThrowable(it)
+        })
     }
 
     fun fireFileForRemotePlaySelected(audioPath: String) {
@@ -692,5 +779,35 @@ class FileManagerPresenter(
 
     init {
         loadFiles(back = false, caches = true, fromCache = false)
+
+        appendJob(uploadManager[remotePlay]
+            .fromIOToMain { data -> onUploadsDataReceived(data) })
+        appendJob(uploadManager.observeAdding()
+            .sharedFlowToMain {
+                onUploadsAdded(it)
+            })
+        appendJob(uploadManager.observeDeleting(true)
+            .sharedFlowToMain {
+                onUploadDeleted(it)
+            })
+        appendJob(uploadManager.observeResults()
+            .filter {
+                remotePlay.compareTo(
+                    it.first.destination
+                ) || remotePlay.compareTo(it.first.destination)
+            }
+            .sharedFlowToMain {
+                onUploadResults(it)
+            })
+
+        appendJob(uploadManager.observeStatus()
+            .sharedFlowToMain {
+                onUploadStatusUpdate(it)
+            })
+
+        appendJob(uploadManager.observeProgress()
+            .sharedFlowToMain {
+                onProgressUpdates(it)
+            })
     }
 }

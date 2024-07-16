@@ -24,7 +24,7 @@ import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -60,14 +60,13 @@ class WallPostFCMMessage {
         }
         val app = context.applicationContext
         getRx(app, accountId, from_id)
-            .subscribeOn(INSTANCE)
-            .subscribe({ ownerInfo ->
+            .fromScopeToMain(INSTANCE) { ownerInfo ->
                 notifyImpl(
                     app,
                     ownerInfo.owner,
                     ownerInfo.avatar
                 )
-            }, ignore())
+            }
     }
 
     @SuppressLint("CheckResult")
@@ -80,8 +79,7 @@ class WallPostFCMMessage {
         }
         val app = context.applicationContext
         getRx(app, accountId, owner_id)
-            .subscribeOn(INSTANCE)
-            .subscribe({ info ->
+            .fromScopeToMain(INSTANCE) { info ->
                 val manager =
                     app.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
                 if (hasOreo()) {
@@ -115,7 +113,7 @@ class WallPostFCMMessage {
                         notification
                     )
                 }
-            }, ignore())
+            }
     }
 
     private fun notifyImpl(context: Context, owner: Owner, avatar: Bitmap?) {

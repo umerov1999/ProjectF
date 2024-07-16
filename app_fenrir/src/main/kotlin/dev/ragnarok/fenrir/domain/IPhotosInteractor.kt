@@ -6,8 +6,7 @@ import dev.ragnarok.fenrir.model.Comment
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PhotoAlbum
 import dev.ragnarok.fenrir.model.PhotoTags
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IPhotosInteractor {
     operator fun get(
@@ -17,7 +16,7 @@ interface IPhotosInteractor {
         count: Int,
         offset: Int,
         rev: Boolean
-    ): Single<List<Photo>>
+    ): Flow<List<Photo>>
 
     fun getUsersPhoto(
         accountId: Long,
@@ -26,7 +25,7 @@ interface IPhotosInteractor {
         sort: Int?,
         offset: Int?,
         count: Int?
-    ): Single<List<Photo>>
+    ): Flow<List<Photo>>
 
     fun getAll(
         accountId: Long,
@@ -35,30 +34,30 @@ interface IPhotosInteractor {
         photo_sizes: Int?,
         offset: Int?,
         count: Int?
-    ): Single<List<Photo>>
+    ): Flow<List<Photo>>
 
     fun search(
         accountId: Long,
         criteria: PhotoSearchCriteria,
         offset: Int?,
         count: Int?
-    ): Single<List<Photo>>
+    ): Flow<List<Photo>>
 
     fun getAllCachedData(
         accountId: Long,
         ownerId: Long,
         albumId: Int,
         sortInvert: Boolean
-    ): Single<List<Photo>>
+    ): Flow<List<Photo>>
 
-    fun getAlbumById(accountId: Long, ownerId: Long, albumId: Int): Single<PhotoAlbum>
-    fun getCachedAlbums(accountId: Long, ownerId: Long): Single<List<PhotoAlbum>>
+    fun getAlbumById(accountId: Long, ownerId: Long, albumId: Int): Flow<PhotoAlbum>
+    fun getCachedAlbums(accountId: Long, ownerId: Long): Flow<List<PhotoAlbum>>
     fun getActualAlbums(
         accountId: Long,
         ownerId: Long,
         count: Int,
         offset: Int
-    ): Single<List<PhotoAlbum>>
+    ): Flow<List<PhotoAlbum>>
 
     fun like(
         accountId: Long,
@@ -66,27 +65,27 @@ interface IPhotosInteractor {
         photoId: Int,
         add: Boolean,
         accessKey: String?
-    ): Single<Int>
+    ): Flow<Int>
 
     fun checkAndAddLike(
         accountId: Long,
         ownerId: Long,
         photoId: Int,
         accessKey: String?
-    ): Single<Int>
+    ): Flow<Int>
 
-    fun isLiked(accountId: Long, ownerId: Long, photoId: Int): Single<Boolean>
-    fun copy(accountId: Long, ownerId: Long, photoId: Int, accessKey: String?): Single<Int>
-    fun removedAlbum(accountId: Long, ownerId: Long, albumId: Int): Completable
-    fun deletePhoto(accountId: Long, ownerId: Long, photoId: Int): Completable
-    fun restorePhoto(accountId: Long, ownerId: Long, photoId: Int): Completable
-    fun getPhotosByIds(accountId: Long, ids: Collection<AccessIdPairModel>): Single<List<Photo>>
+    fun isLiked(accountId: Long, ownerId: Long, photoId: Int): Flow<Boolean>
+    fun copy(accountId: Long, ownerId: Long, photoId: Int, accessKey: String?): Flow<Int>
+    fun removedAlbum(accountId: Long, ownerId: Long, albumId: Int): Flow<Boolean>
+    fun deletePhoto(accountId: Long, ownerId: Long, photoId: Int): Flow<Boolean>
+    fun restorePhoto(accountId: Long, ownerId: Long, photoId: Int): Flow<Boolean>
+    fun getPhotosByIds(accountId: Long, ids: Collection<AccessIdPairModel>): Flow<List<Photo>>
     fun getTags(
         accountId: Long,
         ownerId: Long?,
         photo_id: Int?,
         access_key: String?
-    ): Single<List<PhotoTags>>
+    ): Flow<List<PhotoTags>>
 
     fun getAllComments(
         accountId: Long,
@@ -94,5 +93,5 @@ interface IPhotosInteractor {
         album_id: Int?,
         offset: Int,
         count: Int
-    ): Single<List<Comment>>
+    ): Flow<List<Comment>>
 }

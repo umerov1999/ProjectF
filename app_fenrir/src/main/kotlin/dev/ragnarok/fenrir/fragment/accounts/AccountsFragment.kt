@@ -346,7 +346,6 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
         }
     }
 
-    @Suppress("DEPRECATION")
     private fun startExportAccounts() {
         exportAccounts.launch(
             FileManagerSelectActivity.makeFileManager(
@@ -571,7 +570,6 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
         }
     }
 
-    @Suppress("DEPRECATION")
     private fun startImportAccounts() {
         importAccounts.launch(
             FileManagerSelectActivity.makeFileManager(
@@ -582,7 +580,6 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
         )
     }
 
-    @Suppress("DEPRECATION")
     private fun startImportByExchangeToken() {
         importExchangeToken.launch(
             FileManagerSelectActivity.makeFileManager(

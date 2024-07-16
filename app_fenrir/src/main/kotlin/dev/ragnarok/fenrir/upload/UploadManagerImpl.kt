@@ -8,7 +8,6 @@ import android.os.Build
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import dev.ragnarok.fenrir.Extra
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.ApiException
 import dev.ragnarok.fenrir.api.PercentagePublisher
@@ -18,7 +17,6 @@ import dev.ragnarok.fenrir.db.interfaces.IStorages
 import dev.ragnarok.fenrir.domain.IAttachmentsRepository
 import dev.ragnarok.fenrir.domain.IWallsRepository
 import dev.ragnarok.fenrir.longpoll.NotificationHelper
-import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.service.ErrorLocalizer.localizeThrowable
 import dev.ragnarok.fenrir.upload.IUploadManager.IProgressUpdate
 import dev.ragnarok.fenrir.upload.impl.AudioToMessageUploadable
@@ -42,18 +40,26 @@ import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils.findIndexById
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.createPublishSubject
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.inMainThread
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.myEmit
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.fenrir.util.toast.CustomToast
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Scheduler
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.processors.PublishProcessor
-import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 import java.util.Collections
 import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
 class UploadManagerImpl(
@@ -65,38 +71,51 @@ class UploadManagerImpl(
 ) : IUploadManager {
     private val context: Context = context.applicationContext
     private val queue: MutableList<Upload> = ArrayList()
-    private val scheduler: Scheduler = Schedulers.from(Executors.newSingleThreadExecutor())
-    private val addingProcessor = PublishProcessor.create<List<Upload>>()
-    private val deletingProcessor = PublishProcessor.create<IntArray>()
-    private val completeProcessor = PublishProcessor.create<Pair<Upload, UploadResult<*>>>()
-    private val statusProcessor = PublishProcessor.create<Upload>()
-    private val timer: Flowable<Long> = Flowable.interval(
-        PROGRESS_LOOKUP_DELAY.toLong(),
-        PROGRESS_LOOKUP_DELAY.toLong(),
-        TimeUnit.MILLISECONDS
-    ).onBackpressureBuffer()
-    private val notificationUpdateDisposable = CompositeDisposable()
+    private val scheduler =
+        CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher())
+
+    private val addingProcessor = createPublishSubject<List<Upload>>()
+    private val deletingProcessor = createPublishSubject<IntArray>()
+    private val completeProcessor = createPublishSubject<Pair<Upload, UploadResult<*>>>()
+    private val statusProcessor = createPublishSubject<Upload>()
+
+    private val timer: Flow<IProgressUpdate?> = flow {
+        while (isActive()) {
+            delay(PROGRESS_LOOKUP_DELAY.toLong())
+            val ret: IProgressUpdate?
+            synchronized(this) {
+                val pCurrent = current
+                ret = if (pCurrent == null) {
+                    null
+                } else {
+                    ProgressUpdate(pCurrent.getObjectId(), pCurrent.progress)
+                }
+            }
+            emit(ret)
+        }
+    }
+    private val notificationUpdateDisposable = CompositeJob()
+    private val compositeDisposable = CompositeJob()
     private val serverMap = Collections.synchronizedMap(HashMap<String, UploadServer>())
-    private val compositeDisposable = CompositeDisposable()
 
     @Volatile
     private var current: Upload? = null
     private var needCreateChannel = true
-    override fun get(accountId: Long, destination: UploadDestination): Single<List<Upload>> {
-        return Single.fromCallable { getByDestination(accountId, destination) }
+    override fun get(accountId: Long, destination: UploadDestination): Flow<List<Upload>> {
+        return flow { emit(getByDestination(accountId, destination)) }
     }
 
-    override fun get(accountId: Long, @Method filters: List<Int>): Single<List<Upload>> {
-        return Single.fromCallable {
+    override fun get(accountId: Long, @Method filters: List<Int>): Flow<List<Upload>> {
+        return flow {
+            val data: MutableList<Upload> = ArrayList()
             synchronized(this) {
-                val data: MutableList<Upload> = ArrayList()
                 for (upload in queue) {
                     if (accountId == upload.accountId && filters.contains(upload.destination.method)) {
                         data.add(upload)
                     }
                 }
-                return@fromCallable data
             }
+            emit(data)
         }
     }
 
@@ -113,16 +132,17 @@ class UploadManagerImpl(
     }
 
     private fun startWithNotification() {
-        updateNotification(emptyList())
-        notificationUpdateDisposable.add(observeProgress()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { updateNotification(it) })
+        updateNotification(null)
+        notificationUpdateDisposable.add(
+            observeProgress().sharedFlowToMain {
+                updateNotification(it)
+            }
+        )
     }
 
     @Suppress("DEPRECATION")
-    private fun updateNotification(updates: List<IProgressUpdate>) {
-        if (updates.nonNullNoEmpty()) {
-            val progress = updates[0].progress
+    private fun updateNotification(updates: IProgressUpdate?) {
+        updates?.let {
             val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
                     ?: return
@@ -146,7 +166,7 @@ class UploadManagerImpl(
             builder.setContentTitle(context.getString(R.string.files_uploading_notification_title))
                 .setSmallIcon(R.drawable.ic_notification_upload)
                 .setOngoing(true)
-                .setProgress(100, progress, false)
+                .setProgress(100, it.progress, false)
                 .build()
             if (AppPerms.hasNotificationPermissionSimple(context)) {
                 notificationManager.notify(NotificationHelper.NOTIFICATION_UPLOAD, builder.build())
@@ -171,15 +191,15 @@ class UploadManagerImpl(
                 all.add(upload)
                 queue.add(upload)
             }
-            addingProcessor.onNext(all)
+            addingProcessor.myEmit(all)
             startIfNotStarted()
         }
     }
 
     private fun startIfNotStarted() {
-        compositeDisposable.add(Completable.complete()
-            .observeOn(scheduler)
-            .subscribe { startIfNotStartedInternal() })
+        scheduler.launch {
+            startIfNotStartedInternal()
+        }
     }
 
     private fun findFirstQueue(): Upload? {
@@ -206,23 +226,24 @@ class UploadManagerImpl(
             startWithNotification()
             current = first
             first.setStatus(Upload.STATUS_UPLOADING).errorText = null
-            statusProcessor.onNext(first)
+            statusProcessor.myEmit(first)
             val uploadable = createUploadable(first)
             val server = serverMap[createServerKey(first)]
             compositeDisposable.add(
-                uploadable.doUpload(
-                    first,
-                    server,
-                    WeakProgressPublisgher(first)
-                )
-                    .subscribeOn(scheduler)
-                    .observeOn(scheduler)
-                    .subscribe({
+                scheduler.launch {
+                    uploadable.doUpload(
+                        first,
+                        server,
+                        WeakProgressPublisher(first)
+                    ).catch {
+                        onUploadFail(first, it)
+                    }.collect {
                         onUploadComplete(
                             first,
                             it
                         )
-                    }, { t -> onUploadFail(first, t) })
+                    }
+                }
             )
         }
     }
@@ -243,7 +264,7 @@ class UploadManagerImpl(
             if (destination.messageMethod != MessageMethod.VIDEO && destination.messageMethod != MessageMethod.AUDIO && destination.method != Method.VIDEO && destination.method != Method.AUDIO && destination.method != Method.STORY) serverMap[createServerKey(
                 upload
             )] = result.server
-            completeProcessor.onNext(create(upload, result))
+            completeProcessor.myEmit(create(upload, result))
             startIfNotStartedInternal()
         }
     }
@@ -259,12 +280,10 @@ class UploadManagerImpl(
                     firstNonEmptyString(cause.message, cause.toString())
                 }
                 t.printStackTrace()
-                compositeDisposable.add(Completable.complete()
-                    .observeOn(provideMainThreadScheduler())
-                    .subscribe {
-                        CustomToast.createCustomToast(context).setDuration(Toast.LENGTH_SHORT)
-                            .showToastError(message)
-                    })
+                compositeDisposable.add(inMainThread {
+                    CustomToast.createCustomToast(context).setDuration(Toast.LENGTH_SHORT)
+                        .showToastError(message)
+                })
             }
             val errorMessage: String? = if (t is ApiException) {
                 localizeThrowable(context, t)
@@ -272,7 +291,7 @@ class UploadManagerImpl(
                 firstNonEmptyString(t.message, t.toString())
             }
             upload.setStatus(Upload.STATUS_ERROR).errorText = errorMessage
-            statusProcessor.onNext(upload)
+            statusProcessor.myEmit(upload)
             startIfNotStartedInternal()
         }
     }
@@ -286,7 +305,7 @@ class UploadManagerImpl(
             val index = findIndexById(queue, id)
             if (index != -1) {
                 queue.removeAt(index)
-                deletingProcessor.onNext(intArrayOf(id))
+                deletingProcessor.myEmit(intArrayOf(id))
             }
             startIfNotStarted()
         }
@@ -315,7 +334,7 @@ class UploadManagerImpl(
                 for (i in target.indices) {
                     ids[i] = target[i].getObjectId()
                 }
-                deletingProcessor.onNext(ids)
+                deletingProcessor.myEmit(ids)
             }
             startIfNotStarted()
         }
@@ -325,40 +344,30 @@ class UploadManagerImpl(
         synchronized(this) { return wrap(current) }
     }
 
-    override fun observeDeleting(includeCompleted: Boolean): Flowable<IntArray> {
+    override fun observeDeleting(includeCompleted: Boolean): Flow<IntArray> {
         if (includeCompleted) {
-            val completeIds = completeProcessor.onBackpressureBuffer()
-                .map { intArrayOf(it.first.getObjectId()) }
-            return Flowable.merge(deletingProcessor.onBackpressureBuffer(), completeIds)
+            return merge(
+                completeProcessor
+                    .map { intArrayOf(it.first.getObjectId()) }, deletingProcessor
+            )
         }
-        return deletingProcessor.onBackpressureBuffer()
+        return deletingProcessor
     }
 
-    override fun observeAdding(): Flowable<List<Upload>> {
-        return addingProcessor.onBackpressureBuffer()
+    override fun observeAdding(): SharedFlow<List<Upload>> {
+        return addingProcessor
     }
 
-    override fun observeStatus(): Flowable<Upload> {
-        return statusProcessor.onBackpressureBuffer()
+    override fun observeStatus(): SharedFlow<Upload> {
+        return statusProcessor
     }
 
-    override fun observeResults(): Flowable<Pair<Upload, UploadResult<*>>> {
-        return completeProcessor.onBackpressureBuffer()
+    override fun observeResults(): SharedFlow<Pair<Upload, UploadResult<*>>> {
+        return completeProcessor
     }
 
-    override fun observeProgress(): Flowable<List<IProgressUpdate>> {
-        return timer.map {
-            synchronized(this) {
-                val pCurrent = current
-                if (pCurrent == null) {
-                    emptyList()
-                } else {
-                    val update: IProgressUpdate =
-                        ProgressUpdate(pCurrent.getObjectId(), pCurrent.progress)
-                    listOf(update)
-                }
-            }
-        }
+    override fun observeProgress(): Flow<IProgressUpdate?> {
+        return timer
     }
 
     private fun createUploadable(upload: Upload): IUploadable<*> {
@@ -436,7 +445,7 @@ class UploadManagerImpl(
         throw UnsupportedOperationException()
     }
 
-    class WeakProgressPublisgher(upload: Upload) :
+    class WeakProgressPublisher(upload: Upload) :
         PercentagePublisher {
         val reference: WeakReference<Upload> = WeakReference(upload)
         override fun onProgressChanged(percentage: Int) {

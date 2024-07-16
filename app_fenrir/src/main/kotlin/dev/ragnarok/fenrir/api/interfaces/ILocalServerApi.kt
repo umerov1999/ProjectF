@@ -6,20 +6,20 @@ import dev.ragnarok.fenrir.api.model.VKApiAudio
 import dev.ragnarok.fenrir.api.model.VKApiPhoto
 import dev.ragnarok.fenrir.api.model.VKApiVideo
 import dev.ragnarok.fenrir.model.FileRemote
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface ILocalServerApi {
     @CheckResult
-    fun getVideos(offset: Int?, count: Int?, reverse: Boolean): Single<Items<VKApiVideo>>
+    fun getVideos(offset: Int?, count: Int?, reverse: Boolean): Flow<Items<VKApiVideo>>
 
     @CheckResult
-    fun getAudios(offset: Int?, count: Int?, reverse: Boolean): Single<Items<VKApiAudio>>
+    fun getAudios(offset: Int?, count: Int?, reverse: Boolean): Flow<Items<VKApiAudio>>
 
     @CheckResult
-    fun getDiscography(offset: Int?, count: Int?, reverse: Boolean): Single<Items<VKApiAudio>>
+    fun getDiscography(offset: Int?, count: Int?, reverse: Boolean): Flow<Items<VKApiAudio>>
 
     @CheckResult
-    fun getPhotos(offset: Int?, count: Int?, reverse: Boolean): Single<Items<VKApiPhoto>>
+    fun getPhotos(offset: Int?, count: Int?, reverse: Boolean): Flow<Items<VKApiPhoto>>
 
     @CheckResult
     fun searchVideos(
@@ -27,7 +27,7 @@ interface ILocalServerApi {
         offset: Int?,
         count: Int?,
         reverse: Boolean
-    ): Single<Items<VKApiVideo>>
+    ): Flow<Items<VKApiVideo>>
 
     @CheckResult
     fun searchAudios(
@@ -35,7 +35,7 @@ interface ILocalServerApi {
         offset: Int?,
         count: Int?,
         reverse: Boolean
-    ): Single<Items<VKApiAudio>>
+    ): Flow<Items<VKApiAudio>>
 
     @CheckResult
     fun searchDiscography(
@@ -43,7 +43,7 @@ interface ILocalServerApi {
         offset: Int?,
         count: Int?,
         reverse: Boolean
-    ): Single<Items<VKApiAudio>>
+    ): Flow<Items<VKApiAudio>>
 
     @CheckResult
     fun searchPhotos(
@@ -51,26 +51,26 @@ interface ILocalServerApi {
         offset: Int?,
         count: Int?,
         reverse: Boolean
-    ): Single<Items<VKApiPhoto>>
+    ): Flow<Items<VKApiPhoto>>
 
     @CheckResult
-    fun update_time(hash: String?): Single<Int>
+    fun update_time(hash: String?): Flow<Int>
 
     @CheckResult
-    fun delete_media(hash: String?): Single<Int>
+    fun delete_media(hash: String?): Flow<Int>
 
     @CheckResult
-    fun get_file_name(hash: String?): Single<String>
+    fun get_file_name(hash: String?): Flow<String>
 
     @CheckResult
-    fun update_file_name(hash: String?, name: String?): Single<Int>
+    fun update_file_name(hash: String?, name: String?): Flow<Int>
 
     @CheckResult
-    fun rebootPC(type: String?): Single<Int>
+    fun rebootPC(type: String?): Flow<Int>
 
     @CheckResult
-    fun fsGet(dir: String?): Single<Items<FileRemote>>
+    fun fsGet(dir: String?): Flow<Items<FileRemote>>
 
     @CheckResult
-    fun uploadAudio(hash: String?): Single<Int>
+    fun uploadAudio(hash: String?): Flow<Int>
 }

@@ -6,13 +6,11 @@ import android.net.Uri
 import android.os.Bundle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.Includes
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.db.AttachToType
 import dev.ragnarok.fenrir.domain.IAttachmentsRepository
 import dev.ragnarok.fenrir.domain.IAttachmentsRepository.IBaseEvent
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableArrayListCompat
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.AbsModel
@@ -35,10 +33,13 @@ import dev.ragnarok.fenrir.util.FileUtil.createImageFile
 import dev.ragnarok.fenrir.util.FileUtil.getExportedUriForFile
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils.findIndexByPredicate
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.subscribeOnIOAndIgnore
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.functions.Predicate
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.zip
 import java.io.File
 import java.io.IOException
 
@@ -70,15 +71,15 @@ class MessageAttachmentsPresenter(
         )
     }
 
-    private fun onUploadProgressUpdates(updates: List<IProgressUpdate>) {
-        for (update in updates) {
+    private fun onUploadProgressUpdates(updates: IProgressUpdate?) {
+        updates?.let { update ->
             val index = findUploadObjectIndex(update.id)
             if (index != -1) {
                 val upId = entries[index].id
                 val upload = entries[index].attachment as Upload
                 if (upload.status != Upload.STATUS_UPLOADING) {
                     // for uploading only
-                    continue
+                    return
                 }
                 upload.progress = update.progress
                 view?.changePercentageSmoothly(
@@ -158,18 +159,17 @@ class MessageAttachmentsPresenter(
     }
 
     private fun loadData() {
-        appendDisposable(
+        appendJob(
             createLoadAllSingle()
-                .fromIOToMain()
-                .subscribe({ data -> onDataReceived(data) }, ignore())
+                .fromIOToMain { onDataReceived(it) }
         )
     }
 
-    private fun createLoadAllSingle(): Single<List<AttachmentEntry>> {
+    private fun createLoadAllSingle(): Flow<List<AttachmentEntry>> {
         return attachmentsRepository
             .getAttachmentsWithIds(messageOwnerId, AttachToType.MESSAGE, messageId)
             .map { entities2entries(it) }
-            .zipWith(
+            .zip(
                 uploadManager[messageOwnerId, destination]
             ) { atts, uploads ->
                 val data: MutableList<AttachmentEntry> = ArrayList(atts.size + uploads.size)
@@ -396,14 +396,12 @@ class MessageAttachmentsPresenter(
 
     fun fireRemoveClick(entry: AttachmentEntry) {
         if (entry.optionalId != 0) {
-            subscribeOnIOAndIgnore(
-                attachmentsRepository.remove(
-                    messageOwnerId,
-                    AttachToType.MESSAGE,
-                    messageId,
-                    entry.optionalId
-                )
-            )
+            attachmentsRepository.remove(
+                messageOwnerId,
+                AttachToType.MESSAGE,
+                messageId,
+                entry.optionalId
+            ).hiddenIO()
             return
         }
         if (entry.attachment is Upload) {
@@ -551,14 +549,12 @@ class MessageAttachmentsPresenter(
     }
 
     fun fireAttachmentsSelected(attachments: ArrayList<out AbsModel>) {
-        subscribeOnIOAndIgnore(
-            attachmentsRepository.attach(
-                messageOwnerId,
-                AttachToType.MESSAGE,
-                messageId,
-                attachments
-            )
-        )
+        attachmentsRepository.attach(
+            messageOwnerId,
+            AttachToType.MESSAGE,
+            messageId,
+            attachments
+        ).hiddenIO()
     }
 
     companion object {
@@ -589,30 +585,24 @@ class MessageAttachmentsPresenter(
         } else {
             handleInputModels(bundle)
         }
-        val predicate =
-            Predicate { event: IBaseEvent -> event.attachToType == AttachToType.MESSAGE && event.attachToId == messageId && event.accountId == messageOwnerId }
-        appendDisposable(attachmentsRepository
+        val predicate: suspend (IBaseEvent) -> Boolean =
+            { it.attachToType == AttachToType.MESSAGE && it.attachToId == messageId && it.accountId == messageOwnerId }
+        appendJob(attachmentsRepository
             .observeAdding()
             .filter(predicate)
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onAttachmentsAdded(it.attachments) })
-        appendDisposable(attachmentsRepository
+            .sharedFlowToMain { onAttachmentsAdded(it.attachments) })
+        appendJob(attachmentsRepository
             .observeRemoving()
             .filter(predicate)
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onAttachmentRemoved(it.generatedId) })
-        appendDisposable(uploadManager.observeAdding()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onUploadsAdded(it) })
-        appendDisposable(uploadManager.observeDeleting(true)
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onUploadsRemoved(it) })
-        appendDisposable(uploadManager.observeStatus()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onUploadStatusChanges(it) })
-        appendDisposable(uploadManager.observeProgress()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onUploadProgressUpdates(it) })
+            .sharedFlowToMain { onAttachmentRemoved(it.generatedId) })
+        appendJob(uploadManager.observeAdding()
+            .sharedFlowToMain { onUploadsAdded(it) })
+        appendJob(uploadManager.observeDeleting(true)
+            .sharedFlowToMain { onUploadsRemoved(it) })
+        appendJob(uploadManager.observeStatus()
+            .sharedFlowToMain { onUploadStatusChanges(it) })
+        appendJob(uploadManager.observeProgress()
+            .sharedFlowToMain { onUploadProgressUpdates(it) })
         loadData()
     }
 }

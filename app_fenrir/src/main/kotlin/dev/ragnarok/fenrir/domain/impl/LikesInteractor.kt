@@ -6,7 +6,8 @@ import dev.ragnarok.fenrir.domain.ILikesInteractor
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformOwner
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class LikesInteractor(private val networker: INetworker) : ILikesInteractor {
     override fun getLikes(
@@ -17,7 +18,7 @@ class LikesInteractor(private val networker: INetworker) : ILikesInteractor {
         filter: String?,
         count: Int,
         offset: Int
-    ): Single<List<Owner>> {
+    ): Flow<List<Owner>> {
         return networker.vkDefault(accountId)
             .likes()
             .getList(

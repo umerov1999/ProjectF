@@ -1,11 +1,11 @@
 package dev.ragnarok.fenrir.longpoll
 
 import dev.ragnarok.fenrir.api.model.longpoll.VKApiLongpollUpdates
-import io.reactivex.rxjava3.core.Flowable
+import kotlinx.coroutines.flow.Flow
 
 interface ILongpollManager {
     fun forceDestroy(accountId: Long)
-    fun observe(): Flowable<VKApiLongpollUpdates>
-    fun observeKeepAlive(): Flowable<Long>
+    fun observe(): Flow<VKApiLongpollUpdates>
+    fun observeKeepAlive(): Flow<Long>
     fun keepAlive(accountId: Long)
 }

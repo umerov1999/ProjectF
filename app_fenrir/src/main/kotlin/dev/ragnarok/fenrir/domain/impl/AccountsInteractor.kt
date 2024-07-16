@@ -25,10 +25,18 @@ import dev.ragnarok.fenrir.settings.ISettings.IAccountsSettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
-import java.util.concurrent.TimeUnit
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.andThen
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.checkInt
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayedFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.ignoreElement
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.single
 
 class AccountsInteractor(
     private val networker: INetworker,
@@ -36,7 +44,7 @@ class AccountsInteractor(
     private val blacklistRepository: IBlacklistRepository,
     private val ownersRepository: IOwnersRepository
 ) : IAccountsInteractor {
-    override fun getBanned(accountId: Long, count: Int, offset: Int): Single<BannedPart> {
+    override fun getBanned(accountId: Long, count: Int, offset: Int): Flow<BannedPart> {
         return networker.vkDefault(accountId)
             .account()
             .getBanned(count, offset, Fields.FIELDS_BASE_OWNER)
@@ -54,35 +62,35 @@ class AccountsInteractor(
             }
     }
 
-    override fun banOwners(accountId: Long, owners: Collection<Owner>): Completable {
-        var completable = Completable.complete()
-        for (owner in owners) {
-            completable = completable.andThen(
-                networker.vkDefault(accountId)
+    override fun banOwners(accountId: Long, owners: Collection<Owner>): Flow<Boolean> {
+        return flow {
+            for (owner in owners) {
+                val s = networker.vkDefault(accountId)
                     .account()
-                    .ban(owner.ownerId)
-            )
-                .delay(1, TimeUnit.SECONDS) // чтобы не дергало UI
-                .ignoreElement()
-                .andThen(blacklistRepository.fireAdd(accountId, owner))
+                    .ban(owner.ownerId).checkInt().single()
+                if (s) {
+                    delay(1000) // чтобы не дергало UI
+                    blacklistRepository.fireAdd(accountId, owner).single()
+                }
+            }
+            emit(true)
         }
-        return completable
     }
 
-    override fun unbanOwner(accountId: Long, ownerId: Long): Completable {
+    override fun unbanOwner(accountId: Long, ownerId: Long): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .account()
             .unban(ownerId)
-            .delay(1, TimeUnit.SECONDS) // чтобы не дергало UI
+            .delayedFlow(1000) // чтобы не дергало UI
             .ignoreElement()
             .andThen(blacklistRepository.fireRemove(accountId, ownerId))
     }
 
-    override fun changeStatus(accountId: Long, status: String?): Completable {
+    override fun changeStatus(accountId: Long, status: String?): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .status()
             .set(status, null)
-            .flatMapCompletable {
+            .flatMapConcat {
                 ownersRepository.handleStatusChange(
                     accountId,
                     accountId,
@@ -97,7 +105,7 @@ class AccountsInteractor(
         receipt2: String?,
         nonce: String?,
         timestamp: Long?
-    ): Single<RefreshToken> {
+    ): Flow<RefreshToken> {
         return networker.vkDefault(accountId)
             .account()
             .refreshToken(receipt, receipt2, nonce, timestamp)
@@ -105,25 +113,25 @@ class AccountsInteractor(
 
     override fun getExchangeToken(
         accountId: Long
-    ): Single<RefreshToken> {
+    ): Flow<RefreshToken> {
         return networker.vkDefault(accountId)
             .account()
             .getExchangeToken()
     }
 
-    override fun setOffline(accountId: Long): Single<Boolean> {
+    override fun setOffline(accountId: Long): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .account()
             .setOffline()
     }
 
-    override fun getProfileInfo(accountId: Long): Single<VKApiProfileInfo> {
+    override fun getProfileInfo(accountId: Long): Flow<VKApiProfileInfo> {
         return networker.vkDefault(accountId)
             .account()
             .profileInfo
     }
 
-    override fun getPushSettings(accountId: Long): Single<List<ConversationPushItem>> {
+    override fun getPushSettings(accountId: Long): Flow<List<ConversationPushItem>> {
         return networker.vkDefault(accountId)
             .account()
             .pushSettings.map { obj -> obj.pushSettings }
@@ -138,15 +146,15 @@ class AccountsInteractor(
         bdate: String?,
         home_town: String?,
         sex: Int?
-    ): Single<Int> {
+    ): Flow<Int> {
         return networker.vkDefault(accountId)
             .account()
             .saveProfileInfo(first_name, last_name, maiden_name, screen_name, bdate, home_town, sex)
             .map { t -> t.status }
     }
 
-    override fun getAll(refresh: Boolean): Single<List<Account>> {
-        return Single.create { emitter: SingleEmitter<List<Account>> ->
+    override fun getAll(refresh: Boolean): Flow<List<Account>> {
+        return flow {
             val tmpIds: Collection<Long> = settings.registered
             val ids: Collection<Long> = if (!Settings.get().security().IsShow_hidden_accounts) {
                 val lst = ArrayList<Long>()
@@ -161,20 +169,19 @@ class AccountsInteractor(
             }
             val accounts: MutableList<Account> = ArrayList(ids.size)
             for (id in ids) {
-                if (emitter.isDisposed) {
+                if (!isActive()) {
                     break
                 }
                 val owner = ownersRepository.getBaseOwnerInfo(
                     id,
                     id,
                     if (refresh) IOwnersRepository.MODE_NET else IOwnersRepository.MODE_ANY
-                )
-                    .onErrorReturn { if (id > 0) User(id) else Community(-id) }
-                    .blockingGet()
+                ).catch { emit(if (id > 0) User(id) else Community(-id)) }.single()
+
                 val account = Account(id, owner)
                 accounts.add(account)
             }
-            emitter.onSuccess(accounts)
+            emit(accounts)
         }
     }
 
@@ -183,8 +190,8 @@ class AccountsInteractor(
         context: Context,
         offset: Int?,
         count: Int?
-    ): Single<List<ContactConversation>> {
-        return ContactsUtils.getAllContactsJson(context).flatMap {
+    ): Flow<List<ContactConversation>> {
+        return ContactsUtils.getAllContactsJson(context).flatMapConcat {
             networker.vkDefault(accountId)
                 .account().importMessagesContacts(it)
                 .andThen(getContactList(accountId, offset, count))
@@ -194,7 +201,7 @@ class AccountsInteractor(
     override fun processAuthCode(
         accountId: Long,
         auth_code: String, action: Int
-    ): Single<VKApiProcessAuthCode> {
+    ): Flow<VKApiProcessAuthCode> {
         return networker.vkDefault(accountId)
             .account().processAuthCode(auth_code, action)
     }
@@ -203,7 +210,7 @@ class AccountsInteractor(
         accountId: Long,
         offset: Int?,
         count: Int?
-    ): Single<List<ContactConversation>> {
+    ): Flow<List<ContactConversation>> {
         return networker.vkDefault(accountId)
             .account().resetMessagesContacts().andThen(getContactList(accountId, offset, count))
     }
@@ -233,7 +240,7 @@ class AccountsInteractor(
         accountId: Long,
         offset: Int?,
         count: Int?
-    ): Single<List<ContactConversation>> {
+    ): Flow<List<ContactConversation>> {
         return networker.vkDefault(accountId)
             .account().getContactList(offset, count).map { items ->
                 val dtos = listEmptyIfNull(items.items)

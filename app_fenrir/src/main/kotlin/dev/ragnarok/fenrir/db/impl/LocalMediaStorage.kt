@@ -24,16 +24,16 @@ import dev.ragnarok.fenrir.picasso.Content_Local
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.buildUriForPicasso
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.buildUriForPicassoNew
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 
-@Suppress("DEPRECATION")
 internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(mRepositoryContext),
     ILocalMediaStorage {
-    override val videos: Single<List<LocalVideo>>
-        get() = Single.create {
+    override val videos: Flow<List<LocalVideo>>
+        get() = flow {
             val cursor = contentResolver.query(
                 MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                 VIDEO_PROJECTION, null, null, MediaStore.MediaColumns.DATE_MODIFIED + " DESC"
@@ -45,11 +45,11 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
                 }
                 cursor.close()
             }
-            it.onSuccess(data)
+            emit(data)
         }
 
-    override fun getAudios(accountId: Long): Single<List<Audio>> {
-        return Single.create { e: SingleEmitter<List<Audio>> ->
+    override fun getAudios(accountId: Long): Flow<List<Audio>> {
+        return flow {
             val cursor = contentResolver.query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 AUDIO_PROJECTION, null, null, MediaStore.MediaColumns.DATE_MODIFIED + " DESC"
@@ -62,12 +62,12 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
                 }
                 cursor.close()
             }
-            e.onSuccess(data)
+            emit(data)
         }
     }
 
-    override fun getAudios(accountId: Long, albumId: Long): Single<List<Audio>> {
-        return Single.create { e: SingleEmitter<List<Audio>> ->
+    override fun getAudios(accountId: Long, albumId: Long): Flow<List<Audio>> {
+        return flow {
             val cursor = contentResolver.query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 AUDIO_PROJECTION,
@@ -83,12 +83,12 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
                 }
                 cursor.close()
             }
-            e.onSuccess(data)
+            emit(data)
         }
     }
 
-    override fun getPhotos(albumId: Long): Single<List<LocalPhoto>> {
-        return Single.create { e: SingleEmitter<List<LocalPhoto>> ->
+    override fun getPhotos(albumId: Long): Flow<List<LocalPhoto>> {
+        return flow {
             val cursor = context.contentResolver.query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 PROJECTION, MediaStore.MediaColumns.BUCKET_ID + " = ?", arrayOf(albumId.toString()),
@@ -97,7 +97,7 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
             val result = ArrayList<LocalPhoto>(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) break
+                    if (!isActive()) break
                     val imageId = cursor.getLong(BaseColumns._ID)
                     val data =
                         cursor.getString(MediaStore.MediaColumns.DATA)
@@ -109,12 +109,12 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
                 }
                 cursor.close()
             }
-            e.onSuccess(result)
+            emit(result)
         }
     }
 
-    override val photos: Single<List<LocalPhoto>>
-        get() = Single.create { e: SingleEmitter<List<LocalPhoto>> ->
+    override val photos: Flow<List<LocalPhoto>>
+        get() = flow {
             val cursor = context.contentResolver.query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 PROJECTION, null, null,
@@ -123,7 +123,7 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
             val result = ArrayList<LocalPhoto>(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) break
+                    if (!isActive()) break
                     val imageId = cursor.getLong(BaseColumns._ID)
                     val data =
                         cursor.getString(MediaStore.MediaColumns.DATA)
@@ -135,7 +135,7 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
                 }
                 cursor.close()
             }
-            e.onSuccess(result)
+            emit(result)
         }
 
     private fun hasAlbumById(albumId: Int, albums: List<LocalImageAlbum>): Boolean {
@@ -148,8 +148,8 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
         return false
     }
 
-    override val audioAlbums: Single<List<LocalImageAlbum>>
-        get() = Single.create {
+    override val audioAlbums: Flow<List<LocalImageAlbum>>
+        get() = flow {
             val album = MediaStore.MediaColumns.BUCKET_DISPLAY_NAME
             val albumId = MediaStore.MediaColumns.BUCKET_ID
             val coverId = BaseColumns._ID
@@ -161,7 +161,7 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
             val albums: MutableList<LocalImageAlbum> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (it.isDisposed) break
+                    if (!isActive()) break
                     if (!hasAlbumById(cursor.getInt(1), albums)) {
                         albums.add(
                             LocalImageAlbum()
@@ -174,10 +174,10 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
                 }
                 cursor.close()
             }
-            it.onSuccess(albums)
+            emit(albums)
         }
-    override val imageAlbums: Single<List<LocalImageAlbum>>
-        get() = Single.create {
+    override val imageAlbums: Flow<List<LocalImageAlbum>>
+        get() = flow {
             val album = MediaStore.MediaColumns.BUCKET_DISPLAY_NAME
             val albumId = MediaStore.MediaColumns.BUCKET_ID
             val coverId = BaseColumns._ID
@@ -189,7 +189,7 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
             val albums: MutableList<LocalImageAlbum> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (it.isDisposed) break
+                    if (!isActive()) break
                     if (!hasAlbumById(cursor.getInt(1), albums)) {
                         albums.add(
                             LocalImageAlbum()
@@ -202,9 +202,10 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
                 }
                 cursor.close()
             }
-            it.onSuccess(albums)
+            emit(albums)
         }
 
+    @Suppress("DEPRECATION")
     override fun getOldThumbnail(@Content_Local type: Int, content_Id: Long): Bitmap? {
         if (type == Content_Local.PHOTO) {
             return MediaStore.Images.Thumbnails.getThumbnail(

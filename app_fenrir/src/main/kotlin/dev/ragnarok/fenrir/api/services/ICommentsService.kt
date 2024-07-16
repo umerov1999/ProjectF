@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.api.services
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.CustomCommentsResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class ICommentsService : IServiceRest() {
     operator fun get(
@@ -18,7 +18,7 @@ class ICommentsService : IServiceRest() {
         comment_id: Int,
         accessKey: String?,
         fields: String?
-    ): Single<BaseResponse<CustomCommentsResponse>> {
+    ): Flow<BaseResponse<CustomCommentsResponse>> {
         return rest.request(
             "execute",
             form(

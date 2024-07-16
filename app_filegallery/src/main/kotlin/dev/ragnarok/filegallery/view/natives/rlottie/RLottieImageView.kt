@@ -10,16 +10,15 @@ import dev.ragnarok.fenrir.module.BufferWriteNative
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.rlottie.RLottieDrawable
 import dev.ragnarok.filegallery.R
-import dev.ragnarok.filegallery.fromIOToMain
-import dev.ragnarok.filegallery.util.rxutils.RxUtils
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.disposables.Disposable
+import dev.ragnarok.filegallery.util.coroutines.CancelableJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
+import kotlinx.coroutines.flow.flow
+import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.io.BufferedInputStream
 import java.io.File
+import kotlin.coroutines.cancellation.CancellationException
 
 class RLottieImageView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
     AppCompatImageView(context, attrs) {
@@ -29,7 +28,7 @@ class RLottieImageView @JvmOverloads constructor(context: Context, attrs: Attrib
     private var autoRepeat: Boolean
     private var attachedToWindow = false
     private var playing = false
-    private var mDisposable: Disposable? = null
+    private var mDisposable = CancelableJob()
     fun clearLayerColors() {
         layerColors?.clear()
     }
@@ -76,35 +75,31 @@ class RLottieImageView @JvmOverloads constructor(context: Context, attrs: Attrib
             setAnimationByUrlCache(url, w, h)
             return
         }
-        mDisposable = Single.create { u: SingleEmitter<Boolean> ->
+        mDisposable.set(flow {
+            var call: Call? = null
             try {
                 val request: Request = Request.Builder()
                     .url(url)
                     .build()
-                val response: Response = client.build().newCall(request).execute()
+                call = client.build().newCall(request)
+                val response: Response = call.execute()
                 if (!response.isSuccessful) {
-                    u.onSuccess(false)
-                    return@create
+                    emit(false)
+                    return@flow
                 }
-                val bfr = response.body.byteStream()
-                val input = BufferedInputStream(bfr)
-                cache.writeTempCacheFile(url, input)
-                input.close()
+                cache.writeTempCacheFile(url, response.body.source())
                 response.close()
                 cache.renameTempFile(url)
-            } catch (e: Exception) {
-                u.onSuccess(false)
-                return@create
+                emit(true)
+            } catch (e: CancellationException) {
+                call?.cancel()
+                throw e
             }
-            u.onSuccess(true)
-        }.fromIOToMain()
-            .subscribe(
-                { u ->
-                    if (u) {
-                        setAnimationByUrlCache(url, w, h)
-                    }
-                }, RxUtils.ignore()
-            )
+        }.fromIOToMain {
+            if (it) {
+                setAnimationByUrlCache(url, w, h)
+            }
+        })
     }
 
     private fun setAnimation(rLottieDrawable: RLottieDrawable) {
@@ -177,7 +172,7 @@ class RLottieImageView @JvmOverloads constructor(context: Context, attrs: Attrib
     }
 
     fun clearAnimationDrawable() {
-        mDisposable?.dispose()
+        mDisposable.cancel()
         animatedDrawable?.let {
             it.stop()
             it.callback = null
@@ -198,7 +193,7 @@ class RLottieImageView @JvmOverloads constructor(context: Context, attrs: Attrib
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        mDisposable?.dispose()
+        mDisposable.cancel()
         attachedToWindow = false
         animatedDrawable?.stop()
         animatedDrawable?.setCurrentParentView(null)
@@ -219,7 +214,7 @@ class RLottieImageView @JvmOverloads constructor(context: Context, attrs: Attrib
     override fun setImageDrawable(dr: Drawable?) {
         super.setImageDrawable(dr)
         if (dr !is RLottieDrawable) {
-            mDisposable?.dispose()
+            mDisposable.cancel()
             animatedDrawable?.let {
                 it.stop()
                 it.callback = null
@@ -231,7 +226,7 @@ class RLottieImageView @JvmOverloads constructor(context: Context, attrs: Attrib
 
     override fun setImageBitmap(bm: Bitmap?) {
         super.setImageBitmap(bm)
-        mDisposable?.dispose()
+        mDisposable.cancel()
         animatedDrawable?.let {
             it.stop()
             it.callback = null
@@ -242,7 +237,7 @@ class RLottieImageView @JvmOverloads constructor(context: Context, attrs: Attrib
 
     override fun setImageResource(resId: Int) {
         super.setImageResource(resId)
-        mDisposable?.dispose()
+        mDisposable.cancel()
         animatedDrawable?.let {
             it.stop()
             it.callback = null
@@ -273,7 +268,7 @@ class RLottieImageView @JvmOverloads constructor(context: Context, attrs: Attrib
     fun resetFrame() {
         playing = true
         if (attachedToWindow) {
-            animatedDrawable?.setAutoRepeat(1)
+            animatedDrawable?.setProgress(0f)
         }
     }
 
@@ -292,9 +287,7 @@ class RLottieImageView @JvmOverloads constructor(context: Context, attrs: Attrib
         val height = a.getDimension(R.styleable.RLottieImageView_h, 28f).toInt()
         a.recycle()
         if (FenrirNative.isNativeLoaded && animRes != 0) {
-            animatedDrawable =
-                RLottieDrawable(animRes, width, height, false, null, false)
-            setAnimation(animatedDrawable!!)
+            setAnimation(RLottieDrawable(animRes, width, height, false, null, false))
             playAnimation()
         }
     }

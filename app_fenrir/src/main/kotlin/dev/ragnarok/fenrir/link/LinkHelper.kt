@@ -18,7 +18,6 @@ import dev.ragnarok.fenrir.fragment.fave.FaveTabsFragment
 import dev.ragnarok.fenrir.fragment.photos.vkphotos.IVKPhotosView
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.NewsFeedCriteria
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.link.types.AbsLink
 import dev.ragnarok.fenrir.link.types.AppLink
 import dev.ragnarok.fenrir.link.types.ArticleLink
@@ -84,6 +83,7 @@ import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import kotlin.math.abs
 
@@ -96,8 +96,7 @@ object LinkHelper {
         }
         if (link.contains("vk.cc")) {
             InteractorFactory.createUtilsInteractor().checkLink(accountId, link)
-                .fromIOToMain()
-                .subscribe({ t ->
+                .fromIOToMain({ t ->
                     if ("banned" == t.status) {
                         createCustomToast(context).showToastError(R.string.link_banned)
                     } else {
@@ -114,8 +113,7 @@ object LinkHelper {
                 }) { e -> createCustomToast(context).showToastThrowable(e) }
         } else if (link.contains("vk.me")) {
             InteractorFactory.createUtilsInteractor().joinChatByInviteLink(accountId, link)
-                .fromIOToMain()
-                .subscribe({ t ->
+                .fromIOToMain({ t ->
                     getChatPlace(
                         accountId,
                         accountId,
@@ -160,7 +158,7 @@ object LinkHelper {
             AbsLink.ARTICLE_LINK -> {
                 val articleLink = link as ArticleLink
                 InteractorFactory.createFaveInteractor()
-                    .getByLinksArticles(accountId, articleLink.url).fromIOToMain().subscribe({
+                    .getByLinksArticles(accountId, articleLink.url).fromIOToMain({
                         if (it.isEmpty()) {
                             getExternalLinkPlace(accountId, articleLink.url).tryOpenWith(context)
                         } else {
@@ -392,8 +390,7 @@ object LinkHelper {
                     accountId,
                     listOf(Audio().setId(audioLink.trackId).setOwnerId(audioLink.ownerId))
                 )
-                    .fromIOToMain()
-                    .subscribe({
+                    .fromIOToMain({
                         startForPlayList(context, ArrayList(it), 0, false)
                         getPlayerPlace(Settings.get().accounts().current).tryOpenWith(context)
                     }) { e -> createCustomToast(context).showToastThrowable(e) }
@@ -405,8 +402,7 @@ object LinkHelper {
                     accountId,
                     listOf(AccessIdPair(storyLink.storyId, storyLink.ownerId, storyLink.access_key))
                 )
-                    .fromIOToMain()
-                    .subscribe({
+                    .fromIOToMain({
                         PlaceFactory.getHistoryVideoPreviewPlace(accountId, ArrayList(it), 0)
                             .tryOpenWith(context)
                     }) { e -> createCustomToast(context).showToastThrowable(e) }
@@ -427,7 +423,6 @@ object LinkHelper {
         return link != null && openVKLink(activity, accountId, link, isMain)
     }
 
-    @Suppress("deprecation")
     private fun getCustomTabsPackages(context: Context): ArrayList<ResolveInfo> {
         val pm = context.packageManager
         val activityIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com"))

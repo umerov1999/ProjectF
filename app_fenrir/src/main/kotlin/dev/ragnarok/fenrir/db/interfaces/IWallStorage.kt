@@ -7,8 +7,7 @@ import dev.ragnarok.fenrir.db.model.entity.PostDboEntity
 import dev.ragnarok.fenrir.model.EditingPostType
 import dev.ragnarok.fenrir.model.criteria.WallCriteria
 import dev.ragnarok.fenrir.util.Optional
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IWallStorage : IStorage {
     @CheckResult
@@ -16,10 +15,10 @@ interface IWallStorage : IStorage {
         accountId: Long, posts: List<PostDboEntity>,
         owners: OwnerEntities?,
         clearWall: IClearWallTask?
-    ): Single<IntArray>
+    ): Flow<IntArray>
 
     @CheckResult
-    fun replacePost(accountId: Long, post: PostDboEntity): Single<Int>
+    fun replacePost(accountId: Long, post: PostDboEntity): Flow<Int>
 
     @CheckResult
     fun getEditingPost(
@@ -27,13 +26,13 @@ interface IWallStorage : IStorage {
         ownerId: Long,
         @EditingPostType type: Int,
         includeAttachment: Boolean
-    ): Single<PostDboEntity>
+    ): Flow<PostDboEntity>
 
     @CheckResult
-    fun deletePost(accountId: Long, dbid: Int): Completable
+    fun deletePost(accountId: Long, dbid: Int): Flow<Boolean>
 
     @CheckResult
-    fun findPostById(accountId: Long, dbid: Int): Single<Optional<PostDboEntity>>
+    fun findPostById(accountId: Long, dbid: Int): Flow<Optional<PostDboEntity>>
 
     @CheckResult
     fun findPostById(
@@ -41,17 +40,17 @@ interface IWallStorage : IStorage {
         ownerId: Long,
         vkpostId: Int,
         includeAttachment: Boolean
-    ): Single<Optional<PostDboEntity>>
+    ): Flow<Optional<PostDboEntity>>
 
-    fun findDbosByCriteria(criteria: WallCriteria): Single<List<PostDboEntity>>
+    fun findDbosByCriteria(criteria: WallCriteria): Flow<List<PostDboEntity>>
 
     @CheckResult
-    fun update(accountId: Long, ownerId: Long, postId: Int, update: PostPatch): Completable
+    fun update(accountId: Long, ownerId: Long, postId: Int, update: PostPatch): Flow<Boolean>
 
     /**
      * Уведомить хранилище, что пост более не существует
      */
-    fun invalidatePost(accountId: Long, postVkid: Int, postOwnerId: Long): Completable
+    fun invalidatePost(accountId: Long, postVkid: Int, postOwnerId: Long): Flow<Boolean>
     interface IClearWallTask {
         val ownerId: Long
     }

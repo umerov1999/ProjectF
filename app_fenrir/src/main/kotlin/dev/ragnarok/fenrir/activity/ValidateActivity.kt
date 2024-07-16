@@ -27,12 +27,13 @@ import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.theme.ThemesController.currentStyle
 import dev.ragnarok.fenrir.util.Logger
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import kotlinx.coroutines.flow.filter
 
 class ValidateActivity : AppCompatActivity() {
     private var validateProvider: IValidateProvider? = null
-    private val mCompositeDisposable = CompositeDisposable()
+    private val mCompositeJob = CompositeJob()
     private var urlVal: String? = null
     private var accountId: Long = ISettings.IAccountsSettings.INVALID_ID
 
@@ -48,17 +49,15 @@ class ValidateActivity : AppCompatActivity() {
         validateProvider = Includes.validationProvider
 
         validateProvider?.let {
-            mCompositeDisposable.add(
+            mCompositeJob.add(
                 it.observeWaiting()
                     .filter { ob -> ob == urlVal }
-                    .observeOn(Includes.provideMainThreadScheduler())
-                    .subscribe({ onWaitingRequestReceived() }, RxUtils.ignore())
+                    .sharedFlowToMain { onWaitingRequestReceived() }
             )
-            mCompositeDisposable.add(
+            mCompositeJob.add(
                 it.observeCanceling()
                     .filter { ob -> ob == urlVal }
-                    .observeOn(Includes.provideMainThreadScheduler())
-                    .subscribe({ onRequestCancelled() }, RxUtils.ignore())
+                    .sharedFlowToMain { onRequestCancelled() }
             )
         }
 
@@ -88,7 +87,6 @@ class ValidateActivity : AppCompatActivity() {
         webview.settings.domStorageEnabled = true
         webview.settings.blockNetworkLoads = false
         webview.settings.blockNetworkImage = false
-        webview.settings.databaseEnabled = true
         webview.clearCache(true)
         webview.settings.userAgentString = UserAgentTool.getAccountUserAgent(accountId)
 
@@ -122,7 +120,7 @@ class ValidateActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        mCompositeDisposable.dispose()
+        mCompositeJob.cancel()
         super.onDestroy()
     }
 

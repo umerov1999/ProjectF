@@ -15,8 +15,7 @@ import dev.ragnarok.fenrir.model.drawer.RecentChat
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.settings.theme.ThemeOverlay
 import dev.ragnarok.fenrir.view.pager.Transformers_Types
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Observable
+import kotlinx.coroutines.flow.SharedFlow
 
 interface ISettings {
     fun recentChats(): IRecentChats
@@ -30,8 +29,8 @@ interface ISettings {
     fun accounts(): IAccountsSettings
 
     interface IAccountsSettings {
-        val observeChanges: Flowable<Long>
-        val observeRegistered: Flowable<IAccountsSettings>
+        val observeChanges: SharedFlow<Long>
+        val observeRegistered: SharedFlow<IAccountsSettings>
         val registered: List<Long>
         var current: Long
         val currentAccessToken: String?
@@ -294,13 +293,13 @@ interface ISettings {
 
     interface IDrawerSettings {
         var categoriesOrder: List<DrawerCategory>
-        val observeChanges: Observable<List<DrawerCategory>>
+        val observeChanges: SharedFlow<List<DrawerCategory>>
         fun reset()
     }
 
     interface ISideDrawerSettings {
         var categoriesOrder: List<DrawerCategory>
-        val observeChanges: Observable<List<DrawerCategory>>
+        val observeChanges: SharedFlow<List<DrawerCategory>>
         fun reset()
     }
 

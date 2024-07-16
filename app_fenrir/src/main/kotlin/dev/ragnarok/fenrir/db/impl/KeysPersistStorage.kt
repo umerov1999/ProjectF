@@ -14,11 +14,10 @@ import dev.ragnarok.fenrir.getString
 import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.wrap
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.MaybeEmitter
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.single
 
 internal class KeysPersistStorage(context: AppStorages) : AbsStorage(context), IKeysStorage {
     private fun map(cursor: Cursor): AesKeyPair {
@@ -33,11 +32,11 @@ internal class KeysPersistStorage(context: AppStorages) : AbsStorage(context), I
             .setMyAesKey(cursor.getString(EncryptionKeysForMessagesColumns.OUT_KEY))
     }
 
-    override fun saveKeyPair(pair: AesKeyPair): Completable {
-        return Completable.create { e ->
-            val alreadyExist = findKeyPairFor(pair.accountId, pair.sessionId).blockingGet()
+    override fun saveKeyPair(pair: AesKeyPair): Flow<Boolean> {
+        return flow {
+            val alreadyExist = findKeyPairFor(pair.accountId, pair.sessionId).single()
             if (alreadyExist != null) {
-                e.tryOnError(DatabaseException("Key pair with the session ID is already in the database"))
+                throw DatabaseException("Key pair with the session ID is already in the database")
             } else {
                 val cv = ContentValues()
                 cv.put(EncryptionKeysForMessagesColumns.VERSION, pair.version)
@@ -53,31 +52,31 @@ internal class KeysPersistStorage(context: AppStorages) : AbsStorage(context), I
                 cv.put(EncryptionKeysForMessagesColumns.IN_KEY, pair.hisAesKey)
                 val uri = getKeysContentUriFor(pair.accountId)
                 context.contentResolver.insert(uri, cv)
-                e.onComplete()
+                emit(true)
             }
         }
     }
 
-    override fun getAll(accountId: Long): Single<List<AesKeyPair>> {
-        return Single.create { e: SingleEmitter<List<AesKeyPair>> ->
+    override fun getAll(accountId: Long): Flow<List<AesKeyPair>> {
+        return flow {
             val uri = getKeysContentUriFor(accountId)
             val cursor = context.contentResolver.query(uri, null, null, null, BaseColumns._ID)
             val pairs: MutableList<AesKeyPair> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     pairs.add(map(cursor).setAccountId(accountId))
                 }
                 cursor.close()
             }
-            e.onSuccess(pairs)
+            emit(pairs)
         }
     }
 
-    override fun getKeys(accountId: Long, peerId: Long): Single<List<AesKeyPair>> {
-        return Single.create { e: SingleEmitter<List<AesKeyPair>> ->
+    override fun getKeys(accountId: Long, peerId: Long): Flow<List<AesKeyPair>> {
+        return flow {
             val uri = getKeysContentUriFor(accountId)
             val cursor = context.contentResolver
                 .query(
@@ -90,19 +89,19 @@ internal class KeysPersistStorage(context: AppStorages) : AbsStorage(context), I
             val pairs: MutableList<AesKeyPair> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     pairs.add(map(cursor).setAccountId(accountId))
                 }
                 cursor.close()
             }
-            e.onSuccess(pairs)
+            emit(pairs)
         }
     }
 
-    override fun findLastKeyPair(accountId: Long, peerId: Long): Single<Optional<AesKeyPair>> {
-        return Single.create { e: SingleEmitter<Optional<AesKeyPair>> ->
+    override fun findLastKeyPair(accountId: Long, peerId: Long): Flow<Optional<AesKeyPair>> {
+        return flow {
             val uri = getKeysContentUriFor(accountId)
             val cursor = context.contentResolver
                 .query(
@@ -119,12 +118,12 @@ internal class KeysPersistStorage(context: AppStorages) : AbsStorage(context), I
                 }
                 cursor.close()
             }
-            e.onSuccess(wrap(pair))
+            emit(wrap(pair))
         }
     }
 
-    override fun findKeyPairFor(accountId: Long, sessionId: Long): Maybe<AesKeyPair> {
-        return Maybe.create { e: MaybeEmitter<AesKeyPair> ->
+    override fun findKeyPairFor(accountId: Long, sessionId: Long): Flow<AesKeyPair?> {
+        return flow {
             val uri = getKeysContentUriFor(accountId)
             val cursor = context.contentResolver
                 .query(
@@ -141,18 +140,15 @@ internal class KeysPersistStorage(context: AppStorages) : AbsStorage(context), I
                 }
                 cursor.close()
             }
-            if (pair != null) {
-                e.onSuccess(pair)
-            }
-            e.onComplete()
+            emit(pair)
         }
     }
 
-    override fun deleteAll(accountId: Long): Completable {
-        return Completable.create { e ->
+    override fun deleteAll(accountId: Long): Flow<Boolean> {
+        return flow {
             val uri = getKeysContentUriFor(accountId)
             context.contentResolver.delete(uri, null, null)
-            e.onComplete()
+            emit(true)
         }
     }
 }

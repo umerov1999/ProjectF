@@ -30,6 +30,7 @@ import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.settings.theme.ThemesController
 import dev.ragnarok.filegallery.toColor
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.inMainThread
 import dev.ragnarok.filegallery.util.toast.CustomToast
 import okhttp3.Request
 import java.io.BufferedInputStream
@@ -479,7 +480,7 @@ object DownloadWorkUtils {
                     file_v.setFile(file_v.file + "." + file_v.ext)
                     result.renameTo(File(file_v.setExt("error").build()))
                 }
-                Utils.inMainThread {
+                inMainThread {
                     CustomToast.createCustomToast(applicationContext, null)
                         ?.showToastError(R.string.error_with_message, e.localizedMessage)
                 }
@@ -559,7 +560,7 @@ object DownloadWorkUtils {
                     NotificationHelper.NOTIFICATION_DOWNLOAD,
                     NotificationHelper.NOTIFICATION_DOWNLOADING
                 )
-                Utils.inMainThread {
+                inMainThread {
                     CustomToast.createCustomToast(applicationContext, null)
                         ?.showToastInfo(R.string.saved)
                 }
@@ -572,7 +573,6 @@ object DownloadWorkUtils {
 
     }
 
-    @Suppress("DEPRECATION")
     class TrackDownloadWorker(context: Context, workerParams: WorkerParameters) :
         DefaultDownloadWorker(context, workerParams) {
         override fun doWork(): Result {
@@ -626,7 +626,7 @@ object DownloadWorkUtils {
                     NotificationHelper.NOTIFICATION_DOWNLOADING
                 )
                 MusicPlaybackController.tracksExist.addAudio(file_v.buildFilename())
-                Utils.inMainThread {
+                inMainThread {
                     CustomToast.createCustomToast(applicationContext, null)
                         ?.showToastInfo(R.string.saved)
                 }

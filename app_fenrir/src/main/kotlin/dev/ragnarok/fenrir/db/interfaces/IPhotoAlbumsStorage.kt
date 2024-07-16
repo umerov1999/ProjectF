@@ -4,8 +4,7 @@ import androidx.annotation.CheckResult
 import dev.ragnarok.fenrir.db.model.entity.PhotoAlbumDboEntity
 import dev.ragnarok.fenrir.model.criteria.PhotoAlbumsCriteria
 import dev.ragnarok.fenrir.util.Optional
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IPhotoAlbumsStorage : IStorage {
     @CheckResult
@@ -13,10 +12,10 @@ interface IPhotoAlbumsStorage : IStorage {
         accountId: Long,
         ownerId: Long,
         albumId: Int
-    ): Single<Optional<PhotoAlbumDboEntity>>
+    ): Flow<Optional<PhotoAlbumDboEntity>>
 
     @CheckResult
-    fun findAlbumsByCriteria(criteria: PhotoAlbumsCriteria): Single<List<PhotoAlbumDboEntity>>
+    fun findAlbumsByCriteria(criteria: PhotoAlbumsCriteria): Flow<List<PhotoAlbumDboEntity>>
 
     @CheckResult
     fun store(
@@ -24,8 +23,8 @@ interface IPhotoAlbumsStorage : IStorage {
         ownerId: Long,
         albums: List<PhotoAlbumDboEntity>,
         clearBefore: Boolean
-    ): Completable
+    ): Flow<Boolean>
 
     @CheckResult
-    fun removeAlbumById(accountId: Long, ownerId: Long, albumId: Int): Completable
+    fun removeAlbumById(accountId: Long, ownerId: Long, albumId: Int): Flow<Boolean>
 }

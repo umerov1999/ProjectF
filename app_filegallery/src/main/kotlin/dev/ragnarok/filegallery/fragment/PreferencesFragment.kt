@@ -65,28 +65,28 @@ import dev.ragnarok.filegallery.settings.backup.SettingsBackup
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.Utils.getAppVersionName
 import dev.ragnarok.filegallery.util.Utils.safelyClose
-import dev.ragnarok.filegallery.util.rxutils.RxUtils
+import dev.ragnarok.filegallery.util.coroutines.CancelableJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.filegallery.util.serializeble.json.*
 import dev.ragnarok.filegallery.util.serializeble.prefs.Preferences
 import dev.ragnarok.filegallery.util.toast.CustomSnackbars
 import dev.ragnarok.filegallery.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.filegallery.view.MySearchView
 import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.Disposable
 import okio.buffer
 import okio.source
 import java.io.File
 import java.io.FileOutputStream
 import java.io.FilenameFilter
-import java.util.concurrent.TimeUnit
 
 class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScreenChangeListener,
     BackPressCallback, CanBackPressedCallback {
     private var preferencesView: RecyclerView? = null
     private var layoutManager: LinearLayoutManager? = null
     private var searchView: MySearchView? = null
-    private var sleepDataDisposable = Disposable.disposed()
+    private var sleepDataDisposable = CancelableJob()
     private val SEARCH_DELAY = 2000
     override val keyInstanceState: String = "root_preferences"
 
@@ -244,7 +244,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             )
             it.setOnQueryTextListener(object : MySearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
-                    sleepDataDisposable.dispose()
+                    sleepDataDisposable.cancel()
                     if (query.nonNullNoEmpty() && query.trimmedNonNullNoEmpty()) {
                         preferencesAdapter?.findPreferences(requireActivity(), query, root)
                     }
@@ -252,11 +252,9 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    sleepDataDisposable.dispose()
-                    sleepDataDisposable = Single.just(Any())
-                        .delay(SEARCH_DELAY.toLong(), TimeUnit.MILLISECONDS)
-                        .fromIOToMain()
-                        .subscribe({
+                    sleepDataDisposable.cancel()
+                    sleepDataDisposable.set(delayTaskFlow(SEARCH_DELAY.toLong())
+                        .toMain {
                             if (newText.nonNullNoEmpty() && newText.trimmedNonNullNoEmpty()) {
                                 preferencesAdapter?.findPreferences(
                                     requireActivity(),
@@ -264,7 +262,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                                     root
                                 )
                             }
-                        }, { RxUtils.dummy() })
+                        })
                     return false
                 }
             })
@@ -377,13 +375,11 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 showTickMarks = true
                 titleRes = R.string.font_size
                 onSeek {
-                    sleepDataDisposable.dispose()
-                    sleepDataDisposable = Single.just(Any())
-                        .delay(1, TimeUnit.SECONDS)
-                        .fromIOToMain()
-                        .subscribe({
+                    sleepDataDisposable.cancel()
+                    sleepDataDisposable.set(delayTaskFlow(1000)
+                        .toMain {
                             requireActivity().recreate()
-                        }, { RxUtils.dummy() })
+                        })
                 }
             }
 
@@ -618,7 +614,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
 
             multiLineText("videos_ext", parentFragmentManager) {
                 titleRes = R.string.video_ext
-                defaultValue = setOf("gif", "mp4", "avi", "mpeg")
+                defaultValue = setOf("mp4", "avi", "mpeg")
                 isSpace = true
                 dependency = "developer_mode"
                 onMultiLineTextChange {
@@ -630,7 +626,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 titleRes = R.string.photo_ext
                 isSpace = true
                 dependency = "developer_mode"
-                defaultValue = setOf("jpg", "jpeg", "jpg", "webp", "png", "tiff")
+                defaultValue = setOf("jpg", "jpeg", "heic", "webp", "png", "tiff")
                 onMultiLineTextChange {
                     requireActivity().recreate()
                 }
@@ -1134,8 +1130,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
 
             view.findViewById<MaterialButton>(R.id.reboot_pc_win).setOnClickListener {
                 Includes.networkInterfaces.localServerApi().rebootPC("win")
-                    .fromIOToMain()
-                    .subscribe({
+                    .fromIOToMain({
                         createCustomToast(
                             requireActivity(),
                             view
@@ -1145,8 +1140,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
 
             view.findViewById<MaterialButton>(R.id.reboot_pc_linux).setOnClickListener {
                 Includes.networkInterfaces.localServerApi().rebootPC("linux")
-                    .fromIOToMain()
-                    .subscribe({
+                    .fromIOToMain({
                         createCustomToast(
                             requireActivity(),
                             view
@@ -1405,7 +1399,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
     }
 
     override fun onDestroy() {
-        sleepDataDisposable.dispose()
+        sleepDataDisposable.cancel()
         preferencesView?.let { preferencesAdapter?.stopObserveScrollPosition(it) }
         preferencesAdapter?.onScreenChangeListener = null
         preferencesView?.adapter = null

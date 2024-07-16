@@ -10,7 +10,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IAudioInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.media.music.MusicPlaybackService.Companion.startForPlayList
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.model.AudioPlaylist
@@ -24,13 +23,14 @@ import dev.ragnarok.fenrir.util.HelperSimple
 import dev.ragnarok.fenrir.util.HelperSimple.hasHelp
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.safeCheck
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
+import kotlinx.coroutines.flow.Flow
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 
 class AudiosPresenter(
     accountId: Long,
@@ -43,10 +43,10 @@ class AudiosPresenter(
     private val audioInteractor: IAudioInteractor = InteractorFactory.createAudioInteractor()
     private val audios: ArrayList<Audio> = ArrayList()
     val playlistId: Int? = albumId
-    private val audioListDisposable = CompositeDisposable()
-    private val searcher: FindAudio = FindAudio(compositeDisposable)
-    private var sleepDataDisposable = Disposable.disposed()
-    private var swapDisposable = Disposable.disposed()
+    private val audioListDisposable = CompositeJob()
+    private val searcher: FindAudio = FindAudio(compositeJob)
+    private var sleepDataDisposable = CancelableJob()
+    private var swapDisposable = CancelableJob()
     private var actualReceived = false
     private var Curr: MutableList<AudioPlaylist>? = null
     private var loadingNow = false
@@ -80,10 +80,9 @@ class AudiosPresenter(
         }
         if (audios.isEmpty()) {
             if (!iSSelectMode && playlistId == null) {
-                appendDisposable(
+                appendJob(
                     Includes.stores.tempStore().getAudiosAll(ownerId)
-                        .fromIOToMain()
-                        .subscribe({
+                        .fromIOToMain({
                             if (it.isEmpty()) {
                                 fireRefresh()
                             } else {
@@ -113,8 +112,7 @@ class AudiosPresenter(
     private fun requestList(offset: Int, album_id: Int?) {
         setLoadingNow(true)
         audioListDisposable.add(audioInteractor[accountId, album_id, ownerId, offset, GET_COUNT, accessKey]
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 onListReceived(
                     offset,
                     it
@@ -126,10 +124,9 @@ class AudiosPresenter(
         endOfContent = data.isEmpty()
         actualReceived = true
         if (playlistId == null && !iSSelectMode) {
-            appendDisposable(
+            appendJob(
                 Includes.stores.tempStore().addAudios(ownerId, data, offset == 0)
-                    .fromIOToMain()
-                    .subscribe(RxUtils.dummy(), ignore())
+                    .hiddenIO()
             )
         }
         if (offset == 0) {
@@ -169,9 +166,9 @@ class AudiosPresenter(
     }
 
     override fun onDestroyed() {
-        audioListDisposable.dispose()
-        swapDisposable.dispose()
-        sleepDataDisposable.dispose()
+        audioListDisposable.cancel()
+        swapDisposable.cancel()
+        sleepDataDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -231,21 +228,15 @@ class AudiosPresenter(
 
     private fun sleep_search(q: String?) {
         if (loadingNow) return
-        sleepDataDisposable.dispose()
+        sleepDataDisposable.cancel()
         if (q.isNullOrEmpty()) {
             searcher.cancel()
         } else {
             if (!searcher.isSearchMode) {
                 searcher.insertCache(audios, audios.size)
             }
-            sleepDataDisposable = Single.just(Any())
-                .delay(WEB_SEARCH_DELAY.toLong(), TimeUnit.MILLISECONDS)
-                .fromIOToMain()
-                .subscribe({ searcher.do_search(q) }) { t ->
-                    onListGetError(
-                        t
-                    )
-                }
+            sleepDataDisposable += delayTaskFlow(WEB_SEARCH_DELAY.toLong())
+                .toMain { searcher.do_search(q) }
         }
     }
 
@@ -264,8 +255,7 @@ class AudiosPresenter(
                     ownerId,
                     accessKey
                 )
-                    .fromIOToMain()
-                    .subscribe({ t -> loadedPlaylist(t) }) { t ->
+                    .fromIOToMain({ t -> loadedPlaylist(t) }) { t ->
                         showError(
                             getCauseIfRuntime(t)
                         )
@@ -281,8 +271,7 @@ class AudiosPresenter(
             album.id,
             album.owner_id
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 view?.customToast?.showToast(
                     R.string.success
                 )
@@ -298,8 +287,7 @@ class AudiosPresenter(
             album.owner_id,
             album.access_key
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 view?.customToast?.showToast(R.string.success)
             }) { throwable ->
                 showError(throwable)
@@ -331,10 +319,9 @@ class AudiosPresenter(
                     audio.id,
                     root.findViewById<TextInputEditText>(R.id.edit_artist).text.toString(),
                     root.findViewById<TextInputEditText>(R.id.edit_title).text.toString()
-                ).fromIOToMain()
-                    .subscribe({ fireRefresh() }) { t ->
-                        showError(getCauseIfRuntime(t))
-                    })
+                ).fromIOToMain({ fireRefresh() }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
             }
             .setNegativeButton(R.string.button_cancel, null)
             .show()
@@ -381,10 +368,9 @@ class AudiosPresenter(
         } else {
             after = audios[toPosition - 1].id
         }
-        swapDisposable.dispose()
-        swapDisposable = audioInteractor.reorder(accountId, ownerId, audio_from.id, before, after)
-            .fromIOToMain()
-            .subscribe(ignore()) { tempSwap(toPosition, fromPosition) }
+        swapDisposable.cancel()
+        swapDisposable += audioInteractor.reorder(accountId, ownerId, audio_from.id, before, after)
+            .fromIOToMain { tempSwap(toPosition, fromPosition) }
         return true
     }
 
@@ -396,10 +382,10 @@ class AudiosPresenter(
         }
     }
 
-    private inner class FindAudio(disposable: CompositeDisposable) : FindAtWithContent<Audio>(
+    private inner class FindAudio(disposable: CompositeJob) : FindAtWithContent<Audio>(
         disposable, SEARCH_VIEW_COUNT, SEARCH_COUNT
     ) {
-        override fun search(offset: Int, count: Int): Single<List<Audio>> {
+        override fun search(offset: Int, count: Int): Flow<List<Audio>> {
             return audioInteractor[accountId, playlistId, ownerId, offset, count, accessKey]
         }
 
@@ -496,10 +482,9 @@ class AudiosPresenter(
                 audios.clear()
                 audios.addAll(data)
                 if (playlistId == null && !iSSelectMode) {
-                    appendDisposable(
+                    appendJob(
                         Includes.stores.tempStore().addAudios(ownerId, data, true)
-                            .fromIOToMain()
-                            .subscribe(RxUtils.dummy(), ignore())
+                            .hiddenIO()
                     )
                 }
                 view?.notifyListChanged()

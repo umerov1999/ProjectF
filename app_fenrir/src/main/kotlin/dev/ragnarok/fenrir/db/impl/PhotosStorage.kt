@@ -23,10 +23,10 @@ import dev.ragnarok.fenrir.model.criteria.PhotoCriteria
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 internal class PhotosStorage(base: AppStorages) : AbsStorage(base), IPhotosStorage {
     override fun insertPhotosRx(
@@ -35,8 +35,8 @@ internal class PhotosStorage(base: AppStorages) : AbsStorage(base), IPhotosStora
         albumId: Int,
         photos: List<PhotoDboEntity>,
         clearBefore: Boolean
-    ): Completable {
-        return Completable.fromAction {
+    ): Flow<Boolean> {
+        return flow {
             val operations =
                 ArrayList<ContentProviderOperation>(if (clearBefore) photos.size + 1 else photos.size)
             val uri = getPhotosContentUriFor(accountId)
@@ -60,6 +60,7 @@ internal class PhotosStorage(base: AppStorages) : AbsStorage(base), IPhotosStora
                 )
             }
             context.contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
+            emit(true)
         }
     }
 
@@ -69,8 +70,8 @@ internal class PhotosStorage(base: AppStorages) : AbsStorage(base), IPhotosStora
         albumId: Int,
         photos: List<PhotoDboEntity>,
         clearBefore: Boolean
-    ): Completable {
-        return Completable.fromAction {
+    ): Flow<Boolean> {
+        return flow {
             val operations =
                 ArrayList<ContentProviderOperation>(if (clearBefore) photos.size + 1 else photos.size)
             val uri = getPhotosExtendedContentUriFor(accountId)
@@ -94,11 +95,12 @@ internal class PhotosStorage(base: AppStorages) : AbsStorage(base), IPhotosStora
                 )
             }
             context.contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
+            emit(true)
         }
     }
 
-    override fun findPhotosExtendedByCriteriaRx(criteria: PhotoCriteria): Single<List<PhotoDboEntity>> {
-        return Single.create { e: SingleEmitter<List<PhotoDboEntity>> ->
+    override fun findPhotosExtendedByCriteriaRx(criteria: PhotoCriteria): Flow<List<PhotoDboEntity>> {
+        return flow {
             val selection = getSelectionExtendedForCriteria(criteria)
             val orderBy =
                 if (criteria.orderBy == null) PhotosExtendedColumns.DATE + (if (!criteria.sortInvert) " DESC" else " ASC") else criteria.orderBy
@@ -107,19 +109,19 @@ internal class PhotosStorage(base: AppStorages) : AbsStorage(base), IPhotosStora
             val photos = ArrayList<PhotoDboEntity>(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     photos.add(mapPhotoDbo(cursor))
                 }
                 cursor.close()
             }
-            e.onSuccess(photos)
+            emit(photos)
         }
     }
 
-    override fun findPhotosByCriteriaRx(criteria: PhotoCriteria): Single<List<PhotoDboEntity>> {
-        return Single.create { e: SingleEmitter<List<PhotoDboEntity>> ->
+    override fun findPhotosByCriteriaRx(criteria: PhotoCriteria): Flow<List<PhotoDboEntity>> {
+        return flow {
             val selection = getSelectionForCriteria(criteria)
             val orderBy =
                 if (criteria.orderBy == null) PhotosColumns.PHOTO_ID + (if (!criteria.sortInvert) " DESC" else " ASC") else criteria.orderBy
@@ -128,14 +130,14 @@ internal class PhotosStorage(base: AppStorages) : AbsStorage(base), IPhotosStora
             val photos = ArrayList<PhotoDboEntity>(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     photos.add(mapPhotoDbo(cursor))
                 }
                 cursor.close()
             }
-            e.onSuccess(photos)
+            emit(photos)
         }
     }
 
@@ -144,8 +146,8 @@ internal class PhotosStorage(base: AppStorages) : AbsStorage(base), IPhotosStora
         ownerId: Long,
         photoId: Int,
         patch: PhotoPatch
-    ): Completable {
-        return Completable.fromAction {
+    ): Flow<Boolean> {
+        return flow {
             val cv = ContentValues()
             patch.like.requireNonNull {
                 cv.put(PhotosColumns.LIKES, it.count)
@@ -160,6 +162,7 @@ internal class PhotosStorage(base: AppStorages) : AbsStorage(base), IPhotosStora
                 val args = arrayOf(photoId.toString(), ownerId.toString())
                 contentResolver.update(uri, cv, where, args)
             }
+            emit(true)
         }
     }
 

@@ -3,7 +3,7 @@ package dev.ragnarok.filegallery.api.interfaces
 import androidx.annotation.CheckResult
 import dev.ragnarok.filegallery.api.PercentagePublisher
 import dev.ragnarok.filegallery.api.model.response.BaseResponse
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 import java.io.InputStream
 
 interface IUploadApi {
@@ -13,5 +13,5 @@ interface IUploadApi {
         filename: String?,
         inputStream: InputStream,
         listener: PercentagePublisher?
-    ): Single<BaseResponse<Int>>
+    ): Flow<BaseResponse<Int>>
 }

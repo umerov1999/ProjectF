@@ -12,7 +12,8 @@ import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class VideosSearchPresenter(
     accountId: Long,
@@ -40,7 +41,7 @@ class VideosSearchPresenter(
         accountId: Long,
         criteria: VideoSearchCriteria,
         startFrom: IntNextFrom
-    ): Single<Pair<List<Video>, IntNextFrom>> {
+    ): Flow<Pair<List<Video>, IntNextFrom>> {
         val offset = startFrom.offset
         val nextFrom = IntNextFrom(offset + 50)
         return videosInteractor.search(accountId, criteria, 50, offset)

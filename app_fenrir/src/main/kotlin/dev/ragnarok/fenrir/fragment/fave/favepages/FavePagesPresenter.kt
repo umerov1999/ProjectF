@@ -4,7 +4,6 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IFaveInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.FavePage
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.nonNullNoEmpty
@@ -13,11 +12,13 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.findIndexById
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.safeCheck
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
+import kotlinx.coroutines.flow.Flow
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
 class FavePagesPresenter(
@@ -28,10 +29,10 @@ class FavePagesPresenter(
     AccountDependencyPresenter<IFavePagesView>(accountId, savedInstanceState) {
     private val pages: MutableList<FavePage> = ArrayList()
     private val faveInteractor: IFaveInteractor = InteractorFactory.createFaveInteractor()
-    private val cacheDisposable = CompositeDisposable()
-    private val actualDataDisposable = CompositeDisposable()
+    private val cacheDisposable = CompositeJob()
+    private val actualDataDisposable = CompositeJob()
     private val searcher: FindPage = FindPage(actualDataDisposable)
-    private var sleepDataDisposable = Disposable.disposed()
+    private var sleepDataDisposable = CancelableJob()
     private var actualDataReceived = false
     private var endOfContent = false
     private var cacheLoadingNow = false
@@ -40,21 +41,15 @@ class FavePagesPresenter(
     private var offsetPos = 0
     private fun sleep_search(q: String?) {
         if (actualDataLoading || cacheLoadingNow) return
-        sleepDataDisposable.dispose()
+        sleepDataDisposable.cancel()
         if (q.isNullOrEmpty()) {
             searcher.cancel()
         } else {
             if (!searcher.isSearchMode) {
                 searcher.insertCache(pages, pages.size)
             }
-            sleepDataDisposable = Single.just(Any())
-                .delay(WEB_SEARCH_DELAY.toLong(), TimeUnit.MILLISECONDS)
-                .fromIOToMain()
-                .subscribe({ searcher.do_search(q) }) { t ->
-                    onActualDataGetError(
-                        t
-                    )
-                }
+            sleepDataDisposable += delayTaskFlow(WEB_SEARCH_DELAY.toLong())
+                .toMain { searcher.do_search(q) }
         }
     }
 
@@ -71,8 +66,7 @@ class FavePagesPresenter(
         actualDataLoading = true
         resolveRefreshingView()
         actualDataDisposable.add(faveInteractor.getPages(accountId, GET_COUNT, offset, isUser)
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 onActualDataReceived(
                     offset,
                     it
@@ -134,8 +128,7 @@ class FavePagesPresenter(
     private fun loadAllCachedData() {
         cacheLoadingNow = true
         cacheDisposable.add(faveInteractor.getCachedPages(accountId, isUser)
-            .fromIOToMain()
-            .subscribe({ onCachedDataReceived(it) }) { t ->
+            .fromIOToMain({ onCachedDataReceived(it) }) { t ->
                 onCachedGetError(
                     t
                 )
@@ -154,9 +147,9 @@ class FavePagesPresenter(
     }
 
     override fun onDestroyed() {
-        cacheDisposable.dispose()
-        actualDataDisposable.dispose()
-        sleepDataDisposable.dispose()
+        cacheDisposable.cancel()
+        actualDataDisposable.cancel()
+        sleepDataDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -203,17 +196,15 @@ class FavePagesPresenter(
     }
 
     fun fireOwnerDelete(owner: Owner) {
-        appendDisposable(faveInteractor.removePage(accountId, owner.ownerId, isUser)
-            .fromIOToMain()
-            .subscribe({ onUserRemoved(accountId, owner.ownerId) }) { t ->
+        appendJob(faveInteractor.removePage(accountId, owner.ownerId, isUser)
+            .fromIOToMain({ onUserRemoved(accountId, owner.ownerId) }) { t ->
                 showError(getCauseIfRuntime(t))
             })
     }
 
     fun firePushFirst(owner: Owner) {
-        appendDisposable(faveInteractor.pushFirst(accountId, owner.ownerId)
-            .fromIOToMain()
-            .subscribe({ fireRefresh() }) { t ->
+        appendJob(faveInteractor.pushFirst(accountId, owner.ownerId)
+            .fromIOToMain({ fireRefresh() }) { t ->
                 showError(getCauseIfRuntime(t))
             })
     }
@@ -225,10 +216,10 @@ class FavePagesPresenter(
         )
     }
 
-    private inner class FindPage(disposable: CompositeDisposable) : FindAtWithContent<FavePage>(
+    private inner class FindPage(disposable: CompositeJob) : FindAtWithContent<FavePage>(
         disposable, SEARCH_VIEW_COUNT, SEARCH_COUNT
     ) {
-        override fun search(offset: Int, count: Int): Single<List<FavePage>> {
+        override fun search(offset: Int, count: Int): Flow<List<FavePage>> {
             return faveInteractor.getPages(accountId, count, offset, isUser)
         }
 

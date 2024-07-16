@@ -19,8 +19,9 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue
 import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
+import okio.Buffer
+import okio.BufferedSource
 import java.io.IOException
-import java.io.InputStream
 import java.io.InterruptedIOException
 import java.util.concurrent.ExecutionException
 
@@ -53,7 +54,7 @@ class OkHttpDataSource internal constructor(
     private val contentTypePredicate: Predicate<String>?
     private var dataSpec: DataSpec? = null
     private var response: Response? = null
-    private var responseByteStream: InputStream? = null
+    private var responseByteStream: BufferedSource? = null
     private var opened = false
     private var bytesToRead: Long = 0
     private var bytesRead: Long = 0
@@ -98,7 +99,7 @@ class OkHttpDataSource internal constructor(
             this.response = executeCall(call)
             response = this.response
             responseBody = response?.body ?: return -1
-            responseByteStream = responseBody.byteStream()
+            responseByteStream = responseBody.source()
         } catch (e: IOException) {
             throw HttpDataSource.HttpDataSourceException.createForIOException(
                 e, dataSpec, HttpDataSource.HttpDataSourceException.TYPE_OPEN
@@ -119,7 +120,9 @@ class OkHttpDataSource internal constructor(
                 }
             }
             val errorResponseBody: ByteArray = try {
-                Util.toByteArray(Assertions.checkNotNull(responseByteStream))
+                val buffer = Buffer()
+                Assertions.checkNotNull(responseByteStream).readAll(buffer)
+                buffer.readByteArray()
             } catch (e: IOException) {
                 Util.EMPTY_BYTE_ARRAY
             }

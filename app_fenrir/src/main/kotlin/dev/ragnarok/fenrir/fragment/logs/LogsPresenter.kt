@@ -6,19 +6,17 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.db.TempDataHelper
 import dev.ragnarok.fenrir.db.interfaces.ITempDataStorage
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.LogEvent
 import dev.ragnarok.fenrir.model.LogEventType
 import dev.ragnarok.fenrir.model.LogEventWrapper
-import dev.ragnarok.fenrir.util.DisposableHolder
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class LogsPresenter(savedInstanceState: Bundle?) :
     RxSupportPresenter<ILogsView>(savedInstanceState) {
     private val types: MutableList<LogEventType> = createTypes()
     private val events: MutableList<LogEventWrapper> = ArrayList()
     private val store: ITempDataStorage = Includes.stores.tempStore()
-    private val disposableHolder = DisposableHolder<Int>()
     private var loadingNow = false
     private fun resolveEmptyTextVisibility() {
         view?.setEmptyTextVisible(events.isEmpty())
@@ -53,9 +51,8 @@ class LogsPresenter(savedInstanceState: Bundle?) :
     private fun loadAll() {
         val type = selectedType
         setLoading(true)
-        disposableHolder.append(store.getLogAll(type)
-            .fromIOToMain()
-            .subscribe({ events -> onDataReceived(events) }) { throwable ->
+        appendJob(store.getLogAll(type)
+            .fromIOToMain({ events -> onDataReceived(events) }) { throwable ->
                 onDataReceiveError(
                     getCauseIfRuntime(throwable)
                 )
@@ -87,11 +84,6 @@ class LogsPresenter(savedInstanceState: Bundle?) :
             }
             return type
         }
-
-    override fun onDestroyed() {
-        disposableHolder.dispose()
-        super.onDestroyed()
-    }
 
     fun fireTypeClick(entry: LogEventType) {
         if (selectedType == entry.getType()) {

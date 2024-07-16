@@ -52,21 +52,27 @@ import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Unixtime.now
 import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.functions.BiFunction
-import io.reactivex.rxjava3.processors.PublishProcessor
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.andThen
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.createPublishSubject
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.emptyListFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.emptyTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlowThrowable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.zip
 import java.util.LinkedList
 
 class OwnersRepository(private val networker: INetworker, private val cache: IOwnersStorage) :
     IOwnersRepository {
-    private val userUpdatesPublisher = PublishProcessor.create<List<UserUpdate>>()
-    private fun getCachedDetails(accountId: Long, userId: Long): Single<Optional<UserDetails>> {
+    private val userUpdatesPublisher = createPublishSubject<List<UserUpdate>>()
+    private fun getCachedDetails(accountId: Long, userId: Long): Flow<Optional<UserDetails>> {
         return cache.getUserDetails(accountId, userId)
-            .flatMap { optional ->
+            .flatMapConcat { optional ->
                 if (optional.isEmpty) {
-                    Single.just(empty())
+                    toFlow(empty())
                 } else {
                     val entity = optional.requireNonEmpty()
                     val requiredIds: MutableSet<Long> = HashSet(1)
@@ -102,18 +108,16 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
     private fun getCachedGroupsDetails(
         accountId: Long,
         groupId: Long
-    ): Single<Optional<CommunityDetails>> {
+    ): Flow<Optional<CommunityDetails>> {
         return cache.getGroupsDetails(accountId, groupId)
-            .flatMap { optional ->
+            .map { optional ->
                 if (optional.isEmpty) {
-                    Single.just(empty())
+                    empty()
                 } else {
                     val entity = optional.requireNonEmpty()
-                    Single.just(
-                        wrap(
-                            buildCommunityDetailsFromDbo(
-                                entity
-                            )
+                    wrap(
+                        buildCommunityDetailsFromDbo(
+                            entity
                         )
                     )
                 }
@@ -123,9 +127,9 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
     private fun getCachedGroupsFullData(
         accountId: Long,
         groupId: Long
-    ): Single<Pair<Community?, CommunityDetails?>> {
+    ): Flow<Pair<Community?, CommunityDetails?>> {
         return cache.findCommunityDboById(accountId, groupId)
-            .zipWith(
+            .zip(
                 getCachedGroupsDetails(accountId, groupId)
             ) { groupsEntityOptional, groupsDetailsOptional ->
                 create(map(groupsEntityOptional.get()), groupsDetailsOptional.get())
@@ -135,9 +139,9 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
     private fun getCachedFullData(
         accountId: Long,
         userId: Long
-    ): Single<Pair<User?, UserDetails?>> {
+    ): Flow<Pair<User?, UserDetails?>> {
         return cache.findUserDboById(accountId, userId)
-            .zipWith(
+            .zip(
                 getCachedDetails(accountId, userId)
             ) { userEntityOptional, userDetailsOptional ->
                 create(map(userEntityOptional.get()), userDetailsOptional.get())
@@ -149,13 +153,13 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         userId: Long,
         type: String?,
         comment: String?
-    ): Single<Int> {
+    ): Flow<Int> {
         return networker.vkDefault(accountId)
             .users()
             .report(userId, type, comment)
     }
 
-    override fun checkAndAddFriend(accountId: Long, userId: Long): Single<Int> {
+    override fun checkAndAddFriend(accountId: Long, userId: Long): Flow<Int> {
         return networker.vkDefault(accountId)
             .users()
             .checkAndAddFriend(userId)
@@ -165,13 +169,13 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         accountId: Long,
         userId: Long,
         mode: Int
-    ): Single<Pair<User?, UserDetails?>> {
+    ): Flow<Pair<User?, UserDetails?>> {
         when (mode) {
             IOwnersRepository.MODE_CACHE -> return getCachedFullData(accountId, userId)
             IOwnersRepository.MODE_NET -> return networker.vkDefault(accountId)
                 .users()
                 .getUserWallInfo(userId, Fields.FIELDS_FULL_USER, null)
-                .flatMap { user ->
+                .flatMapConcat { user ->
                     val userEntity = mapUser(user)
                     val detailsEntity = mapUserDetails(user)
                     cache.storeUserDbos(accountId, listOf(userEntity))
@@ -187,7 +191,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         owner_id: Long,
         offset: Int,
         count: Int
-    ): Single<List<MarketAlbum>> {
+    ): Flow<List<MarketAlbum>> {
         return networker.vkDefault(accountId)
             .groups()
             .getMarketAlbums(owner_id, offset, count)
@@ -206,7 +210,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         offset: Int,
         count: Int,
         isService: Boolean
-    ): Single<List<Market>> {
+    ): Flow<List<Market>> {
         if (isService) {
             return networker.vkDefault(accountId)
                 .groups()
@@ -232,7 +236,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
     override fun getMarketById(
         accountId: Long,
         ids: Collection<AccessIdPair>
-    ): Single<List<Market>> {
+    ): Flow<List<Market>> {
         return networker.vkDefault(accountId)
             .groups()
             .getMarketById(ids)
@@ -248,13 +252,13 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         accountId: Long,
         communityId: Long,
         mode: Int
-    ): Single<Pair<Community?, CommunityDetails?>> {
+    ): Flow<Pair<Community?, CommunityDetails?>> {
         when (mode) {
             IOwnersRepository.MODE_CACHE -> return getCachedGroupsFullData(accountId, communityId)
             IOwnersRepository.MODE_NET -> return networker.vkDefault(accountId)
                 .groups()
                 .getWallInfo(communityId.toString(), Fields.FIELDS_FULL_GROUP)
-                .flatMap { dto ->
+                .flatMapConcat { dto ->
                     val community = mapCommunity(dto)
                     val details = mapCommunityDetails(dto)
                     cache.storeCommunityDbos(accountId, listOf(community))
@@ -262,22 +266,22 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
                         .andThen(getCachedGroupsFullData(accountId, communityId))
                 }
         }
-        return Single.error(Exception("Not yet implemented"))
+        return toFlowThrowable(Exception("Not yet implemented"))
     }
 
-    override fun findFriendBirtday(accountId: Long): Single<List<User>> {
+    override fun findFriendBirtday(accountId: Long): Flow<List<User>> {
         return cache.findFriendBirtday(accountId)
     }
 
-    override fun cacheActualOwnersData(accountId: Long, ids: Collection<Long>): Completable {
-        var completable = Completable.complete()
+    override fun cacheActualOwnersData(accountId: Long, ids: Collection<Long>): Flow<Boolean> {
+        var completable = emptyTaskFlow()
         val dividedIds = DividedIds(ids)
         if (dividedIds.gids.nonNullNoEmpty()) {
             completable = completable.andThen(
                 networker.vkDefault(accountId)
                     .groups()
                     .getById(dividedIds.gids, null, null, Fields.FIELDS_BASE_GROUP)
-                    .flatMapCompletable {
+                    .flatMapConcat {
                         cache.storeCommunityDbos(
                             accountId,
                             mapCommunities(it.groups)
@@ -288,7 +292,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
             completable = completable.andThen(
                 networker.vkDefault(accountId)
                     .users()[dividedIds.uids, null, Fields.FIELDS_BASE_USER, null]
-                    .flatMapCompletable {
+                    .flatMapConcat {
                         cache.storeUserDbos(
                             accountId,
                             mapUsers(it)
@@ -303,7 +307,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         admin: Boolean,
         editor: Boolean,
         moderator: Boolean
-    ): Single<List<Owner>> {
+    ): Flow<List<Owner>> {
         val roles: MutableList<String> = ArrayList()
         if (admin) {
             roles.add("admin")
@@ -327,11 +331,11 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
             }
     }
 
-    override fun insertOwners(accountId: Long, entities: OwnerEntities): Completable {
+    override fun insertOwners(accountId: Long, entities: OwnerEntities): Flow<Boolean> {
         return cache.storeOwnerEntities(accountId, entities)
     }
 
-    override fun handleStatusChange(accountId: Long, userId: Long, status: String?): Completable {
+    override fun handleStatusChange(accountId: Long, userId: Long, status: String?): Flow<Boolean> {
         val patch = UserPatch(userId).setStatus(UserPatch.Status(status))
         return applyPatchesThenPublish(accountId, listOf(patch))
     }
@@ -340,7 +344,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         accountId: Long,
         offlineUpdates: List<UserIsOfflineUpdate>?,
         onlineUpdates: List<UserIsOnlineUpdate>?
-    ): Completable {
+    ): Flow<Boolean> {
         val patches: MutableList<UserPatch> = ArrayList()
         if (offlineUpdates.nonNullNoEmpty()) {
             for (update in offlineUpdates) {
@@ -373,7 +377,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         return applyPatchesThenPublish(accountId, patches)
     }
 
-    private fun applyPatchesThenPublish(accountId: Long, patches: List<UserPatch>): Completable {
+    private fun applyPatchesThenPublish(accountId: Long, patches: List<UserPatch>): Flow<Boolean> {
         val updates: MutableList<UserUpdate> = ArrayList(patches.size)
         for (patch in patches) {
             val update = UserUpdate(accountId, patch.userId)
@@ -390,11 +394,14 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
             updates.add(update)
         }
         return cache.applyPathes(accountId, patches)
-            .doOnComplete { userUpdatesPublisher.onNext(updates) }
+            .map {
+                userUpdatesPublisher.emit(updates)
+                true
+            }
     }
 
-    override fun observeUpdates(): Flowable<List<UserUpdate>> {
-        return userUpdatesPublisher.onBackpressureBuffer()
+    override fun observeUpdates(): SharedFlow<List<UserUpdate>> {
+        return userUpdatesPublisher
     }
 
     override fun searchPeoples(
@@ -402,7 +409,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         criteria: PeopleSearchCriteria,
         count: Int,
         offset: Int
-    ): Single<List<User>> {
+    ): Flow<List<User>> {
         val q = criteria.query
         val sortOption = criteria.findOptionByKey<SpinnerOption>(PeopleSearchCriteria.KEY_SORT)
         val sort =
@@ -484,13 +491,12 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         user_id: Long,
         count: Int,
         offset: Int
-    ): Single<List<Gift>> {
+    ): Flow<List<Gift>> {
         return networker.vkDefault(accountId)
             .users()
             .getGifts(user_id, count, offset)
-            .flatMap { dtos ->
-                val gifts = transformGifts(dtos.items)
-                Single.just(gifts)
+            .map { dtos ->
+                transformGifts(dtos.items)
             }
     }
 
@@ -498,13 +504,13 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         accountId: Long,
         ids: Collection<Long>,
         mode: Int
-    ): Single<List<Owner>> {
+    ): Flow<List<Owner>> {
         if (ids.isEmpty()) {
-            return Single.just(emptyList())
+            return emptyListFlow()
         }
         val dividedIds = DividedIds(ids)
         return getUsers(accountId, dividedIds.uids, mode)
-            .zipWith(
+            .zip(
                 getCommunities(
                     accountId,
                     dividedIds.gids,
@@ -522,13 +528,18 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         accountId: Long,
         ids: Collection<Long>,
         mode: Int
-    ): Single<IOwnersBundle> {
+    ): Flow<IOwnersBundle> {
         if (ids.isEmpty()) {
-            return Single.just(SparseArrayOwnersBundle(0))
+            return toFlow(SparseArrayOwnersBundle(0))
         }
         val dividedIds = DividedIds(ids)
         return getUsers(accountId, dividedIds.uids, mode)
-            .zipWith(getCommunities(accountId, dividedIds.gids, mode), TO_BUNDLE_FUNCTION)
+            .zip(getCommunities(accountId, dividedIds.gids, mode)) { users, communities ->
+                val bundle = SparseArrayOwnersBundle(users.size + communities.size)
+                bundle.putAll(users)
+                bundle.putAll(communities)
+                bundle
+            }
     }
 
     override fun findBaseOwnersDataAsBundle(
@@ -536,30 +547,28 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         ids: Collection<Long>,
         mode: Int,
         alreadyExists: Collection<Owner>?
-    ): Single<IOwnersBundle> {
+    ): Flow<IOwnersBundle> {
         if (ids.isEmpty()) {
-            return Single.just(SparseArrayOwnersBundle(0))
+            return toFlow(SparseArrayOwnersBundle(0))
         }
-        val b: IOwnersBundle = SparseArrayOwnersBundle(ids.size)
+        val bundle: IOwnersBundle = SparseArrayOwnersBundle(ids.size)
         if (alreadyExists != null) {
-            b.putAll(alreadyExists)
+            bundle.putAll(alreadyExists)
         }
-        return Single.just(b)
-            .flatMap { bundle ->
-                val missing = bundle.getMissing(ids)
-                if (missing.isEmpty()) {
-                    Single.just(bundle)
-                } else {
-                    findBaseOwnersDataAsList(accountId, missing, mode)
-                        .map { owners ->
-                            bundle.putAll(owners)
-                            bundle
-                        }
+
+        val missing = bundle.getMissing(ids)
+        return if (missing.isEmpty()) {
+            toFlow(bundle)
+        } else {
+            findBaseOwnersDataAsList(accountId, missing, mode)
+                .map { owners ->
+                    bundle.putAll(owners)
+                    bundle
                 }
-            }
+        }
     }
 
-    override fun getBaseOwnerInfo(accountId: Long, ownerId: Long, mode: Int): Single<Owner> {
+    override fun getBaseOwnerInfo(accountId: Long, ownerId: Long, mode: Int): Flow<Owner> {
         var pOwnerId = ownerId
         if (pOwnerId == 0L) {
             pOwnerId = Settings.get().accounts().current
@@ -588,52 +597,56 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         accountId: Long,
         gids: List<Long>,
         mode: Int
-    ): Single<List<Community>> {
+    ): Flow<List<Community>> {
         if (gids.isEmpty()) {
-            return Single.just(emptyList())
+            return emptyListFlow()
         }
-        when (mode) {
-            IOwnersRepository.MODE_CACHE -> return cache.findCommunityDbosByIds(accountId, gids)
+        return when (mode) {
+            IOwnersRepository.MODE_CACHE -> cache.findCommunityDbosByIds(accountId, gids)
                 .map { obj -> buildCommunitiesFromDbos(obj) }
 
-            IOwnersRepository.MODE_ANY -> return cache.findCommunityDbosByIds(accountId, gids)
-                .flatMap { dbos ->
+            IOwnersRepository.MODE_ANY -> cache.findCommunityDbosByIds(accountId, gids)
+                .flatMapConcat { dbos ->
                     if (dbos.size == gids.size) {
-                        Single.just(buildCommunitiesFromDbos(dbos))
+                        toFlow(buildCommunitiesFromDbos(dbos))
                     } else {
                         getActualCommunitiesAndStore(accountId, gids)
                     }
                 }
 
-            IOwnersRepository.MODE_NET -> return getActualCommunitiesAndStore(accountId, gids)
+            IOwnersRepository.MODE_NET -> getActualCommunitiesAndStore(accountId, gids)
+            else -> throw IllegalArgumentException("Invalid mode: $mode")
         }
-        throw IllegalArgumentException("Invalid mode: $mode")
     }
 
     private fun getActualUsersAndStore(
         accountId: Long,
         uids: Collection<Long>
-    ): Single<List<User>> {
+    ): Flow<List<User>> {
         return networker.vkDefault(accountId)
             .users()[uids, null, Fields.FIELDS_BASE_USER, null]
-            .flatMap { dtos ->
+            .flatMapConcat { dtos ->
                 cache.storeUserDbos(accountId, mapUsers(dtos))
-                    .andThen(Single.just(transformUsers(dtos)))
+                    .map {
+                        transformUsers(dtos)
+                    }
             }
     }
 
     private fun getActualCommunitiesAndStore(
         accountId: Long,
         gids: List<Long>
-    ): Single<List<Community>> {
+    ): Flow<List<Community>> {
         return networker.vkDefault(accountId)
             .groups()
             .getById(gids, null, null, Fields.FIELDS_BASE_GROUP)
-            .flatMap { dtos ->
+            .flatMapConcat { dtos ->
                 val communityEntities = mapCommunities(dtos.groups)
                 val communities = transformCommunities(dtos.groups)
                 cache.storeCommunityDbos(accountId, communityEntities)
-                    .andThen(Single.just(communities))
+                    .map {
+                        communities
+                    }
             }
     }
 
@@ -642,7 +655,7 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         groupId: Long,
         offset: Int?,
         count: Int?
-    ): Single<List<GroupChats>> {
+    ): Flow<List<GroupChats>> {
         return networker.vkDefault(accountId)
             .groups()
             .getChats(groupId, offset, count)
@@ -654,26 +667,26 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
             .map { obj -> transformGroupChats(obj) }
     }
 
-    private fun getUsers(accountId: Long, uids: List<Long>, mode: Int): Single<List<User>> {
+    private fun getUsers(accountId: Long, uids: List<Long>, mode: Int): Flow<List<User>> {
         if (uids.isEmpty()) {
-            return Single.just(emptyList())
+            return emptyListFlow()
         }
-        when (mode) {
-            IOwnersRepository.MODE_CACHE -> return cache.findUserDbosByIds(accountId, uids)
+        return when (mode) {
+            IOwnersRepository.MODE_CACHE -> cache.findUserDbosByIds(accountId, uids)
                 .map { obj -> buildUsersFromDbo(obj) }
 
-            IOwnersRepository.MODE_ANY -> return cache.findUserDbosByIds(accountId, uids)
-                .flatMap { dbos ->
+            IOwnersRepository.MODE_ANY -> cache.findUserDbosByIds(accountId, uids)
+                .flatMapConcat { dbos ->
                     if (dbos.size == uids.size) {
-                        Single.just(buildUsersFromDbo(dbos))
+                        toFlow(buildUsersFromDbo(dbos))
                     } else {
                         getActualUsersAndStore(accountId, uids)
                     }
                 }
 
-            IOwnersRepository.MODE_NET -> return getActualUsersAndStore(accountId, uids)
+            IOwnersRepository.MODE_NET -> getActualUsersAndStore(accountId, uids)
+            else -> throw IllegalArgumentException("Invalid mode: $mode")
         }
-        throw IllegalArgumentException("Invalid mode: $mode")
     }
 
     private class DividedIds(ids: Collection<Long>) {
@@ -698,15 +711,5 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
                 }
             }
         }
-    }
-
-    companion object {
-        private val TO_BUNDLE_FUNCTION =
-            BiFunction<List<User>, List<Community>, IOwnersBundle> { users, communities ->
-                val bundle = SparseArrayOwnersBundle(users.size + communities.size)
-                bundle.putAll(users)
-                bundle.putAll(communities)
-                bundle
-            }
     }
 }

@@ -6,14 +6,14 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IMessagesRepository
 import dev.ragnarok.fenrir.domain.Repository.messages
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Message
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.PersistentLogger
 import dev.ragnarok.fenrir.util.Utils
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class LocalJsonToChatPresenter(
     accountId: Long,
@@ -28,7 +28,7 @@ class LocalJsonToChatPresenter(
     private var isLoading: Boolean = false
     private var showEmpty: Boolean = false
     private val fInteractor: IMessagesRepository = messages
-    private val actualDataDisposable = CompositeDisposable()
+    private val actualDataDisposable = CompositeJob()
     override fun onGuiCreated(viewHost: ILocalJsonToChatView) {
         super.onGuiCreated(viewHost)
         viewHost.displayData(mPost)
@@ -145,8 +145,7 @@ class LocalJsonToChatPresenter(
         resolveRefreshingView()
         val accountId = super.accountId
         actualDataDisposable.add(fInteractor.getMessagesFromLocalJSon(accountId, context)
-            .fromIOToMain()
-            .subscribe({ onActualDataReceived(it) }) { onActualDataGetError(it) })
+            .fromIOToMain({ onActualDataReceived(it) }) { onActualDataGetError(it) })
     }
 
     private fun onActualDataGetError(t: Throwable) {
@@ -198,7 +197,7 @@ class LocalJsonToChatPresenter(
     }
 
     override fun onDestroyed() {
-        actualDataDisposable.dispose()
+        actualDataDisposable.cancel()
         super.onDestroyed()
     }
 

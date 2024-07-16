@@ -5,7 +5,10 @@ import dev.ragnarok.fenrir.module.StringExist
 import dev.ragnarok.filegallery.Includes.stores
 import dev.ragnarok.filegallery.settings.Settings.get
 import dev.ragnarok.filegallery.util.AppPerms.hasReadWriteStoragePermission
-import io.reactivex.rxjava3.core.Completable
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.emptyTaskFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.single
 import java.io.File
 import java.util.Locale
 
@@ -16,22 +19,23 @@ class FileExistNative : AbsFileExist {
         CachedAudios.insert(file.lowercase(Locale.getDefault()))
     }
 
-    override fun findAllAudios(context: Context): Completable {
-        return if (!hasReadWriteStoragePermission(context)) Completable.complete() else Completable.create { t ->
+    override fun findAllAudios(context: Context): Flow<Boolean> {
+        return if (!hasReadWriteStoragePermission(context)) emptyTaskFlow() else flow {
             val temp = File(get().main().musicDir)
             if (!temp.exists()) {
-                t.onComplete()
-                return@create
+                emit(false)
+                return@flow
             }
             val file_list = temp.listFiles()
             if (file_list == null || file_list.isEmpty()) {
-                t.onComplete()
-                return@create
+                emit(false)
+                return@flow
             }
             CachedAudios.clear()
             for (u in file_list) {
                 if (u.isFile) CachedAudios.insert(u.name.lowercase(Locale.getDefault()))
             }
+            emit(true)
         }
     }
 
@@ -48,9 +52,9 @@ class FileExistNative : AbsFileExist {
         CachedTags.delete(path)
     }
 
-    override fun findAllTags(): Completable {
-        return Completable.create {
-            val list = stores.searchQueriesStore().getAllTagDirs().blockingGet()
+    override fun findAllTags(): Flow<Boolean> {
+        return flow {
+            val list = stores.searchQueriesStore().getAllTagDirs().single()
             CachedAudios.clear()
             CachedTags.clear()
             for (u in list) {

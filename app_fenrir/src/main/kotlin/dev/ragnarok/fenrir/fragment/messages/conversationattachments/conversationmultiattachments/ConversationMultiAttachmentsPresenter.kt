@@ -10,7 +10,6 @@ import dev.ragnarok.fenrir.domain.IMessagesRepository
 import dev.ragnarok.fenrir.domain.IWallsRepository
 import dev.ragnarok.fenrir.domain.Repository
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.media.music.MusicPlaybackService
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.model.Document
@@ -31,9 +30,9 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.intValueIn
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.dummy
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.dummy
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class ConversationMultiAttachmentsPresenter(
     accountId: Long,
@@ -50,7 +49,7 @@ class ConversationMultiAttachmentsPresenter(
 
     private val messagesRepository: IMessagesRepository = Repository.messages
     private val fInteractor: IWallsRepository = Repository.walls
-    private val actualDataDisposable = CompositeDisposable()
+    private val actualDataDisposable = CompositeJob()
     private var loaded = 0
     private var actualDataReceived = false
     private var endOfContent = false
@@ -88,8 +87,7 @@ class ConversationMultiAttachmentsPresenter(
             null,
             cacheData = false, rev = false
         )
-            .fromIOToMain()
-            .subscribe({ data ->
+            .fromIOToMain({ data ->
                 onActualDataReceived(
                     offset,
                     data
@@ -376,8 +374,7 @@ class ConversationMultiAttachmentsPresenter(
                         mPhotos,
                         Serializers.PHOTOS_SERIALIZER
                     )
-                    .fromIOToMain()
-                    .subscribe({
+                    .fromIOToMain({
                         onPhotosSavedToTmpStore(
                             position,
                             source
@@ -395,7 +392,7 @@ class ConversationMultiAttachmentsPresenter(
     }
 
     override fun onDestroyed() {
-        actualDataDisposable.dispose()
+        actualDataDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -426,9 +423,8 @@ class ConversationMultiAttachmentsPresenter(
     }
 
     fun firePostRestoreClick(post: Post) {
-        appendDisposable(fInteractor.restore(accountId, post.ownerId, post.vkid)
-            .fromIOToMain()
-            .subscribe(dummy()) { t ->
+        appendJob(fInteractor.restore(accountId, post.ownerId, post.vkid)
+            .fromIOToMain(dummy()) { t ->
                 showError(t)
             })
     }
@@ -458,9 +454,8 @@ class ConversationMultiAttachmentsPresenter(
         ) {
             return
         }
-        appendDisposable(fInteractor.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
-            .fromIOToMain()
-            .subscribe(ignore()) { t ->
+        appendJob(fInteractor.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
+            .fromIOToMain(dummy()) { t ->
                 showError(t)
             })
     }

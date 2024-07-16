@@ -4,8 +4,6 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.ICommunitiesInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
-import dev.ragnarok.fenrir.fromIOToMainComputation
 import dev.ragnarok.fenrir.model.Community
 import dev.ragnarok.fenrir.model.DataWrapper
 import dev.ragnarok.fenrir.model.Owner
@@ -18,13 +16,15 @@ import dev.ragnarok.fenrir.util.Translit.cyr2lat
 import dev.ragnarok.fenrir.util.Translit.lat2cyr
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.indexOf
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.andThen
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 
 class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<ICommunitiesView>(accountId, savedInstanceState) {
@@ -33,10 +33,10 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
     private val search: DataWrapper<Community> = DataWrapper(ArrayList(0), false)
     private val communitiesInteractor: ICommunitiesInteractor =
         InteractorFactory.createCommunitiesInteractor()
-    private val actualDisposable = CompositeDisposable()
-    private val cacheDisposable = CompositeDisposable()
-    private val netSearchDisposable = CompositeDisposable()
-    private val filterDisposable = CompositeDisposable()
+    private val actualDisposable = CompositeJob()
+    private val cacheDisposable = CompositeJob()
+    private val netSearchDisposable = CompositeJob()
+    private val filterDisposable = CompositeJob()
     private val isNotFriendShow: Boolean =
         Settings.get().main().isOwnerInChangesMonitor(userId) && userId != accountId
     private var actualEndOfContent = false
@@ -58,8 +58,7 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
             if (isNotFriendShow) 1000 else 200,
             offset, true
         )
-            .fromIOToMain()
-            .subscribe({ communities ->
+            .fromIOToMain({ communities ->
                 onActualDataReceived(
                     communities,
                     do_scan
@@ -135,8 +134,7 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
     private fun loadCachedData() {
         cacheLoadingNow = true
         cacheDisposable.add(communitiesInteractor.getCachedData(accountId, userId)
-            .fromIOToMain()
-            .subscribe({ communities -> onCachedDataReceived(communities) }) { t ->
+            .fromIOToMain({ communities -> onCachedDataReceived(communities) }) { t ->
                 onCacheGetError(
                     t
                 )
@@ -186,12 +184,11 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
         if (searchNow) {
             filterDisposable.add(
                 filter(own.data, filter)
-                    .fromIOToMainComputation()
-                    .subscribe({ filteredData ->
+                    .fromIOToMain { filteredData ->
                         onFilteredDataReceived(
                             filteredData
                         )
-                    }, ignore())
+                    }
             )
             startNetSearch(true)
         } else {
@@ -201,7 +198,6 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
 
     private fun startNetSearch(withDelay: Boolean) {
         val filter = filter
-        val single: Single<List<Community>>
 
         val in_page = Settings.get().main().isCommunities_in_page_search
         val inc = if (in_page) 1000 else 100
@@ -215,9 +211,8 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
             null, null, null, 0, 100, networkOffset
         )
 
-        single = if (withDelay) {
-            Completable.complete()
-                .delay(1, TimeUnit.SECONDS)
+        val single = if (withDelay) {
+            delayTaskFlow(1000)
                 .andThen(searchSingle)
         } else {
             searchSingle
@@ -225,8 +220,7 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
         netSearchNow = true
         resolveRefreshing()
         netSearchDisposable.add(single.map { filterM(it, filter) }
-            .fromIOToMain()
-            .subscribe({ data ->
+            .fromIOToMain({ data ->
                 onSearchDataReceived(data, inc)
             }) { t -> onSearchError(t) })
     }
@@ -270,8 +264,7 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
 
     fun fireUnsubscribe(community: Community) {
         actualDisposable.add(communitiesInteractor.leave(accountId, community.id)
-            .fromIOToMain()
-            .subscribe({ fireRefresh() }) { t -> onSearchError(t) })
+            .fromIOToMain({ fireRefresh() }) { t -> onSearchError(t) })
     }
 
     fun fireCommunityLongClick(community: Community): Boolean {
@@ -285,10 +278,10 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
     }
 
     override fun onDestroyed() {
-        actualDisposable.dispose()
-        cacheDisposable.dispose()
-        filterDisposable.dispose()
-        netSearchDisposable.dispose()
+        actualDisposable.cancel()
+        cacheDisposable.cancel()
+        filterDisposable.cancel()
+        netSearchDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -321,18 +314,18 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
     }
 
     companion object {
-        internal fun filter(orig: List<Community>, filter: String?): Single<List<Community>> {
-            return Single.create { emitter: SingleEmitter<List<Community>> ->
+        internal fun filter(orig: List<Community>, filter: String?): Flow<List<Community>> {
+            return flow {
                 val result: MutableList<Community> = ArrayList(5)
                 for (community in orig) {
-                    if (emitter.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     if (isMatchFilter(community, filter)) {
                         result.add(community)
                     }
                 }
-                emitter.onSuccess(result)
+                emit(result)
             }
         }
 

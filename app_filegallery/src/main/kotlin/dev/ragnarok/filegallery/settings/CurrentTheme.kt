@@ -109,10 +109,12 @@ object CurrentTheme {
         )
     }
 
+    @Suppress("deprecation")
     fun getStatusBarColor(context: Context): Int {
         return getColorFromAttrs(android.R.attr.statusBarColor, context, "#000000")
     }
 
+    @Suppress("deprecation")
     fun getNavigationBarColor(context: Context): Int {
         return getColorFromAttrs(android.R.attr.navigationBarColor, context, "#000000")
     }
@@ -137,6 +139,14 @@ object CurrentTheme {
         val color = array.getColor(0, defaultColor.toColor())
         array.recycle()
         return color
+    }
+
+    fun getPrimaryTextColorCode(context: Context): Int {
+        return getColorFromAttrs(android.R.attr.textColorPrimary, context, "#000000")
+    }
+
+    fun getSecondaryTextColorCode(context: Context): Int {
+        return getColorFromAttrs(android.R.attr.textColorSecondary, context, "#000000")
     }
 
     fun getSecondaryTextColor(context: Context): Int {

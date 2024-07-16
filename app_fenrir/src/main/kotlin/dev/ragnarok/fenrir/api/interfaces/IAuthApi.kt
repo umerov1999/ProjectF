@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.api.interfaces
 import dev.ragnarok.fenrir.api.model.LoginResponse
 import dev.ragnarok.fenrir.api.model.VKApiValidationResponse
 import dev.ragnarok.fenrir.api.model.response.VKUrlResponse
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IAuthApi {
     fun directLogin(
@@ -20,7 +20,7 @@ interface IAuthApi {
         captchaKey: String?,
         forceSms: Boolean,
         libverify_support: Boolean
-    ): Single<LoginResponse>
+    ): Flow<LoginResponse>
 
     fun validatePhone(
         apiId: Int,
@@ -29,7 +29,7 @@ interface IAuthApi {
         sid: String?,
         v: String?,
         libverify_support: Boolean
-    ): Single<VKApiValidationResponse>
+    ): Flow<VKApiValidationResponse>
 
     fun authByExchangeToken(
         clientId: Int,
@@ -41,5 +41,5 @@ interface IAuthApi {
         sakVersion: String?,
         gaid: String?,
         v: String?
-    ): Single<VKUrlResponse>
+    ): Flow<VKUrlResponse>
 }

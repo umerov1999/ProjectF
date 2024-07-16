@@ -5,18 +5,17 @@ import dev.ragnarok.fenrir.db.model.entity.NewsDboEntity
 import dev.ragnarok.fenrir.db.model.entity.OwnerEntities
 import dev.ragnarok.fenrir.model.FeedSourceCriteria
 import dev.ragnarok.fenrir.model.criteria.FeedCriteria
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IFeedStorage : IStorage {
-    fun findByCriteria(criteria: FeedCriteria): Single<List<NewsDboEntity>>
+    fun findByCriteria(criteria: FeedCriteria): Flow<List<NewsDboEntity>>
     fun store(
         accountId: Long,
         data: List<NewsDboEntity>,
         owners: OwnerEntities?,
         clearBeforeStore: Boolean
-    ): Single<IntArray>
+    ): Flow<IntArray>
 
-    fun storeLists(accountId: Long, entities: List<FeedListEntity>): Completable
-    fun getAllLists(criteria: FeedSourceCriteria): Single<List<FeedListEntity>>
+    fun storeLists(accountId: Long, entities: List<FeedListEntity>): Flow<Boolean>
+    fun getAllLists(criteria: FeedSourceCriteria): Flow<List<FeedListEntity>>
 }

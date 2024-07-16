@@ -2,16 +2,16 @@ package dev.ragnarok.fenrir.api
 
 import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.api.rest.SimplePostHttp
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 import okhttp3.OkHttpClient
 
 interface IVKRestProvider {
-    fun provideNormalRest(accountId: Long): Single<SimplePostHttp>
-    fun provideCustomRest(accountId: Long, token: String): Single<SimplePostHttp>
-    fun provideServiceRest(): Single<SimplePostHttp>
-    fun provideNormalHttpClient(accountId: Long): Single<OkHttpClient.Builder>
+    fun provideNormalRest(accountId: Long): Flow<SimplePostHttp>
+    fun provideCustomRest(accountId: Long, token: String): Flow<SimplePostHttp>
+    fun provideServiceRest(): Flow<SimplePostHttp>
+    fun provideNormalHttpClient(accountId: Long): Flow<OkHttpClient.Builder>
     fun provideRawHttpClient(
         @AccountType type: Int,
         customDeviceName: String?
-    ): Single<OkHttpClient.Builder>
+    ): Flow<OkHttpClient.Builder>
 }

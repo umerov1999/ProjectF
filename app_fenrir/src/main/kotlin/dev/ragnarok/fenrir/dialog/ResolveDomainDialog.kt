@@ -7,11 +7,11 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.dialog.base.AccountDependencyDialogFragment
 import dev.ragnarok.fenrir.domain.IUtilsInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.place.PlaceFactory.getExternalLinkPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.util.Optional
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.spots.SpotsDialog
 
 class ResolveDomainDialog : AccountDependencyDialogFragment() {
@@ -36,10 +36,9 @@ class ResolveDomainDialog : AccountDependencyDialogFragment() {
     }
 
     private fun request() {
-        appendDisposable(
+        appendJob(
             (mUtilsInteractor ?: return).resolveDomain(mAccountId, domain)
-                .fromIOToMain()
-                .subscribe({ optionalOwner -> onResolveResult(optionalOwner) }) {
+                .fromIOToMain({ optionalOwner -> onResolveResult(optionalOwner) }) {
                     onResolveError()
                 })
     }

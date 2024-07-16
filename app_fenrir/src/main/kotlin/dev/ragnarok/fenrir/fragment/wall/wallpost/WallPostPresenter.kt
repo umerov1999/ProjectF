@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.fragment.wall.wallpost
 import android.content.Context
 import android.os.Bundle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.model.VKApiPostSource
 import dev.ragnarok.fenrir.db.model.PostUpdate
@@ -14,7 +13,6 @@ import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.domain.Repository.walls
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Commented
 import dev.ragnarok.fenrir.model.CommentedType
@@ -27,7 +25,10 @@ import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.dummy
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import kotlinx.coroutines.flow.filter
 
 class WallPostPresenter(
     accountId: Long, private val postId: Int, private val ownerId: Long, post: Post?,
@@ -68,14 +69,13 @@ class WallPostPresenter(
 
     private fun loadOwnerInfoIfNeed() {
         if (owner == null) {
-            appendDisposable(
+            appendJob(
                 ownersRepository.getBaseOwnerInfo(
                     accountId,
                     ownerId,
                     IOwnersRepository.MODE_NET
                 )
-                    .fromIOToMain()
-                    .subscribe({ owner -> onOwnerInfoReceived(owner) }, ignore())
+                    .fromIOToMain { owner -> onOwnerInfoReceived(owner) }
             )
         }
     }
@@ -94,9 +94,8 @@ class WallPostPresenter(
             return
         }
         setLoadingPostNow(true)
-        appendDisposable(wallInteractor.getById(accountId, ownerId, postId)
-            .fromIOToMain()
-            .subscribe({ post -> onActualPostReceived(post) }) { t ->
+        appendJob(wallInteractor.getById(accountId, ownerId, postId)
+            .fromIOToMain({ post -> onActualPostReceived(post) }) { t ->
                 onLoadPostInfoError(
                     t
                 )
@@ -262,14 +261,13 @@ class WallPostPresenter(
             return
         }
         if (post != null) {
-            appendDisposable(wallInteractor.like(
+            appendJob(wallInteractor.like(
                 accountId,
                 ownerId,
                 postId,
                 !(post ?: return).isUserLikes
             )
-                .fromIOToMain()
-                .subscribe(ignore()) { t ->
+                .fromIOToMain(dummy()) { t ->
                     showError(t)
                 })
         } else {
@@ -280,15 +278,13 @@ class WallPostPresenter(
     fun fireBookmark() {
         post?.let { pPost ->
             if (!pPost.isFavorite) {
-                appendDisposable(faveInteractor.addPost(accountId, ownerId, postId, null)
-                    .fromIOToMain()
-                    .subscribe({ onPostAddedToBookmarks() }) { t ->
+                appendJob(faveInteractor.addPost(accountId, ownerId, postId, null)
+                    .fromIOToMain({ onPostAddedToBookmarks() }) { t ->
                         showError(getCauseIfRuntime(t))
                     })
             } else {
-                appendDisposable(faveInteractor.removePost(accountId, ownerId, postId)
-                    .fromIOToMain()
-                    .subscribe({ onPostAddedToBookmarks() }) { t ->
+                appendJob(faveInteractor.removePost(accountId, ownerId, postId)
+                    .fromIOToMain({ onPostAddedToBookmarks() }) { t ->
                         showError(getCauseIfRuntime(t))
                     })
             }
@@ -317,9 +313,8 @@ class WallPostPresenter(
             ownerId,
             postId
         ) else wallInteractor.restore(accountId, ownerId, postId)
-        appendDisposable(completable
-            .fromIOToMain()
-            .subscribe({ onDeleteOrRestoreComplete(delete) }) { t ->
+        appendJob(completable
+            .fromIOToMain({ onDeleteOrRestoreComplete(delete) }) { t ->
                 showError(getCauseIfRuntime(t))
             })
     }
@@ -339,9 +334,8 @@ class WallPostPresenter(
     }
 
     private fun pinOrUnpin(pin: Boolean) {
-        appendDisposable(wallInteractor.pinUnpin(accountId, ownerId, postId, pin)
-            .fromIOToMain()
-            .subscribe({ onPinOrUnpinComplete(pin) }) { t ->
+        appendJob(wallInteractor.pinUnpin(accountId, ownerId, postId, pin)
+            .fromIOToMain({ onPinOrUnpinComplete(pin) }) { t ->
                 showError(getCauseIfRuntime(t))
             })
     }
@@ -377,9 +371,8 @@ class WallPostPresenter(
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.report)
             .setItems(items) { dialog, item ->
-                appendDisposable(wallInteractor.reportPost(accountId, ownerId, postId, item)
-                    .fromIOToMain()
-                    .subscribe({ p ->
+                appendJob(wallInteractor.reportPost(accountId, ownerId, postId, item)
+                    .fromIOToMain({ p ->
                         if (p == 1) view?.customToast?.showToast(
                             R.string.success
                         ) else view?.customToast?.showToast(
@@ -465,13 +458,11 @@ class WallPostPresenter(
             loadActualPostInfo()
         }
         loadOwnerInfoIfNeed()
-        appendDisposable(wallInteractor.observeMinorChanges()
+        appendJob(wallInteractor.observeMinorChanges()
             .filter { it.ownerId == ownerId && it.postId == postId }
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onPostUpdate(it) })
-        appendDisposable(wallInteractor.observeChanges()
+            .sharedFlowToMain { onPostUpdate(it) })
+        appendJob(wallInteractor.observeChanges()
             .filter { postId == it.vkid && it.ownerId == ownerId }
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onPostChanged(it) })
+            .sharedFlowToMain { onPostChanged(it) })
     }
 }

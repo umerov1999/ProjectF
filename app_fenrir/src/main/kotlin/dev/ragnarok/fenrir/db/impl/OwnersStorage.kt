@@ -42,41 +42,46 @@ import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.UserInfoResolveUtil.getUserActivityLine
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.createPublishSubject
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.emptyListFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.emptyTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.MaybeEmitter
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.subjects.PublishSubject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.flow
 
 internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwnersStorage {
-    private val banActionsPublisher: PublishSubject<BanAction> = PublishSubject.create()
-    private val managementActionsPublisher: PublishSubject<Pair<Long, Manager>> =
-        PublishSubject.create()
+    private val banActionsPublisher = createPublishSubject<BanAction>()
+    private val managementActionsPublisher = createPublishSubject<Pair<Long, Manager>>()
 
-    override fun fireBanAction(action: BanAction): Completable {
-        return Completable.fromAction { banActionsPublisher.onNext(action) }
+    override fun fireBanAction(action: BanAction): Flow<Boolean> {
+        return flow {
+            banActionsPublisher.emit(action)
+            emit(true)
+        }
     }
 
-    override fun observeBanActions(): Observable<BanAction> {
+    override fun observeBanActions(): SharedFlow<BanAction> {
         return banActionsPublisher
     }
 
-    override fun fireManagementChangeAction(manager: Pair<Long, Manager>): Completable {
-        return Completable.fromAction { managementActionsPublisher.onNext(manager) }
+    override fun fireManagementChangeAction(manager: Pair<Long, Manager>): Flow<Boolean> {
+        return flow {
+            managementActionsPublisher.emit(manager)
+            emit(true)
+        }
     }
 
-    override fun observeManagementChanges(): Observable<Pair<Long, Manager>> {
+    override fun observeManagementChanges(): SharedFlow<Pair<Long, Manager>> {
         return managementActionsPublisher
     }
 
     override fun getUserDetails(
         accountId: Long,
         userId: Long
-    ): Single<Optional<UserDetailsEntity>> {
-        return Single.fromCallable {
+    ): Flow<Optional<UserDetailsEntity>> {
+        return flow {
             val uri = getUserDetContentUriFor(accountId)
             val where = BaseColumns._ID + " = ?"
             val args = arrayOf(userId.toString())
@@ -92,15 +97,15 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
                 }
                 cursor.close()
             }
-            wrap(details)
+            emit(wrap(details))
         }
     }
 
     override fun getGroupsDetails(
         accountId: Long,
         groupId: Long
-    ): Single<Optional<CommunityDetailsEntity>> {
-        return Single.fromCallable {
+    ): Flow<Optional<CommunityDetailsEntity>> {
+        return flow {
             val uri = getGroupsDetContentUriFor(accountId)
             val where = BaseColumns._ID + " = ?"
             val args = arrayOf(groupId.toString())
@@ -116,7 +121,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
                 }
                 cursor.close()
             }
-            wrap(details)
+            emit(wrap(details))
         }
     }
 
@@ -124,8 +129,8 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
         accountId: Long,
         groupId: Long,
         dbo: CommunityDetailsEntity
-    ): Completable {
-        return Completable.fromAction {
+    ): Flow<Boolean> {
+        return flow {
             val cv = ContentValues()
             cv.put(BaseColumns._ID, groupId)
             cv.put(
@@ -134,6 +139,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
             )
             val uri = getGroupsDetContentUriFor(accountId)
             contentResolver.insert(uri, cv)
+            emit(true)
         }
     }
 
@@ -141,8 +147,8 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
         accountId: Long,
         userId: Long,
         dbo: UserDetailsEntity
-    ): Completable {
-        return Completable.fromAction {
+    ): Flow<Boolean> {
+        return flow {
             val cv = ContentValues()
             cv.put(BaseColumns._ID, userId)
             cv.put(
@@ -151,13 +157,14 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
             )
             val uri = getUserDetContentUriFor(accountId)
             contentResolver.insert(uri, cv)
+            emit(true)
         }
     }
 
-    override fun applyPathes(accountId: Long, patches: List<UserPatch>): Completable {
+    override fun applyPathes(accountId: Long, patches: List<UserPatch>): Flow<Boolean> {
         return if (patches.isEmpty()) {
-            Completable.complete()
-        } else Completable.create { emitter ->
+            emptyTaskFlow()
+        } else flow {
             val uri = getUserContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>(patches.size)
             for (patch in patches) {
@@ -183,7 +190,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
                 }
             }
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            emitter.onComplete()
+            emit(true)
         }
     }
 
@@ -191,8 +198,8 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
         accountId: Long,
         userId: Long,
         ids: Collection<Long>
-    ): Single<MutableMap<Long, FriendListEntity>> {
-        return Single.create { emitter: SingleEmitter<MutableMap<Long, FriendListEntity>> ->
+    ): Flow<MutableMap<Long, FriendListEntity>> {
+        return flow {
             val uri = getFriendListsContentUriFor(accountId)
             val where =
                 FriendListsColumns.USER_ID + " = ? " + " AND " + FriendListsColumns.LIST_ID + " IN(" + Utils.join(
@@ -205,7 +212,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
                 HashMap(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (emitter.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     val dbo = mapFriendsList(cursor)
@@ -213,12 +220,12 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
                 }
                 cursor.close()
             }
-            emitter.onSuccess(map)
+            emit(map)
         }
     }
 
-    override fun getLocalizedUserActivity(accountId: Long, userId: Long): Maybe<String> {
-        return Maybe.create { e: MaybeEmitter<String> ->
+    override fun getLocalizedUserActivity(accountId: Long, userId: Long): Flow<String?> {
+        return flow {
             val uProjection = arrayOf(UsersColumns.LAST_SEEN, UsersColumns.ONLINE, UsersColumns.SEX)
             val uri = getUserContentUriFor(accountId)
             val where = BaseColumns._ID + " = ?"
@@ -233,16 +240,17 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
                     val sex = cursor.getInt(UsersColumns.SEX)
                     val userActivityLine =
                         getUserActivityLine(context, lastSeen, online, sex, false)
-                    e.onSuccess(userActivityLine)
+                    emit(userActivityLine)
+                    return@flow
                 }
                 cursor.close()
             }
-            e.onComplete()
+            emit(null)
         }
     }
 
-    override fun findUserDboById(accountId: Long, ownerId: Long): Single<Optional<UserEntity>> {
-        return Single.create { emitter: SingleEmitter<Optional<UserEntity>> ->
+    override fun findUserDboById(accountId: Long, ownerId: Long): Flow<Optional<UserEntity>> {
+        return flow {
             val where = BaseColumns._ID + " = ?"
             val args = arrayOf(ownerId.toString())
             val uri = getUserContentUriFor(accountId)
@@ -254,15 +262,15 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
                 }
                 cursor.close()
             }
-            emitter.onSuccess(wrap(dbo))
+            emit(wrap(dbo))
         }
     }
 
     override fun findCommunityDboById(
         accountId: Long,
         ownerId: Long
-    ): Single<Optional<CommunityEntity>> {
-        return Single.create { emitter: SingleEmitter<Optional<CommunityEntity>> ->
+    ): Flow<Optional<CommunityEntity>> {
+        return flow {
             val where = BaseColumns._ID + " = ?"
             val args = arrayOf(ownerId.toString())
             val uri = getGroupsContentUriFor(accountId)
@@ -274,12 +282,12 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
                 }
                 cursor.close()
             }
-            emitter.onSuccess(wrap(dbo))
+            emit(wrap(dbo))
         }
     }
 
-    override fun findUserByDomain(accountId: Long, domain: String?): Single<Optional<UserEntity>> {
-        return Single.create { emitter: SingleEmitter<Optional<UserEntity>> ->
+    override fun findUserByDomain(accountId: Long, domain: String?): Flow<Optional<UserEntity>> {
+        return flow {
             val uri = getUserContentUriFor(accountId)
             val where = UsersColumns.DOMAIN + " LIKE ?"
             val args = arrayOf(domain)
@@ -291,12 +299,12 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
                 }
                 cursor.close()
             }
-            emitter.onSuccess(wrap(entity))
+            emit(wrap(entity))
         }
     }
 
-    override fun findFriendBirtday(accountId: Long): Single<List<User>> {
-        return Single.create {
+    override fun findFriendBirtday(accountId: Long): Flow<List<User>> {
+        return flow {
             val uri = getUserContentUriFor(accountId)
             val where = UsersColumns.BDATE + " IS NOT NULL AND " + UsersColumns.IS_FRIEND + " = 1"
             val cursor = contentResolver.query(uri, null, where, null, UsersColumns.BDATE + " DESC")
@@ -305,15 +313,15 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
                 Entity2Model.map(mapUserDbo(cursor))?.let { it1 -> listEntity.add(it1) }
             }
             cursor?.close()
-            it.onSuccess(listEntity)
+            emit(listEntity)
         }
     }
 
     override fun findCommunityByDomain(
         accountId: Long,
         domain: String?
-    ): Single<Optional<CommunityEntity>> {
-        return Single.create { emitter: SingleEmitter<Optional<CommunityEntity>> ->
+    ): Flow<Optional<CommunityEntity>> {
+        return flow {
             val uri = getGroupsContentUriFor(accountId)
             val where = GroupsColumns.SCREEN_NAME + " LIKE ?"
             val args = arrayOf(domain)
@@ -325,14 +333,14 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
                 }
                 cursor.close()
             }
-            emitter.onSuccess(wrap(entity))
+            emit(wrap(entity))
         }
     }
 
-    override fun findUserDbosByIds(accountId: Long, ids: List<Long>): Single<List<UserEntity>> {
+    override fun findUserDbosByIds(accountId: Long, ids: List<Long>): Flow<List<UserEntity>> {
         return if (ids.isEmpty()) {
-            Single.just(emptyList())
-        } else Single.create { emitter: SingleEmitter<List<UserEntity>> ->
+            emptyListFlow()
+        } else flow {
             val where: String
             val args: Array<String>?
             val uri = getUserContentUriFor(accountId)
@@ -347,24 +355,24 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
             val dbos: MutableList<UserEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (emitter.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     dbos.add(mapUserDbo(cursor))
                 }
                 cursor.close()
             }
-            emitter.onSuccess(dbos)
+            emit(dbos)
         }
     }
 
     override fun findCommunityDbosByIds(
         accountId: Long,
         ids: List<Long>
-    ): Single<List<CommunityEntity>> {
+    ): Flow<List<CommunityEntity>> {
         return if (ids.isEmpty()) {
-            Single.just(emptyList())
-        } else Single.create { emitter: SingleEmitter<List<CommunityEntity>> ->
+            emptyListFlow()
+        } else flow {
             val where: String
             val args: Array<String>?
             val uri = getGroupsContentUriFor(accountId)
@@ -379,30 +387,30 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
             val dbos: MutableList<CommunityEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (emitter.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     dbos.add(mapCommunityDbo(cursor))
                 }
                 cursor.close()
             }
-            emitter.onSuccess(dbos)
+            emit(dbos)
         }
     }
 
-    override fun storeUserDbos(accountId: Long, users: List<UserEntity>): Completable {
-        return Completable.create { emitter ->
+    override fun storeUserDbos(accountId: Long, users: List<UserEntity>): Flow<Boolean> {
+        return flow {
             val operations = ArrayList<ContentProviderOperation>(users.size)
             appendUsersInsertOperation(operations, accountId, users)
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            emitter.onComplete()
+            emit(true)
         }
     }
 
-    override fun storeOwnerEntities(accountId: Long, entities: OwnerEntities?): Completable {
-        return Completable.create { emitter ->
+    override fun storeOwnerEntities(accountId: Long, entities: OwnerEntities?): Flow<Boolean> {
+        return flow {
             if (entities == null) {
-                emitter.onComplete()
+                emit(false)
             } else {
                 val operations = ArrayList<ContentProviderOperation>(
                     entities.size()
@@ -410,7 +418,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
                 appendUsersInsertOperation(operations, accountId, entities.userEntities)
                 appendCommunitiesInsertOperation(operations, accountId, entities.communityEntities)
                 contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-                emitter.onComplete()
+                emit(true)
             }
         }
     }
@@ -418,23 +426,23 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
     override fun storeCommunityDbos(
         accountId: Long,
         communityEntities: List<CommunityEntity>
-    ): Completable {
-        return Completable.create { emitter ->
+    ): Flow<Boolean> {
+        return flow {
             val operations = ArrayList<ContentProviderOperation>(communityEntities.size)
             appendCommunitiesInsertOperation(operations, accountId, communityEntities)
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            emitter.onComplete()
+            emit(true)
         }
     }
 
     override fun getMissingUserIds(
         accountId: Long,
         ids: Collection<Long>
-    ): Single<Collection<Long>> {
-        return Single.create { e: SingleEmitter<Collection<Long>> ->
-            if (ids.isEmpty()) {
-                e.onSuccess(emptyList())
-            } else {
+    ): Flow<Collection<Long>> {
+        return if (ids.isEmpty()) {
+            emptyListFlow()
+        } else {
+            flow {
                 val copy: MutableSet<Long> = HashSet(ids)
                 val projection = arrayOf(BaseColumns._ID)
                 val cursor = contentResolver.query(
@@ -448,7 +456,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
                     }
                     cursor.close()
                 }
-                e.onSuccess(copy)
+                emit(copy)
             }
         }
     }
@@ -456,11 +464,11 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
     override fun getMissingCommunityIds(
         accountId: Long,
         ids: Collection<Long>
-    ): Single<Collection<Long>> {
-        return Single.create { e: SingleEmitter<Collection<Long>> ->
-            if (ids.isEmpty()) {
-                e.onSuccess(emptyList())
-            } else {
+    ): Flow<Collection<Long>> {
+        return if (ids.isEmpty()) {
+            emptyListFlow()
+        } else {
+            flow {
                 val copy: MutableSet<Long> = HashSet(ids)
                 val projection = arrayOf(BaseColumns._ID)
                 val cursor = contentResolver.query(
@@ -474,7 +482,7 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
                     }
                     cursor.close()
                 }
-                e.onSuccess(copy)
+                emit(copy)
             }
         }
     }

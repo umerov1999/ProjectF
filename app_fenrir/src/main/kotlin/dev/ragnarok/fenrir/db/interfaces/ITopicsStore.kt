@@ -5,12 +5,11 @@ import dev.ragnarok.fenrir.db.model.entity.OwnerEntities
 import dev.ragnarok.fenrir.db.model.entity.PollDboEntity
 import dev.ragnarok.fenrir.db.model.entity.TopicDboEntity
 import dev.ragnarok.fenrir.model.criteria.TopicsCriteria
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface ITopicsStore {
     @CheckResult
-    fun getByCriteria(criteria: TopicsCriteria): Single<List<TopicDboEntity>>
+    fun getByCriteria(criteria: TopicsCriteria): Flow<List<TopicDboEntity>>
 
     @CheckResult
     fun store(
@@ -21,7 +20,7 @@ interface ITopicsStore {
         canAddTopic: Boolean,
         defaultOrder: Int,
         clearBefore: Boolean
-    ): Completable
+    ): Flow<Boolean>
 
     @CheckResult
     fun attachPoll(
@@ -29,5 +28,5 @@ interface ITopicsStore {
         ownerId: Long,
         topicId: Int,
         pollDbo: PollDboEntity?
-    ): Completable
+    ): Flow<Boolean>
 }

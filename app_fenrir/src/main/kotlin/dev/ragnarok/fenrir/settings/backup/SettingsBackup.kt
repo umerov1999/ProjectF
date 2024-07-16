@@ -7,6 +7,7 @@ import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.model.ShortcutStored
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingleSafe
 import dev.ragnarok.fenrir.util.serializeble.json.JsonObject
 import dev.ragnarok.fenrir.util.serializeble.json.JsonObjectBuilder
 import dev.ragnarok.fenrir.util.serializeble.prefs.Preferences
@@ -210,7 +211,7 @@ class SettingsBackup {
                 user_names_pointers
             )
         )
-        val yu = Includes.stores.tempStore().getShortcutAll().blockingGet()
+        val yu = Includes.stores.tempStore().getShortcutAll().syncSingleSafe()
         if (yu.nonNullNoEmpty()) {
             ret.put(
                 "shortcuts",
@@ -271,7 +272,7 @@ class SettingsBackup {
         ret["shortcuts"]?.let {
             val jp = kJson.decodeFromJsonElement(ListSerializer(ShortcutStored.serializer()), it)
             if (jp.nonNullNoEmpty()) {
-                Includes.stores.tempStore().addShortcuts(jp.reversed()).blockingAwait()
+                Includes.stores.tempStore().addShortcuts(jp.reversed()).syncSingleSafe()
             }
         }
     }

@@ -11,7 +11,10 @@ import dev.ragnarok.fenrir.api.model.response.RepostReponse
 import dev.ragnarok.fenrir.api.model.response.WallResponse
 import dev.ragnarok.fenrir.api.model.response.WallSearchResponse
 import dev.ragnarok.fenrir.api.services.IWallService
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.checkInt
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 internal class WallApi(accountId: Long, provider: IServiceProvider) : AbsApi(accountId, provider),
     IWallApi {
@@ -23,14 +26,13 @@ internal class WallApi(accountId: Long, provider: IServiceProvider) : AbsApi(acc
         offset: Int,
         extended: Boolean?,
         fields: String?
-    ): Single<WallSearchResponse> {
+    ): Flow<WallSearchResponse> {
         return provideService(IWallService(), TokenType.USER, TokenType.SERVICE)
-            .flatMap { service ->
-                service
-                    .search(
-                        ownerId, null, query, integerFromBoolean(ownersOnly),
-                        count, offset, integerFromBoolean(extended), fields
-                    )
+            .flatMapConcat {
+                it.search(
+                    ownerId, null, query, integerFromBoolean(ownersOnly),
+                    count, offset, integerFromBoolean(extended), fields
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -48,47 +50,46 @@ internal class WallApi(accountId: Long, provider: IServiceProvider) : AbsApi(acc
         longitude: Double?,
         placeId: Int?,
         markAsAds: Boolean?
-    ): Single<Boolean> {
+    ): Flow<Boolean> {
         return provideService(IWallService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .edit(
-                        ownerId,
-                        postId,
-                        integerFromBoolean(friendsOnly),
-                        message,
-                        join(
-                            attachments,
-                            ","
-                        ) { formatAttachmentToken(it) },
-                        services,
-                        integerFromBoolean(signed),
-                        publishDate,
-                        latitude,
-                        longitude,
-                        placeId,
-                        integerFromBoolean(markAsAds)
-                    )
+            .flatMapConcat { s ->
+                s.edit(
+                    ownerId,
+                    postId,
+                    integerFromBoolean(friendsOnly),
+                    message,
+                    join(
+                        attachments,
+                        ","
+                    ) { formatAttachmentToken(it) },
+                    services,
+                    integerFromBoolean(signed),
+                    publishDate,
+                    latitude,
+                    longitude,
+                    placeId,
+                    integerFromBoolean(markAsAds)
+                )
                     .map(extractResponseWithErrorHandling())
-                    .map { response -> response.postId != 0 }
+                    .map { it.postId != 0 }
             }
     }
 
-    override fun pin(ownerId: Long?, postId: Int): Single<Boolean> {
+    override fun pin(ownerId: Long?, postId: Int): Flow<Boolean> {
         return provideService(IWallService(), TokenType.USER)
-            .flatMap { service ->
-                service.pin(ownerId, postId)
+            .flatMapConcat {
+                it.pin(ownerId, postId)
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
-    override fun unpin(ownerId: Long?, postId: Int): Single<Boolean> {
+    override fun unpin(ownerId: Long?, postId: Int): Flow<Boolean> {
         return provideService(IWallService(), TokenType.USER)
-            .flatMap { service ->
-                service.unpin(ownerId, postId)
+            .flatMapConcat {
+                it.unpin(ownerId, postId)
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
@@ -98,11 +99,11 @@ internal class WallApi(accountId: Long, provider: IServiceProvider) : AbsApi(acc
         message: String?,
         groupId: Long?,
         markAsAds: Boolean?
-    ): Single<RepostReponse> {
+    ): Flow<RepostReponse> {
         val obj = "wall" + postOwnerId + "_" + postId
         return provideService(IWallService(), TokenType.USER)
-            .flatMap { service ->
-                service.repost(obj, message, groupId, integerFromBoolean(markAsAds))
+            .flatMapConcat {
+                it.repost(obj, message, groupId, integerFromBoolean(markAsAds))
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -123,78 +124,77 @@ internal class WallApi(accountId: Long, provider: IServiceProvider) : AbsApi(acc
         guid: Int?,
         markAsAds: Boolean?,
         adsPromotedStealth: Boolean?
-    ): Single<Int> {
+    ): Flow<Int> {
         return provideService(IWallService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .post(
-                        ownerId,
-                        integerFromBoolean(friendsOnly),
-                        integerFromBoolean(fromGroup),
-                        message,
-                        join(
-                            attachments,
-                            ","
-                        ) { formatAttachmentToken(it) },
-                        services,
-                        integerFromBoolean(signed),
-                        publishDate,
-                        latitude,
-                        longitude,
-                        placeId,
-                        postId,
-                        guid,
-                        integerFromBoolean(markAsAds),
-                        integerFromBoolean(adsPromotedStealth)
-                    )
+            .flatMapConcat { s ->
+                s.post(
+                    ownerId,
+                    integerFromBoolean(friendsOnly),
+                    integerFromBoolean(fromGroup),
+                    message,
+                    join(
+                        attachments,
+                        ","
+                    ) { formatAttachmentToken(it) },
+                    services,
+                    integerFromBoolean(signed),
+                    publishDate,
+                    latitude,
+                    longitude,
+                    placeId,
+                    postId,
+                    guid,
+                    integerFromBoolean(markAsAds),
+                    integerFromBoolean(adsPromotedStealth)
+                )
                     .map(extractResponseWithErrorHandling())
-                    .map { response -> response.postId }
+                    .map { it.postId }
             }
     }
 
-    override fun delete(ownerId: Long?, postId: Int): Single<Boolean> {
+    override fun delete(ownerId: Long?, postId: Int): Flow<Boolean> {
         return provideService(IWallService(), TokenType.USER)
-            .flatMap { service ->
-                service.delete(ownerId, postId)
+            .flatMapConcat {
+                it.delete(ownerId, postId)
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
-    override fun restoreComment(ownerId: Long?, commentId: Int): Single<Boolean> {
+    override fun restoreComment(ownerId: Long?, commentId: Int): Flow<Boolean> {
         return provideService(IWallService(), TokenType.USER)
-            .flatMap { service ->
-                service.restoreComment(ownerId, commentId)
+            .flatMapConcat {
+                it.restoreComment(ownerId, commentId)
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
-    override fun deleteComment(ownerId: Long?, commentId: Int): Single<Boolean> {
+    override fun deleteComment(ownerId: Long?, commentId: Int): Flow<Boolean> {
         return provideService(IWallService(), TokenType.USER)
-            .flatMap { service ->
-                service.deleteComment(ownerId, commentId)
+            .flatMapConcat {
+                it.deleteComment(ownerId, commentId)
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
-    override fun restore(ownerId: Long?, postId: Int): Single<Boolean> {
+    override fun restore(ownerId: Long?, postId: Int): Flow<Boolean> {
         return provideService(IWallService(), TokenType.USER)
-            .flatMap { service ->
-                service.restore(ownerId, postId)
+            .flatMapConcat {
+                it.restore(ownerId, postId)
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
     override fun editComment(
         ownerId: Long?, commentId: Int, message: String?,
         attachments: Collection<IAttachmentToken>?
-    ): Single<Boolean> {
+    ): Flow<Boolean> {
         return provideService(IWallService(), TokenType.USER)
-            .flatMap { service ->
-                service.editComment(
+            .flatMapConcat { s ->
+                s.editComment(
                     ownerId,
                     commentId,
                     message,
@@ -203,7 +203,7 @@ internal class WallApi(accountId: Long, provider: IServiceProvider) : AbsApi(acc
                         ","
                     ) { formatAttachmentToken(it) })
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
@@ -211,25 +211,24 @@ internal class WallApi(accountId: Long, provider: IServiceProvider) : AbsApi(acc
         ownerId: Long?, postId: Int, fromGroup: Long?, message: String?,
         replyToComment: Int?, attachments: Collection<IAttachmentToken>?,
         stickerId: Int?, generatedUniqueId: Int?
-    ): Single<Int> {
+    ): Flow<Int> {
         return provideService(IWallService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service
-                    .createComment(
-                        ownerId,
-                        postId,
-                        fromGroup,
-                        message,
-                        replyToComment,
-                        join(
-                            attachments,
-                            ","
-                        ) { formatAttachmentToken(it) },
-                        stickerId,
-                        generatedUniqueId
-                    )
+            .flatMapConcat { s ->
+                s.createComment(
+                    ownerId,
+                    postId,
+                    fromGroup,
+                    message,
+                    replyToComment,
+                    join(
+                        attachments,
+                        ","
+                    ) { formatAttachmentToken(it) },
+                    stickerId,
+                    generatedUniqueId
+                )
                     .map(extractResponseWithErrorHandling())
-                    .map { response -> response.commentId }
+                    .map { it.commentId }
             }
     }
 
@@ -241,10 +240,10 @@ internal class WallApi(accountId: Long, provider: IServiceProvider) : AbsApi(acc
         filter: String?,
         extended: Boolean?,
         fields: String?
-    ): Single<WallResponse> {
+    ): Flow<WallResponse> {
         return provideService(IWallService(), TokenType.USER, TokenType.SERVICE)
-            .flatMap { service ->
-                service[ownerId, domain, offset, count, filter, if (extended != null) if (extended) 1 else 0 else null, fields]
+            .flatMapConcat {
+                it[ownerId, domain, offset, count, filter, if (extended != null) if (extended) 1 else 0 else null, fields]
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -254,53 +253,48 @@ internal class WallApi(accountId: Long, provider: IServiceProvider) : AbsApi(acc
         extended: Boolean?,
         copyHistoryDepth: Int?,
         fields: String?
-    ): Single<PostsResponse> {
+    ): Flow<PostsResponse> {
         val line = join(ids, ",") { orig -> orig.ownerId.toString() + "_" + orig.id }
         return provideService(IWallService(), TokenType.USER, TokenType.SERVICE)
-            .flatMap { service ->
-                service
-                    .getById(
-                        line,
-                        if (extended != null) if (extended) 1 else 0 else null,
-                        copyHistoryDepth,
-                        fields
-                    )
+            .flatMapConcat {
+                it.getById(
+                    line,
+                    if (extended != null) if (extended) 1 else 0 else null,
+                    copyHistoryDepth,
+                    fields
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun reportPost(owner_id: Long?, post_id: Int?, reason: Int?): Single<Int> {
+    override fun reportPost(owner_id: Long?, post_id: Int?, reason: Int?): Flow<Int> {
         return provideService(IWallService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .reportPost(owner_id, post_id, reason)
+            .flatMapConcat {
+                it.reportPost(owner_id, post_id, reason)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun subscribe(owner_id: Long?): Single<Int> {
+    override fun subscribe(owner_id: Long?): Flow<Int> {
         return provideService(IWallService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .subscribe(owner_id)
+            .flatMapConcat {
+                it.subscribe(owner_id)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun unsubscribe(owner_id: Long?): Single<Int> {
+    override fun unsubscribe(owner_id: Long?): Flow<Int> {
         return provideService(IWallService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .unsubscribe(owner_id)
+            .flatMapConcat {
+                it.unsubscribe(owner_id)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun reportComment(owner_id: Long?, post_id: Int?, reason: Int?): Single<Int> {
+    override fun reportComment(owner_id: Long?, post_id: Int?, reason: Int?): Flow<Int> {
         return provideService(IWallService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .reportComment(owner_id, post_id, reason)
+            .flatMapConcat {
+                it.reportComment(owner_id, post_id, reason)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -309,22 +303,21 @@ internal class WallApi(accountId: Long, provider: IServiceProvider) : AbsApi(acc
         ownerId: Long, postId: Int, needLikes: Boolean?,
         startCommentId: Int?, offset: Int?, count: Int?,
         sort: String?, extended: Boolean?, fields: String?
-    ): Single<DefaultCommentsResponse> {
+    ): Flow<DefaultCommentsResponse> {
         return provideService(IWallService(), TokenType.USER, TokenType.SERVICE)
-            .flatMap { service ->
-                service
-                    .getComments(
-                        ownerId,
-                        postId,
-                        integerFromBoolean(needLikes),
-                        startCommentId,
-                        offset,
-                        count,
-                        sort,
-                        integerFromBoolean(extended),
-                        10,
-                        fields
-                    )
+            .flatMapConcat {
+                it.getComments(
+                    ownerId,
+                    postId,
+                    integerFromBoolean(needLikes),
+                    startCommentId,
+                    offset,
+                    count,
+                    sort,
+                    integerFromBoolean(extended),
+                    10,
+                    fields
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }

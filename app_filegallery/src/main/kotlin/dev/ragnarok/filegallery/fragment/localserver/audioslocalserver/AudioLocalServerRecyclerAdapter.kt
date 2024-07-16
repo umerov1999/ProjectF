@@ -23,7 +23,6 @@ import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.Includes.networkInterfaces
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.api.interfaces.ILocalServerApi
-import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.media.music.MusicPlaybackController
 import dev.ragnarok.filegallery.media.music.PlayerStatus
 import dev.ragnarok.filegallery.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
@@ -39,16 +38,17 @@ import dev.ragnarok.filegallery.settings.CurrentTheme.getColorPrimary
 import dev.ragnarok.filegallery.settings.CurrentTheme.getColorSecondary
 import dev.ragnarok.filegallery.settings.Settings.get
 import dev.ragnarok.filegallery.toColor
-import dev.ragnarok.filegallery.toMainThread
 import dev.ragnarok.filegallery.util.DownloadWorkUtils.doDownloadAudio
 import dev.ragnarok.filegallery.util.Utils
+import dev.ragnarok.filegallery.util.coroutines.CancelableJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.filegallery.util.toast.CustomSnackbars
 import dev.ragnarok.filegallery.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.filegallery.view.WeakViewAnimatorAdapter
 import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.util.regex.Pattern
 
 class AudioLocalServerRecyclerAdapter(
@@ -57,8 +57,8 @@ class AudioLocalServerRecyclerAdapter(
 ) : RecyclerView.Adapter<AudioLocalServerRecyclerAdapter.AudioHolder>() {
     private val mAudioInteractor: ILocalServerApi
     private var mClickListener: ClickListener? = null
-    private var mPlayerDisposable = Disposable.disposed()
-    private var audioListDisposable = Disposable.disposed()
+    private var mPlayerDisposable = CancelableJob()
+    private var audioListDisposable = CancelableJob()
     private var currAudio: Audio?
     private val isAudio_round_icon: Boolean = get().main().isAudio_round_icon
     fun setItems(data: List<Audio>) {
@@ -66,19 +66,15 @@ class AudioLocalServerRecyclerAdapter(
         notifyDataSetChanged()
     }
 
-    private fun doBitrate(url: String): Single<Int> {
-        return Single.create { v: SingleEmitter<Int> ->
-            try {
-                val retriever = MediaMetadataRetriever()
-                retriever.setDataSource(url, HashMap())
-                val bitrate = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)
-                if (bitrate != null) {
-                    v.onSuccess((bitrate.toLong() / 1000).toInt())
-                } else {
-                    v.tryOnError(Throwable("Can't receipt bitrate "))
-                }
-            } catch (e: RuntimeException) {
-                v.tryOnError(e)
+    private fun doBitrate(url: String): Flow<Int> {
+        return flow {
+            val retriever = MediaMetadataRetriever()
+            retriever.setDataSource(url, HashMap())
+            val bitrate = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)
+            if (bitrate != null) {
+                emit((bitrate.toLong() / 1000).toInt())
+            } else {
+                throw Throwable("Can't receipt bitrate ")
             }
         }
     }
@@ -87,23 +83,22 @@ class AudioLocalServerRecyclerAdapter(
         if (url.isNullOrEmpty()) {
             return
         }
-        audioListDisposable = doBitrate(url).fromIOToMain()
-            .subscribe(
-                {
-                    createCustomToast(
-                        mContext, null
-                    )?.showToast(
-                        mContext.resources.getString(
-                            R.string.bitrate,
-                            it,
-                            Utils.BytesToSize(size.toLong())
-                        )
+        audioListDisposable.set(doBitrate(url).fromIOToMain(
+            {
+                createCustomToast(
+                    mContext, null
+                )?.showToast(
+                    mContext.resources.getString(
+                        R.string.bitrate,
+                        it,
+                        Utils.BytesToSize(size.toLong())
                     )
-                }
-            ) {
-                createCustomToast(mContext, null)?.setDuration(Toast.LENGTH_LONG)
-                    ?.showToastThrowable(it)
+                )
             }
+        ) {
+            createCustomToast(mContext, null)?.setDuration(Toast.LENGTH_LONG)
+                ?.showToastThrowable(it)
+        })
     }
 
     @get:DrawableRes
@@ -263,8 +258,8 @@ class AudioLocalServerRecyclerAdapter(
                     if (hash.isNullOrEmpty()) {
                         return@show
                     }
-                    audioListDisposable = mAudioInteractor.update_time(hash)
-                        .fromIOToMain().subscribe(
+                    audioListDisposable.set(mAudioInteractor.update_time(hash)
+                        .fromIOToMain(
                             {
                                 createCustomToast(
                                     mContext, view
@@ -274,7 +269,7 @@ class AudioLocalServerRecyclerAdapter(
                                 mContext,
                                 view
                             )?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(it)
-                        }
+                        })
                 }
 
                 AudioLocalServerOption.edit_item_audio -> {
@@ -282,8 +277,8 @@ class AudioLocalServerRecyclerAdapter(
                     if (hash2.isNullOrEmpty()) {
                         return@show
                     }
-                    audioListDisposable = mAudioInteractor.get_file_name(hash2)
-                        .fromIOToMain().subscribe(
+                    audioListDisposable.set(mAudioInteractor.get_file_name(hash2)
+                        .fromIOToMain(
                             { t ->
                                 val root =
                                     View.inflate(mContext, R.layout.entry_file_name, null)
@@ -295,25 +290,23 @@ class AudioLocalServerRecyclerAdapter(
                                     .setCancelable(true)
                                     .setView(root)
                                     .setPositiveButton(R.string.button_ok) { _, _ ->
-                                        audioListDisposable =
-                                            mAudioInteractor.update_file_name(
-                                                hash2,
-                                                root.findViewById<TextInputEditText>(R.id.edit_file_name).text.toString()
-                                                    .trim { it <= ' ' })
-                                                .fromIOToMain()
-                                                .subscribe({
-                                                    createCustomToast(
-                                                        mContext, view
-                                                    )?.showToast(
-                                                        R.string.success
-                                                    )
-                                                }) {
-                                                    createCustomToast(
-                                                        mContext,
-                                                        view
-                                                    )?.setDuration(Toast.LENGTH_LONG)
-                                                        ?.showToastThrowable(it)
-                                                }
+                                        audioListDisposable.set(mAudioInteractor.update_file_name(
+                                            hash2,
+                                            root.findViewById<TextInputEditText>(R.id.edit_file_name).text.toString()
+                                                .trim { it <= ' ' })
+                                            .fromIOToMain({
+                                                createCustomToast(
+                                                    mContext, view
+                                                )?.showToast(
+                                                    R.string.success
+                                                )
+                                            }) {
+                                                createCustomToast(
+                                                    mContext,
+                                                    view
+                                                )?.setDuration(Toast.LENGTH_LONG)
+                                                    ?.showToastThrowable(it)
+                                            })
                                     }
                                     .setNegativeButton(R.string.button_cancel, null)
                                     .show()
@@ -322,7 +315,7 @@ class AudioLocalServerRecyclerAdapter(
                                 mContext,
                                 view
                             )?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(it)
-                        }
+                        })
                 }
 
                 AudioLocalServerOption.delete_item_audio -> MaterialAlertDialogBuilder(
@@ -336,8 +329,8 @@ class AudioLocalServerRecyclerAdapter(
                         if (hash1.isNullOrEmpty()) {
                             return@setPositiveButton
                         }
-                        audioListDisposable = mAudioInteractor.delete_media(hash1)
-                            .fromIOToMain().subscribe(
+                        audioListDisposable.set(mAudioInteractor.delete_media(hash1)
+                            .fromIOToMain(
                                 {
                                     createCustomToast(
                                         mContext, view
@@ -347,7 +340,7 @@ class AudioLocalServerRecyclerAdapter(
                                     mContext,
                                     view
                                 )?.setDuration(Toast.LENGTH_LONG)?.showToastThrowable(it)
-                            }
+                            })
                     }
                     .setNegativeButton(R.string.button_cancel, null)
                     .show()
@@ -463,15 +456,14 @@ class AudioLocalServerRecyclerAdapter(
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        mPlayerDisposable = MusicPlaybackController.observeServiceBinding()
-            .toMainThread()
-            .subscribe { status -> onServiceBindEvent(status) }
+        mPlayerDisposable.set(MusicPlaybackController.observeServiceBinding()
+            .sharedFlowToMain { status -> onServiceBindEvent(status) })
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
-        mPlayerDisposable.dispose()
-        audioListDisposable.dispose()
+        mPlayerDisposable.cancel()
+        audioListDisposable.cancel()
     }
 
     private fun onServiceBindEvent(@PlayerStatus status: Int) {

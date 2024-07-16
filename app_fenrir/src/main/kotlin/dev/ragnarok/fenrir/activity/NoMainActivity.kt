@@ -16,6 +16,7 @@ import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.theme.ThemesController.currentStyle
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCream
 import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.getInstance
 
 abstract class NoMainActivity : AppCompatActivity() {
@@ -37,11 +38,16 @@ abstract class NoMainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         isZoomPhoto = Settings.get().main().isDo_zoom_photo
         setContentView(getNoMainContentView())
-        val w = window
-        w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        w.statusBarColor = CurrentTheme.getStatusBarColor(this)
-        w.navigationBarColor = CurrentTheme.getNavigationBarColor(this)
+        if (!hasVanillaIceCream()) {
+            val w = window
+            if (!Utils.hasMarshmallow()) {
+                w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            }
+
+            w.statusBarColor = CurrentTheme.getStatusBarColor(this)
+            w.navigationBarColor = CurrentTheme.getNavigationBarColor(this)
+        }
         supportFragmentManager.addOnBackStackChangedListener(mBackStackListener)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {

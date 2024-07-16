@@ -110,7 +110,6 @@ class DualTabPhotosFragment : BaseFragment(), BackPressCallback {
             throw UnsupportedOperationException()
         }
 
-        @Suppress("DEPRECATION")
         override fun createFragment(position: Int): Fragment {
             val source = mSources[position]
             if (source is LocalPhotosSelectableSource) {

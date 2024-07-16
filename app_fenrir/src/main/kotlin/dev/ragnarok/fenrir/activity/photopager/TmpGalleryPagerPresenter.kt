@@ -3,14 +3,13 @@ package dev.ragnarok.fenrir.activity.photopager
 import android.os.Bundle
 import dev.ragnarok.fenrir.db.Stores
 import dev.ragnarok.fenrir.db.serialize.Serializers
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.TmpSource
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.util.PersistentLogger
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import kotlinx.coroutines.flow.flow
 
 class TmpGalleryPagerPresenter : PhotoPagerPresenter {
     constructor(
@@ -35,27 +34,25 @@ class TmpGalleryPagerPresenter : PhotoPagerPresenter {
 
     private fun loadDataFromDatabase(source: TmpSource) {
         changeLoadingNowState(true)
-        appendDisposable(Stores.instance
+        appendJob(Stores.instance
             .tempStore()
             .getTemporaryData(source.ownerId, source.sourceId, Serializers.PHOTOS_SERIALIZER)
-            .fromIOToMain()
-            .subscribe({ onInitialLoadingFinished(it) }) {
+            .fromIOToMain({ onInitialLoadingFinished(it) }) {
                 PersistentLogger.logThrowable("TmpGalleryPagerPresenter", it)
             })
     }
 
     private fun loadDataFromParcelNative(parcelNative: Long) {
         changeLoadingNowState(true)
-        appendDisposable(
-            Single.create { v: SingleEmitter<ArrayList<Photo>> ->
-                v.onSuccess(
+        appendJob(
+            flow {
+                emit(
                     ParcelNative.loadParcelableArrayList(
                         parcelNative, Photo.NativeCreator, ParcelFlags.MUTABLE_LIST
                     ) ?: ArrayList()
                 )
             }
-                .fromIOToMain()
-                .subscribe({ onInitialLoadingFinished(it) }) {
+                .fromIOToMain({ onInitialLoadingFinished(it) }) {
                     it.printStackTrace()
                 })
     }

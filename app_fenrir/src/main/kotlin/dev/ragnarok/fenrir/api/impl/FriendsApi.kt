@@ -10,7 +10,9 @@ import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.api.model.response.DeleteFriendResponse
 import dev.ragnarok.fenrir.api.model.response.OnlineFriendsResponse
 import dev.ragnarok.fenrir.api.services.IFriendsService
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 internal class FriendsApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IFriendsApi {
@@ -20,7 +22,7 @@ internal class FriendsApi(accountId: Long, provider: IServiceProvider) :
         count: Int,
         offset: Int,
         fields: String?
-    ): Single<OnlineFriendsResponse> {
+    ): Flow<OnlineFriendsResponse> {
         val targetOrder = if (order == null) null else toQuotes(order)
         val targetFields = if (fields == null) null else toQuotes(fields)
         val code = "var user_id = %s;\n" +
@@ -40,9 +42,8 @@ internal class FriendsApi(accountId: Long, provider: IServiceProvider) :
                 "return {\"uids\":uids, \"profiles\":profiles};"
         val formattedCode = String.format(code, userId, count, offset, targetFields, targetOrder)
         return provideService(IFriendsService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .getOnline(formattedCode)
+            .flatMapConcat {
+                it.getOnline(formattedCode)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -72,18 +73,18 @@ internal class FriendsApi(accountId: Long, provider: IServiceProvider) :
     override fun get(
         userId: Long?, order: String?, listId: Int?, count: Int?,
         offset: Int?, fields: String?, nameCase: String?
-    ): Single<Items<VKApiUser>> {
+    ): Flow<Items<VKApiUser>> {
         return provideService(IFriendsService(), TokenType.USER, TokenType.SERVICE)
-            .flatMap { service ->
-                service[userId, order, listId, count, offset, fields, nameCase]
+            .flatMapConcat {
+                it[userId, order, listId, count, offset, fields, nameCase]
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getByPhones(phones: String?, fields: String?): Single<List<VKApiUser>> {
+    override fun getByPhones(phones: String?, fields: String?): Flow<List<VKApiUser>> {
         return provideService(IFriendsService(), TokenType.USER)
-            .flatMap { service ->
-                service.getByPhones(phones, fields)
+            .flatMapConcat {
+                it.getByPhones(phones, fields)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -92,44 +93,44 @@ internal class FriendsApi(accountId: Long, provider: IServiceProvider) :
         count: Int?,
         fields: String?,
         nameCase: String?
-    ): Single<Items<VKApiUser>> {
+    ): Flow<Items<VKApiUser>> {
         return provideService(IFriendsService(), TokenType.USER)
-            .flatMap { service ->
-                service.getRecommendations(count, fields, nameCase)
+            .flatMapConcat {
+                it.getRecommendations(count, fields, nameCase)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
     override fun deleteSubscriber(
         subscriber_id: Long
-    ): Single<Int> {
+    ): Flow<Int> {
         return provideService(IFriendsService(), TokenType.USER)
-            .flatMap { service ->
-                service.deleteSubscriber(subscriber_id)
+            .flatMapConcat {
+                it.deleteSubscriber(subscriber_id)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getLists(userId: Long?, returnSystem: Boolean?): Single<Items<VKApiFriendList>> {
+    override fun getLists(userId: Long?, returnSystem: Boolean?): Flow<Items<VKApiFriendList>> {
         return provideService(IFriendsService(), TokenType.USER)
-            .flatMap { service ->
-                service.getLists(userId, integerFromBoolean(returnSystem))
+            .flatMapConcat {
+                it.getLists(userId, integerFromBoolean(returnSystem))
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun delete(userId: Long): Single<DeleteFriendResponse> {
+    override fun delete(userId: Long): Flow<DeleteFriendResponse> {
         return provideService(IFriendsService(), TokenType.USER)
-            .flatMap { service ->
-                service.delete(userId)
+            .flatMapConcat {
+                it.delete(userId)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun add(userId: Long, text: String?, follow: Boolean?): Single<Int> {
+    override fun add(userId: Long, text: String?, follow: Boolean?): Flow<Int> {
         return provideService(IFriendsService(), TokenType.USER)
-            .flatMap { service ->
-                service.add(userId, text, integerFromBoolean(follow))
+            .flatMapConcat {
+                it.add(userId, text, integerFromBoolean(follow))
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -141,10 +142,10 @@ internal class FriendsApi(accountId: Long, provider: IServiceProvider) :
         nameCase: String?,
         offset: Int?,
         count: Int?
-    ): Single<Items<VKApiUser>> {
+    ): Flow<Items<VKApiUser>> {
         return provideService(IFriendsService(), TokenType.USER)
-            .flatMap { service ->
-                service.search(userId, query, fields, nameCase, offset, count)
+            .flatMapConcat {
+                it.search(userId, query, fields, nameCase, offset, count)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -155,7 +156,7 @@ internal class FriendsApi(accountId: Long, provider: IServiceProvider) :
         count: Int,
         offset: Int,
         fields: String?
-    ): Single<List<VKApiUser>> {
+    ): Flow<List<VKApiUser>> {
         val code = "var source_uid = %s;\n" +
                 "var target_uid = %s;\n" +
                 "var count = %s;\n" +
@@ -175,15 +176,9 @@ internal class FriendsApi(accountId: Long, provider: IServiceProvider) :
         val formattedCode =
             String.format(code, sourceUid, targetUid, count, offset, toQuotes(fields))
 
-        //return executionService()
-        //        .execute(formattedCode)
-        //        .map(response -> {
-        //            MutualFriendsResponse data = convertJsonResponse(response.get(), MutualFriendsResponse.class);
-        //            return data.profiles;
-        //        });
         return provideService(IFriendsService(), TokenType.USER)
-            .flatMap { service ->
-                service.getMutual(formattedCode)
+            .flatMapConcat { s ->
+                s.getMutual(formattedCode)
                     .map(extractResponseWithErrorHandling())
                     .map { it.profiles.orEmpty() }
             }

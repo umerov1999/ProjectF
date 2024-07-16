@@ -718,7 +718,6 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         presenter?.fireRecordSendClick()
     }
 
-    @Suppress("DEPRECATION")
     override fun onRecordCustomClick() {
         if (!AppPerms.hasReadWriteStoragePermission(requireActivity())) {
             requestSendCustomVoicePermission.launch()
@@ -1978,7 +1977,6 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         ScreenshotHelper.makeScreenshot(requireActivity())
     }
 
-    @Suppress("DEPRECATION")
     private val requestSendCustomVoicePermission = requestPermissionsAbs(
         arrayOf(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,

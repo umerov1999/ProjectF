@@ -9,20 +9,19 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IFaveInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.FaveLink
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IFaveLinksView>(accountId, savedInstanceState) {
     private val faveInteractor: IFaveInteractor = InteractorFactory.createFaveInteractor()
     private val links: MutableList<FaveLink> = ArrayList()
-    private val cacheDisposable = CompositeDisposable()
-    private val actualDisposable = CompositeDisposable()
+    private val cacheDisposable = CompositeJob()
+    private val actualDisposable = CompositeJob()
     private var endOfContent = false
     private var actualDataReceived = false
     private var cacheLoading = false
@@ -33,8 +32,7 @@ class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
         cacheLoading = true
         cacheDisposable.add(
             faveInteractor.getCachedLinks(accountId)
-                .fromIOToMain()
-                .subscribe({ onCachedDataReceived(it) }, ignore())
+                .fromIOToMain { onCachedDataReceived(it) }
         )
     }
 
@@ -42,8 +40,7 @@ class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
         actualLoading = true
         resolveRefreshingView()
         actualDisposable.add(faveInteractor.getLinks(accountId, COUNT, offset)
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 onActualDataReceived(
                     it,
                     offset
@@ -117,8 +114,8 @@ class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     override fun onDestroyed() {
-        cacheDisposable.dispose()
-        actualDisposable.dispose()
+        cacheDisposable.cancel()
+        actualDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -136,9 +133,8 @@ class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
 
     fun fireDeleteClick(link: FaveLink) {
         val id = link.id ?: return
-        appendDisposable(faveInteractor.removeLink(accountId, id)
-            .fromIOToMain()
-            .subscribe({ onLinkRemoved(accountId, id) }) { t ->
+        appendJob(faveInteractor.removeLink(accountId, id)
+            .fromIOToMain({ onLinkRemoved(accountId, id) }) { t ->
                 showError(getCauseIfRuntime(t))
             })
     }
@@ -167,8 +163,7 @@ class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
                     accountId,
                     root.findViewById<TextInputEditText>(R.id.edit_link).text.toString()
                         .trim { it <= ' ' })
-                    .fromIOToMain()
-                    .subscribe({ fireRefresh() }) { t ->
+                    .fromIOToMain({ fireRefresh() }) { t ->
                         showError(getCauseIfRuntime(t))
                     })
             }

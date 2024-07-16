@@ -12,28 +12,30 @@ import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.NewsfeedResponse
 import dev.ragnarok.fenrir.api.model.response.NewsfeedSearchResponse
 import dev.ragnarok.fenrir.api.services.INewsfeedService
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 import kotlin.math.abs
 
 internal class NewsfeedApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), INewsfeedApi {
-    override fun getLists(listIds: Collection<Int>?): Single<Items<VKApiFeedList>> {
+    override fun getLists(listIds: Collection<Int>?): Flow<Items<VKApiFeedList>> {
         return provideService(INewsfeedService(), TokenType.USER)
-            .flatMap { service ->
-                service.getLists(join(listIds, ","), 1)
+            .flatMapConcat {
+                it.getLists(join(listIds, ","), 1)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun saveList(title: String?, listIds: Collection<Long>?): Single<Int> {
+    override fun saveList(title: String?, listIds: Collection<Long>?): Flow<Int> {
         return provideService(INewsfeedService(), TokenType.USER)
-            .flatMap { service ->
-                service.saveList(title, join(listIds, ","))
+            .flatMapConcat {
+                it.saveList(title, join(listIds, ","))
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun addBan(listIds: Collection<Long>): Single<Int> {
+    override fun addBan(listIds: Collection<Long>): Flow<Int> {
         val users: ArrayList<Long> = ArrayList()
         val groups: ArrayList<Long> = ArrayList()
         for (i in listIds) {
@@ -44,16 +46,16 @@ internal class NewsfeedApi(accountId: Long, provider: IServiceProvider) :
             }
         }
         return provideService(INewsfeedService(), TokenType.USER)
-            .flatMap { service ->
-                service.addBan(join(users, ","), join(groups, ","))
+            .flatMapConcat {
+                it.addBan(join(users, ","), join(groups, ","))
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun deleteList(list_id: Int?): Single<Int> {
+    override fun deleteList(list_id: Int?): Flow<Int> {
         return provideService(INewsfeedService(), TokenType.USER)
-            .flatMap { service ->
-                service.deleteList(list_id)
+            .flatMapConcat {
+                it.deleteList(list_id)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -62,10 +64,10 @@ internal class NewsfeedApi(accountId: Long, provider: IServiceProvider) :
         type: String?,
         owner_id: Long?,
         item_id: Int?
-    ): Single<IgnoreItemResponse> {
+    ): Flow<IgnoreItemResponse> {
         return provideService(INewsfeedService(), TokenType.USER)
-            .flatMap { service ->
-                service.ignoreItem(type, owner_id, item_id)
+            .flatMapConcat {
+                it.ignoreItem(type, owner_id, item_id)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -80,14 +82,13 @@ internal class NewsfeedApi(accountId: Long, provider: IServiceProvider) :
         endTime: Long?,
         startFrom: String?,
         fields: String?
-    ): Single<NewsfeedSearchResponse> {
+    ): Flow<NewsfeedSearchResponse> {
         return provideService(INewsfeedService(), TokenType.USER, TokenType.SERVICE)
-            .flatMap { service ->
-                service
-                    .search(
-                        query, integerFromBoolean(extended), count, latitude, longitude,
-                        startTime, endTime, startFrom, fields
-                    )
+            .flatMapConcat {
+                it.search(
+                    query, integerFromBoolean(extended), count, latitude, longitude,
+                    startTime, endTime, startFrom, fields
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -101,21 +102,20 @@ internal class NewsfeedApi(accountId: Long, provider: IServiceProvider) :
         lastCommentsCount: Int?,
         startFrom: String?,
         fields: String?
-    ): Single<NewsfeedCommentsResponse> {
+    ): Flow<NewsfeedCommentsResponse> {
         return provideService(INewsfeedService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .getComments(
-                        count,
-                        filters,
-                        reposts,
-                        startTime,
-                        endTime,
-                        lastCommentsCount,
-                        startFrom,
-                        fields,
-                        null
-                    )
+            .flatMapConcat {
+                it.getComments(
+                    count,
+                    filters,
+                    reposts,
+                    startTime,
+                    endTime,
+                    lastCommentsCount,
+                    startFrom,
+                    fields,
+                    null
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -126,11 +126,10 @@ internal class NewsfeedApi(accountId: Long, provider: IServiceProvider) :
         offset: Int?,
         startTime: Long?,
         endTime: Long?
-    ): Single<NewsfeedCommentsResponse> {
+    ): Flow<NewsfeedCommentsResponse> {
         return provideService(INewsfeedService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .getMentions(owner_id, count, offset, startTime, endTime)
+            .flatMapConcat {
+                it.getMentions(owner_id, count, offset, startTime, endTime)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -139,10 +138,10 @@ internal class NewsfeedApi(accountId: Long, provider: IServiceProvider) :
         filters: String?, returnBanned: Boolean?, startTime: Long?,
         endTime: Long?, maxPhotoCount: Int?, sourceIds: String?,
         startFrom: String?, count: Int?, fields: String?
-    ): Single<NewsfeedResponse> {
+    ): Flow<NewsfeedResponse> {
         return provideService(INewsfeedService(), TokenType.USER)
-            .flatMap { service ->
-                service[filters, integerFromBoolean(returnBanned), startTime, endTime, maxPhotoCount, sourceIds, startFrom, count, fields]
+            .flatMapConcat {
+                it[filters, integerFromBoolean(returnBanned), startTime, endTime, maxPhotoCount, sourceIds, startFrom, count, fields]
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -151,10 +150,10 @@ internal class NewsfeedApi(accountId: Long, provider: IServiceProvider) :
         filters: String?, returnBanned: Boolean?, startTime: Long?,
         endTime: Long?, maxPhotoCount: Int?, sourceIds: String?,
         startFrom: String?, count: Int?, fields: String?
-    ): Single<NewsfeedResponse> {
+    ): Flow<NewsfeedResponse> {
         return provideService(INewsfeedService(), TokenType.USER)
-            .flatMap { service ->
-                service.getByType(
+            .flatMapConcat {
+                it.getByType(
                     "top",
                     filters,
                     integerFromBoolean(returnBanned),
@@ -173,14 +172,13 @@ internal class NewsfeedApi(accountId: Long, provider: IServiceProvider) :
     override fun getRecommended(
         startTime: Long?, endTime: Long?,
         maxPhotoCount: Int?, startFrom: String?, count: Int?, fields: String?
-    ): Single<NewsfeedResponse> {
+    ): Flow<NewsfeedResponse> {
         return provideService(INewsfeedService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .getRecommended(
-                        startTime, endTime,
-                        maxPhotoCount, startFrom, count, fields
-                    )
+            .flatMapConcat {
+                it.getRecommended(
+                    startTime, endTime,
+                    maxPhotoCount, startFrom, count, fields
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -190,16 +188,15 @@ internal class NewsfeedApi(accountId: Long, provider: IServiceProvider) :
         startFrom: String?,
         count: Int?,
         fields: String?
-    ): Single<NewsfeedResponse> {
+    ): Flow<NewsfeedResponse> {
         return provideService(INewsfeedService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .getFeedLikes(maxPhotoCount, startFrom, count, fields)
+            .flatMapConcat {
+                it.getFeedLikes(maxPhotoCount, startFrom, count, fields)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun deleteBan(listIds: Collection<Long>): Single<Int> {
+    override fun deleteBan(listIds: Collection<Long>): Flow<Int> {
         val users: ArrayList<Long> = ArrayList()
         val groups: ArrayList<Long> = ArrayList()
         for (i in listIds) {
@@ -210,20 +207,19 @@ internal class NewsfeedApi(accountId: Long, provider: IServiceProvider) :
             }
         }
         return provideService(INewsfeedService(), TokenType.USER)
-            .flatMap { service ->
-                service.deleteBan(join(users, ","), join(groups, ","))
+            .flatMapConcat {
+                it.deleteBan(join(users, ","), join(groups, ","))
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getBanned(): Single<NewsfeedBanResponse> {
+    override fun getBanned(): Flow<NewsfeedBanResponse> {
         return provideService(INewsfeedService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .getBanned(
-                        1,
-                        Fields.FIELDS_BASE_OWNER
-                    )
+            .flatMapConcat {
+                it.getBanned(
+                    1,
+                    Fields.FIELDS_BASE_OWNER
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }

@@ -9,13 +9,11 @@ import dev.ragnarok.fenrir.domain.Repository.messages
 import dev.ragnarok.fenrir.model.Message
 import dev.ragnarok.fenrir.model.SaveMessageBuilder
 import dev.ragnarok.fenrir.util.AppPerms
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.dummy
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
+import dev.ragnarok.fenrir.util.IntentService
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingleSafe
 import java.io.File
 
-@Suppress("DEPRECATION")
-class QuickReplyService : android.app.IntentService(QuickReplyService::class.java.name) {
-    @Deprecated("Deprecated in Java")
+class QuickReplyService : IntentService(QuickReplyService::class.java.name) {
     override fun onHandleIntent(intent: Intent?) {
         if (intent != null && ACTION_ADD_MESSAGE == intent.action && intent.extras != null) {
             val accountId = (intent.extras ?: return).getLong(Extra.ACCOUNT_ID)
@@ -29,7 +27,7 @@ class QuickReplyService : android.app.IntentService(QuickReplyService::class.jav
             val accountId = (intent.extras ?: return).getLong(Extra.ACCOUNT_ID)
             val peerId = (intent.extras ?: return).getLong(Extra.PEER_ID)
             val msgId = (intent.extras ?: return).getInt(Extra.MESSAGE_ID)
-            messages.markAsRead(accountId, peerId, msgId).blockingSubscribe(dummy(), ignore())
+            messages.markAsRead(accountId, peerId, msgId).syncSingleSafe()
         } else if (intent != null && ACTION_DELETE_FILE == intent.action && intent.extras != null) {
             if (AppPerms.hasNotificationPermissionSimple(this)) {
                 NotificationManagerCompat.from(this).cancel(
@@ -44,7 +42,7 @@ class QuickReplyService : android.app.IntentService(QuickReplyService::class.jav
     private fun addMessage(accountId: Long, peerId: Long, text: String?) {
         val messagesInteractor = messages
         val builder = SaveMessageBuilder(accountId, peerId).setText(text)
-        messagesInteractor.put(builder).blockingSubscribe()
+        messagesInteractor.put(builder).syncSingleSafe()
         messages.runSendingQueue()
     }
 

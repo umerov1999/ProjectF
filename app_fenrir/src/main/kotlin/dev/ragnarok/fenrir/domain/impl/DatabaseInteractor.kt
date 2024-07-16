@@ -12,7 +12,10 @@ import dev.ragnarok.fenrir.model.database.School
 import dev.ragnarok.fenrir.model.database.SchoolClazz
 import dev.ragnarok.fenrir.model.database.University
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 class DatabaseInteractor(private val cache: IDatabaseStore, private val networker: INetworker) :
     IDatabaseInteractor {
@@ -21,7 +24,7 @@ class DatabaseInteractor(private val cache: IDatabaseStore, private val networke
         facultyId: Int,
         count: Int,
         offset: Int
-    ): Single<List<Chair>> {
+    ): Flow<List<Chair>> {
         return networker.vkDefault(accountId)
             .database()
             .getChairs(facultyId, offset, count)
@@ -35,12 +38,12 @@ class DatabaseInteractor(private val cache: IDatabaseStore, private val networke
             }
     }
 
-    override fun getCountries(accountId: Long, ignoreCache: Boolean): Single<List<Country>> {
+    override fun getCountries(accountId: Long, ignoreCache: Boolean): Flow<List<Country>> {
         return if (ignoreCache) {
             networker.vkDefault(accountId)
                 .database()
                 .getCountries(true, null, null, 1000)
-                .flatMap { items ->
+                .flatMapConcat { items ->
                     val dtos = listEmptyIfNull(items.items)
                     val dbos: MutableList<CountryDboEntity> = ArrayList(dtos.size)
                     val countries: MutableList<Country> = ArrayList(dbos.size)
@@ -51,7 +54,7 @@ class DatabaseInteractor(private val cache: IDatabaseStore, private val networke
                     if (countries.isEmpty()) {
                         networker.vkDefault(accountId)
                             .database().getCountries(false, "RU,BY,RS", null, 100)
-                            .flatMap { itemsg ->
+                            .flatMapConcat { itemsg ->
                                 val dtosg = listEmptyIfNull(itemsg.items)
                                 val dbosg: MutableList<CountryDboEntity> = ArrayList(dtosg.size)
                                 val countriesg: MutableList<Country> = ArrayList(dbosg.size)
@@ -60,21 +63,25 @@ class DatabaseInteractor(private val cache: IDatabaseStore, private val networke
                                     countriesg.add(Country(dto.id, dto.title))
                                 }
                                 cache.storeCountries(accountId, dbosg)
-                                    .andThen(Single.just(countriesg))
+                                    .map {
+                                        countriesg
+                                    }
                             }
                     } else {
                         cache.storeCountries(accountId, dbos)
-                            .andThen(Single.just(countries))
+                            .map {
+                                countries
+                            }
                     }
                 }
         } else cache.getCountries(accountId)
-            .flatMap { dbos ->
+            .flatMapConcat { dbos ->
                 if (dbos.isNotEmpty()) {
                     val countries: MutableList<Country> = ArrayList(dbos.size)
                     for (dbo in dbos) {
                         countries.add(Country(dbo.id, dbo.title))
                     }
-                    Single.just(countries)
+                    toFlow(countries)
                 } else {
                     getCountries(accountId, true)
                 }
@@ -88,7 +95,7 @@ class DatabaseInteractor(private val cache: IDatabaseStore, private val networke
         needAll: Boolean,
         count: Int,
         offset: Int
-    ): Single<List<City>> {
+    ): Flow<List<City>> {
         return networker.vkDefault(accountId)
             .database()
             .getCities(countryId, null, q, needAll, offset, count)
@@ -112,7 +119,7 @@ class DatabaseInteractor(private val cache: IDatabaseStore, private val networke
         universityId: Int,
         count: Int,
         offset: Int
-    ): Single<List<Faculty>> {
+    ): Flow<List<Faculty>> {
         return networker.vkDefault(accountId)
             .database()
             .getFaculties(universityId, offset, count)
@@ -126,7 +133,7 @@ class DatabaseInteractor(private val cache: IDatabaseStore, private val networke
             }
     }
 
-    override fun getSchoolClasses(accountId: Long, countryId: Int): Single<List<SchoolClazz>> {
+    override fun getSchoolClasses(accountId: Long, countryId: Int): Flow<List<SchoolClazz>> {
         return networker.vkDefault(accountId)
             .database()
             .getSchoolClasses(countryId)
@@ -145,7 +152,7 @@ class DatabaseInteractor(private val cache: IDatabaseStore, private val networke
         q: String?,
         count: Int,
         offset: Int
-    ): Single<List<School>> {
+    ): Flow<List<School>> {
         return networker.vkDefault(accountId)
             .database()
             .getSchools(q, cityId, offset, count)
@@ -166,7 +173,7 @@ class DatabaseInteractor(private val cache: IDatabaseStore, private val networke
         countyId: Int?,
         count: Int,
         offset: Int
-    ): Single<List<University>> {
+    ): Flow<List<University>> {
         return networker.vkDefault(accountId)
             .database()
             .getUniversities(filter, countyId, cityId, offset, count)

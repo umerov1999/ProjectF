@@ -4,11 +4,11 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
 import dev.ragnarok.fenrir.fragment.search.criteria.BaseSearchCriteria
 import dev.ragnarok.fenrir.fragment.search.nextfrom.AbsNextFrom
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.WeakActionHandler
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import kotlinx.coroutines.flow.Flow
 
 abstract class AbsSearchPresenter<V : IBaseSearchView<T>, C : BaseSearchCriteria, T, N : AbsNextFrom> internal constructor(
     accountId: Long,
@@ -17,7 +17,7 @@ abstract class AbsSearchPresenter<V : IBaseSearchView<T>, C : BaseSearchCriteria
 ) : PlaceSupportPresenter<V>(accountId, savedInstanceState) {
     val data: MutableList<T> = ArrayList()
     private lateinit var actionHandler: WeakActionHandler<AbsSearchPresenter<*, *, *, *>>
-    private val searchDisposable = CompositeDisposable()
+    private val searchDisposable = CompositeJob()
     lateinit var nextFrom: N
         private set
     private var resultsForCriteria: C? = null
@@ -51,8 +51,7 @@ abstract class AbsSearchPresenter<V : IBaseSearchView<T>, C : BaseSearchCriteria
         setLoadingNow(true)
         searchDisposable.add(
             doSearch(accountId, cloneCriteria, nf)
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain({
                     onSearchDataReceived(
                         cloneCriteria,
                         nf,
@@ -129,7 +128,7 @@ abstract class AbsSearchPresenter<V : IBaseSearchView<T>, C : BaseSearchCriteria
         }
     }
 
-    abstract fun doSearch(accountId: Long, criteria: C, startFrom: N): Single<Pair<List<T>, N>>
+    abstract fun doSearch(accountId: Long, criteria: C, startFrom: N): Flow<Pair<List<T>, N>>
     abstract fun instantiateEmptyCriteria(): C
     override fun onDestroyed() {
         actionHandler.setAction(null)

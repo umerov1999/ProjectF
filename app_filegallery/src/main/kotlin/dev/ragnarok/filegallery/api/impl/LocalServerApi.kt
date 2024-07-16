@@ -10,25 +10,25 @@ import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.model.FileRemote
 import dev.ragnarok.filegallery.model.Photo
 import dev.ragnarok.filegallery.model.Video
-import dev.ragnarok.filegallery.nonNullNoEmpty
+import dev.ragnarok.filegallery.nonNullNoEmptyOr
 import dev.ragnarok.filegallery.util.Utils.firstNonEmptyString
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.exceptions.Exceptions
-import io.reactivex.rxjava3.functions.Function
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 internal class LocalServerApi(private val service: ILocalServerServiceProvider) : ILocalServerApi {
-    override fun getVideos(offset: Int?, count: Int?, reverse: Boolean): Single<List<Video>> {
+    override fun getVideos(offset: Int?, count: Int?, reverse: Boolean): Flow<List<Video>> {
         return service.provideLocalServerService()
-            .flatMap { service ->
-                service.getVideos(offset, count, if (reverse) 1 else 0)
+            .flatMapConcat {
+                it.getVideos(offset, count, if (reverse) 1 else 0)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getAudios(offset: Int?, count: Int?, reverse: Boolean): Single<List<Audio>> {
+    override fun getAudios(offset: Int?, count: Int?, reverse: Boolean): Flow<List<Audio>> {
         return service.provideLocalServerService()
-            .flatMap { service ->
-                service.getAudios(offset, count, if (reverse) 1 else 0)
+            .flatMapConcat {
+                it.getAudios(offset, count, if (reverse) 1 else 0)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -37,18 +37,18 @@ internal class LocalServerApi(private val service: ILocalServerServiceProvider) 
         offset: Int?,
         count: Int?,
         reverse: Boolean
-    ): Single<MutableList<Photo>> {
+    ): Flow<MutableList<Photo>> {
         return service.provideLocalServerService()
-            .flatMap { service ->
-                service.getPhotos(offset, count, if (reverse) 1 else 0)
+            .flatMapConcat {
+                it.getPhotos(offset, count, if (reverse) 1 else 0)
                     .map(extractResponseWithErrorHandlingMutable())
             }
     }
 
-    override fun getDiscography(offset: Int?, count: Int?, reverse: Boolean): Single<List<Audio>> {
+    override fun getDiscography(offset: Int?, count: Int?, reverse: Boolean): Flow<List<Audio>> {
         return service.provideLocalServerService()
-            .flatMap { service ->
-                service.getDiscography(offset, count, if (reverse) 1 else 0)
+            .flatMapConcat {
+                it.getDiscography(offset, count, if (reverse) 1 else 0)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -58,10 +58,10 @@ internal class LocalServerApi(private val service: ILocalServerServiceProvider) 
         offset: Int?,
         count: Int?,
         reverse: Boolean
-    ): Single<List<Video>> {
+    ): Flow<List<Video>> {
         return service.provideLocalServerService()
-            .flatMap { service ->
-                service.searchVideos(query, offset, count, if (reverse) 1 else 0)
+            .flatMapConcat {
+                it.searchVideos(query, offset, count, if (reverse) 1 else 0)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -71,10 +71,10 @@ internal class LocalServerApi(private val service: ILocalServerServiceProvider) 
         offset: Int?,
         count: Int?,
         reverse: Boolean
-    ): Single<List<Photo>> {
+    ): Flow<List<Photo>> {
         return service.provideLocalServerService()
-            .flatMap { service ->
-                service.searchPhotos(query, offset, count, if (reverse) 1 else 0)
+            .flatMapConcat {
+                it.searchPhotos(query, offset, count, if (reverse) 1 else 0)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -84,10 +84,10 @@ internal class LocalServerApi(private val service: ILocalServerServiceProvider) 
         offset: Int?,
         count: Int?,
         reverse: Boolean
-    ): Single<List<Audio>> {
+    ): Flow<List<Audio>> {
         return service.provideLocalServerService()
-            .flatMap { service ->
-                service.searchAudios(query, offset, count, if (reverse) 1 else 0)
+            .flatMapConcat {
+                it.searchAudios(query, offset, count, if (reverse) 1 else 0)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -97,58 +97,58 @@ internal class LocalServerApi(private val service: ILocalServerServiceProvider) 
         offset: Int?,
         count: Int?,
         reverse: Boolean
-    ): Single<List<Audio>> {
+    ): Flow<List<Audio>> {
         return service.provideLocalServerService()
-            .flatMap { service ->
-                service.searchDiscography(query, offset, count, if (reverse) 1 else 0)
+            .flatMapConcat {
+                it.searchDiscography(query, offset, count, if (reverse) 1 else 0)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun update_time(hash: String?): Single<Int> {
+    override fun update_time(hash: String?): Flow<Int> {
         return service.provideLocalServerService()
-            .flatMap { service ->
-                service.update_time(hash)
+            .flatMapConcat {
+                it.update_time(hash)
                     .map(extractResponseWithErrorHandlingSimple())
             }
     }
 
-    override fun delete_media(hash: String?): Single<Int> {
+    override fun delete_media(hash: String?): Flow<Int> {
         return service.provideLocalServerService()
-            .flatMap { service ->
-                service.delete_media(hash)
+            .flatMapConcat {
+                it.delete_media(hash)
                     .map(extractResponseWithErrorHandlingSimple())
             }
     }
 
-    override fun get_file_name(hash: String?): Single<String> {
+    override fun get_file_name(hash: String?): Flow<String> {
         return service.provideLocalServerService()
-            .flatMap { service ->
-                service.get_file_name(hash)
+            .flatMapConcat {
+                it.get_file_name(hash)
                     .map(extractResponseWithErrorHandlingSimple())
             }
     }
 
-    override fun update_file_name(hash: String?, name: String?): Single<Int> {
+    override fun update_file_name(hash: String?, name: String?): Flow<Int> {
         return service.provideLocalServerService()
-            .flatMap { service ->
-                service.update_file_name(hash, name)
+            .flatMapConcat {
+                it.update_file_name(hash, name)
                     .map(extractResponseWithErrorHandlingSimple())
             }
     }
 
-    override fun rebootPC(type: String?): Single<Int> {
+    override fun rebootPC(type: String?): Flow<Int> {
         return service.provideLocalServerService()
-            .flatMap { service ->
-                service.rebootPC(type)
+            .flatMapConcat {
+                it.rebootPC(type)
                     .map(extractResponseWithErrorHandlingSimple())
             }
     }
 
-    override fun fsGet(dir: String?): Single<List<FileRemote>> {
+    override fun fsGet(dir: String?): Flow<List<FileRemote>> {
         return service.provideLocalServerService()
-            .flatMap { service ->
-                service.fsGet(dir)
+            .flatMapConcat {
+                it.fsGet(dir)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -162,58 +162,46 @@ internal class LocalServerApi(private val service: ILocalServerServiceProvider) 
             }
         }
 
-        inline fun <reified T> extractResponseWithErrorHandling(): Function<BaseResponse<Items<T>>, List<T>> {
-            return Function { response ->
-                if (response.error != null) {
-                    throw Exceptions.propagate(
-                        Exception(
-                            firstNonEmptyString(
-                                response.error?.errorMsg,
-                                "Error"
-                            )
+        inline fun <reified T> extractResponseWithErrorHandling(): (BaseResponse<Items<T>>) -> List<T> =
+            {
+                if (it.error != null) {
+                    throw Throwable(
+                        firstNonEmptyString(
+                            it.error?.errorMsg,
+                            "Error"
                         )
                     )
+                } else {
+                    it.response?.items.nonNullNoEmptyOr({ items -> items }, { ArrayList() })
                 }
-                response.response?.items.nonNullNoEmpty {
-                    return@Function it
-                }
-                return@Function ArrayList<T>()
             }
-        }
 
-        inline fun <reified T> extractResponseWithErrorHandlingMutable(): Function<BaseResponse<Items<T>>, MutableList<T>> {
-            return Function { response ->
-                if (response.error != null) {
-                    throw Exceptions.propagate(
-                        Exception(
-                            firstNonEmptyString(
-                                response.error?.errorMsg,
-                                "Error"
-                            )
+        inline fun <reified T> extractResponseWithErrorHandlingMutable(): (BaseResponse<Items<T>>) -> MutableList<T> =
+            {
+                if (it.error != null) {
+                    throw Throwable(
+                        firstNonEmptyString(
+                            it.error?.errorMsg,
+                            "Error"
                         )
                     )
+                } else {
+                    it.response?.items.nonNullNoEmptyOr({ items -> items }, { ArrayList() })
                 }
-                response.response?.items.nonNullNoEmpty {
-                    return@Function it
-                }
-                return@Function ArrayList<T>()
             }
-        }
 
-        inline fun <reified T : Any> extractResponseWithErrorHandlingSimple(): Function<BaseResponse<T>, T> {
-            return Function { response ->
-                if (response.error != null) {
-                    throw Exceptions.propagate(
-                        Exception(
-                            firstNonEmptyString(
-                                response.error?.errorMsg,
-                                "Error"
-                            )
+        inline fun <reified T> extractResponseWithErrorHandlingSimple(): (BaseResponse<T>) -> T =
+            {
+                if (it.error != null) {
+                    throw Throwable(
+                        firstNonEmptyString(
+                            it.error?.errorMsg,
+                            "Error"
                         )
                     )
+                } else {
+                    it.response ?: throw NullPointerException("response")
                 }
-                response.response ?: throw NullPointerException("response")
             }
-        }
     }
 }

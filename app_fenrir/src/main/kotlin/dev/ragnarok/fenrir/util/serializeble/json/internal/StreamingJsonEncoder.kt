@@ -8,6 +8,7 @@ import dev.ragnarok.fenrir.util.serializeble.json.Json
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
 import dev.ragnarok.fenrir.util.serializeble.json.JsonElementSerializer
 import dev.ragnarok.fenrir.util.serializeble.json.JsonEncoder
+import dev.ragnarok.fenrir.util.serializeble.json.JsonObject
 import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.COLON
 import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.COMMA
 import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.INVALID
@@ -65,6 +66,9 @@ internal class StreamingJsonEncoder(
     }
 
     override fun encodeJsonElement(element: JsonElement) {
+        if (polymorphicDiscriminator != null && element !is JsonObject) {
+            throwJsonElementPolymorphicException(polymorphicSerialName, element)
+        }
         encodeSerializableValue(JsonElementSerializer, element)
     }
 

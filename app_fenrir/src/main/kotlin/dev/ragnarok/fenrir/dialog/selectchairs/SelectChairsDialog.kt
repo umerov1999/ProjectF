@@ -12,8 +12,8 @@ import dev.ragnarok.fenrir.dialog.base.AccountDependencyDialogFragment
 import dev.ragnarok.fenrir.domain.IDatabaseInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.search.filteredit.FilterEditFragment
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.database.Chair
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class SelectChairsDialog : AccountDependencyDialogFragment(), ChairsAdapter.Listener {
     private var chairId = 0
@@ -51,15 +51,14 @@ class SelectChairsDialog : AccountDependencyDialogFragment(), ChairsAdapter.List
     }
 
     private fun request(offset: Int) {
-        appendDisposable(
+        appendJob(
             mDatabaseInteractor.getChairs(accountId, chairId, COUNT_PER_REQUEST, offset)
-                .fromIOToMain()
-                .subscribe({ chairs ->
+                .fromIOToMain { chairs ->
                     onDataReceived(
                         offset,
                         chairs
                     )
-                }) { })
+                })
     }
 
     private fun onDataReceived(offset: Int, chairs: List<Chair>) {

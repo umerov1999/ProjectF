@@ -59,13 +59,9 @@ class CubicBezierInterpolator(start: PointF, end: PointF) : Interpolator {
 
     companion object {
         val DEFAULT = CubicBezierInterpolator(0.25, 0.1, 0.25, 1.0)
-
         val EASE_OUT = CubicBezierInterpolator(0.0, 0.0, .58, 1.0)
-
         val EASE_OUT_QUINT = CubicBezierInterpolator(.23, 1.0, .32, 1.0)
-
         val EASE_IN = CubicBezierInterpolator(.42, 0.0, 1.0, 1.0)
-
         val EASE_BOTH = CubicBezierInterpolator(.42, 0.0, .58, 1.0)
     }
 

@@ -68,7 +68,7 @@ object PlaceFactory {
         return place
     }
 
-    fun getTagDirsPlace(ownerId: Int, isSelect: Boolean): Place {
+    fun getTagDirsPlace(ownerId: Long, isSelect: Boolean): Place {
         return Place(Place.TAG_DIRS)
             .setArguments(TagDirFragment.buildArgs(ownerId, isSelect))
     }

@@ -6,50 +6,50 @@ import dev.ragnarok.fenrir.api.model.VKApiFriendList
 import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.api.model.response.DeleteFriendResponse
 import dev.ragnarok.fenrir.api.model.response.OnlineFriendsResponse
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IFriendsApi {
     @CheckResult
     fun getOnline(
         userId: Long, order: String?, count: Int,
         offset: Int, fields: String?
-    ): Single<OnlineFriendsResponse>
+    ): Flow<OnlineFriendsResponse>
 
     @CheckResult
     operator fun get(
         userId: Long?, order: String?, listId: Int?, count: Int?, offset: Int?,
         fields: String?, nameCase: String?
-    ): Single<Items<VKApiUser>>
+    ): Flow<Items<VKApiUser>>
 
     @CheckResult
-    fun getByPhones(phones: String?, fields: String?): Single<List<VKApiUser>>
+    fun getByPhones(phones: String?, fields: String?): Flow<List<VKApiUser>>
 
     @CheckResult
     fun getRecommendations(
         count: Int?,
         fields: String?,
         nameCase: String?
-    ): Single<Items<VKApiUser>>
+    ): Flow<Items<VKApiUser>>
 
     @CheckResult
     fun deleteSubscriber(
         subscriber_id: Long
-    ): Single<Int>
+    ): Flow<Int>
 
     @CheckResult
-    fun getLists(userId: Long?, returnSystem: Boolean?): Single<Items<VKApiFriendList>>
+    fun getLists(userId: Long?, returnSystem: Boolean?): Flow<Items<VKApiFriendList>>
 
     @CheckResult
-    fun delete(userId: Long): Single<DeleteFriendResponse>
+    fun delete(userId: Long): Flow<DeleteFriendResponse>
 
     @CheckResult
-    fun add(userId: Long, text: String?, follow: Boolean?): Single<Int>
+    fun add(userId: Long, text: String?, follow: Boolean?): Flow<Int>
 
     @CheckResult
     fun search(
         userId: Long, query: String?, fields: String?, nameCase: String?,
         offset: Int?, count: Int?
-    ): Single<Items<VKApiUser>>
+    ): Flow<Items<VKApiUser>>
 
     @CheckResult
     fun getMutual(
@@ -58,5 +58,5 @@ interface IFriendsApi {
         count: Int,
         offset: Int,
         fields: String?
-    ): Single<List<VKApiUser>>
+    ): Flow<List<VKApiUser>>
 }

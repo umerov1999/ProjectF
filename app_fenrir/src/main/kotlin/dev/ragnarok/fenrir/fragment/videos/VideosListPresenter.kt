@@ -7,13 +7,11 @@ import android.view.View
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import dev.ragnarok.fenrir.Includes
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IVideosInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.fragment.search.nextfrom.IntNextFrom
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.upload.IUploadManager
@@ -29,11 +27,15 @@ import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils.findIndexById
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.safeCheck
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 
 class VideosListPresenter(
     accountId: Long, val ownerId: Long, val albumId: Int, private val action: String?,
@@ -47,10 +49,10 @@ class VideosListPresenter(
         ownerId
     )
     private val uploadsData: MutableList<Upload> = ArrayList(0)
-    private val netDisposable = CompositeDisposable()
-    private val cacheDisposable = CompositeDisposable()
+    private val netDisposable = CompositeJob()
+    private val cacheDisposable = CompositeJob()
     private val searcher: FindVideo = FindVideo(netDisposable)
-    private var sleepDataDisposable = Disposable.disposed()
+    private var sleepDataDisposable = CancelableJob()
     private var endOfContent = false
     private var intNextFrom: IntNextFrom
     private var hasActualNetData = false
@@ -58,21 +60,15 @@ class VideosListPresenter(
     private var cacheNowLoading = false
     private fun sleep_search(q: String?) {
         if (requestNow || cacheNowLoading) return
-        sleepDataDisposable.dispose()
+        sleepDataDisposable.cancel()
         if (q.isNullOrEmpty()) {
             searcher.cancel()
         } else {
             if (!searcher.isSearchMode) {
                 searcher.insertCache(data, intNextFrom.offset)
             }
-            sleepDataDisposable = Single.just(Any())
-                .delay(WEB_SEARCH_DELAY.toLong(), TimeUnit.MILLISECONDS)
-                .fromIOToMain()
-                .subscribe({ searcher.do_search(q) }) { throwable ->
-                    onListGetError(
-                        throwable
-                    )
-                }
+            sleepDataDisposable += delayTaskFlow(WEB_SEARCH_DELAY.toLong())
+                .toMain { searcher.do_search(q) }
         }
     }
 
@@ -100,8 +96,8 @@ class VideosListPresenter(
         }
     }
 
-    private fun onProgressUpdates(updates: List<IProgressUpdate>) {
-        for (update in updates) {
+    private fun onProgressUpdates(updates: IProgressUpdate?) {
+        updates?.let { update ->
             val index = findIndexById(uploadsData, update.id)
             if (index != -1) {
                 view?.notifyUploadProgressChanged(
@@ -196,8 +192,7 @@ class VideosListPresenter(
         setRequestNow(true)
         val startFrom = if (more) intNextFrom else IntNextFrom(0)
         netDisposable.add(interactor[accountId, ownerId, albumId, COUNT, startFrom.offset]
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 val nextFrom = IntNextFrom(startFrom.offset + COUNT)
                 onRequestResposnse(it, startFrom, nextFrom)
             }) { throwable -> onListGetError(throwable) })
@@ -253,8 +248,7 @@ class VideosListPresenter(
     private fun loadAllFromCache() {
         cacheNowLoading = true
         cacheDisposable.add(interactor.getCachedVideos(accountId, ownerId, albumId)
-            .fromIOToMain()
-            .subscribe({ onCachedDataReceived(it) }) { obj -> obj.printStackTrace() })
+            .fromIOToMain({ onCachedDataReceived(it) }) { obj -> obj.printStackTrace() })
     }
 
     private fun onCachedDataReceived(videos: List<Video>) {
@@ -264,9 +258,9 @@ class VideosListPresenter(
     }
 
     override fun onDestroyed() {
-        cacheDisposable.dispose()
-        netDisposable.dispose()
-        sleepDataDisposable.dispose()
+        cacheDisposable.cancel()
+        netDisposable.cancel()
+        sleepDataDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -326,18 +320,17 @@ class VideosListPresenter(
                 val title = root.findViewById<TextInputEditText>(R.id.edit_title).text.toString()
                 val description =
                     root.findViewById<TextInputEditText>(R.id.edit_description).text.toString()
-                appendDisposable(interactor.edit(
+                appendJob(interactor.edit(
                     accountId, video.ownerId, video.id,
                     title, description
-                ).fromIOToMain()
-                    .subscribe({
-                        data[position].setTitle(title).setDescription(description)
-                        view?.notifyItemChanged(
-                            position
-                        )
-                    }) { t ->
-                        showError(getCauseIfRuntime(t))
-                    })
+                ).fromIOToMain({
+                    data[position].setTitle(title).setDescription(description)
+                    view?.notifyItemChanged(
+                        position
+                    )
+                }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
             }
             .setNegativeButton(R.string.button_cancel, null)
             .show()
@@ -351,8 +344,7 @@ class VideosListPresenter(
         when (id) {
             R.id.action_add_to_my_videos -> {
                 netDisposable.add(interactor.addToMy(accountId, accountId, video.ownerId, video.id)
-                    .fromIOToMain()
-                    .subscribe({ onAddComplete() }) { t ->
+                    .fromIOToMain({ onAddComplete() }) { t ->
                         showError(getCauseIfRuntime(t))
                     })
             }
@@ -363,8 +355,7 @@ class VideosListPresenter(
 
             R.id.action_delete_from_my_videos -> {
                 netDisposable.add(interactor.delete(accountId, video.id, video.ownerId, accountId)
-                    .fromIOToMain()
-                    .subscribe({
+                    .fromIOToMain({
                         data.removeAt(position)
                         view?.notifyItemRemoved(
                             position
@@ -384,10 +375,10 @@ class VideosListPresenter(
         }
     }
 
-    private inner class FindVideo(disposable: CompositeDisposable) : FindAtWithContent<Video>(
+    private inner class FindVideo(disposable: CompositeJob) : FindAtWithContent<Video>(
         disposable, SEARCH_VIEW_COUNT, SEARCH_COUNT
     ) {
-        override fun search(offset: Int, count: Int): Single<List<Video>> {
+        override fun search(offset: Int, count: Int): Flow<List<Video>> {
             return interactor[accountId, ownerId, albumId, count, offset]
         }
 
@@ -458,29 +449,23 @@ class VideosListPresenter(
     init {
         intNextFrom = IntNextFrom(0)
         data = ArrayList()
-        appendDisposable(uploadManager[accountId, destination]
-            .fromIOToMain()
-            .subscribe { data -> onUploadsDataReceived(data) })
-        appendDisposable(uploadManager.observeAdding()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onUploadsAdded(it) })
-        appendDisposable(uploadManager.observeDeleting(true)
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onUploadDeleted(it) })
-        appendDisposable(uploadManager.observeResults()
+        appendJob(uploadManager[accountId, destination]
+            .fromIOToMain { data -> onUploadsDataReceived(data) })
+        appendJob(uploadManager.observeAdding()
+            .sharedFlowToMain { onUploadsAdded(it) })
+        appendJob(uploadManager.observeDeleting(true)
+            .sharedFlowToMain { onUploadDeleted(it) })
+        appendJob(uploadManager.observeResults()
             .filter {
                 destination.compareTo(
                     it.first.destination
                 )
             }
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onUploadResults(it) })
-        appendDisposable(uploadManager.observeStatus()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onUploadStatusUpdate(it) })
-        appendDisposable(uploadManager.observeProgress()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onProgressUpdates(it) })
+            .sharedFlowToMain { onUploadResults(it) })
+        appendJob(uploadManager.observeStatus()
+            .sharedFlowToMain { onUploadStatusUpdate(it) })
+        appendJob(uploadManager.observeProgress()
+            .sharedFlowToMain { onProgressUpdates(it) })
         loadAllFromCache()
         request(false)
         if (IVideosListView.ACTION_SELECT.equals(action, ignoreCase = true)) {

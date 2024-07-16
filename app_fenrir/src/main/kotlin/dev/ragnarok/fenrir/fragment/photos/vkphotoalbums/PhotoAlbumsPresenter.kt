@@ -8,7 +8,6 @@ import dev.ragnarok.fenrir.domain.IUtilsInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Community
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.PhotoAlbum
@@ -17,7 +16,8 @@ import dev.ragnarok.fenrir.model.SimplePrivacy
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.findIndexById
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class PhotoAlbumsPresenter(
     accountId: Long,
@@ -29,8 +29,8 @@ class PhotoAlbumsPresenter(
     private val ownersRepository: IOwnersRepository = owners
     private val utilsInteractor: IUtilsInteractor = InteractorFactory.createUtilsInteractor()
     private val mOwnerId: Long = ownerId
-    private val netDisposable = CompositeDisposable()
-    private val cacheDisposable = CompositeDisposable()
+    private val netDisposable = CompositeJob()
+    private val cacheDisposable = CompositeJob()
     private var mOwner: Owner? = null
     private var mAction: String? = null
     private var mData: ArrayList<PhotoAlbum> = ArrayList()
@@ -65,13 +65,12 @@ class PhotoAlbumsPresenter(
         if (isMy) {
             return
         }
-        appendDisposable(ownersRepository.getBaseOwnerInfo(
+        appendJob(ownersRepository.getBaseOwnerInfo(
             accountId,
             mOwnerId,
             IOwnersRepository.MODE_ANY
         )
-            .fromIOToMain()
-            .subscribe({ owner -> onOwnerInfoReceived(owner) }) { t ->
+            .fromIOToMain({ owner -> onOwnerInfoReceived(owner) }) { t ->
                 onOwnerGetError(
                     t
                 )
@@ -92,8 +91,7 @@ class PhotoAlbumsPresenter(
         netLoadingNow = true
         resolveProgressView()
         netDisposable.add(photosInteractor.getActualAlbums(accountId, mOwnerId, COUNT, offset)
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 onActualAlbumsReceived(
                     it
                 )
@@ -140,8 +138,7 @@ class PhotoAlbumsPresenter(
 
     private fun loadAllFromDb() {
         cacheDisposable.add(photosInteractor.getCachedAlbums(accountId, mOwnerId)
-            .fromIOToMain()
-            .subscribe({ onCachedDataReceived(it) }) { })
+            .fromIOToMain({ onCachedDataReceived(it) }) { })
     }
 
     private fun onCachedDataReceived(albums: List<PhotoAlbum>) {
@@ -151,8 +148,8 @@ class PhotoAlbumsPresenter(
     }
 
     override fun onDestroyed() {
-        cacheDisposable.dispose()
-        netDisposable.dispose()
+        cacheDisposable.cancel()
+        netDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -173,13 +170,12 @@ class PhotoAlbumsPresenter(
     private fun doAlbumRemove(album: PhotoAlbum) {
         val albumId = album.getObjectId()
         val ownerId = album.ownerId
-        appendDisposable(photosInteractor.removedAlbum(
+        appendJob(photosInteractor.removedAlbum(
             accountId,
             album.ownerId,
             album.getObjectId()
         )
-            .fromIOToMain()
-            .subscribe({ onAlbumRemoved(albumId, ownerId) }) { t ->
+            .fromIOToMain({ onAlbumRemoved(albumId, ownerId) }) { t ->
                 showError(getCauseIfRuntime(t))
             })
     }
@@ -268,10 +264,9 @@ class PhotoAlbumsPresenter(
         album.privacyComment?.let {
             privacies[1] = it
         }
-        appendDisposable(utilsInteractor
+        appendJob(utilsInteractor
             .createFullPrivacies(accountId, privacies)
-            .fromIOToMain()
-            .subscribe({ full ->
+            .fromIOToMain({ full ->
                 val editor = PhotoAlbumEditor.create()
                     .setPrivacyView(full[0])
                     .setPrivacyComment(full[1])

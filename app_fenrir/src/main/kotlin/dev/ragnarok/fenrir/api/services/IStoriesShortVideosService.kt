@@ -10,14 +10,14 @@ import dev.ragnarok.fenrir.api.model.response.StoryGetResponse
 import dev.ragnarok.fenrir.api.model.response.ViewersListResponse
 import dev.ragnarok.fenrir.api.model.server.VKApiStoryUploadServer
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class IStoriesShortVideosService : IServiceRest() {
     fun stories_getPhotoUploadServer(
         add_to_news: Int?,
         group_id: Long?,
         reply_to_story: String?
-    ): Single<BaseResponse<VKApiStoryUploadServer>> {
+    ): Flow<BaseResponse<VKApiStoryUploadServer>> {
         return rest.request(
             "stories.getPhotoUploadServer",
             form(
@@ -33,7 +33,7 @@ class IStoriesShortVideosService : IServiceRest() {
         add_to_news: Int?,
         group_id: Long?,
         reply_to_story: String?
-    ): Single<BaseResponse<VKApiStoryUploadServer>> {
+    ): Flow<BaseResponse<VKApiStoryUploadServer>> {
         return rest.request(
             "stories.getVideoUploadServer",
             form(
@@ -52,7 +52,7 @@ class IStoriesShortVideosService : IServiceRest() {
         count: Int?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<ViewersListResponse>> {
+    ): Flow<BaseResponse<ViewersListResponse>> {
         return rest.request(
             "stories.getViewers", form(
                 "owner_id" to ownerId,
@@ -65,7 +65,7 @@ class IStoriesShortVideosService : IServiceRest() {
         )
     }
 
-    fun stories_save(upload_results: String?): Single<BaseResponse<Items<VKApiStory>>> {
+    fun stories_save(upload_results: String?): Flow<BaseResponse<Items<VKApiStory>>> {
         return rest.request(
             "stories.save",
             form("upload_results" to upload_results),
@@ -73,7 +73,7 @@ class IStoriesShortVideosService : IServiceRest() {
         )
     }
 
-    fun stories_delete(owner_id: Long, story_id: Int): Single<BaseResponse<Int>> {
+    fun stories_delete(owner_id: Long, story_id: Int): Flow<BaseResponse<Int>> {
         return rest.request(
             "stories.delete", form(
                 "owner_id" to owner_id,
@@ -86,7 +86,7 @@ class IStoriesShortVideosService : IServiceRest() {
         owner_id: Long?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<StoriesResponse>> {
+    ): Flow<BaseResponse<StoriesResponse>> {
         return rest.request(
             "stories.get", form(
                 "owner_id" to owner_id,
@@ -100,7 +100,7 @@ class IStoriesShortVideosService : IServiceRest() {
         owner_id: Long,
         offset: Int?,
         count: Int?
-    ): Single<BaseResponse<Items<VKApiNarratives>>> {
+    ): Flow<BaseResponse<Items<VKApiNarratives>>> {
         return rest.request(
             "narratives.getFromOwner", form(
                 "owner_id" to owner_id,
@@ -114,7 +114,7 @@ class IStoriesShortVideosService : IServiceRest() {
         stories: String?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<StoryGetResponse>> {
+    ): Flow<BaseResponse<StoryGetResponse>> {
         return rest.request(
             "stories.getById", form(
                 "stories" to stories,
@@ -130,7 +130,7 @@ class IStoriesShortVideosService : IServiceRest() {
         count: Int?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<StoriesResponse>> {
+    ): Flow<BaseResponse<StoriesResponse>> {
         return rest.request(
             "stories.search", form(
                 "q" to q,
@@ -147,7 +147,7 @@ class IStoriesShortVideosService : IServiceRest() {
         count: Int?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<ShortVideosResponse>> {
+    ): Flow<BaseResponse<ShortVideosResponse>> {
         return rest.request(
             "shortVideo.getTopVideos", form(
                 "start_from" to startFrom,
@@ -164,7 +164,7 @@ class IStoriesShortVideosService : IServiceRest() {
         count: Int?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<ShortVideosResponse>> {
+    ): Flow<BaseResponse<ShortVideosResponse>> {
         return rest.request(
             "shortVideo.getOwnerVideos", form(
                 "owner_id" to ownerId,

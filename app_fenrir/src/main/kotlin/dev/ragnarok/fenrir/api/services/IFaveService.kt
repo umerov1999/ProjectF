@@ -9,7 +9,7 @@ import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.FavePageResponse
 import dev.ragnarok.fenrir.api.model.response.FavePostsResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class IFaveService : IServiceRest() {
     fun getPages(
@@ -17,7 +17,7 @@ class IFaveService : IServiceRest() {
         count: Int?,
         type: String?,
         fields: String?
-    ): Single<BaseResponse<Items<FavePageResponse>>> {
+    ): Flow<BaseResponse<Items<FavePageResponse>>> {
         return rest.request(
             "fave.getPages", form(
                 "offset" to offset,
@@ -34,7 +34,7 @@ class IFaveService : IServiceRest() {
         item_type: String?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<Items<VKApiAttachments.Entry>>> {
+    ): Flow<BaseResponse<Items<VKApiAttachments.Entry>>> {
         return rest.request(
             "fave.get", form(
                 "offset" to offset,
@@ -52,7 +52,7 @@ class IFaveService : IServiceRest() {
         item_type: String?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<Items<VKApiAttachments.Entry>>> {
+    ): Flow<BaseResponse<Items<VKApiAttachments.Entry>>> {
         return rest.request(
             "fave.get", form(
                 "offset" to offset,
@@ -71,7 +71,7 @@ class IFaveService : IServiceRest() {
         sort_by: String?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<Items<VKApiArticle>>> {
+    ): Flow<BaseResponse<Items<VKApiArticle>>> {
         return rest.request(
             "articles.getOwnerPublished", form(
                 "owner_id" to owner_id,
@@ -88,7 +88,7 @@ class IFaveService : IServiceRest() {
         links: String?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<Items<VKApiArticle>>> {
+    ): Flow<BaseResponse<Items<VKApiArticle>>> {
         return rest.request(
             "articles.getByLink", form(
                 "links" to links,
@@ -104,7 +104,7 @@ class IFaveService : IServiceRest() {
         item_type: String?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<FavePostsResponse>> {
+    ): Flow<BaseResponse<FavePostsResponse>> {
         return rest.request(
             "fave.get", form(
                 "offset" to offset,
@@ -122,7 +122,7 @@ class IFaveService : IServiceRest() {
         item_type: String?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<Items<FaveLinkDto>>> {
+    ): Flow<BaseResponse<Items<FaveLinkDto>>> {
         return rest.request(
             "fave.get", form(
                 "offset" to offset,
@@ -140,7 +140,7 @@ class IFaveService : IServiceRest() {
         item_type: String?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<Items<VKApiAttachments.Entry>>> {
+    ): Flow<BaseResponse<Items<VKApiAttachments.Entry>>> {
         return rest.request(
             "fave.get", form(
                 "offset" to offset,
@@ -155,7 +155,7 @@ class IFaveService : IServiceRest() {
     fun getPhotos(
         offset: Int?,
         count: Int?
-    ): Single<BaseResponse<Items<VKApiPhoto>>> {
+    ): Flow<BaseResponse<Items<VKApiPhoto>>> {
         return rest.request(
             "fave.getPhotos", form(
                 "offset" to offset,
@@ -164,14 +164,14 @@ class IFaveService : IServiceRest() {
         )
     }
 
-    fun addLink(link: String?): Single<BaseResponse<Int>> {
+    fun addLink(link: String?): Flow<BaseResponse<Int>> {
         return rest.request("fave.addLink", form("link" to link), baseInt)
     }
 
     fun addPage(
         userId: Long?,
         groupId: Long?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "fave.addPage", form(
                 "user_id" to userId,
@@ -184,7 +184,7 @@ class IFaveService : IServiceRest() {
         owner_id: Long?,
         id: Int?,
         access_key: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "fave.addVideo", form(
                 "owner_id" to owner_id,
@@ -194,7 +194,7 @@ class IFaveService : IServiceRest() {
         )
     }
 
-    fun addArticle(url: String?): Single<BaseResponse<Int>> {
+    fun addArticle(url: String?): Flow<BaseResponse<Int>> {
         return rest.request("fave.addArticle", form("url" to url), baseInt)
     }
 
@@ -202,7 +202,7 @@ class IFaveService : IServiceRest() {
         id: Int,
         owner_id: Long,
         access_key: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "fave.addProduct", form(
                 "id" to id,
@@ -216,7 +216,7 @@ class IFaveService : IServiceRest() {
         owner_id: Long?,
         id: Int?,
         access_key: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "fave.addPost", form(
                 "owner_id" to owner_id,
@@ -230,7 +230,7 @@ class IFaveService : IServiceRest() {
     fun removePage(
         userId: Long?,
         groupId: Long?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "fave.removePage", form(
                 "user_id" to userId,
@@ -239,14 +239,14 @@ class IFaveService : IServiceRest() {
         )
     }
 
-    fun removeLink(linkId: String?): Single<BaseResponse<Int>> {
+    fun removeLink(linkId: String?): Flow<BaseResponse<Int>> {
         return rest.request("fave.removeLink", form("link_id" to linkId), baseInt)
     }
 
     fun removeArticle(
         owner_id: Long?,
         article_id: Int?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "fave.removeArticle", form(
                 "owner_id" to owner_id,
@@ -258,7 +258,7 @@ class IFaveService : IServiceRest() {
     fun removeProduct(
         id: Int?,
         owner_id: Long?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "fave.removeProduct", form(
                 "id" to id,
@@ -270,7 +270,7 @@ class IFaveService : IServiceRest() {
     fun removePost(
         owner_id: Long?,
         id: Int?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "fave.removePost", form(
                 "owner_id" to owner_id,
@@ -282,7 +282,7 @@ class IFaveService : IServiceRest() {
     fun removeVideo(
         owner_id: Long?,
         id: Int?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "fave.removeVideo", form(
                 "owner_id" to owner_id,
@@ -294,7 +294,7 @@ class IFaveService : IServiceRest() {
     fun pushFirst(
         code: String?,
         ownerId: Long
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "execute", form(
                 "code" to code,

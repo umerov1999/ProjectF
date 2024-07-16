@@ -13,7 +13,6 @@ import dev.ragnarok.fenrir.activity.PostCreateActivity.Companion.newIntent
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.fragment.base.RecyclerMenuAdapter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Icon
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.Text
@@ -23,11 +22,13 @@ import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.theme.ThemesController.currentStyle
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.toast.CustomToast
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.zip
 
 class PostPublishPrepareActivity : AppCompatActivity(), RecyclerMenuAdapter.ActionListener {
-    private val compositeDisposable = CompositeDisposable()
+    private val compositeJob = CompositeJob()
     private var adapter: RecyclerMenuAdapter? = null
     private var recyclerView: RecyclerView? = null
     private var proressView: View? = null
@@ -64,13 +65,13 @@ class PostPublishPrepareActivity : AppCompatActivity(), RecyclerMenuAdapter.Acti
             links = ActivityUtils.checkLinks(this)
             setLoading(true)
             val interactor = owners
-            compositeDisposable.add(interactor.getCommunitiesWhereAdmin(
+            compositeJob.add(interactor.getCommunitiesWhereAdmin(
                 accountId,
                 admin = true,
                 editor = true,
                 moderator = false
             )
-                .zipWith<Owner, List<Owner>>(
+                .zip(
                     interactor.getBaseOwnerInfo(
                         accountId,
                         accountId,
@@ -82,8 +83,7 @@ class PostPublishPrepareActivity : AppCompatActivity(), RecyclerMenuAdapter.Acti
                     result.addAll(owners)
                     result
                 }
-                .fromIOToMain()
-                .subscribe({ owners -> onOwnersReceived(owners) }) { throwable ->
+                .fromIOToMain({ owners -> onOwnersReceived(owners) }) { throwable ->
                     onOwnersGetError(
                         throwable
                     )
@@ -130,7 +130,7 @@ class PostPublishPrepareActivity : AppCompatActivity(), RecyclerMenuAdapter.Acti
     }
 
     override fun onDestroy() {
-        compositeDisposable.dispose()
+        compositeJob.cancel()
         super.onDestroy()
     }
 

@@ -3,11 +3,11 @@ package dev.ragnarok.fenrir.fragment.audio.local.localaudioalbums
 import android.os.Bundle
 import dev.ragnarok.fenrir.db.Stores
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.LocalImageAlbum
 import dev.ragnarok.fenrir.util.AppPerms.hasReadStoragePermission
 import dev.ragnarok.fenrir.util.Objects.safeEquals
 import dev.ragnarok.fenrir.util.PersistentLogger
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import java.util.Locale
 
 class LocalAudioAlbumsPresenter(private val currentId: Int, savedInstanceState: Bundle?) :
@@ -88,11 +88,10 @@ class LocalAudioAlbumsPresenter(private val currentId: Int, savedInstanceState: 
     private fun loadData() {
         if (mLoadingNow) return
         changeLoadingNowState(true)
-        appendDisposable(Stores.instance
+        appendJob(Stores.instance
             .localMedia()
             .audioAlbums
-            .fromIOToMain()
-            .subscribe({ onDataLoaded(it) }) { throwable ->
+            .fromIOToMain({ onDataLoaded(it) }) { throwable ->
                 onLoadError(
                     throwable
                 )

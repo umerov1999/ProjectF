@@ -19,6 +19,7 @@ package androidx.camera.core;
 import static androidx.camera.core.MirrorMode.MIRROR_MODE_OFF;
 import static androidx.camera.core.MirrorMode.MIRROR_MODE_ON;
 import static androidx.camera.core.MirrorMode.MIRROR_MODE_ON_FRONT_ONLY;
+import static androidx.camera.core.MirrorMode.MIRROR_MODE_UNSPECIFIED;
 import static androidx.camera.core.impl.ImageOutputConfig.OPTION_MAX_RESOLUTION;
 import static androidx.camera.core.impl.ImageOutputConfig.OPTION_RESOLUTION_SELECTOR;
 import static androidx.camera.core.impl.ImageOutputConfig.OPTION_TARGET_ASPECT_RATIO;
@@ -43,7 +44,6 @@ import androidx.annotation.GuardedBy;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.RestrictTo.Scope;
 import androidx.camera.core.impl.CameraControlInternal;
@@ -76,7 +76,6 @@ import java.util.Set;
  * that are usable by a camera. UseCase also will communicate of the active/inactive state to
  * the Camera.
  */
-@RequiresApi(21) // TODO(b/200306659): Remove and replace with annotation on package-info.java
 public abstract class UseCase {
 
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -442,7 +441,7 @@ public abstract class UseCase {
     @RestrictTo(Scope.LIBRARY_GROUP)
     @MirrorMode.Mirror
     protected int getMirrorModeInternal() {
-        return ((ImageOutputConfig) mCurrentConfig).getMirrorMode(MIRROR_MODE_OFF);
+        return ((ImageOutputConfig) mCurrentConfig).getMirrorMode(MIRROR_MODE_UNSPECIFIED);
     }
 
     /**
@@ -453,6 +452,7 @@ public abstract class UseCase {
     public boolean isMirroringRequired(@NonNull CameraInternal camera) {
         int mirrorMode = getMirrorModeInternal();
         switch (mirrorMode) {
+            case MIRROR_MODE_UNSPECIFIED:
             case MIRROR_MODE_OFF:
                 return false;
             case MIRROR_MODE_ON:
@@ -782,11 +782,6 @@ public abstract class UseCase {
      * implementation of the associated camera after this function is invoked. Otherwise, a fake
      * no-op {@link CameraControlInternal} implementation is returned by
      * {@link #getCameraControl()} function.
-     *
-     * <p>An {@link EventCallback} can be registered to receive
-     * {@link EventCallback#onBind(CameraInfo)} event which is invoked right after this function
-     * is executed.
-     *
      */
     @SuppressLint("WrongConstant")
     @RestrictTo(Scope.LIBRARY_GROUP)
@@ -802,11 +797,6 @@ public abstract class UseCase {
         mCameraConfig = cameraConfig;
         mCurrentConfig = mergeConfigs(camera.getCameraInfoInternal(), mExtendedConfig,
                 mCameraConfig);
-
-        EventCallback eventCallback = mCurrentConfig.getUseCaseEventCallback(null);
-        if (eventCallback != null) {
-            eventCallback.onBind(camera.getCameraInfoInternal());
-        }
         onBind();
     }
 
@@ -838,20 +828,11 @@ public abstract class UseCase {
      * <p>After this function is invoked, calling {@link #getCameraControl()} returns a fake no-op
      * {@link CameraControlInternal} implementation.
      *
-     * <p>An {@link EventCallback} can be registered to receive {@link EventCallback#onUnbind()}
-     * event which is invoked right after this function is executed.
-     *
      */
     @RestrictTo(Scope.LIBRARY)
     public final void unbindFromCamera(@NonNull CameraInternal camera) {
         // Do any cleanup required by the UseCase implementation
         onUnbind();
-
-        // Cleanup required for any type of UseCase
-        EventCallback eventCallback = mCurrentConfig.getUseCaseEventCallback(null);
-        if (eventCallback != null) {
-            eventCallback.onUnbind();
-        }
 
         synchronized (mCameraLock) {
             checkArgument(camera == mCamera);
@@ -1109,26 +1090,5 @@ public abstract class UseCase {
          * includes updating the {@link Surface} used by the use case.
          */
         void onUseCaseReset(@NonNull UseCase useCase);
-    }
-
-    /**
-     * Callback for when a {@link UseCase} transitions between bound/unbound states.
-     *
-     */
-    @RestrictTo(Scope.LIBRARY_GROUP)
-    public interface EventCallback {
-
-        /**
-         * Called when use case is binding to a camera.
-         *
-         * @param cameraInfo that current used.
-         */
-        void onBind(@NonNull CameraInfo cameraInfo);
-
-        /**
-         * Called when use case is unbinding from the camera to clear additional resources used
-         * for the UseCase.
-         */
-        void onUnbind();
     }
 }

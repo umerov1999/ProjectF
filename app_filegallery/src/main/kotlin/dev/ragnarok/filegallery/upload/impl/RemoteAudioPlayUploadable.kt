@@ -12,8 +12,10 @@ import dev.ragnarok.filegallery.upload.UploadResult
 import dev.ragnarok.filegallery.upload.UploadUtils
 import dev.ragnarok.filegallery.util.Utils.firstNonEmptyString
 import dev.ragnarok.filegallery.util.Utils.safelyClose
-import dev.ragnarok.filegallery.util.rxutils.RxUtils.safelyCloseAction
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.toFlowThrowable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
@@ -24,7 +26,7 @@ class RemoteAudioPlayUploadable(private val context: Context, private val networ
     override fun doUpload(
         upload: Upload,
         listener: PercentagePublisher?
-    ): Single<UploadResult<Audio>> {
+    ): Flow<UploadResult<Audio>> {
         var inputStream: InputStream? = null
         val local_settings = Settings.get().main().localServer
         return try {
@@ -43,7 +45,7 @@ class RemoteAudioPlayUploadable(private val context: Context, private val networ
                 context.contentResolver.openInputStream(uri)
             }
             if (inputStream == null) {
-                return Single.error(
+                return toFlowThrowable(
                     NotFoundException(
                         "Unable to open InputStream, URI: $uri"
                     )
@@ -54,19 +56,17 @@ class RemoteAudioPlayUploadable(private val context: Context, private val networ
             )
             networker.uploads()
                 .remotePlayAudioRx(server_url, filename, inputStream, listener)
-                .doFinally(safelyCloseAction(inputStream))
-                .flatMap { dto ->
-                    Single.just(
-                        UploadResult(
-                            Audio().setId(
-                                dto.response ?: throw NotFoundException()
-                            )
+                .onCompletion { safelyClose(inputStream) }
+                .map { dto ->
+                    UploadResult(
+                        Audio().setId(
+                            dto.response ?: throw NotFoundException()
                         )
                     )
                 }
         } catch (e: Exception) {
             safelyClose(inputStream)
-            Single.error(e)
+            toFlowThrowable(e)
         }
     }
 }

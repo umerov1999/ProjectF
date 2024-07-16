@@ -10,103 +10,105 @@ import dev.ragnarok.fenrir.api.model.response.ResolveDomailResponse
 import dev.ragnarok.fenrir.api.model.response.VKApiChatResponse
 import dev.ragnarok.fenrir.api.model.response.VKApiLinkResponse
 import dev.ragnarok.fenrir.api.services.IUtilsService
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 internal class UtilsApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IUtilsApi {
-    override fun resolveScreenName(screenName: String?): Single<ResolveDomailResponse> {
+    override fun resolveScreenName(screenName: String?): Flow<ResolveDomailResponse> {
         return provideService(
             IUtilsService(),
             TokenType.USER,
             TokenType.COMMUNITY,
             TokenType.SERVICE
         )
-            .flatMap { service ->
-                service.resolveScreenName(screenName)
+            .flatMapConcat {
+                it.resolveScreenName(screenName)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getShortLink(url: String?, t_private: Int?): Single<VKApiShortLink> {
+    override fun getShortLink(url: String?, t_private: Int?): Flow<VKApiShortLink> {
         return provideService(
             IUtilsService(),
             TokenType.USER,
             TokenType.COMMUNITY,
             TokenType.SERVICE
         )
-            .flatMap { service ->
-                service.getShortLink(url, t_private)
+            .flatMapConcat {
+                it.getShortLink(url, t_private)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getLastShortenedLinks(count: Int?, offset: Int?): Single<Items<VKApiShortLink>> {
+    override fun getLastShortenedLinks(count: Int?, offset: Int?): Flow<Items<VKApiShortLink>> {
         return provideService(IUtilsService(), TokenType.USER)
-            .flatMap { service ->
-                service.getLastShortenedLinks(count, offset)
+            .flatMapConcat {
+                it.getLastShortenedLinks(count, offset)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun deleteFromLastShortened(key: String?): Single<Int> {
+    override fun deleteFromLastShortened(key: String?): Flow<Int> {
         return provideService(IUtilsService(), TokenType.USER)
-            .flatMap { service ->
-                service.deleteFromLastShortened(key)
+            .flatMapConcat {
+                it.deleteFromLastShortened(key)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun checkLink(url: String?): Single<VKApiCheckedLink> {
+    override fun checkLink(url: String?): Flow<VKApiCheckedLink> {
         return provideService(
             IUtilsService(),
             TokenType.USER,
             TokenType.COMMUNITY,
             TokenType.SERVICE
         )
-            .flatMap { service ->
-                service.checkLink(url)
+            .flatMapConcat {
+                it.checkLink(url)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun joinChatByInviteLink(link: String?): Single<VKApiChatResponse> {
+    override fun joinChatByInviteLink(link: String?): Flow<VKApiChatResponse> {
         return provideService(IUtilsService(), TokenType.USER)
-            .flatMap { service ->
-                service.joinChatByInviteLink(link)
+            .flatMapConcat {
+                it.joinChatByInviteLink(link)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getInviteLink(peer_id: Long?, reset: Int?): Single<VKApiLinkResponse> {
+    override fun getInviteLink(peer_id: Long?, reset: Int?): Flow<VKApiLinkResponse> {
         return provideService(IUtilsService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.getInviteLink(peer_id, reset)
+            .flatMapConcat {
+                it.getInviteLink(peer_id, reset)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun customScript(code: String?): Single<Int> {
+    override fun customScript(code: String?): Flow<Int> {
         return provideService(
             IUtilsService(),
             TokenType.USER,
             TokenType.COMMUNITY,
             TokenType.SERVICE
         )
-            .flatMap { service ->
-                service.customScript(code)
+            .flatMapConcat {
+                it.customScript(code)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getServerTime(): Single<Long> {
+    override fun getServerTime(): Flow<Long> {
         return provideService(
             IUtilsService(),
             TokenType.USER,
             TokenType.COMMUNITY,
             TokenType.SERVICE
         )
-            .flatMap { service ->
-                service.getServerTime()
+            .flatMapConcat {
+                it.getServerTime()
                     .map(extractResponseWithErrorHandling())
             }
     }

@@ -24,7 +24,7 @@ class Photo : Parcelable, ParcelNative.ParcelableNative {
         private set
     var date: Long = 0
         private set
-    var isGif = false
+    var isAnimation = false
         private set
     private var isLocal = false
 
@@ -37,7 +37,7 @@ class Photo : Parcelable, ParcelNative.ParcelableNative {
         text = parcel.readString()
         date = parcel.readLong()
         isLocal = parcel.readBoolean()
-        isGif = parcel.readBoolean()
+        isAnimation = parcel.readBoolean()
     }
 
     internal constructor(parcel: Parcel) {
@@ -48,11 +48,11 @@ class Photo : Parcelable, ParcelNative.ParcelableNative {
         text = parcel.readString()
         date = parcel.readLong()
         isLocal = parcel.getBoolean()
-        isGif = parcel.getBoolean()
+        isAnimation = parcel.getBoolean()
     }
 
-    fun setGif(gif: Boolean): Photo {
-        isGif = gif
+    fun setIsAnimation(animation: Boolean): Photo {
+        isAnimation = animation
         return this
     }
 
@@ -107,7 +107,7 @@ class Photo : Parcelable, ParcelNative.ParcelableNative {
         parcel.writeString(text)
         parcel.writeLong(date)
         parcel.putBoolean(isLocal)
-        parcel.putBoolean(isGif)
+        parcel.putBoolean(isAnimation)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -128,7 +128,7 @@ class Photo : Parcelable, ParcelNative.ParcelableNative {
         dest.writeString(text)
         dest.writeLong(date)
         dest.writeBoolean(isLocal)
-        dest.writeBoolean(isGif)
+        dest.writeBoolean(isAnimation)
     }
 
     companion object {

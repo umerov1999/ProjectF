@@ -25,7 +25,6 @@ object FileUtil {
         return FileProvider.getUriForFile(context, Constants.FILE_PROVIDER_AUTHORITY, file)
     }
 
-    @Suppress("DEPRECATION")
     @Throws(IOException::class)
     fun createImageFile(): File {
         val timeStamp = PHOTO_DATE_FORMAT.format(Date())

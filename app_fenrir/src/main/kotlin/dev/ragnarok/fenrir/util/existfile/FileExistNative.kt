@@ -7,10 +7,12 @@ import dev.ragnarok.fenrir.module.FileUtils
 import dev.ragnarok.fenrir.module.StringExist
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.hasReadStoragePermissionSimple
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.emptyTaskFlow
 import dev.ragnarok.fenrir.util.serializeble.json.internal.OkioSerialReader
 import dev.ragnarok.fenrir.util.serializeble.json.internal.WriteMode
 import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.ReaderJsonLexer
-import io.reactivex.rxjava3.core.Completable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import okio.buffer
 import okio.source
 import java.io.File
@@ -57,12 +59,12 @@ class FileExistNative : AbsFileExist {
         return CachedPhotos.contains(transform_owner(photo.ownerId) + "_" + photo.getObjectId())
     }
 
-    override fun findLocalImages(photos: List<SelectablePhotoWrapper>): Completable {
-        return Completable.create { t ->
+    override fun findLocalImages(photos: List<SelectablePhotoWrapper>): Flow<Boolean> {
+        return flow {
             val temp = File(Settings.get().main().photoDir)
             if (!temp.exists()) {
-                t.onComplete()
-                return@create
+                emit(false)
+                return@flow
             }
             CachedPhotos.clear()
             CachedPhotos.lockMutex(true)
@@ -71,7 +73,7 @@ class FileExistNative : AbsFileExist {
             for (i in photos) {
                 i.setDownloaded(existPhoto(i.photo))
             }
-            t.onComplete()
+            emit(true)
         }
     }
 
@@ -83,24 +85,24 @@ class FileExistNative : AbsFileExist {
         CachedPhotos.insert(file.lowercase(Locale.getDefault()))
     }
 
-    override fun findAllAudios(context: Context): Completable {
-        return if (!hasReadStoragePermissionSimple(context)) Completable.complete() else Completable.create { t ->
+    override fun findAllAudios(context: Context): Flow<Boolean> {
+        return if (!hasReadStoragePermissionSimple(context)) emptyTaskFlow() else flow {
             findRemoteAudios(context, false)
             val temp = File(Settings.get().main().musicDir)
             if (!temp.exists()) {
-                t.onComplete()
-                return@create
+                emit(false)
+                return@flow
             }
             val file_list = temp.listFiles()
             if (file_list == null || file_list.isEmpty()) {
-                t.onComplete()
-                return@create
+                emit(false)
+                return@flow
             }
             CachedAudios.clear()
             for (u in file_list) {
                 if (u.isFile) CachedAudios.insert(u.name.lowercase(Locale.getDefault()))
             }
-            t.onComplete()
+            emit(true)
         }
     }
 

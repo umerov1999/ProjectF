@@ -12,7 +12,8 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class ChatAttachmentVideoPresenter(peerId: Long, accountId: Long, savedInstanceState: Bundle?) :
     BaseChatAttachmentsPresenter<Video, IChatAttachmentVideoView>(
@@ -28,7 +29,7 @@ class ChatAttachmentVideoPresenter(peerId: Long, accountId: Long, savedInstanceS
     override fun requestAttachments(
         peerId: Long,
         nextFrom: String?
-    ): Single<Pair<String?, List<Video>>> {
+    ): Flow<Pair<String?, List<Video>>> {
         return get().vkDefault(accountId)
             .messages()
             .getHistoryAttachments(peerId, VKApiAttachment.TYPE_VIDEO, nextFrom, 1, 1, 45, 50, null)

@@ -10,13 +10,14 @@ import dev.ragnarok.fenrir.model.FileRemote
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class LocalServerInteractor(private val networker: INetworker) : ILocalServerInteractor {
-    override fun getVideos(offset: Int, count: Int, reverse: Boolean): Single<List<Video>> {
+    override fun getVideos(offset: Int, count: Int, reverse: Boolean): Flow<List<Video>> {
         return networker.localServerApi()
             .getVideos(offset, count, reverse)
-            .flatMap { items ->
+            .map { items ->
                 val dtos = listEmptyIfNull(
                     items.items
                 )
@@ -26,11 +27,11 @@ class LocalServerInteractor(private val networker: INetworker) : ILocalServerInt
                     dbos.add(mapVideo(dto))
                     videos.add(transform(dto))
                 }
-                Single.just(videos)
+                videos
             }
     }
 
-    override fun getAudios(offset: Int, count: Int, reverse: Boolean): Single<List<Audio>> {
+    override fun getAudios(offset: Int, count: Int, reverse: Boolean): Flow<List<Audio>> {
         return networker.localServerApi()
             .getAudios(offset, count, reverse)
             .map { items ->
@@ -45,7 +46,7 @@ class LocalServerInteractor(private val networker: INetworker) : ILocalServerInt
             }
     }
 
-    override fun getDiscography(offset: Int, count: Int, reverse: Boolean): Single<List<Audio>> {
+    override fun getDiscography(offset: Int, count: Int, reverse: Boolean): Flow<List<Audio>> {
         return networker.localServerApi()
             .getDiscography(offset, count, reverse)
             .map { items ->
@@ -60,7 +61,7 @@ class LocalServerInteractor(private val networker: INetworker) : ILocalServerInt
             }
     }
 
-    override fun getPhotos(offset: Int, count: Int, reverse: Boolean): Single<List<Photo>> {
+    override fun getPhotos(offset: Int, count: Int, reverse: Boolean): Flow<List<Photo>> {
         return networker.localServerApi()
             .getPhotos(offset, count, reverse)
             .map { items ->
@@ -80,10 +81,10 @@ class LocalServerInteractor(private val networker: INetworker) : ILocalServerInt
         offset: Int,
         count: Int,
         reverse: Boolean
-    ): Single<List<Video>> {
+    ): Flow<List<Video>> {
         return networker.localServerApi()
             .searchVideos(q, offset, count, reverse)
-            .flatMap { items ->
+            .map { items ->
                 val dtos = listEmptyIfNull(
                     items.items
                 )
@@ -93,7 +94,7 @@ class LocalServerInteractor(private val networker: INetworker) : ILocalServerInt
                     dbos.add(mapVideo(dto))
                     videos.add(transform(dto))
                 }
-                Single.just(videos)
+                videos
             }
     }
 
@@ -102,7 +103,7 @@ class LocalServerInteractor(private val networker: INetworker) : ILocalServerInt
         offset: Int,
         count: Int,
         reverse: Boolean
-    ): Single<List<Audio>> {
+    ): Flow<List<Audio>> {
         return networker.localServerApi()
             .searchAudios(q, offset, count, reverse)
             .map { items ->
@@ -122,7 +123,7 @@ class LocalServerInteractor(private val networker: INetworker) : ILocalServerInt
         offset: Int,
         count: Int,
         reverse: Boolean
-    ): Single<List<Audio>> {
+    ): Flow<List<Audio>> {
         return networker.localServerApi()
             .searchDiscography(q, offset, count, reverse)
             .map { items ->
@@ -142,7 +143,7 @@ class LocalServerInteractor(private val networker: INetworker) : ILocalServerInt
         offset: Int,
         count: Int,
         reverse: Boolean
-    ): Single<List<Photo>> {
+    ): Flow<List<Photo>> {
         return networker.localServerApi()
             .searchPhotos(q, offset, count, reverse)
             .map { items ->
@@ -157,37 +158,37 @@ class LocalServerInteractor(private val networker: INetworker) : ILocalServerInt
             }
     }
 
-    override fun update_time(hash: String?): Single<Int> {
+    override fun update_time(hash: String?): Flow<Int> {
         return networker.localServerApi()
             .update_time(hash)
     }
 
-    override fun delete_media(hash: String?): Single<Int> {
+    override fun delete_media(hash: String?): Flow<Int> {
         return networker.localServerApi()
             .delete_media(hash)
     }
 
-    override fun get_file_name(hash: String?): Single<String> {
+    override fun get_file_name(hash: String?): Flow<String> {
         return networker.localServerApi()
             .get_file_name(hash)
     }
 
-    override fun update_file_name(hash: String?, name: String?): Single<Int> {
+    override fun update_file_name(hash: String?, name: String?): Flow<Int> {
         return networker.localServerApi()
             .update_file_name(hash, name)
     }
 
-    override fun rebootPC(type: String?): Single<Int> {
+    override fun rebootPC(type: String?): Flow<Int> {
         return networker.localServerApi().rebootPC(type)
     }
 
-    override fun fsGet(dir: String?): Single<List<FileRemote>> {
+    override fun fsGet(dir: String?): Flow<List<FileRemote>> {
         return networker.localServerApi().fsGet(dir).map {
             listEmptyIfNull(it.items)
         }
     }
 
-    override fun uploadAudio(hash: String?): Single<Int> {
+    override fun uploadAudio(hash: String?): Flow<Int> {
         return networker.localServerApi().uploadAudio(hash)
     }
 }

@@ -32,17 +32,48 @@
 /************************************************************************/
 
 #define PAINT_METHOD(ret, METHOD) \
-    switch (id) { \
-        case TVG_CLASS_ID_SHAPE: ret = P((Shape*)paint)->METHOD; break; \
-        case TVG_CLASS_ID_SCENE: ret = P((Scene*)paint)->METHOD; break; \
-        case TVG_CLASS_ID_PICTURE: ret = P((Picture*)paint)->METHOD; break; \
-        case TVG_CLASS_ID_TEXT: ret = P((Text*)paint)->METHOD; break; \
+    switch (paint->type()) { \
+        case Type::Shape: ret = P((Shape*)paint)->METHOD; break; \
+        case Type::Scene: ret = P((Scene*)paint)->METHOD; break; \
+        case Type::Picture: ret = P((Picture*)paint)->METHOD; break; \
+        case Type::Text: ret = P((Text*)paint)->METHOD; break; \
         default: ret = {}; \
     }
 
 
+static Result _clipRect(RenderMethod* renderer, const Point* pts, const RenderTransform* pTransform, RenderTransform* rTransform, RenderRegion& before)
+{
+    //sorting
+    Point tmp[4];
+    Point min = {FLT_MAX, FLT_MAX};
+    Point max = {0.0f, 0.0f};
 
-static Result _compFastTrack(Paint* cmpTarget, const RenderTransform* pTransform, RenderTransform* rTransform, RenderRegion& viewport)
+    for (int i = 0; i < 4; ++i) {
+        tmp[i] = pts[i];
+        if (rTransform) tmp[i] *= rTransform->m;
+        if (pTransform) tmp[i] *= pTransform->m;
+        if (tmp[i].x < min.x) min.x = tmp[i].x;
+        if (tmp[i].x > max.x) max.x = tmp[i].x;
+        if (tmp[i].y < min.y) min.y = tmp[i].y;
+        if (tmp[i].y > max.y) max.y = tmp[i].y;
+    }
+
+    float region[4] = {float(before.x), float(before.x + before.w), float(before.y), float(before.y + before.h)};
+
+    //figure out if the clipper is a superset of the current viewport(before) region
+    if (min.x <= region[0] && max.x >= region[1] && min.y <= region[2] && max.y >= region[3]) {
+        //viewport region is same, nothing to do.
+        return Result::Success;
+    //figure out if the clipper is totally outside of the viewport
+    } else if (max.x <= region[0] || min.x >= region[1] || max.y <= region[2] || min.y >= region[3]) {
+        renderer->viewport({0, 0, 0, 0});
+        return Result::Success;
+    }
+    return Result::InsufficientCondition;
+}
+
+
+static Result _compFastTrack(RenderMethod* renderer, Paint* cmpTarget, const RenderTransform* pTransform, RenderTransform* rTransform, RenderRegion& before)
 {
     /* Access Shape class by Paint is bad... but it's ok still it's an internal usage. */
     auto shape = static_cast<Shape*>(cmpTarget);
@@ -56,11 +87,15 @@ static Result _compFastTrack(Paint* cmpTarget, const RenderTransform* pTransform
 
     if (ptsCnt != 4) return Result::InsufficientCondition;
 
-    if (rTransform) rTransform->update();
+    if (rTransform && (cmpTarget->pImpl->renderFlag & RenderUpdateFlag::Transform)) rTransform->update();
 
-    //No rotation and no skewing
-    if (pTransform && (!mathRightAngle(&pTransform->m) || mathSkewed(&pTransform->m))) return Result::InsufficientCondition;
-    if (rTransform && (!mathRightAngle(&rTransform->m) || mathSkewed(&rTransform->m))) return Result::InsufficientCondition;
+    //No rotation and no skewing, still can try out clipping the rect region.
+    auto tryClip = false;
+
+    if (pTransform && (!rightAngle(&pTransform->m) || skewed(&pTransform->m))) tryClip = true;
+    if (rTransform && (!rightAngle(&rTransform->m) || skewed(&rTransform->m))) tryClip = true;
+
+    if (tryClip) return _clipRect(renderer, pts, pTransform, rTransform, before);
 
     //Perpendicular Rectangle?
     auto pt1 = pts + 0;
@@ -68,8 +103,10 @@ static Result _compFastTrack(Paint* cmpTarget, const RenderTransform* pTransform
     auto pt3 = pts + 2;
     auto pt4 = pts + 3;
 
-    if ((mathEqual(pt1->x, pt2->x) && mathEqual(pt2->y, pt3->y) && mathEqual(pt3->x, pt4->x) && mathEqual(pt1->y, pt4->y)) ||
-        (mathEqual(pt2->x, pt3->x) && mathEqual(pt1->y, pt2->y) && mathEqual(pt1->x, pt4->x) && mathEqual(pt3->y, pt4->y))) {
+    if ((tvg::equal(pt1->x, pt2->x) && tvg::equal(pt2->y, pt3->y) && tvg::equal(pt3->x, pt4->x) && tvg::equal(pt1->y, pt4->y)) ||
+        (tvg::equal(pt2->x, pt3->x) && tvg::equal(pt1->y, pt2->y) && tvg::equal(pt1->x, pt4->x) && tvg::equal(pt3->y, pt4->y))) {
+
+        RenderRegion after;
 
         auto v1 = *pt1;
         auto v2 = *pt3;
@@ -85,25 +122,19 @@ static Result _compFastTrack(Paint* cmpTarget, const RenderTransform* pTransform
         }
 
         //sorting
-        if (v1.x > v2.x) {
-            auto tmp = v2.x;
-            v2.x = v1.x;
-            v1.x = tmp;
-        }
+        if (v1.x > v2.x) std::swap(v1.x, v2.x);
+        if (v1.y > v2.y) std::swap(v1.y, v2.y);
 
-        if (v1.y > v2.y) {
-            auto tmp = v2.y;
-            v2.y = v1.y;
-            v1.y = tmp;
-        }
+        after.x = static_cast<int32_t>(v1.x);
+        after.y = static_cast<int32_t>(v1.y);
+        after.w = static_cast<int32_t>(ceil(v2.x - after.x));
+        after.h = static_cast<int32_t>(ceil(v2.y - after.y));
 
-        viewport.x = static_cast<int32_t>(v1.x);
-        viewport.y = static_cast<int32_t>(v1.y);
-        viewport.w = static_cast<int32_t>(ceil(v2.x - viewport.x));
-        viewport.h = static_cast<int32_t>(ceil(v2.y - viewport.y));
+        if (after.w < 0) after.w = 0;
+        if (after.h < 0) after.h = 0;
 
-        if (viewport.w < 0) viewport.w = 0;
-        if (viewport.h < 0) viewport.h = 0;
+        after.intersect(before);
+        renderer->viewport(after);
 
         return Result::Success;
     }
@@ -150,13 +181,14 @@ Paint* Paint::Impl::duplicate()
 bool Paint::Impl::rotate(float degree)
 {
     if (rTransform) {
-        if (mathEqual(degree, rTransform->degree)) return true;
+        if (rTransform->overriding) return false;
+        if (tvg::equal(degree, rTransform->degree)) return true;
     } else {
-        if (mathZero(degree)) return true;
+        if (tvg::zero(degree)) return true;
         rTransform = new RenderTransform();
     }
     rTransform->degree = degree;
-    if (!rTransform->overriding) renderFlag |= RenderUpdateFlag::Transform;
+    renderFlag |= RenderUpdateFlag::Transform;
 
     return true;
 }
@@ -165,13 +197,14 @@ bool Paint::Impl::rotate(float degree)
 bool Paint::Impl::scale(float factor)
 {
     if (rTransform) {
-        if (mathEqual(factor, rTransform->scale)) return true;
+        if (rTransform->overriding) return false;
+        if (tvg::equal(factor, rTransform->scale)) return true;
     } else {
-        if (mathEqual(factor, 1.0f)) return true;
+        if (tvg::equal(factor, 1.0f)) return true;
         rTransform = new RenderTransform();
     }
     rTransform->scale = factor;
-    if (!rTransform->overriding) renderFlag |= RenderUpdateFlag::Transform;
+    renderFlag |= RenderUpdateFlag::Transform;
 
     return true;
 }
@@ -180,14 +213,15 @@ bool Paint::Impl::scale(float factor)
 bool Paint::Impl::translate(float x, float y)
 {
     if (rTransform) {
-        if (mathEqual(x, rTransform->x) && mathEqual(y, rTransform->y)) return true;
+        if (rTransform->overriding) return false;
+        if (tvg::equal(x, rTransform->m.e13) && tvg::equal(y, rTransform->m.e23)) return true;
     } else {
-        if (mathZero(x) && mathZero(y)) return true;
+        if (tvg::zero(x) && tvg::zero(y)) return true;
         rTransform = new RenderTransform();
     }
-    rTransform->x = x;
-    rTransform->y = y;
-    if (!rTransform->overriding) renderFlag |= RenderUpdateFlag::Transform;
+    rTransform->m.e13 = x;
+    rTransform->m.e23 = y;
+    renderFlag |= RenderUpdateFlag::Transform;
 
     return true;
 }
@@ -232,10 +266,7 @@ RenderData Paint::Impl::update(RenderMethod* renderer, const RenderTransform* pT
         this->renderer = renderer;
     }
 
-    if (renderFlag & RenderUpdateFlag::Transform) {
-        if (!rTransform) return nullptr;
-        rTransform->update();
-    }
+    if (renderFlag & RenderUpdateFlag::Transform) rTransform->update();
 
     /* 1. Composition Pre Processing */
     RenderData trd = nullptr;                 //composite target render data
@@ -251,7 +282,7 @@ RenderData Paint::Impl::update(RenderMethod* renderer, const RenderTransform* pT
         /* If the transformation has no rotational factors and the ClipPath/Alpha(InvAlpha)Masking involves a simple rectangle,
            we can optimize by using the viewport instead of the regular ClipPath/AlphaMasking sequence for improved performance. */
         auto tryFastTrack = false;
-        if (target->identifier() == TVG_CLASS_ID_SHAPE) {
+        if (target->type() == Type::Shape) {
             if (method == CompositeMethod::ClipPath) tryFastTrack = true;
             else {
                 auto shape = static_cast<Shape*>(target);
@@ -264,11 +295,8 @@ RenderData Paint::Impl::update(RenderMethod* renderer, const RenderTransform* pT
                 }
             }
             if (tryFastTrack) {
-                RenderRegion viewport2;
-                if ((compFastTrack = _compFastTrack(target, pTransform, target->pImpl->rTransform, viewport2)) == Result::Success) {
-                    viewport = renderer->viewport();
-                    viewport2.intersect(viewport);
-                    renderer->viewport(viewport2);
+                viewport = renderer->viewport();
+                if ((compFastTrack = _compFastTrack(renderer, target, pTransform, target->pImpl->rTransform, viewport)) == Result::Success) {
                     target->pImpl->ctxFlag |= ContextFlag::FastTrack;
                 }
             }
@@ -362,28 +390,28 @@ Paint :: ~Paint()
 Result Paint::rotate(float degree) noexcept
 {
     if (pImpl->rotate(degree)) return Result::Success;
-    return Result::FailedAllocation;
+    return Result::InsufficientCondition;
 }
 
 
 Result Paint::scale(float factor) noexcept
 {
     if (pImpl->scale(factor)) return Result::Success;
-    return Result::FailedAllocation;
+    return Result::InsufficientCondition;
 }
 
 
 Result Paint::translate(float x, float y) noexcept
 {
     if (pImpl->translate(x, y)) return Result::Success;
-    return Result::FailedAllocation;
+    return Result::InsufficientCondition;
 }
 
 
 Result Paint::transform(const Matrix& m) noexcept
 {
     if (pImpl->transform(m)) return Result::Success;
-    return Result::FailedAllocation;
+    return Result::InsufficientCondition;
 }
 
 
@@ -446,9 +474,9 @@ uint8_t Paint::opacity() const noexcept
 }
 
 
-uint32_t Paint::identifier() const noexcept
+TVG_DEPRECATED uint32_t Paint::identifier() const noexcept
 {
-    return pImpl->id;
+    return (uint32_t) type();
 }
 
 

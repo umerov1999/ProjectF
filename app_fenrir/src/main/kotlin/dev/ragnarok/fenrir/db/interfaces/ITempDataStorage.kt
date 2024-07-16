@@ -5,54 +5,53 @@ import dev.ragnarok.fenrir.db.serialize.ISerializeAdapter
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.model.LogEvent
 import dev.ragnarok.fenrir.model.ShortcutStored
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface ITempDataStorage {
     fun <T> getTemporaryData(
         ownerId: Long,
         sourceId: Int,
         serializer: ISerializeAdapter<T>
-    ): Single<List<T>>
+    ): Flow<List<T>>
 
     fun <T> putTemporaryData(
         ownerId: Long,
         sourceId: Int,
         data: List<T>,
         serializer: ISerializeAdapter<T>
-    ): Completable
+    ): Flow<Boolean>
 
-    fun deleteTemporaryData(ownerId: Long): Completable
+    fun deleteTemporaryData(ownerId: Long): Flow<Boolean>
 
-    fun getSearchQueries(sourceId: Int): Single<List<String>>
+    fun getSearchQueries(sourceId: Int): Flow<List<String>>
 
-    fun insertSearchQuery(sourceId: Int, query: String?): Completable
+    fun insertSearchQuery(sourceId: Int, query: String?): Flow<Boolean>
 
-    fun deleteSearch(sourceId: Int): Completable
+    fun deleteSearch(sourceId: Int): Flow<Boolean>
 
-    fun addLog(type: Int, tag: String, body: String): Single<LogEvent>
+    fun addLog(type: Int, tag: String, body: String): Flow<LogEvent>
 
-    fun getLogAll(type: Int): Single<List<LogEvent>>
+    fun getLogAll(type: Int): Flow<List<LogEvent>>
 
-    fun addShortcut(action: String, cover: String, name: String): Completable
+    fun addShortcut(action: String, cover: String, name: String): Flow<Boolean>
 
-    fun addShortcuts(list: List<ShortcutStored>): Completable
+    fun addShortcuts(list: List<ShortcutStored>): Flow<Boolean>
 
-    fun deleteShortcut(action: String): Completable
+    fun deleteShortcut(action: String): Flow<Boolean>
 
-    fun getShortcutAll(): Single<List<ShortcutStored>>
+    fun getShortcutAll(): Flow<List<ShortcutStored>>
 
-    fun getAudiosAll(sourceOwner: Long): Single<List<Audio>>
+    fun getAudiosAll(sourceOwner: Long): Flow<List<Audio>>
 
-    fun addAudios(sourceOwner: Long, list: List<Audio>, clear: Boolean): Completable
+    fun addAudios(sourceOwner: Long, list: List<Audio>, clear: Boolean): Flow<Boolean>
 
-    fun deleteAudios(): Completable
+    fun deleteAudios(): Flow<Boolean>
 
-    fun deleteAudio(sourceOwner: Long, id: Int, ownerId: Long): Completable
+    fun deleteAudio(sourceOwner: Long, id: Int, ownerId: Long): Flow<Boolean>
 
-    fun addReactionsAssets(accountId: Long, list: List<ReactionAssetEntity>): Completable
+    fun addReactionsAssets(accountId: Long, list: List<ReactionAssetEntity>): Flow<Boolean>
 
-    fun getReactionsAssets(accountId: Long): Single<List<ReactionAssetEntity>>
+    fun getReactionsAssets(accountId: Long): Flow<List<ReactionAssetEntity>>
 
-    fun clearReactionAssets(accountId: Long): Completable
+    fun clearReactionAssets(accountId: Long): Flow<Boolean>
 }

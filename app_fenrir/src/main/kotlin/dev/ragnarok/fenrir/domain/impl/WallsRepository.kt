@@ -32,11 +32,16 @@ import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.VKOwnIds
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleTransformer
-import io.reactivex.rxjava3.subjects.PublishSubject
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.andThen
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.createPublishSubject
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.emptyTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.ignoreElement
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlowThrowable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 import kotlin.math.abs
 
 class WallsRepository(
@@ -44,22 +49,22 @@ class WallsRepository(
     private val storages: IStorages,
     private val ownersRepository: IOwnersRepository
 ) : IWallsRepository {
-    private val minorUpdatesPublisher = PublishSubject.create<PostUpdate>()
-    private val majorUpdatesPublisher = PublishSubject.create<Post>()
-    private val postInvalidatePublisher = PublishSubject.create<IdPair>()
+    private val minorUpdatesPublisher = createPublishSubject<PostUpdate>()
+    private val majorUpdatesPublisher = createPublishSubject<Post>()
+    private val postInvalidatePublisher = createPublishSubject<IdPair>()
     override fun editPost(
         accountId: Long, ownerId: Long, postId: Int, friendsOnly: Boolean?,
         message: String?, attachments: List<AbsModel>?, services: String?,
         signed: Boolean?, publishDate: Long?, latitude: Double?, longitude: Double?,
         placeId: Int?, markAsAds: Boolean?
-    ): Completable {
+    ): Flow<Boolean> {
         var tokens: List<IAttachmentToken>? = null
         try {
             if (attachments.nonNullNoEmpty()) {
                 tokens = createTokens(attachments)
             }
         } catch (e: Exception) {
-            return Completable.error(e)
+            return toFlowThrowable(e)
         }
         return networker.vkDefault(accountId)
             .wall()
@@ -67,7 +72,7 @@ class WallsRepository(
                 ownerId, postId, friendsOnly, message, tokens, services,
                 signed, publishDate, latitude, longitude, placeId, markAsAds
             )
-            .flatMapCompletable {
+            .flatMapConcat {
                 getAndStorePost(
                     accountId,
                     ownerId,
@@ -93,14 +98,14 @@ class WallsRepository(
         guid: Int?,
         markAsAds: Boolean?,
         adsPromotedStealth: Boolean?
-    ): Single<Post> {
+    ): Flow<Post> {
         var tokens: List<IAttachmentToken>? = null
         try {
             if (attachments.nonNullNoEmpty()) {
                 tokens = createTokens(attachments)
             }
         } catch (e: Exception) {
-            return Single.error(e)
+            return toFlowThrowable(e)
         }
         return networker.vkDefault(accountId)
             .wall()
@@ -108,26 +113,29 @@ class WallsRepository(
                 ownerId, friendsOnly, fromGroup, message, tokens, services, signed, publishDate,
                 latitude, longitude, placeId, postId, guid, markAsAds, adsPromotedStealth
             )
-            .flatMap { vkid ->
-                val completable: Completable = if (postId != null && postId != vkid) {
+            .flatMapConcat { vkid ->
+                val completable = if (postId != null && postId != vkid) {
                     // если id поста изменился - удаляем его из бд
                     invalidatePost(accountId, postId, ownerId)
                 } else {
-                    Completable.complete()
+                    emptyTaskFlow()
                 }
                 completable.andThen(getAndStorePost(accountId, ownerId, vkid))
             }
     }
 
-    private fun invalidatePost(accountId: Long, postId: Int, ownerId: Long): Completable {
+    private fun invalidatePost(accountId: Long, postId: Int, ownerId: Long): Flow<Boolean> {
         val pair = IdPair(postId, ownerId)
         return storages.wall()
             .invalidatePost(accountId, postId, ownerId)
-            .doOnComplete { postInvalidatePublisher.onNext(pair) }
+            .map {
+                postInvalidatePublisher.emit(pair)
+                true
+            }
     }
 
-    override fun like(accountId: Long, ownerId: Long, postId: Int, add: Boolean): Single<Int> {
-        val single: Single<Int> = if (add) {
+    override fun like(accountId: Long, ownerId: Long, postId: Int, add: Boolean): Flow<Int> {
+        val single: Flow<Int> = if (add) {
             networker.vkDefault(accountId)
                 .likes()
                 .add("post", ownerId, postId, null)
@@ -136,18 +144,21 @@ class WallsRepository(
                 .likes()
                 .delete("post", ownerId, postId, null)
         }
-        return single.flatMap { count ->
+        return single.flatMapConcat { count ->
             val update = PostUpdate(accountId, postId, ownerId).withLikes(count, add)
-            applyPatch(update).andThen(Single.just(count))
+            applyPatch(update)
+                .map {
+                    count
+                }
         }
     }
 
-    override fun checkAndAddLike(accountId: Long, ownerId: Long, postId: Int): Single<Int> {
+    override fun checkAndAddLike(accountId: Long, ownerId: Long, postId: Int): Flow<Int> {
         return networker.vkDefault(accountId)
             .likes().checkAndAddLike("post", ownerId, postId, null)
     }
 
-    override fun isLiked(accountId: Long, ownerId: Long, postId: Int): Single<Boolean> {
+    override fun isLiked(accountId: Long, ownerId: Long, postId: Int): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .likes()
             .isLiked("post", ownerId, postId)
@@ -159,10 +170,10 @@ class WallsRepository(
         offset: Int,
         count: Int,
         wallFilter: Int
-    ): Single<List<Post>> {
+    ): Flow<List<Post>> {
         return networker.vkDefault(accountId)
             .wall()[ownerId, null, offset, count, convertToApiFilter(wallFilter), true, Fields.FIELDS_BASE_OWNER]
-            .flatMap { response ->
+            .flatMapConcat { response ->
                 val owners = transformOwners(response.profiles, response.groups)
                 val dtos = listEmptyIfNull(response.posts)
                 val ids = VKOwnIds()
@@ -176,9 +187,8 @@ class WallsRepository(
                         IOwnersRepository.MODE_ANY,
                         owners
                     )
-                    .flatMap { bundle ->
-                        val posts = transformPosts(dtos, bundle)
-                        Single.just(posts)
+                    .map { bundle ->
+                        transformPosts(dtos, bundle)
                     }
             }
     }
@@ -190,10 +200,10 @@ class WallsRepository(
         count: Int,
         wallFilter: Int,
         needStore: Boolean
-    ): Single<List<Post>> {
+    ): Flow<List<Post>> {
         return networker.vkDefault(accountId)
             .wall()[ownerId, null, offset, count, convertToApiFilter(wallFilter), true, Fields.FIELDS_BASE_OWNER]
-            .flatMap { response ->
+            .flatMapConcat { response ->
                 val owners = transformOwners(response.profiles, response.groups)
                 val dtos = listEmptyIfNull(response.posts)
                 val ids = VKOwnIds()
@@ -208,7 +218,7 @@ class WallsRepository(
                         IOwnersRepository.MODE_ANY,
                         owners
                     )
-                    .flatMap { bundle ->
+                    .flatMapConcat { bundle ->
                         val posts = transformPosts(dtos, bundle)
                         val dbos: MutableList<PostDboEntity> = ArrayList(dtos.size)
                         for (dto in dtos) {
@@ -226,80 +236,74 @@ class WallsRepository(
                                     } else null)
                                 .map { posts }
                         } else {
-                            Single.just(posts)
+                            toFlow(posts)
                         }
                     }
             }
     }
 
-    private fun entities2models(accountId: Long): SingleTransformer<List<PostDboEntity>, List<Post>> {
-        return SingleTransformer { single: Single<List<PostDboEntity>> ->
-            single
-                .flatMap { dbos ->
-                    val ids = VKOwnIds()
-                    fillOwnerIds(ids, dbos)
-                    ownersRepository
-                        .findBaseOwnersDataAsBundle(accountId, ids.all, IOwnersRepository.MODE_ANY)
-                        .map { owners ->
-                            val posts: MutableList<Post> = ArrayList(dbos.size)
-                            for (dbo in dbos) {
-                                posts.add(buildPostFromDbo(dbo, owners))
-                            }
-                            posts
-                        }
+    private fun entities2models(accountId: Long): suspend (List<PostDboEntity>) -> Flow<List<Post>> =
+        {
+            val ids = VKOwnIds()
+            fillOwnerIds(ids, it)
+            ownersRepository
+                .findBaseOwnersDataAsBundle(accountId, ids.all, IOwnersRepository.MODE_ANY)
+                .map { owners ->
+                    val posts: MutableList<Post> = ArrayList(it.size)
+                    for (dbo in it) {
+                        posts.add(buildPostFromDbo(dbo, owners))
+                    }
+                    posts
                 }
         }
-    }
 
-    private fun entity2model(accountId: Long): SingleTransformer<PostDboEntity, Post> {
-        return SingleTransformer { single ->
-            single
-                .flatMap { dbo ->
-                    val ids = VKOwnIds()
-                    fillPostOwnerIds(ids, dbo)
-                    ownersRepository
-                        .findBaseOwnersDataAsBundle(accountId, ids.all, IOwnersRepository.MODE_ANY)
-                        .map { owners ->
-                            buildPostFromDbo(
-                                dbo, owners
-                            )
-                        }
-                }
-        }
+    private fun entity2model(accountId: Long): suspend (PostDboEntity) -> Flow<Post> = {
+        val ids = VKOwnIds()
+        fillPostOwnerIds(ids, it)
+        ownersRepository
+            .findBaseOwnersDataAsBundle(accountId, ids.all, IOwnersRepository.MODE_ANY)
+            .map { owners ->
+                buildPostFromDbo(
+                    it, owners
+                )
+            }
     }
 
     override fun getCachedWall(
         accountId: Long,
         ownerId: Long,
         wallFilter: Int
-    ): Single<List<Post>> {
+    ): Flow<List<Post>> {
         val criteria = WallCriteria(accountId, ownerId).setMode(wallFilter)
         return storages.wall()
             .findDbosByCriteria(criteria)
-            .compose(entities2models(accountId))
+            .flatMapConcat(entities2models(accountId))
     }
 
-    private fun applyPatch(update: PostUpdate): Completable {
+    private fun applyPatch(update: PostUpdate): Flow<Boolean> {
         val patch = update2patch(update)
         return storages.wall()
             .update(update.accountId, update.ownerId, update.postId, patch)
-            .andThen(Completable.fromAction { minorUpdatesPublisher.onNext(update) })
+            .map {
+                minorUpdatesPublisher.emit(update)
+                true
+            }
     }
 
-    override fun delete(accountId: Long, ownerId: Long, postId: Int): Completable {
+    override fun delete(accountId: Long, ownerId: Long, postId: Int): Flow<Boolean> {
         val update = PostUpdate(accountId, postId, ownerId).withDeletion(true)
         return networker.vkDefault(accountId)
             .wall()
             .delete(ownerId, postId)
-            .flatMapCompletable { applyPatch(update) }
+            .flatMapConcat { applyPatch(update) }
     }
 
-    override fun restore(accountId: Long, ownerId: Long, postId: Int): Completable {
+    override fun restore(accountId: Long, ownerId: Long, postId: Int): Flow<Boolean> {
         val update = PostUpdate(accountId, postId, ownerId).withDeletion(false)
         return networker.vkDefault(accountId)
             .wall()
             .restore(ownerId, postId)
-            .flatMapCompletable { applyPatch(update) }
+            .flatMapConcat { applyPatch(update) }
     }
 
     override fun reportPost(
@@ -307,30 +311,30 @@ class WallsRepository(
         owner_id: Long,
         post_id: Int,
         reason: Int
-    ): Single<Int> {
+    ): Flow<Int> {
         return networker.vkDefault(accountId)
             .wall()
             .reportPost(owner_id, post_id, reason)
     }
 
-    override fun subscribe(accountId: Long, owner_id: Long): Single<Int> {
+    override fun subscribe(accountId: Long, owner_id: Long): Flow<Int> {
         return networker.vkDefault(accountId)
             .wall()
             .subscribe(owner_id)
     }
 
-    override fun unsubscribe(accountId: Long, owner_id: Long): Single<Int> {
+    override fun unsubscribe(accountId: Long, owner_id: Long): Flow<Int> {
         return networker.vkDefault(accountId)
             .wall()
             .unsubscribe(owner_id)
     }
 
-    override fun getById(accountId: Long, ownerId: Long, postId: Int): Single<Post> {
+    override fun getById(accountId: Long, ownerId: Long, postId: Int): Flow<Post> {
         val id = dev.ragnarok.fenrir.api.model.IdPair(postId, ownerId)
         return networker.vkDefault(accountId)
             .wall()
             .getById(setOf(id), true, 5, Fields.FIELDS_BASE_OWNER)
-            .flatMap { response ->
+            .flatMapConcat { response ->
                 if (response.posts.isNullOrEmpty()) {
                     throw NotFoundException()
                 }
@@ -348,8 +352,13 @@ class WallsRepository(
             }
     }
 
-    override fun pinUnpin(accountId: Long, ownerId: Long, postId: Int, pin: Boolean): Completable {
-        val single: Single<Boolean> = if (pin) {
+    override fun pinUnpin(
+        accountId: Long,
+        ownerId: Long,
+        postId: Int,
+        pin: Boolean
+    ): Flow<Boolean> {
+        val single = if (pin) {
             networker.vkDefault(accountId)
                 .wall()
                 .pin(ownerId, postId)
@@ -359,18 +368,18 @@ class WallsRepository(
                 .unpin(ownerId, postId)
         }
         val update = PostUpdate(accountId, postId, ownerId).withPin(pin)
-        return single.flatMapCompletable { applyPatch(update) }
+        return single.flatMapConcat { applyPatch(update) }
     }
 
-    override fun observeMinorChanges(): Observable<PostUpdate> {
+    override fun observeMinorChanges(): SharedFlow<PostUpdate> {
         return minorUpdatesPublisher
     }
 
-    override fun observeChanges(): Observable<Post> {
+    override fun observeChanges(): SharedFlow<Post> {
         return majorUpdatesPublisher
     }
 
-    override fun observePostInvalidation(): Observable<IdPair> {
+    override fun observePostInvalidation(): SharedFlow<IdPair> {
         return postInvalidatePublisher
     }
 
@@ -379,10 +388,10 @@ class WallsRepository(
         ownerId: Long,
         type: Int,
         withAttachments: Boolean
-    ): Single<Post> {
+    ): Flow<Post> {
         return storages.wall()
             .getEditingPost(accountId, ownerId, type, withAttachments)
-            .compose(entity2model(accountId))
+            .flatMapConcat(entity2model(accountId))
     }
 
     override fun post(
@@ -390,7 +399,7 @@ class WallsRepository(
         post: Post,
         fromGroup: Boolean,
         showSigner: Boolean
-    ): Single<Post> {
+    ): Flow<Post> {
         val publishDate = if (post.isPostponed) post.date else null
         val attachments: List<AbsModel>? =
             if (post.hasAttachments()) post.attachments?.toList() else null
@@ -408,12 +417,12 @@ class WallsRepository(
         ownerId: Long,
         groupId: Long?,
         message: String?
-    ): Single<Post> {
+    ): Flow<Post> {
         val resultOwnerId = if (groupId != null) -abs(groupId) else accountId
         return networker.vkDefault(accountId)
             .wall()
             .repost(ownerId, postId, message, groupId, null)
-            .flatMap { reponse ->
+            .flatMapConcat { reponse ->
                 reponse.postId?.let {
                     getAndStorePost(
                         accountId,
@@ -424,22 +433,22 @@ class WallsRepository(
             }
     }
 
-    override fun cachePostWithIdSaving(accountId: Long, post: Post): Single<Int> {
+    override fun cachePostWithIdSaving(accountId: Long, post: Post): Flow<Int> {
         val entity = buildPostDbo(post)
         return storages.wall()
             .replacePost(accountId, entity)
     }
 
-    override fun deleteFromCache(accountId: Long, postDbid: Int): Completable {
+    override fun deleteFromCache(accountId: Long, postDbid: Int): Flow<Boolean> {
         return storages.wall().deletePost(accountId, postDbid)
     }
 
-    private fun getAndStorePost(accountId: Long, ownerId: Long, postId: Int): Single<Post> {
+    private fun getAndStorePost(accountId: Long, ownerId: Long, postId: Int): Flow<Post> {
         val cache = storages.wall()
         return networker.vkDefault(accountId)
             .wall()
             .getById(singlePair(postId, ownerId), true, 5, Fields.FIELDS_BASE_OWNER)
-            .flatMap { response ->
+            .flatMapConcat { response ->
                 if (safeCountOf(response.posts) != 1) {
                     throw NotFoundException()
                 }
@@ -447,15 +456,15 @@ class WallsRepository(
                 val ownerEntities = mapOwners(response.profiles, response.groups)
                 cache.storeWallEntities(accountId, listOf(dbo), ownerEntities, null)
                     .map { ints -> ints[0] }
-                    .flatMap { dbid ->
+                    .flatMapConcat { dbid ->
                         cache
                             .findPostById(accountId, dbid)
                             .map { obj -> obj.requireNonEmpty() }
-                            .compose(entity2model(accountId))
+                            .flatMapConcat(entity2model(accountId))
                     }
             }
             .map { post ->
-                majorUpdatesPublisher.onNext(post)
+                majorUpdatesPublisher.emit(post)
                 post
             }
     }
@@ -467,7 +476,7 @@ class WallsRepository(
         ownersPostOnly: Boolean,
         count: Int,
         offset: Int
-    ): Single<Pair<List<Post>, Int>> {
+    ): Flow<Pair<List<Post>, Int>> {
         return networker.vkDefault(accountId)
             .wall()
             .search(
@@ -479,7 +488,7 @@ class WallsRepository(
                 true,
                 Fields.FIELDS_BASE_OWNER
             )
-            .flatMap { response ->
+            .flatMapConcat { response ->
                 val dtos = listEmptyIfNull(response.items)
                 val owners = transformOwners(response.profiles, response.groups)
                 val ids = VKOwnIds()

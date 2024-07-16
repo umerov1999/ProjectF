@@ -6,10 +6,10 @@ import dev.ragnarok.fenrir.domain.IFeedInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.absownerslist.ISimpleOwnersView
 import dev.ragnarok.fenrir.fragment.absownerslist.SimpleOwnersPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.util.Utils
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class FeedBannedPresenter(
     accountId: Long,
@@ -18,7 +18,7 @@ class FeedBannedPresenter(
     SimpleOwnersPresenter<ISimpleOwnersView>(accountId, savedInstanceState) {
     private val feedInteractor: IFeedInteractor =
         InteractorFactory.createFeedInteractor()
-    private val actualDataDisposable = CompositeDisposable()
+    private val actualDataDisposable = CompositeJob()
     private var endOfContent = false
     private var actualDataLoading = false
     private var doLoadTabs = false
@@ -46,8 +46,7 @@ class FeedBannedPresenter(
         actualDataDisposable.add(feedInteractor.getBanned(
             accountId
         )
-            .fromIOToMain()
-            .subscribe({ users -> onDataReceived(users) }) { t ->
+            .fromIOToMain({ users -> onDataReceived(users) }) { t ->
                 onDataGetError(
                     t
                 )
@@ -63,8 +62,7 @@ class FeedBannedPresenter(
     fun fireRemove(owner: Owner) {
         actualDataDisposable.add(
             feedInteractor.deleteBan(accountId, listOf(owner.ownerId))
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain({
                     val pos = Utils.indexOfOwner(data, owner)
                     data.removeAt(pos)
                     view?.notifyDataRemoved(pos, 1)
@@ -95,7 +93,7 @@ class FeedBannedPresenter(
     }
 
     override fun onDestroyed() {
-        actualDataDisposable.dispose()
+        actualDataDisposable.cancel()
         super.onDestroyed()
     }
 

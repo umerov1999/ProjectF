@@ -10,7 +10,8 @@ import dev.ragnarok.filegallery.api.interfaces.INetworker
 import dev.ragnarok.filegallery.api.interfaces.IUploadApi
 import dev.ragnarok.filegallery.api.services.ILocalServerService
 import dev.ragnarok.filegallery.settings.ISettings.IMainSettings
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class Networker(settings: IMainSettings) : INetworker {
     private val localServerRestProvider: ILocalServerRestProvider =
@@ -18,7 +19,7 @@ class Networker(settings: IMainSettings) : INetworker {
     private val uploadRestProvider: IUploadRestProvider = UploadRestProvider(settings)
     override fun localServerApi(): ILocalServerApi {
         return LocalServerApi(object : ILocalServerServiceProvider {
-            override fun provideLocalServerService(): Single<ILocalServerService> {
+            override fun provideLocalServerService(): Flow<ILocalServerService> {
                 return localServerRestProvider.provideLocalServerRest()
                     .map {
                         val ret = ILocalServerService()

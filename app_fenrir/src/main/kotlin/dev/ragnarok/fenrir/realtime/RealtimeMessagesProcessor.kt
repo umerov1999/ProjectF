@@ -24,16 +24,22 @@ import dev.ragnarok.fenrir.util.PersistentLogger.logThrowable
 import dev.ragnarok.fenrir.util.Utils.collectIds
 import dev.ragnarok.fenrir.util.Utils.removeIf
 import dev.ragnarok.fenrir.util.VKOwnIds
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleTransformer
-import io.reactivex.rxjava3.subjects.PublishSubject
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.andThen
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.createPublishSubject
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.emptyTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.myEmit
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.zip
 import java.util.LinkedList
 import java.util.concurrent.atomic.AtomicInteger
 
 internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
-    private val publishSubject: PublishSubject<TmpResult> = PublishSubject.create()
+    private val publishSubject = createPublishSubject<TmpResult>()
     private val repositories: IStorages = stores
     private val networker: INetworker = networkInterfaces
     private val stateLock = Any()
@@ -45,7 +51,7 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
 
     @Volatile
     private var current: Entry? = null
-    override fun observeResults(): Observable<TmpResult> {
+    override fun observeResults(): SharedFlow<TmpResult> {
         return publishSubject
     }
 
@@ -158,9 +164,27 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
         synchronized(stateLock) { entry = current }
         val start = System.currentTimeMillis()
         val ignoreIfExists = entry?.isIgnoreIfExists
-        entry?.let { Single.just(it) }?.let { its ->
-            init(its) // ищем недостающие сообщения в локальной базе
-                .flatMap { result ->
+        entry?.let { toFlow(it) }?.let { its ->
+            its.map {
+                val result = TmpResult(
+                    it.id, it.accountId, it.count()
+                )
+                val updates = it.updates
+                if (updates.hasFullMessages()) {
+                    for (update in updates.fullMessages.orEmpty()) {
+                        result.add(update.messageId)
+                            .setDto(Dto2Model.transform(it.accountId, update))
+                    }
+                }
+                if (updates.hasNonFullMessages()) {
+                    for (update in updates.nonFull.orEmpty()) {
+                        result.add(update.messageId)
+                            .setBackup(Dto2Model.transform(it.accountId, update))
+                    }
+                }
+                result
+            } // ищем недостающие сообщения в локальной базе
+                .flatMapConcat { result ->
                     repositories
                         .messages()
                         .getMissingMessages(result.accountId, result.allIds)
@@ -170,99 +194,83 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
                             )
                         }
                 }
-                .flatMap { result ->
+                .flatMapConcat { result ->
                     // отсеиваем сообщения, которые уже есть в локальной базе (если требуется)
                     if (ignoreIfExists == true) {
                         removeIf(result.data) { it.isAlreadyExists }
                     }
                     if (result.data.isEmpty()) {
-                        Single.just(result)
+                        toFlow(result)
                     } else {
-                        Single.just(result)
-                            .compose(andStore)
+                        toFlow(result)
+                            .flatMapConcat(andStore())
                     }
                 }
-                .compose(NotificationScheduler.fromNotificationThreadToMain())
-                .subscribe({ result ->
+                .fromScopeToMain(NotificationScheduler.INSTANCE, { result ->
                     onResultReceived(
                         start,
                         result
                     )
-                }) { throwable -> onProcessError(throwable) }
+                }, { throwable -> onProcessError(throwable) })
         }
     }// сохраняем сообщения в локальную базу и получаем оттуда "тяжелые" обьекты сообщений// отсеиваем сообщения, которые имеют отношение к обмену ключами
 
-    // если в исходных данных недостаточно инфы - получаем нужные данные с api
-    private val andStore: SingleTransformer<TmpResult, TmpResult>
-        get() = SingleTransformer { single: Single<TmpResult> ->
-            single
-                .flatMap { result ->
-                    // если в исходных данных недостаточно инфы - получаем нужные данные с api
-                    val needGetFromNet =
-                        collectIds(result.data) {
-                            it.dto == null
-                        }
-                    if (needGetFromNet.isEmpty()) {
-                        Single.just(result)
-                    } else {
-                        networker.vkDefault(result.accountId)
-                            .messages()
-                            .getById(needGetFromNet)
-                            .map { result.appendDtos(it) }
-                    }
-                }
-                .map { result ->
-                    // отсеиваем сообщения, которые имеют отношение к обмену ключами
-                    removeIf(
-                        result.data
-                    ) {
-                        KeyExchangeService.intercept(
-                            app,
-                            result.accountId,
-                            it.dto
-                        )
-                    }
-                    result
-                }
-                .flatMap { result ->
-                    if (result.data.isEmpty()) {
-                        Single.just(result)
-                    } else {
-                        identifyMissingObjectsGetAndStore(result)
-                            .andThen(Single.just(result)) // сохраняем сообщения в локальную базу и получаем оттуда "тяжелые" обьекты сообщений
-                            .compose(storeToCacheAndReturn())
-                    }
-                }
+    private fun andStore(): suspend (TmpResult) -> Flow<TmpResult> = { result ->
+        // если в исходных данных недостаточно инфы - получаем нужные данные с api
+        val needGetFromNet =
+            collectIds(result.data) {
+                it.dto == null
+            }
+        if (needGetFromNet.isEmpty()) {
+            toFlow(result)
+        } else {
+            networker.vkDefault(result.accountId)
+                .messages()
+                .getById(needGetFromNet)
+                .map { result.appendDtos(it) }
         }
+            .map { s ->
+                // отсеиваем сообщения, которые имеют отношение к обмену ключами
+                removeIf(
+                    s.data
+                ) {
+                    KeyExchangeService.intercept(
+                        app,
+                        s.accountId,
+                        it.dto
+                    )
+                }
+                s
+            }
+            .flatMapConcat { s ->
+                if (s.data.isEmpty()) {
+                    toFlow(s)
+                } else {
+                    identifyMissingObjectsGetAndStore(s)
+                        .andThen(toFlow(s)) // сохраняем сообщения в локальную базу и получаем оттуда "тяжелые" обьекты сообщений
+                        .flatMapConcat(storeToCacheAndReturn())
+                }
+            }
+    }
 
-    private fun storeToCacheAndReturn(): SingleTransformer<TmpResult, TmpResult> {
-        return SingleTransformer { single: Single<TmpResult> ->
-            single // собственно, вставка
-                .flatMap { result ->
-                    messagesInteractor
-                        .insertMessages(
-                            result.accountId,
-                            result.collectDtos()
-                        ) //.andThen(refreshChangedDialogs(result))
-                        .andThen(Single.just(result))
+    private fun storeToCacheAndReturn(): suspend (TmpResult) -> Flow<TmpResult> = { result ->
+        messagesInteractor.insertMessages(result.accountId, result.collectDtos())
+            .flatMapConcat {
+                // собственно, получение из локальной базы
+                val ids = collectIds(result.data) {
+                    true
                 }
-                .flatMap { result ->
-                    // собственно, получение из локальной базы
-                    val ids = collectIds(result.data) {
-                        true
-                    }
-                    messagesInteractor
-                        .findCachedMessages(result.accountId, ids)
-                        .map { result.appendModel(it) }
-                }
-        }
+                messagesInteractor
+                    .findCachedMessages(result.accountId, ids)
+                    .map { result.appendModel(it) }
+            }
     }
 
     private fun onResultReceived(startTime: Long, result: TmpResult) {
         val lastEnryProcessTime = System.currentTimeMillis() - startTime
         d(TAG, "SUCCESS, data: $result, time: $lastEnryProcessTime")
         sendNotifications(result)
-        publishSubject.onNext(result)
+        publishSubject.myEmit(result)
         resetCurrent()
         startIfNotStarted()
     }
@@ -287,11 +295,11 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
         startIfNotStarted()
     }
 
-    private fun identifyMissingObjectsGetAndStore(result: TmpResult): Completable {
+    private fun identifyMissingObjectsGetAndStore(result: TmpResult): Flow<Boolean> {
         val ownIds = getOwnIds(result)
         val chatIds: Collection<Long>? = getChatIds(result)
         val accountId = result.accountId
-        var completable = Completable.complete()
+        var completable = emptyTaskFlow()
         if (ownIds.nonEmpty()) {
             // проверяем на недостающих пользователей и групп
             completable = completable.andThen(findMissingOwnersGetAndStore(accountId, ownIds))
@@ -303,17 +311,17 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
         return completable
     }
 
-    private fun findMissingChatsGetAndStore(accountId: Long, ids: Collection<Long>): Completable {
+    private fun findMissingChatsGetAndStore(accountId: Long, ids: Collection<Long>): Flow<Boolean> {
         return repositories.dialogs()
             .getMissingGroupChats(accountId, ids)
-            .flatMapCompletable { integers ->
+            .flatMapConcat { integers ->
                 if (integers.isEmpty()) {
-                    Completable.complete()
+                    emptyTaskFlow()
                 } else {
                     networker.vkDefault(accountId)
                         .messages()
                         .getChat(null, integers, null, null)
-                        .flatMapCompletable {
+                        .flatMapConcat {
                             repositories.dialogs()
                                 .insertChats(accountId, it)
                         }
@@ -321,21 +329,21 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
             }
     }
 
-    private fun findMissingOwnersGetAndStore(accountId: Long, ids: VKOwnIds): Completable {
+    private fun findMissingOwnersGetAndStore(accountId: Long, ids: VKOwnIds): Flow<Boolean> {
         return findMissingOwnerIds(accountId, ids)
-            .flatMapCompletable { integers ->
+            .flatMapConcat { integers ->
                 if (integers.isEmpty()) {
-                    Completable.complete()
+                    emptyTaskFlow()
                 } else {
                     ownersRepository.cacheActualOwnersData(accountId, integers)
                 }
             }
     }
 
-    private fun findMissingOwnerIds(accountId: Long, ids: VKOwnIds): Single<List<Long>> {
+    private fun findMissingOwnerIds(accountId: Long, ids: VKOwnIds): Flow<List<Long>> {
         return repositories.owners()
             .getMissingUserIds(accountId, ids.getUids())
-            .zipWith(
+            .zip(
                 repositories.owners().getMissingCommunityIds(accountId, ids.getGids())
             ) { integers, integers2 ->
                 if (integers.isEmpty() && integers2.isEmpty()) {
@@ -374,28 +382,6 @@ internal class RealtimeMessagesProcessor : IRealtimeMessagesProcessor {
                 }
             }
             return vkOwnIds
-        }
-
-        internal fun init(single: Single<Entry>): Single<TmpResult> {
-            return single.map {
-                val result = TmpResult(
-                    it.id, it.accountId, it.count()
-                )
-                val updates = it.updates
-                if (updates.hasFullMessages()) {
-                    for (update in updates.fullMessages.orEmpty()) {
-                        result.add(update.messageId)
-                            .setDto(Dto2Model.transform(it.accountId, update))
-                    }
-                }
-                if (updates.hasNonFullMessages()) {
-                    for (update in updates.nonFull.orEmpty()) {
-                        result.add(update.messageId)
-                            .setBackup(Dto2Model.transform(it.accountId, update))
-                    }
-                }
-                result
-            }
         }
     }
 }

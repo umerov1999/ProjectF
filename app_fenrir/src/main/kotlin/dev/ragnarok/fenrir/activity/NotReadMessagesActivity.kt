@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import androidx.annotation.ColorInt
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -30,7 +29,11 @@ import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceProvider
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.settings.CurrentTheme.getNavigationBarColor
+import dev.ragnarok.fenrir.settings.CurrentTheme.getStatusBarColor
+import dev.ragnarok.fenrir.settings.CurrentTheme.getStatusBarNonColored
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCream
 import dev.ragnarok.fenrir.util.ViewUtils
 
 class NotReadMessagesActivity : NoMainActivity(), PlaceProvider, AppStyleable {
@@ -181,13 +184,15 @@ class NotReadMessagesActivity : NoMainActivity(), PlaceProvider, AppStyleable {
 
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val statusBarNonColored = CurrentTheme.getStatusBarNonColored(this)
-        val statusBarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.statusBarColor = if (colored) statusBarColored else statusBarNonColored
-        @ColorInt val navigationColor =
-            if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
-        w.navigationBarColor = navigationColor
+        if (!hasVanillaIceCream()) {
+            w.statusBarColor =
+                if (colored) getStatusBarColor(this) else getStatusBarNonColored(
+                    this
+                )
+            w.navigationBarColor =
+                if (colored) getNavigationBarColor(this) else Color.BLACK
+        }
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons

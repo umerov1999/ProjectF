@@ -4,11 +4,9 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import dev.ragnarok.fenrir.Includes
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.db.Stores
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.media.music.MusicPlaybackService.Companion.startForPlayList
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
@@ -25,14 +23,17 @@ import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils.findIndexById
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.safeCheck
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import kotlinx.coroutines.flow.filter
 import java.util.Locale
 
 class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IAudiosLocalView>(accountId, savedInstanceState) {
     private val origin_audios: ArrayList<Audio> = ArrayList()
     private val audios: ArrayList<Audio> = ArrayList()
-    private val audioListDisposable = CompositeDisposable()
+    private val audioListDisposable = CompositeJob()
     private val uploadManager: IUploadManager = Includes.uploadManager
     private val uploadsData: MutableList<Upload> = ArrayList(0)
     private val destination: UploadDestination = forAudio(accountId)
@@ -49,29 +50,23 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun firePrepared() {
-        appendDisposable(uploadManager[accountId, destination]
-            .fromIOToMain()
-            .subscribe { data -> onUploadsDataReceived(data) })
-        appendDisposable(uploadManager.observeAdding()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { added -> onUploadsAdded(added) })
-        appendDisposable(uploadManager.observeDeleting(true)
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { ids -> onUploadDeleted(ids) })
-        appendDisposable(uploadManager.observeResults()
+        appendJob(uploadManager[accountId, destination]
+            .fromIOToMain { data -> onUploadsDataReceived(data) })
+        appendJob(uploadManager.observeAdding()
+            .sharedFlowToMain { added -> onUploadsAdded(added) })
+        appendJob(uploadManager.observeDeleting(true)
+            .sharedFlowToMain { ids -> onUploadDeleted(ids) })
+        appendJob(uploadManager.observeResults()
             .filter {
                 destination.compareTo(
                     it.first.destination
                 ) || remotePlay.compareTo(it.first.destination)
             }
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { pair -> onUploadResults(pair) })
-        appendDisposable(uploadManager.observeStatus()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { upload -> onUploadStatusUpdate(upload) })
-        appendDisposable(uploadManager.observeProgress()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { updates -> onProgressUpdates(updates) })
+            .sharedFlowToMain { pair -> onUploadResults(pair) })
+        appendJob(uploadManager.observeStatus()
+            .sharedFlowToMain { upload -> onUploadStatusUpdate(upload) })
+        appendJob(uploadManager.observeProgress()
+            .sharedFlowToMain { updates -> onProgressUpdates(updates) })
         fireRefresh()
     }
 
@@ -168,8 +163,7 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
             audioListDisposable.add(Stores.instance
                 .localMedia()
                 .getAudios(accountId)
-                .fromIOToMain()
-                .subscribe({ onListReceived(it) }) { t ->
+                .fromIOToMain({ onListReceived(it) }) { t ->
                     onListGetError(
                         t
                     )
@@ -178,8 +172,7 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
             audioListDisposable.add(Stores.instance
                 .localMedia()
                 .getAudios(accountId, bucket_id.toLong())
-                .fromIOToMain()
-                .subscribe({ onListReceived(it) }) { t ->
+                .fromIOToMain({ onListReceived(it) }) { t ->
                     onListGetError(
                         t
                     )
@@ -213,7 +206,7 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     override fun onDestroyed() {
-        audioListDisposable.dispose()
+        audioListDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -302,8 +295,8 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
         }
     }
 
-    private fun onProgressUpdates(updates: List<IProgressUpdate>) {
-        for (update in updates) {
+    private fun onProgressUpdates(updates: IProgressUpdate?) {
+        updates?.let { update ->
             val index = findIndexById(uploadsData, update.id)
             if (index != -1) {
                 view?.notifyUploadProgressChanged(

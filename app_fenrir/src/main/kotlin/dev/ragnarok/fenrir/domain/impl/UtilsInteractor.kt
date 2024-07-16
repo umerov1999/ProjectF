@@ -22,7 +22,11 @@ import dev.ragnarok.fenrir.util.Optional.Companion.empty
 import dev.ragnarok.fenrir.util.Optional.Companion.wrap
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.emptyMapFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 import kotlin.math.abs
 
 class UtilsInteractor(
@@ -34,9 +38,9 @@ class UtilsInteractor(
     override fun createFullPrivacies(
         accountId: Long,
         orig: Map<Int, SimplePrivacy>
-    ): Single<Map<Int, Privacy>> {
-        return Single.just(orig)
-            .flatMap {
+    ): Flow<Map<Int, Privacy>> {
+        return toFlow(orig)
+            .flatMapConcat {
                 val uids: MutableSet<Long> = HashSet()
                 val listsIds: MutableSet<Long> = HashSet()
                 for ((_, privacy) in orig) {
@@ -55,7 +59,7 @@ class UtilsInteractor(
                     uids,
                     IOwnersRepository.MODE_ANY
                 )
-                    .flatMap { owners ->
+                    .flatMapConcat { owners ->
                         findFriendListsByIds(accountId, accountId, listsIds)
                             .map { lists ->
                                 val privacies: MutableMap<Int, Privacy> = HashMap(
@@ -71,35 +75,35 @@ class UtilsInteractor(
             }
     }
 
-    override fun resolveDomain(accountId: Long, domain: String?): Single<Optional<Owner>> {
+    override fun resolveDomain(accountId: Long, domain: String?): Flow<Optional<Owner>> {
         return stores.owners()
             .findUserByDomain(accountId, domain)
-            .flatMap { optionalUserEntity ->
+            .flatMapConcat { optionalUserEntity ->
                 if (optionalUserEntity.nonEmpty()) {
                     val user = map(optionalUserEntity.get())
-                    Single.just(wrap<Owner>(user))
+                    toFlow(wrap<Owner>(user))
                 } else {
                     stores.owners()
                         .findCommunityByDomain(accountId, domain)
-                        .flatMap { optionalCommunityEntity ->
+                        .map { optionalCommunityEntity ->
                             if (optionalCommunityEntity.nonEmpty()) {
                                 val community =
                                     buildCommunityFromDbo(optionalCommunityEntity.requireNonEmpty())
-                                Single.just(wrap<Owner>(community))
+                                wrap<Owner>(community)
                             } else {
-                                Single.just(empty())
+                                empty()
                             }
                         }
                 }
             }
-            .flatMap { optionalOwner ->
+            .flatMapConcat { optionalOwner ->
                 if (optionalOwner.nonEmpty()) {
-                    Single.just(optionalOwner)
+                    toFlow(optionalOwner)
                 } else {
                     networker.vkDefault(accountId)
                         .utils()
                         .resolveScreenName(domain)
-                        .flatMap { response ->
+                        .flatMapConcat { response ->
                             response.object_id?.let {
                                 when (response.type) {
                                     "user" -> {
@@ -125,9 +129,9 @@ class UtilsInteractor(
                                             .map { pp -> wrap(pp) }
                                     }
 
-                                    else -> Single.just(empty())
+                                    else -> toFlow(empty())
                                 }
-                            } ?: Single.just(empty())
+                            } ?: toFlow(empty())
                         }
                 }
             }
@@ -138,19 +142,19 @@ class UtilsInteractor(
         accountId: Long,
         userId: Long,
         ids: Collection<Long>
-    ): Single<Map<Long, FriendList>> {
+    ): Flow<Map<Long, FriendList>> {
         return if (ids.isEmpty()) {
-            Single.just(emptyMap())
+            emptyMapFlow()
         } else stores.owners()
             .findFriendsListsByIds(accountId, userId, ids)
-            .flatMap { mp ->
+            .flatMapConcat { mp ->
                 if (mp.size == ids.size) {
                     val data: MutableMap<Long, FriendList> = HashMap(mp.size)
                     for (id in ids) {
                         val dbo = mp[id] ?: continue
                         data[id] = FriendList(dbo.id, dbo.name)
                     }
-                    Single.just(data)
+                    toFlow(data)
                 } else {
                     networker.vkDefault(accountId)
                         .friends()
@@ -160,7 +164,7 @@ class UtilsInteractor(
                                 items.items
                             )
                         }
-                        .flatMap { dtos ->
+                        .flatMapConcat { dtos ->
                             val dbos: MutableList<FriendListEntity> = ArrayList(dtos.size)
                             val data: MutableMap<Long, FriendList> = HashMap(mp.size)
                             for (dto in dtos) {
@@ -181,7 +185,9 @@ class UtilsInteractor(
                             }
                             stores.relativeship()
                                 .storeFriendsList(accountId, userId, dbos)
-                                .andThen(Single.just(data))
+                                .map {
+                                    data
+                                }
                         }
                 }
             }
@@ -191,7 +197,7 @@ class UtilsInteractor(
         accountId: Long,
         count: Int?,
         offset: Int?
-    ): Single<List<ShortLink>> {
+    ): Flow<List<ShortLink>> {
         return networker.vkDefault(accountId)
             .utils()
             .getLastShortenedLinks(count, offset)
@@ -207,26 +213,26 @@ class UtilsInteractor(
             }
     }
 
-    override fun getShortLink(accountId: Long, url: String?, t_private: Int?): Single<ShortLink> {
+    override fun getShortLink(accountId: Long, url: String?, t_private: Int?): Flow<ShortLink> {
         return networker.vkDefault(accountId)
             .utils()
             .getShortLink(url, t_private)
             .map { obj -> transform(obj) }
     }
 
-    override fun deleteFromLastShortened(accountId: Long, key: String?): Single<Int> {
+    override fun deleteFromLastShortened(accountId: Long, key: String?): Flow<Int> {
         return networker.vkDefault(accountId)
             .utils()
             .deleteFromLastShortened(key)
     }
 
-    override fun checkLink(accountId: Long, url: String?): Single<VKApiCheckedLink> {
+    override fun checkLink(accountId: Long, url: String?): Flow<VKApiCheckedLink> {
         return networker.vkDefault(accountId)
             .utils()
             .checkLink(url)
     }
 
-    override fun joinChatByInviteLink(accountId: Long, link: String?): Single<VKApiChatResponse> {
+    override fun joinChatByInviteLink(accountId: Long, link: String?): Flow<VKApiChatResponse> {
         return networker.vkDefault(accountId)
             .utils()
             .joinChatByInviteLink(link)
@@ -236,19 +242,19 @@ class UtilsInteractor(
         accountId: Long,
         peer_id: Long?,
         reset: Int?
-    ): Single<VKApiLinkResponse> {
+    ): Flow<VKApiLinkResponse> {
         return networker.vkDefault(accountId)
             .utils()
             .getInviteLink(peer_id, reset)
     }
 
-    override fun customScript(accountId: Long, code: String?): Single<Int> {
+    override fun customScript(accountId: Long, code: String?): Flow<Int> {
         return networker.vkDefault(accountId)
             .utils()
             .customScript(code)
     }
 
-    override fun getServerTime(accountId: Long): Single<Long> {
+    override fun getServerTime(accountId: Long): Flow<Long> {
         return networker.vkDefault(accountId)
             .utils()
             .getServerTime()

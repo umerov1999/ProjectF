@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.upload.impl
 
-import android.annotation.SuppressLint
 import android.content.Context
 import dev.ragnarok.fenrir.api.PercentagePublisher
 import dev.ragnarok.fenrir.api.interfaces.INetworker
@@ -16,36 +15,39 @@ import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.upload.UploadResult
 import dev.ragnarok.fenrir.upload.UploadUtils
 import dev.ragnarok.fenrir.util.Utils.safelyClose
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.safelyCloseAction
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlowThrowable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
+import kotlin.coroutines.cancellation.CancellationException
 
 class DocumentUploadable(
     private val context: Context,
     private val networker: INetworker,
     private val storage: IDocsStorage
 ) : IUploadable<Document> {
-    @SuppressLint("CheckResult")
+    @Suppress("BlockingMethodInNonBlockingContext")
     override fun doUpload(
         upload: Upload,
         initialServer: UploadServer?,
         listener: PercentagePublisher?
-    ): Single<UploadResult<Document>> {
+    ): Flow<UploadResult<Document>> {
         val ownerId = upload.destination.ownerId
         val groupId = if (ownerId >= 0) null else ownerId
         val accountId = upload.accountId
-        val serverSingle: Single<UploadServer> = if (initialServer == null) {
+        val serverSingle = if (initialServer == null) {
             networker.vkDefault(accountId)
                 .docs()
                 .getUploadServer(groupId)
-                .map { it }
         } else {
-            Single.just(initialServer)
+            toFlow(initialServer)
         }
-        return serverSingle.flatMap { server ->
+        return serverSingle.flatMapConcat { server ->
             var inputStream: InputStream? = null
             try {
                 val uri = upload.fileUri
@@ -56,7 +58,7 @@ class DocumentUploadable(
                     context.contentResolver.openInputStream(uri)
                 }
                 if (inputStream == null) {
-                    Single.error(
+                    toFlowThrowable(
                         NotFoundException(
                             "Unable to open InputStream, URI: $uri"
                         )
@@ -70,18 +72,18 @@ class DocumentUploadable(
                             inputStream,
                             listener
                         )
-                        .doFinally(safelyCloseAction(inputStream))
-                        .flatMap { dto ->
+                        .onCompletion { safelyClose(inputStream) }
+                        .flatMapConcat { dto ->
                             if (dto.file.isNullOrEmpty()) {
-                                Single.error(NotFoundException("VK doesn't upload this file"))
+                                toFlowThrowable(NotFoundException("VK doesn't upload this file"))
                             } else {
                                 networker
                                     .vkDefault(accountId)
                                     .docs()
                                     .save(dto.file, filename, null)
-                                    .flatMap { tmpList ->
+                                    .flatMapConcat { tmpList ->
                                         if (tmpList.type.isEmpty()) {
-                                            Single.error(
+                                            toFlowThrowable(
                                                 NotFoundException()
                                             )
                                         } else {
@@ -93,9 +95,11 @@ class DocumentUploadable(
                                                     storage,
                                                     upload,
                                                     entity
-                                                ).andThen(Single.just(result))
+                                                ).map {
+                                                    result
+                                                }
                                             } else {
-                                                Single.just(result)
+                                                toFlow(result)
                                             }
                                         }
                                     }
@@ -104,7 +108,10 @@ class DocumentUploadable(
                 }
             } catch (e: Exception) {
                 safelyClose(inputStream)
-                Single.error(e)
+                if (e is CancellationException) {
+                    throw e
+                }
+                toFlowThrowable(e)
             }
         }
     }
@@ -113,7 +120,7 @@ class DocumentUploadable(
         storage: IDocsStorage,
         upload: Upload,
         entity: DocumentDboEntity
-    ): Completable {
+    ): Flow<Boolean> {
         return storage.store(upload.accountId, entity.ownerId, listOf(entity), false)
     }
 }

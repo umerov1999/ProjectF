@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.search.wallsearch
 
 import android.os.Bundle
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.db.model.PostUpdate
 import dev.ragnarok.fenrir.domain.ILikesInteractor
 import dev.ragnarok.fenrir.domain.IWallsRepository
@@ -9,7 +8,6 @@ import dev.ragnarok.fenrir.domain.Repository
 import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchPresenter
 import dev.ragnarok.fenrir.fragment.search.criteria.WallSearchCriteria
 import dev.ragnarok.fenrir.fragment.search.nextfrom.IntNextFrom
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Post
 import dev.ragnarok.fenrir.requireNonNull
@@ -18,8 +16,11 @@ import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.dummy
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class WallSearchPresenter(
     accountId: Long,
@@ -77,7 +78,7 @@ class WallSearchPresenter(
         accountId: Long,
         criteria: WallSearchCriteria,
         startFrom: IntNextFrom
-    ): Single<Pair<List<Post>, IntNextFrom>> {
+    ): Flow<Pair<List<Post>, IntNextFrom>> {
         val offset = startFrom.offset
         val nextFrom = IntNextFrom(offset + COUNT)
         return walls.search(accountId, criteria.ownerId, criteria.query, true, COUNT, offset)
@@ -108,9 +109,8 @@ class WallSearchPresenter(
         ) {
             return
         }
-        appendDisposable(walls.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
-            .fromIOToMain()
-            .subscribe(ignore()) { t ->
+        appendJob(walls.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
+            .fromIOToMain(dummy()) { t ->
                 showError(t)
             })
     }
@@ -120,8 +120,7 @@ class WallSearchPresenter(
     }
 
     init {
-        appendDisposable(walls.observeMinorChanges()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onPostMinorUpdates(it) })
+        appendJob(walls.observeMinorChanges()
+            .sharedFlowToMain { onPostMinorUpdates(it) })
     }
 }

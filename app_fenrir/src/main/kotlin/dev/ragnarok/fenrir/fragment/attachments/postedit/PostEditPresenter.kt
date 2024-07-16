@@ -2,14 +2,12 @@ package dev.ragnarok.fenrir.fragment.attachments.postedit
 
 import android.os.Bundle
 import androidx.annotation.StringRes
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.model.VKApiCommunity
 import dev.ragnarok.fenrir.api.model.VKApiPost
 import dev.ragnarok.fenrir.domain.IWallsRepository
 import dev.ragnarok.fenrir.domain.Repository.walls
 import dev.ragnarok.fenrir.fragment.attachments.abspostedit.AbsPostEditPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.model.AttachmentEntry
@@ -31,6 +29,8 @@ import dev.ragnarok.fenrir.util.Unixtime.now
 import dev.ragnarok.fenrir.util.Utils.copyToArrayListWithPredicate
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.intValueIn
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 
 class PostEditPresenter(
     accountId: Long,
@@ -159,9 +159,8 @@ class PostEditPresenter(
 
     private fun save() {
         d(TAG, "save, author: " + post.author + ", signer: " + post.creator)
-        appendDisposable(uploadManager[accountId, uploadDestination]
-            .fromIOToMain()
-            .subscribe({ data ->
+        appendJob(uploadManager[accountId, uploadDestination]
+            .fromIOToMain({ data ->
                 if (data.isEmpty()) {
                     doCommitImpl()
                 } else {
@@ -208,14 +207,13 @@ class PostEditPresenter(
         setEditingNow(true)
         val signed = if (canAddSignature()) addSignature.get() else null
         val friendsOnly = if (isFriendsOnlyOptionAvailable()) super.friendsOnly.get() else null
-        appendDisposable(wallInteractor
+        appendJob(wallInteractor
             .editPost(
                 accountId, post.ownerId, post.vkid, friendsOnly,
                 getTextBody(), attachmentTokens, null, signed, publishDate,
                 null, null, null, null
             )
-            .fromIOToMain()
-            .subscribe({ onEditResponse() }) { throwable ->
+            .fromIOToMain({ onEditResponse() }) { throwable ->
                 onEditError(
                     getCauseIfRuntime(throwable)
                 )
@@ -230,13 +228,12 @@ class PostEditPresenter(
         // Эта опция не может быть доступна (так как публикация - исключительно для PAGE)
         val fromGroup: Boolean? = null
         setEditingNow(true)
-        appendDisposable(wallInteractor
+        appendJob(wallInteractor
             .post(
                 accountId, post.ownerId, null, fromGroup, body, attachmentTokens, null,
                 signed, publishDate, null, null, null, post.vkid, null, null, null
             )
-            .fromIOToMain()
-            .subscribe({ onEditResponse() }) { throwable ->
+            .fromIOToMain({ onEditResponse() }) { throwable ->
                 onEditError(
                     getCauseIfRuntime(throwable)
                 )
@@ -424,9 +421,8 @@ class PostEditPresenter(
         addSignature.setValue(post.signerId > 0)
         setFromGroupOptionAvailable(false) // only for publishing
         uploadDestination = UploadDestination.forPost(post.vkid, post.ownerId)
-        appendDisposable(uploadManager.observeAdding()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { it ->
+        appendJob(uploadManager.observeAdding()
+            .sharedFlowToMain { it ->
                 onUploadQueueUpdates(
                     it
                 ) {
@@ -434,25 +430,21 @@ class PostEditPresenter(
                             && it.destination.compareTo(uploadDestination)
                 }
             })
-        appendDisposable(uploadManager.observeProgress()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onUploadProgressUpdate(it) })
-        appendDisposable(uploadManager.observeStatus()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe {
+        appendJob(uploadManager.observeProgress()
+            .sharedFlowToMain { onUploadProgressUpdate(it) })
+        appendJob(uploadManager.observeStatus()
+            .sharedFlowToMain {
                 onUploadStatusUpdate(
                     it
                 )
             })
-        appendDisposable(uploadManager.observeDeleting(false)
-            .observeOn(provideMainThreadScheduler())
-            .subscribe {
+        appendJob(uploadManager.observeDeleting(false)
+            .sharedFlowToMain {
                 onUploadObjectRemovedFromQueue(
                     it
                 )
             })
-        appendDisposable(uploadManager.observeResults()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onUploadComplete(it) })
+        appendJob(uploadManager.observeResults()
+            .sharedFlowToMain { onUploadComplete(it) })
     }
 }

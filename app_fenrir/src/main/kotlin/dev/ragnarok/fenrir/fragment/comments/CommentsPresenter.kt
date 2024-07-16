@@ -7,7 +7,6 @@ import androidx.annotation.StringRes
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.Includes.attachmentsRepository
 import dev.ragnarok.fenrir.Includes.networkInterfaces
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.Includes.stores
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSendAttachments
@@ -24,7 +23,6 @@ import dev.ragnarok.fenrir.domain.impl.CommentsInteractor
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
 import dev.ragnarok.fenrir.fragment.comments.ICommentsView.ICommentContextView
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Comment
 import dev.ragnarok.fenrir.model.CommentIntent
 import dev.ragnarok.fenrir.model.CommentUpdate
@@ -44,16 +42,18 @@ import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
-import dev.ragnarok.fenrir.util.DisposableHolder
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.dummy
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayedFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.dummy
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingleSafe
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlin.math.abs
 
 class CommentsPresenter(
@@ -72,10 +72,10 @@ class CommentsPresenter(
         InteractorFactory.createStickersInteractor()
     private val data: MutableList<Comment>
     private val CommentThread: Int?
-    private val stickersWordsDisplayDisposable = DisposableHolder<Void>()
-    private val actualLoadingDisposable = CompositeDisposable()
-    private val deepLookingHolder = DisposableHolder<Void>()
-    private val cacheLoadingDisposable = CompositeDisposable()
+    private val stickersWordsDisplayDisposable = CompositeJob()
+    private val actualLoadingDisposable = CompositeJob()
+    private val deepLookingHolder = CompositeJob()
+    private val cacheLoadingDisposable = CompositeJob()
     private var focusToComment: Int?
     private var commentedState: CommentedState? = null
     private var author: Owner? = null
@@ -91,13 +91,12 @@ class CommentsPresenter(
     private var loadingAvailableAuthorsNow = false
     private fun loadAuthorData() {
         val accountId = authorId
-        appendDisposable(ownersRepository.getBaseOwnerInfo(
+        appendJob(ownersRepository.getBaseOwnerInfo(
             accountId,
             authorId,
             IOwnersRepository.MODE_ANY
         )
-            .fromIOToMain()
-            .subscribe({ owner -> onAuthorDataReceived(owner) }) { t ->
+            .fromIOToMain({ owner -> onAuthorDataReceived(owner) }) { t ->
                 onAuthorDataGetError(
                     t
                 )
@@ -166,19 +165,18 @@ class CommentsPresenter(
         if (!Settings.get().main().isHint_stickers) {
             return
         }
-        stickersWordsDisplayDisposable.dispose()
+        stickersWordsDisplayDisposable.clear()
         if (s.isNullOrEmpty()) {
             view?.updateStickers(
                 emptyList()
             )
             return
         }
-        stickersWordsDisplayDisposable.append(stickersInteractor.getKeywordsStickers(
+        stickersWordsDisplayDisposable.add(stickersInteractor.getKeywordsStickers(
             authorId,
             s.trim { it <= ' ' })
-            .delay(500, TimeUnit.MILLISECONDS)
-            .fromIOToMain()
-            .subscribe({
+            .delayedFlow(500)
+            .fromIOToMain({
                 view?.updateStickers(
                     it
                 )
@@ -187,7 +185,7 @@ class CommentsPresenter(
             })
     }
 
-    private fun onAttchmentRemoveEvent() {
+    private fun onAttachmentRemoveEvent() {
         draftCommentAttachmentsCount--
         onAttachmentCountChanged()
     }
@@ -197,7 +195,7 @@ class CommentsPresenter(
         resolveAttachmentsCounter()
     }
 
-    private fun onAttchmentAddEvent(event: IAddEvent) {
+    private fun onAttachmentAddEvent(event: IAddEvent) {
         draftCommentAttachmentsCount += event.attachments.size
         onAttachmentCountChanged()
     }
@@ -207,8 +205,7 @@ class CommentsPresenter(
     }
 
     private fun restoreDraftCommentSync() {
-        val draft = interactor.restoreDraftComment(authorId, commented)
-            ?.blockingGet()
+        val draft = interactor.restoreDraftComment(authorId, commented).syncSingleSafe()
         if (draft != null) {
             draftCommentText = draft.text
             draftCommentAttachmentsCount = draft.attachmentsCount
@@ -218,7 +215,7 @@ class CommentsPresenter(
 
     private fun requestInitialData() {
         val accountId = authorId
-        val single: Single<CommentsBundle> = when {
+        val single: Flow<CommentsBundle> = when {
             focusToComment != null -> {
                 interactor.getCommentsPortion(
                     accountId,
@@ -260,8 +257,7 @@ class CommentsPresenter(
         }
         setLoadingState(LoadingState.INITIAL)
         actualLoadingDisposable.add(single
-            .fromIOToMain()
-            .subscribe({ bundle -> onInitialDataReceived(bundle) }) { throwable ->
+            .fromIOToMain({ bundle -> onInitialDataReceived(bundle) }) { throwable ->
                 onInitialDataError(
                     throwable
                 )
@@ -288,8 +284,7 @@ class CommentsPresenter(
             false,
             "desc"
         )
-            .fromIOToMain()
-            .subscribe(
+            .fromIOToMain(
                 { bundle -> onCommentsPortionPortionReceived(bundle) }
             ) { throwable -> onCommentPortionError(getCauseIfRuntime(throwable)) })
     }
@@ -309,8 +304,7 @@ class CommentsPresenter(
             false,
             "asc"
         )
-            .fromIOToMain()
-            .subscribe(
+            .fromIOToMain(
                 { bundle -> onCommentsPortionPortionReceived(bundle) }
             ) { throwable -> onCommentPortionError(getCauseIfRuntime(throwable)) })
     }
@@ -495,7 +489,7 @@ class CommentsPresenter(
         )
     }
 
-    private fun saveSingle(): Single<Int> {
+    private fun saveSingle(): Flow<Int> {
         val accountId = authorId
         val replyToComment = replyTo?.getObjectId() ?: 0
         val replyToUser = replyTo?.fromId ?: 0
@@ -508,8 +502,8 @@ class CommentsPresenter(
         )
     }
 
-    private fun saveDraftSync(): Int {
-        return saveSingle().blockingGet()
+    private fun saveDraftSync(): Int? {
+        return saveSingle().syncSingleSafe()
     }
 
     private fun resolveAttachmentsCounter() {
@@ -565,14 +559,13 @@ class CommentsPresenter(
         val older = firstCommentInList
         val accountId = authorId
         view?.displayDeepLookingCommentProgress()
-        deepLookingHolder.append(interactor.getAllCommentsRange(
+        deepLookingHolder.add(interactor.getAllCommentsRange(
             accountId,
             commented,
             older?.getObjectId() ?: 0,
             commentId
         )
-            .fromIOToMain()
-            .subscribe({ comments ->
+            .fromIOToMain({ comments ->
                 onDeepCommentLoadingResponse(
                     commentId,
                     comments
@@ -592,12 +585,12 @@ class CommentsPresenter(
     }
 
     override fun onGuiDestroyed() {
-        deepLookingHolder.dispose()
+        deepLookingHolder.clear()
         super.onGuiDestroyed()
     }
 
     fun fireDeepLookingCancelledByUser() {
-        deepLookingHolder.dispose()
+        deepLookingHolder.clear()
     }
 
     private fun onDeepCommentLoadingResponse(commentId: Int, comments: List<Comment>) {
@@ -688,11 +681,10 @@ class CommentsPresenter(
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.report)
             .setItems(items) { dialog, item ->
-                appendDisposable(interactor.reportComment(
+                appendJob(interactor.reportComment(
                     authorId, comment.fromId, comment.getObjectId(), item
                 )
-                    .fromIOToMain()
-                    .subscribe({ p ->
+                    .fromIOToMain({ p ->
                         if (p == 1) view?.customToast?.showToast(
                             R.string.success
                         )
@@ -745,9 +737,8 @@ class CommentsPresenter(
         if (intent.replyToComment == null && CommentThread != null) intent.setReplyToComment(
             CommentThread
         )
-        appendDisposable(interactor.send(accountId, commented, CommentThread, intent)
-            .fromIOToMain()
-            .subscribe({ onNormalSendResponse() }) { t ->
+        appendJob(interactor.send(accountId, commented, CommentThread, intent)
+            .fromIOToMain({ onNormalSendResponse() }) { t ->
                 onSendError(
                     t
                 )
@@ -760,9 +751,8 @@ class CommentsPresenter(
             CommentThread
         )
         val accountId = authorId
-        appendDisposable(interactor.send(accountId, commented, CommentThread, intent)
-            .fromIOToMain()
-            .subscribe({ onQuickSendResponse() }) { t ->
+        appendJob(interactor.send(accountId, commented, CommentThread, intent)
+            .fromIOToMain({ onQuickSendResponse() }) { t ->
                 onSendError(
                     t
                 )
@@ -857,9 +847,8 @@ class CommentsPresenter(
 
     private fun deleteRestoreInternal(commentId: Int, delete: Boolean) {
         val accountId = authorId
-        appendDisposable(interactor.deleteRestore(accountId, commented, commentId, delete)
-            .fromIOToMain()
-            .subscribe(dummy()) { t ->
+        appendJob(interactor.deleteRestore(accountId, commented, commentId, delete)
+            .fromIOToMain(dummy()) { t ->
                 showError(t)
             })
     }
@@ -885,9 +874,8 @@ class CommentsPresenter(
             return
         }
         val accountId = authorId
-        appendDisposable(interactor.like(accountId, comment.commented, comment.getObjectId(), add)
-            .fromIOToMain()
-            .subscribe(dummy()) { t ->
+        appendJob(interactor.like(accountId, comment.commented, comment.getObjectId(), add)
+            .fromIOToMain(dummy()) { t ->
                 showError(t)
             })
     }
@@ -991,7 +979,7 @@ class CommentsPresenter(
         setLoadingAvailableAuthorsNow(true)
         val accountId = authorId
         val canSendFromAnyGroup = commented.sourceType == CommentedType.POST
-        val single: Single<List<Owner>> = if (canSendFromAnyGroup) {
+        val single = if (canSendFromAnyGroup) {
             interactor.getAvailableAuthors(accountId)
         } else {
             val ids: MutableSet<Long> = HashSet()
@@ -999,9 +987,8 @@ class CommentsPresenter(
             ids.add(commented.sourceOwnerId)
             ownersRepository.findBaseOwnersDataAsList(accountId, ids, IOwnersRepository.MODE_ANY)
         }
-        appendDisposable(single
-            .fromIOToMain()
-            .subscribe({ owners -> onAvailableAuthorsReceived(owners) }) {
+        appendJob(single
+            .fromIOToMain({ owners -> onAvailableAuthorsReceived(owners) }) {
                 onAvailableAuthorsGetError()
             })
     }
@@ -1072,8 +1059,7 @@ class CommentsPresenter(
         val accountId = authorId
         cacheLoadingDisposable.add(
             interactor.getAllCachedData(accountId, commented)
-                .fromIOToMain()
-                .subscribe({ onCachedDataReceived(it) }, {
+                .fromIOToMain({ onCachedDataReceived(it) }, {
                     requestInitialData()
                 })
         )
@@ -1121,13 +1107,13 @@ class CommentsPresenter(
 
     @SuppressLint("CheckResult")
     override fun onDestroyed() {
-        cacheLoadingDisposable.dispose()
-        actualLoadingDisposable.dispose()
-        deepLookingHolder.dispose()
-        stickersWordsDisplayDisposable.dispose()
+        cacheLoadingDisposable.cancel()
+        actualLoadingDisposable.cancel()
+        deepLookingHolder.cancel()
+        stickersWordsDisplayDisposable.cancel()
 
         // save draft async
-        saveSingle().subscribeOn(Schedulers.io()).subscribe(ignore(), ignore())
+        saveSingle().hiddenIO()
         super.onDestroyed()
     }
 
@@ -1182,22 +1168,19 @@ class CommentsPresenter(
         this.CommentThread = commentThread
         data = ArrayList()
         val attachmentsRepository = attachmentsRepository
-        appendDisposable(attachmentsRepository
+        appendJob(attachmentsRepository
             .observeAdding()
             .filter { filterAttachmentEvent(it) }
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onAttchmentAddEvent(it) })
-        appendDisposable(attachmentsRepository
+            .sharedFlowToMain { onAttachmentAddEvent(it) })
+        appendJob(attachmentsRepository
             .observeRemoving()
             .filter { filterAttachmentEvent(it) }
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onAttchmentRemoveEvent() })
-        appendDisposable(stores
+            .sharedFlowToMain { onAttachmentRemoveEvent() })
+        appendJob(stores
             .comments()
             .observeMinorUpdates()
             .filter { it.commented == commented }
-            .observeOn(provideMainThreadScheduler())
-            .subscribe({ update -> onCommentMinorUpdate(update) }) { it.printStackTrace() })
+            .sharedFlowToMain { update -> onCommentMinorUpdate(update) })
         restoreDraftCommentSync()
         loadAuthorData()
         if (focusToComment == null && commentThread == null) {

@@ -87,29 +87,29 @@ import dev.ragnarok.fenrir.settings.backup.SettingsBackup
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.util.refresh.RefreshToken
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
 import dev.ragnarok.fenrir.util.serializeble.prefs.Preferences
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.MySearchView
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.util.concurrent.TimeUnit
 
 class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScreenChangeListener,
     BackPressCallback, CanBackPressedCallback {
     private var preferencesView: RecyclerView? = null
     private var layoutManager: LinearLayoutManager? = null
     private var searchView: MySearchView? = null
-    private val disposables = CompositeDisposable()
-    private var sleepDataDisposable = Disposable.disposed()
+    private val disposables = CompositeJob()
+    private var sleepDataDisposable = CompositeJob()
     private val SEARCH_DELAY = 2000
     override val keyInstanceState: String = "root_preferences"
 
@@ -192,7 +192,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             })
             it.setOnQueryTextListener(object : MySearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
-                    sleepDataDisposable.dispose()
+                    sleepDataDisposable.cancel()
                     if (query.nonNullNoEmpty() && query.trimmedNonNullNoEmpty()) {
                         preferencesAdapter?.findPreferences(requireActivity(), query, root)
                     }
@@ -200,11 +200,9 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    sleepDataDisposable.dispose()
-                    sleepDataDisposable = Single.just(Any())
-                        .delay(SEARCH_DELAY.toLong(), TimeUnit.MILLISECONDS)
-                        .fromIOToMain()
-                        .subscribe({
+                    sleepDataDisposable.cancel()
+                    sleepDataDisposable += delayTaskFlow(SEARCH_DELAY.toLong())
+                        .toMain {
                             if (newText.nonNullNoEmpty() && newText.trimmedNonNullNoEmpty()) {
                                 preferencesAdapter?.findPreferences(
                                     requireActivity(),
@@ -212,7 +210,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                                     root
                                 )
                             }
-                        }, { RxUtils.dummy() })
+                        }
                     return false
                 }
             })
@@ -415,7 +413,6 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
     }
 
     @SuppressLint("CheckResult")
-    @Suppress("DEPRECATION")
     private fun createRootScreen() = screen(requireActivity()) {
         subScreen("general_preferences") {
             titleRes = R.string.general_settings
@@ -535,8 +532,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     disposables.add(
                         InteractorFactory.createAccountInteractor()
                             .getPushSettings(accountId)
-                            .fromIOToMain()
-                            .subscribe({
+                            .fromIOToMain({
                                 Settings.get().notifications().resetAccount(accountId)
                                 for (i in it) {
                                     if (i.disabled_until < 0) {
@@ -573,10 +569,11 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                             RefreshToken.upgradeTokenRxPref(
                                 accountId, ito
                             )
-                                .fromIOToMain()
-                                .subscribe({
-                                    createCustomToast(requireActivity()).showToast(if (it) R.string.success else (R.string.error))
-                                }, RxUtils.ignore())
+                                .fromIOToMain(
+                                    {
+                                        createCustomToast(requireActivity()).showToast(if (it) R.string.success else (R.string.error))
+                                    },
+                                    { createCustomToast(requireActivity()).showToast(it.localizedMessage) })
                         )
                     }
                     true
@@ -656,13 +653,11 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 showTickMarks = true
                 titleRes = R.string.font_size
                 onSeek {
-                    sleepDataDisposable.dispose()
-                    sleepDataDisposable = Single.just(Any())
-                        .delay(1, TimeUnit.SECONDS)
-                        .fromIOToMain()
-                        .subscribe({
+                    sleepDataDisposable.cancel()
+                    sleepDataDisposable += delayTaskFlow(1000)
+                        .toMain {
                             requireActivity().recreate()
-                        }, { RxUtils.dummy() })
+                        }
                 }
             }
 
@@ -1705,7 +1700,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
 
             multiLineText("videos_ext", parentFragmentManager) {
                 titleRes = R.string.video_ext
-                defaultValue = setOf("gif", "mp4", "avi", "mpeg")
+                defaultValue = setOf("mp4", "avi", "mpeg")
                 isSpace = true
                 onMultiLineTextChange {
                     requireActivity().recreate()
@@ -1715,7 +1710,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             multiLineText("photo_ext", parentFragmentManager) {
                 titleRes = R.string.photo_ext
                 isSpace = true
-                defaultValue = setOf("jpg", "jpeg", "jpg", "webp", "png", "tiff")
+                defaultValue = setOf("jpg", "jpeg", "heic", "webp", "png", "tiff")
                 onMultiLineTextChange {
                     requireActivity().recreate()
                 }
@@ -1782,11 +1777,9 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                             .setPositiveButton(R.string.button_yes) { _, _ ->
                                 DBHelper.removeDatabaseFor(requireActivity(), accountId)
                                 cleanCache(requireActivity(), true)
-                                Includes.stores.stickers().clearAccount(accountId).fromIOToMain()
-                                    .subscribe(RxUtils.dummy(), RxUtils.ignore())
+                                Includes.stores.stickers().clearAccount(accountId).hiddenIO()
                                 Includes.stores.tempStore().clearReactionAssets(accountId)
-                                    .fromIOToMain()
-                                    .subscribe(RxUtils.dummy(), RxUtils.ignore())
+                                    .hiddenIO()
                             }
                             .setNegativeButton(R.string.button_no, null)
                             .setCancelable(true).show()
@@ -2520,8 +2513,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             view.findViewById<MaterialButton>(dev.ragnarok.fenrir_common.R.id.reboot_pc_win)
                 .setOnClickListener {
                     Includes.networkInterfaces.localServerApi().rebootPC("win")
-                        .fromIOToMain()
-                        .subscribe({
+                        .fromIOToMain({
                             createCustomToast(requireActivity()).showToastSuccessBottom(R.string.success)
                         }, { createCustomToast(requireActivity()).showToastThrowable(it) })
                 }
@@ -2529,8 +2521,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             view.findViewById<MaterialButton>(dev.ragnarok.fenrir_common.R.id.reboot_pc_linux)
                 .setOnClickListener {
                     Includes.networkInterfaces.localServerApi().rebootPC("linux")
-                        .fromIOToMain()
-                        .subscribe({
+                        .fromIOToMain({
                             createCustomToast(requireActivity()).showToastSuccessBottom(R.string.success)
                         }, { createCustomToast(requireActivity()).showToastThrowable(it) })
                 }
@@ -2786,8 +2777,8 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
     }
 
     override fun onDestroy() {
-        sleepDataDisposable.dispose()
-        disposables.dispose()
+        sleepDataDisposable.cancel()
+        disposables.cancel()
         preferencesView?.let { preferencesAdapter?.stopObserveScrollPosition(it) }
         preferencesAdapter?.onScreenChangeListener = null
         preferencesView?.adapter = null

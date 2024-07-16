@@ -3,8 +3,7 @@ package dev.ragnarok.fenrir.db.interfaces
 import dev.ragnarok.fenrir.db.model.PhotoPatch
 import dev.ragnarok.fenrir.db.model.entity.PhotoDboEntity
 import dev.ragnarok.fenrir.model.criteria.PhotoCriteria
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IPhotosStorage : IStorage {
     fun insertPhotosRx(
@@ -13,10 +12,10 @@ interface IPhotosStorage : IStorage {
         albumId: Int,
         photos: List<PhotoDboEntity>,
         clearBefore: Boolean
-    ): Completable
+    ): Flow<Boolean>
 
-    fun findPhotosByCriteriaRx(criteria: PhotoCriteria): Single<List<PhotoDboEntity>>
-    fun applyPatch(accountId: Long, ownerId: Long, photoId: Int, patch: PhotoPatch): Completable
+    fun findPhotosByCriteriaRx(criteria: PhotoCriteria): Flow<List<PhotoDboEntity>>
+    fun applyPatch(accountId: Long, ownerId: Long, photoId: Int, patch: PhotoPatch): Flow<Boolean>
 
     fun insertPhotosExtendedRx(
         accountId: Long,
@@ -24,7 +23,7 @@ interface IPhotosStorage : IStorage {
         albumId: Int,
         photos: List<PhotoDboEntity>,
         clearBefore: Boolean
-    ): Completable
+    ): Flow<Boolean>
 
-    fun findPhotosExtendedByCriteriaRx(criteria: PhotoCriteria): Single<List<PhotoDboEntity>>
+    fun findPhotosExtendedByCriteriaRx(criteria: PhotoCriteria): Flow<List<PhotoDboEntity>>
 }

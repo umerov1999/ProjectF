@@ -22,10 +22,10 @@ import dev.ragnarok.fenrir.getInt
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttachmentsStorage {
     override fun attachDbos(
@@ -33,8 +33,8 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
         attachToType: Int,
         attachToDbid: Int,
         entities: List<DboEntity>
-    ): Single<IntArray> {
-        return Single.create { emitter: SingleEmitter<IntArray> ->
+    ): Flow<IntArray> {
+        return flow {
             val operations = ArrayList<ContentProviderOperation>(entities.size)
             val indexes = IntArray(entities.size)
             for (i in entities.indices) {
@@ -54,7 +54,7 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
                 val dbid = result.uri?.pathSegments?.get(1)?.toInt()
                 ids[i] = dbid ?: continue
             }
-            emitter.onSuccess(ids)
+            emit(ids)
         }
     }
 
@@ -62,13 +62,13 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
         accountId: Long,
         @AttachToType attachToType: Int,
         attachToDbid: Int
-    ): Single<List<Pair<Int, DboEntity>>> {
-        return Single.create { emitter: SingleEmitter<List<Pair<Int, DboEntity>>> ->
+    ): Flow<List<Pair<Int, DboEntity>>> {
+        return flow {
             val cursor = createCursor(accountId, attachToType, attachToDbid)
             val dbos: MutableList<Pair<Int, DboEntity>> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (emitter.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     val id = cursor.getInt(idColumnFor(attachToType))
@@ -79,7 +79,7 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
                 }
                 cursor.close()
             }
-            emitter.onSuccess(dbos)
+            emit(dbos)
         }
     }
 
@@ -91,7 +91,7 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
         )
     }
 
-    override fun getAttachmentsDbosSync(
+    override suspend fun getAttachmentsDbosSync(
         accountId: Long,
         attachToType: Int,
         attachToDbid: Int,
@@ -101,7 +101,7 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
         val entities: MutableList<DboEntity> = ArrayList(safeCountOf(cursor))
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                if (cancelable.isOperationCancelled) {
+                if (cancelable.canceled()) {
                     break
                 }
                 val json =
@@ -118,29 +118,29 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
         @AttachToType attachToType: Int,
         attachToDbid: Int,
         generatedAttachmentId: Int
-    ): Completable {
-        return Completable.create { e ->
+    ): Flow<Boolean> {
+        return flow {
             val uri = uriForType(attachToType, accountId)
             val selection = idColumnFor(attachToType) + " = ?"
             val args = arrayOf(generatedAttachmentId.toString())
             val count = context.contentResolver.delete(uri, selection, args)
             if (count > 0) {
-                e.onComplete()
+                emit(true)
             } else {
-                e.tryOnError(NotFoundException())
+                throw NotFoundException()
             }
         }
     }
 
-    override fun getCount(accountId: Long, attachToType: Int, attachToDbid: Int): Single<Int> {
-        return Single.fromCallable {
+    override fun getCount(accountId: Long, attachToType: Int, attachToDbid: Int): Flow<Int> {
+        return flow {
             val uri = uriForType(attachToType, accountId)
             val selection = attachToIdColumnFor(attachToType) + " = ?"
             val args = arrayOf(attachToDbid.toString())
             val cursor = contentResolver.query(uri, null, selection, args, null)
             val count = safeCountOf(cursor)
             cursor?.close()
-            count
+            emit(count)
         }
     }
 

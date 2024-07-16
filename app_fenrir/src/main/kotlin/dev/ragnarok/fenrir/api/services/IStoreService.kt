@@ -7,10 +7,10 @@ import dev.ragnarok.fenrir.api.model.VKApiStickerSet
 import dev.ragnarok.fenrir.api.model.VKApiStickersKeywords
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class IStoreService : IServiceRest() {
-    fun getRecentStickers(): Single<BaseResponse<Items<VKApiSticker>>> {
+    fun getRecentStickers(): Flow<BaseResponse<Items<VKApiSticker>>> {
         return rest.request(
             "messages.getRecentStickers",
             null,
@@ -18,7 +18,7 @@ class IStoreService : IServiceRest() {
         )
     }
 
-    fun getStickersSets(): Single<BaseResponse<Items<VKApiStickerSet.Product>>> {
+    fun getStickersSets(): Flow<BaseResponse<Items<VKApiStickerSet.Product>>> {
         return rest.request(
             "store.getProducts",
             form(
@@ -30,7 +30,7 @@ class IStoreService : IServiceRest() {
         )
     }
 
-    fun getStickersKeywords(): Single<BaseResponse<Dictionary<VKApiStickersKeywords>>> {
+    fun getStickersKeywords(): Flow<BaseResponse<Dictionary<VKApiStickersKeywords>>> {
         return rest.request(
             "store.getStickersKeywords",
             form(

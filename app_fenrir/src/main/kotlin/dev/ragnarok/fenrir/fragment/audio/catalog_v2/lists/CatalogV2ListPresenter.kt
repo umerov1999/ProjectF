@@ -7,7 +7,6 @@ import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSe
 import dev.ragnarok.fenrir.domain.IAudioInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.ifNonNullNoEmpty
 import dev.ragnarok.fenrir.model.AudioArtist
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2List
@@ -21,7 +20,8 @@ import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory.Comp
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.Settings
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class CatalogV2ListPresenter(
     accountId: Long,
@@ -35,7 +35,7 @@ class CatalogV2ListPresenter(
     private val audioInteractor: IAudioInteractor = InteractorFactory.createAudioInteractor()
     private val mSections: ArrayList<CatalogV2List.CatalogV2ListItem> =
         ArrayList()
-    private val netDisposable = CompositeDisposable()
+    private val netDisposable = CompositeJob()
     private var netLoadingNow = false
 
     private val resolv = HashMap<Int, String>()
@@ -49,21 +49,20 @@ class CatalogV2ListPresenter(
             return
         }
         netDisposable.add(
-            audioInteractor.getArtistById(accountId, artist_id).fromIOToMain()
-                .subscribe({ artistInfo ->
-                    artistInfo.id.ifNonNullNoEmpty({
-                        startForSendAttachments(context, accountId, AudioArtist(it))
-                    }, {
-                        startForSendAttachments(context, accountId, AudioArtist(artist_id))
-                    })
+            audioInteractor.getArtistById(accountId, artist_id).fromIOToMain({ artistInfo ->
+                artistInfo.id.ifNonNullNoEmpty({
+                    startForSendAttachments(context, accountId, AudioArtist(it))
                 }, {
                     startForSendAttachments(context, accountId, AudioArtist(artist_id))
                 })
+            }, {
+                startForSendAttachments(context, accountId, AudioArtist(artist_id))
+            })
         )
     }
 
     override fun onDestroyed() {
-        netDisposable.dispose()
+        netDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -78,8 +77,7 @@ class CatalogV2ListPresenter(
             query,
             null
         )
-            .fromIOToMain()
-            .subscribe({ sections ->
+            .fromIOToMain({ sections ->
                 onNetDataReceived(
                     sections
                 )

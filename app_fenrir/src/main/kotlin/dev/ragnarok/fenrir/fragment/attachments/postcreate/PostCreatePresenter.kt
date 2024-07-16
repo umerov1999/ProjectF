@@ -4,7 +4,6 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.annotation.StringRes
 import dev.ragnarok.fenrir.Includes
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityUtils.isMimeVideo
 import dev.ragnarok.fenrir.api.model.VKApiCommunity
@@ -16,7 +15,6 @@ import dev.ragnarok.fenrir.domain.IAttachmentsRepository.IRemoveEvent
 import dev.ragnarok.fenrir.domain.IWallsRepository
 import dev.ragnarok.fenrir.domain.Repository
 import dev.ragnarok.fenrir.fragment.attachments.abspostedit.AbsPostEditPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.model.AttachmentEntry
 import dev.ragnarok.fenrir.model.Attachments
@@ -43,11 +41,13 @@ import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils.copyToArrayListWithPredicate
 import dev.ragnarok.fenrir.util.Utils.findInfoByPredicate
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.dummy
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.subscribeOnIOAndIgnore
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.schedulers.Schedulers
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.zip
 
 class PostCreatePresenter(
     accountId: Long,
@@ -189,37 +189,31 @@ class PostCreatePresenter(
         }
 
     private fun setupAttachmentsListening() {
-        appendDisposable(attachmentsRepository.observeAdding()
+        appendJob(attachmentsRepository.observeAdding()
             .filter { filterAttachmentEvents(it) }
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onRepositoryAttachmentsAdded(it.attachments) })
-        appendDisposable(attachmentsRepository.observeRemoving()
+            .sharedFlowToMain { onRepositoryAttachmentsAdded(it.attachments) })
+        appendJob(attachmentsRepository.observeRemoving()
             .filter { filterAttachmentEvents(it) }
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onRepositoryAttachmentsRemoved(it) })
+            .sharedFlowToMain { onRepositoryAttachmentsRemoved(it) })
     }
 
     private fun setupUploadListening() {
-        appendDisposable(uploadManager.observeDeleting(true)
-            .observeOn(provideMainThreadScheduler())
-            .subscribe {
+        appendJob(uploadManager.observeDeleting(true)
+            .sharedFlowToMain {
                 onUploadObjectRemovedFromQueue(
                     it
                 )
             })
-        appendDisposable(uploadManager.observeProgress()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onUploadProgressUpdate(it) })
-        appendDisposable(uploadManager.observeStatus()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe {
+        appendJob(uploadManager.observeProgress()
+            .sharedFlowToMain { onUploadProgressUpdate(it) })
+        appendJob(uploadManager.observeStatus()
+            .sharedFlowToMain {
                 onUploadStatusUpdate(
                     it
                 )
             })
-        appendDisposable(uploadManager.observeAdding()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe {
+        appendJob(uploadManager.observeAdding()
+            .sharedFlowToMain {
                 onUploadQueueUpdates(
                     it
                 ) { t ->
@@ -235,15 +229,14 @@ class PostCreatePresenter(
     }
 
     private fun restoreEditingWallPostFromDbAsync() {
-        appendDisposable(walls
+        appendJob(walls
             .getEditingPost(accountId, ownerId, editingType, false)
-            .fromIOToMain()
-            .subscribe({ post -> onPostRestored(post) }) { obj -> obj.printStackTrace() })
+            .fromIOToMain({ post -> onPostRestored(post) }) { obj -> obj.printStackTrace() })
     }
 
     private fun restoreEditingAttachmentsAsync(postDbid: Int) {
-        appendDisposable(attachmentsSingle(postDbid)
-            .zipWith(
+        appendJob(attachmentsSingle(postDbid)
+            .zip(
                 uploadsSingle(postDbid)
             ) { first, second ->
                 combine(
@@ -251,8 +244,7 @@ class PostCreatePresenter(
                     second
                 )
             }
-            .fromIOToMain()
-            .subscribe({ onAttachmentsRestored(it) }) { obj -> obj.printStackTrace() })
+            .fromIOToMain({ onAttachmentsRestored(it) }) { obj -> obj.printStackTrace() })
     }
 
     private fun onPostRestored(post: Post) {
@@ -268,20 +260,18 @@ class PostCreatePresenter(
         restoreEditingAttachmentsAsync(post.dbid)
     }
 
-    private fun attachmentsSingle(postDbid: Int): Single<List<AttachmentEntry>> {
+    private fun attachmentsSingle(postDbid: Int): Flow<List<AttachmentEntry>> {
         return attachmentsRepository
             .getAttachmentsWithIds(accountId, AttachToType.POST, postDbid)
             .map { createFrom(it, true) }
     }
 
-    private fun uploadsSingle(postDbid: Int): Single<List<AttachmentEntry>> {
+    private fun uploadsSingle(postDbid: Int): Flow<List<AttachmentEntry>> {
         val destination = UploadDestination.forPost(postDbid, ownerId)
         return uploadManager[accountId, destination]
-            .flatMap {
-                Single.just(
-                    createFrom(
-                        it
-                    )
+            .map {
+                createFrom(
+                    it
                 )
             }
     }
@@ -354,25 +344,22 @@ class PostCreatePresenter(
 
     override fun onModelsAdded(models: List<AbsModel>) {
         val pPost = post ?: return
-        appendDisposable(
+        appendJob(
             attachmentsRepository.attach(accountId, AttachToType.POST, pPost.dbid, models)
-                .subscribeOn(Schedulers.io())
-                .subscribe(dummy(), ignore())
+                .hiddenIO()
         )
     }
 
     override fun onAttachmentRemoveClick(index: Int, attachment: AttachmentEntry) {
         val pPost = post ?: return
         if (attachment.optionalId != 0) {
-            appendDisposable(
+            appendJob(
                 attachmentsRepository.remove(
                     accountId,
                     AttachToType.POST,
                     pPost.dbid,
                     attachment.optionalId
-                )
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(dummy(), ignore())
+                ).hiddenIO()
             )
         } else {
             manuallyRemoveElement(index)
@@ -462,9 +449,8 @@ class PostCreatePresenter(
     fun fireReadyClick() {
         val pPost = post ?: return
         val destination = UploadDestination.forPost(pPost.dbid, ownerId)
-        appendDisposable(uploadManager[accountId, destination]
-            .fromIOToMain()
-            .subscribe({
+        appendJob(uploadManager[accountId, destination]
+            .fromIOToMain({
                 if (it.isNotEmpty()) {
                     view?.showError(R.string.wait_until_file_upload_is_complete)
                 } else {
@@ -479,10 +465,9 @@ class PostCreatePresenter(
         changePublishingNowState(true)
         val fromGroup = super.fromGroup.get()
         val showSigner = addSignature.get()
-        appendDisposable(walls
+        appendJob(walls
             .post(accountId, pPost, fromGroup, showSigner)
-            .fromIOToMain()
-            .subscribe({ onPostPublishSuccess() }) { t ->
+            .fromIOToMain({ onPostPublishSuccess() }) { t ->
                 onPostPublishError(
                     t
                 )
@@ -505,25 +490,24 @@ class PostCreatePresenter(
         val pPost = post ?: return
         val destination = UploadDestination.forPost(pPost.dbid, ownerId)
         uploadManager.cancelAll(accountId, destination)
-        subscribeOnIOAndIgnore(walls.deleteFromCache(accountId, pPost.dbid))
+        walls.deleteFromCache(accountId, pPost.dbid).hiddenIO()
     }
 
     private fun safeDraftAsync() {
         val pPost = post ?: return
         commitDataToPost()
-        subscribeOnIOAndIgnore(walls.cachePostWithIdSaving(accountId, pPost))
+        walls.cachePostWithIdSaving(accountId, pPost).hiddenIO()
     }
 
-    fun onBackPresed(): Boolean {
+    fun fireBackPressed() {
         if (postPublished) {
-            return true
+            return
         }
         if (EditingPostType.TEMP == editingType) {
             releasePostDataAsync()
         } else {
             safeDraftAsync()
         }
-        return true
     }
 
     fun fireUriUploadSizeSelected(uris: List<Uri>, size: Int) {

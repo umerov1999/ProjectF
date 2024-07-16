@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowInsetsControllerCompat
@@ -28,7 +27,6 @@ import dev.ragnarok.fenrir.activity.slidr.Slidr.attach
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrConfig
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrPosition
 import dev.ragnarok.fenrir.fragment.absownerslist.OwnersAdapter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.listener.AppStyleable
@@ -43,15 +41,20 @@ import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.place.PlaceProvider
 import dev.ragnarok.fenrir.push.OwnerInfo
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.settings.CurrentTheme.getNavigationBarColor
+import dev.ragnarok.fenrir.settings.CurrentTheme.getStatusBarColor
+import dev.ragnarok.fenrir.settings.CurrentTheme.getStatusBarNonColored
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.theme.ThemesController
 import dev.ragnarok.fenrir.util.AppTextUtils.getDateFromUnixTime
 import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCream
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.serializeble.json.Json
 import dev.ragnarok.fenrir.util.serializeble.json.decodeFromBufferedSource
 import dev.ragnarok.fenrir.util.toast.CustomToast
-import io.reactivex.rxjava3.disposables.Disposable
 import okio.buffer
 import okio.source
 import java.io.File
@@ -61,7 +64,7 @@ import java.text.SimpleDateFormat
 
 class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
     private var mToolbar: Toolbar? = null
-    private var disposable: Disposable = Disposable.disposed()
+    private var disposable = CancelableJob()
     private val DOWNLOAD_DATE_FORMAT: DateFormat =
         SimpleDateFormat("yyyyMMdd_HHmmss", Utils.appLocale)
 
@@ -120,9 +123,8 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
 
         Time.text = getDateFromUnixTime(this, delta.time)
 
-        disposable = OwnerInfo.getRx(this, accountId, delta.ownerId)
-            .fromIOToMain()
-            .subscribe({ owner ->
+        disposable += OwnerInfo.getRx(this, accountId, delta.ownerId)
+            .fromIOToMain({ owner ->
                 Export.setOnClickListener {
                     DownloadWorkUtils.CheckDirectory(Settings.get().main().docDir)
                     val file = File(
@@ -214,11 +216,16 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
             tab.text = adapter.DeltaOwner.content[position].name
         }.attach()
 
-        val w = window
-        w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        w.statusBarColor = CurrentTheme.getStatusBarColor(this)
-        w.navigationBarColor = CurrentTheme.getNavigationBarColor(this)
+        if (!hasVanillaIceCream()) {
+            val w = window
+            if (!Utils.hasMarshmallow()) {
+                w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            }
+
+            w.statusBarColor = getStatusBarColor(this)
+            w.navigationBarColor = getNavigationBarColor(this)
+        }
     }
 
     private class RecyclerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -278,18 +285,20 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
 
     override fun onDestroy() {
         super.onDestroy()
-        disposable.dispose()
+        disposable.cancel()
     }
 
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val statusBarNonColored = CurrentTheme.getStatusBarNonColored(this)
-        val statusBarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.statusBarColor = if (colored) statusBarColored else statusBarNonColored
-        @ColorInt val navigationColor =
-            if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
-        w.navigationBarColor = navigationColor
+        if (!hasVanillaIceCream()) {
+            w.statusBarColor =
+                if (colored) getStatusBarColor(this) else getStatusBarNonColored(
+                    this
+                )
+            w.navigationBarColor =
+                if (colored) getNavigationBarColor(this) else Color.BLACK
+        }
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons

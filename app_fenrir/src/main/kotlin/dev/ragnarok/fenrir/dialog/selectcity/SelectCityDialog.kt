@@ -16,9 +16,9 @@ import dev.ragnarok.fenrir.dialog.base.AccountDependencyDialogFragment
 import dev.ragnarok.fenrir.domain.IDatabaseInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.search.filteredit.FilterEditFragment
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.model.City
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class SelectCityDialog : AccountDependencyDialogFragment(), CitiesAdapter.Listener {
     private val mHandler = Handler(Looper.getMainLooper())
@@ -67,7 +67,7 @@ class SelectCityDialog : AccountDependencyDialogFragment(), CitiesAdapter.Listen
     }
 
     private fun request(offset: Int) {
-        appendDisposable(
+        appendJob(
             databaseInteractor.getCities(
                 accountId,
                 cityId,
@@ -76,13 +76,12 @@ class SelectCityDialog : AccountDependencyDialogFragment(), CitiesAdapter.Listen
                 COUNT_PER_REQUEST,
                 offset
             )
-                .fromIOToMain()
-                .subscribe({ cities ->
+                .fromIOToMain { cities ->
                     onRequestFinished(
                         cities,
                         offset
                     )
-                }) { })
+                })
     }
 
     private fun onRequestFinished(cities: List<City>, offset: Int) {

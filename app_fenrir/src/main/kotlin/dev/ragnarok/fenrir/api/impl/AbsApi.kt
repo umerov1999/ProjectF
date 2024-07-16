@@ -24,19 +24,19 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.refresh.RefreshToken
 import dev.ragnarok.fenrir.util.serializeble.json.decodeFromBufferedSource
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.exceptions.Exceptions
-import io.reactivex.rxjava3.functions.Function
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.single
 import kotlinx.serialization.KSerializer
 import okhttp3.FormBody
 import okhttp3.Request
-import okhttp3.Response
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.random.Random
 
 internal open class AbsApi(val accountId: Long, private val restProvider: IServiceProvider) {
-    fun <T : IServiceRest> provideService(serviceClass: T, vararg tokenTypes: Int): Single<T> {
+    fun <T : IServiceRest> provideService(serviceClass: T, vararg tokenTypes: Int): Flow<T> {
         var pTokenTypes: IntArray = tokenTypes
         if (pTokenTypes.nullOrEmpty()) {
             pTokenTypes = intArrayOf(TokenType.USER) // user by default
@@ -49,14 +49,14 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
         method: String,
         postParams: Map<String, String>,
         serializerType: KSerializer<*>
-    ): Single<BaseResponse<T>> {
+    ): Flow<BaseResponse<T>> {
         val bodyBuilder = FormBody.Builder()
         for ((key, value) in postParams) {
             bodyBuilder.add(key, value)
         }
         return Includes.networkInterfaces.getVkRestProvider().provideNormalHttpClient(accountId)
-            .flatMap { client ->
-                Single.create { emitter: SingleEmitter<Response> ->
+            .flatMapConcat { client ->
+                flow {
                     val request: Request = Request.Builder()
                         .url(
                             method
@@ -64,17 +64,17 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
                         .post(bodyBuilder.build())
                         .build()
                     val call = client.build().newCall(request)
-                    emitter.setCancellable { call.cancel() }
                     try {
                         val response = call.execute()
                         if (!response.isSuccessful) {
-                            emitter.tryOnError(HttpException(response.code))
+                            throw HttpException(response.code)
                         } else {
-                            emitter.onSuccess(response)
+                            emit(response)
                         }
                         response.close()
-                    } catch (e: Exception) {
-                        emitter.tryOnError(e)
+                    } catch (e: CancellationException) {
+                        call.cancel()
+                        throw e
                     }
                 }
             }
@@ -106,14 +106,14 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
     private fun rawVKRequestOnly(
         method: String,
         postParams: Map<String, String>
-    ): Single<VKResponse> {
+    ): Flow<VKResponse> {
         val bodyBuilder = FormBody.Builder()
         for ((key, value) in postParams) {
             bodyBuilder.add(key, value)
         }
         return Includes.networkInterfaces.getVkRestProvider().provideNormalHttpClient(accountId)
-            .flatMap { client ->
-                Single.create { emitter: SingleEmitter<Response> ->
+            .flatMapConcat { client ->
+                flow {
                     val request: Request = Request.Builder()
                         .url(
                             method
@@ -121,17 +121,17 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
                         .post(bodyBuilder.build())
                         .build()
                     val call = client.build().newCall(request)
-                    emitter.setCancellable { call.cancel() }
                     try {
                         val response = call.execute()
                         if (!response.isSuccessful) {
-                            emitter.tryOnError(HttpException(response.code))
+                            throw HttpException(response.code)
                         } else {
-                            emitter.onSuccess(response)
+                            emit(response)
                         }
                         response.close()
-                    } catch (e: Exception) {
-                        emitter.tryOnError(e)
+                    } catch (e: CancellationException) {
+                        call.cancel()
+                        throw e
                     }
                 }
             }
@@ -222,65 +222,56 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
         return handle
     }
 
-    fun <T : Any> extractResponseWithErrorHandling(): Function<BaseResponse<T>, T> {
-        return Function { response ->
-            response.error.requireNonNull {
-                val params = it.requests()
+    fun <T : Any> extractResponseWithErrorHandling(): suspend (BaseResponse<T>) -> T = {
+        val err = it.error
+        if (err != null) {
+            val params = err.requests()
 
-                if (!handleError(it, params)) {
-                    throw Exceptions.propagate(ApiException(it))
-                } else {
-                    var method = it["post_url"]
-                    if ("empty" == method) {
-                        method = "https://" + Settings.get()
-                            .main().apiDomain + "/method/" + it["method"]
-                    }
-                    return@Function rawVKRequest<T>(
-                        method,
-                        params,
-                        it.serializer ?: throw UnsupportedOperationException()
-                    )
-                        .map(extractResponseWithErrorHandling())
-                        .blockingGet()
+            if (!handleError(err, params)) {
+                throw ApiException(err)
+            } else {
+                var method = err["post_url"]
+                if ("empty" == method) {
+                    method = "https://" + Settings.get()
+                        .main().apiDomain + "/method/" + err["method"]
                 }
+                rawVKRequest<T>(
+                    method,
+                    params,
+                    err.serializer ?: throw UnsupportedOperationException()
+                ).map(extractResponseWithErrorHandling()).single()
             }
-            /*
-            response.executeErrors.nonNullNoEmpty {
-                it[0].requireNonNull { sit ->
-                    throw Exceptions.propagate(ApiException(sit))
-                }
-            }
-             */
-            response.response ?: throw NullPointerException("VK return null response")
+        } else {
+            it.response ?: throw NullPointerException("VK return null response")
         }
     }
 
-    fun checkResponseWithErrorHandling(): Function<VKResponse, Completable> {
-        return Function { response ->
-            response.error.requireNonNull {
-                val params = it.requests()
-                if (!handleError(it, params)) {
-                    throw Exceptions.propagate(ApiException(it))
-                } else {
-                    var method = it["post_url"]
-                    if ("empty" == method) {
-                        method = "https://" + Settings.get()
-                            .main().apiDomain + "/method/" + it["method"]
-                    }
-                    return@Function rawVKRequestOnly(method, params)
-                        .map(checkResponseWithErrorHandling())
-                        .blockingGet()
+    fun checkResponseWithErrorHandling(): suspend (VKResponse) -> Boolean = {
+        var resp = true
+        it.error.requireNonNull { err ->
+            val params = err.requests()
+            if (!handleError(err, params)) {
+                throw ApiException(err)
+            } else {
+                var method = err["post_url"]
+                if ("empty" == method) {
+                    method = "https://" + Settings.get()
+                        .main().apiDomain + "/method/" + err["method"]
                 }
+                resp = rawVKRequestOnly(
+                    method,
+                    params
+                ).map(checkResponseWithErrorHandling()).single()
             }
-            /*
-            response.executeErrors.nonNullNoEmpty {
-                it[0].requireNonNull { sit ->
-                    throw Exceptions.propagate(ApiException(sit))
-                }
-            }
-             */
-            Completable.complete()
         }
+        /*
+        it.executeErrors.nonNullNoEmpty {
+            it[0].requireNonNull { sit ->
+                throw ApiException(sit)
+            }
+        }
+         */
+        resp
     }
 
     companion object {

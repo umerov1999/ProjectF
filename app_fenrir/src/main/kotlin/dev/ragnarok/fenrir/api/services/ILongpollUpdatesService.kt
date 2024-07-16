@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.api.services
 import dev.ragnarok.fenrir.api.model.longpoll.VKApiGroupLongpollUpdates
 import dev.ragnarok.fenrir.api.model.longpoll.VKApiLongpollUpdates
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class ILongpollUpdatesService : IServiceRest() {
     fun getUpdates(
@@ -14,7 +14,7 @@ class ILongpollUpdatesService : IServiceRest() {
         wait: Long,
         mode: Int,
         version: Int
-    ): Single<VKApiLongpollUpdates> {
+    ): Flow<VKApiLongpollUpdates> {
         return rest.requestFullUrl(
             server,
             form(
@@ -35,7 +35,7 @@ class ILongpollUpdatesService : IServiceRest() {
         key: String?,
         ts: String?,
         wait: Long
-    ): Single<VKApiGroupLongpollUpdates> {
+    ): Flow<VKApiGroupLongpollUpdates> {
         return rest.requestFullUrl(
             server,
             form("act" to act, "key" to key, "ts" to ts, "wait" to wait),

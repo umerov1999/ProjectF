@@ -1,6 +1,5 @@
 package dev.ragnarok.filegallery.util
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
@@ -21,7 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dev.ragnarok.fenrir.module.rlottie.RLottieDrawable
 import dev.ragnarok.filegallery.BuildConfig
 import dev.ragnarok.filegallery.Constants
-import dev.ragnarok.filegallery.Includes.provideMainThreadScheduler
+import dev.ragnarok.filegallery.Includes
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.media.exo.OkHttpDataSource
 import dev.ragnarok.filegallery.model.Lang
@@ -29,7 +28,6 @@ import dev.ragnarok.filegallery.settings.Settings.get
 import dev.ragnarok.filegallery.util.AppTextUtils.updateDateLang
 import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
 import dev.ragnarok.filegallery.view.pager.*
-import io.reactivex.rxjava3.core.Completable
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import java.io.Closeable
@@ -120,6 +118,10 @@ object Utils {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
     }
 
+    fun hasVanillaIceCream(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && Includes.provideApplicationContext().applicationInfo.targetSdkVersion >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+    }
+
     @Suppress("deprecation")
     fun finishActivityImmediate(activity: Activity) {
         activity.finish()
@@ -139,7 +141,6 @@ object Utils {
         return null
     }
 
-    @Suppress("deprecation")
     fun getAppVersionName(context: Context): String? {
         return try {
             val packageInfo = if (hasTiramisu()) context.packageManager.getPackageInfo(
@@ -320,13 +321,6 @@ object Utils {
             return min
         }
         return value
-    }
-
-    @SuppressLint("CheckResult")
-    inline fun inMainThread(crossinline function: () -> Unit) {
-        Completable.complete()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { function.invoke() }
     }
 
     fun createOkHttp(timeouts: Long): OkHttpClient.Builder {

@@ -11,7 +11,8 @@ import dev.ragnarok.fenrir.getLong
 import dev.ragnarok.fenrir.getString
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.nonNullNoEmpty
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -19,14 +20,14 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlin.math.abs
 
 object ContactsUtils {
-    var projection = arrayOf(
+    private var projection = arrayOf(
         BaseColumns._ID,
         ContactsContract.Contacts.LOOKUP_KEY,
         ContactsContract.Contacts.DISPLAY_NAME,
         ContactsContract.Contacts.STARRED
     )
 
-    fun stripExceptNumbers(str: String?, includePlus: Boolean): String? {
+    private fun stripExceptNumbers(str: String?, includePlus: Boolean): String? {
         if (str == null) {
             return null
         }
@@ -114,8 +115,8 @@ object ContactsUtils {
         }
     }
 
-    fun getAllContactsJson(context: Context): Single<String> {
-        return Single.create {
+    fun getAllContactsJson(context: Context): Flow<String> {
+        return flow {
             val contacts: MutableList<ContactData> = ArrayList()
             val cr = context.contentResolver
             val cursor = cr.query(
@@ -126,7 +127,7 @@ object ContactsUtils {
                 null
             )
             if (cursor == null) {
-                it.tryOnError(Throwable("Can't collect contact list!"))
+                throw Throwable("Can't collect contact list!")
             } else {
                 if (cursor.count > 0) {
                     while (cursor.moveToNext()) {
@@ -140,9 +141,9 @@ object ContactsUtils {
                     cursor.close()
                 }
                 if (contacts.isEmpty()) {
-                    it.tryOnError(Throwable("Can't collect contact list!"))
+                    throw Throwable("Can't collect contact list!")
                 }
-                it.onSuccess(
+                emit(
                     kJson.encodeToString(ListSerializer(ContactData.serializer()), contacts)
                 )
             }

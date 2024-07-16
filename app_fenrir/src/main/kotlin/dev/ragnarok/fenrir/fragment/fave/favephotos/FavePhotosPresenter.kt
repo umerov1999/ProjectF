@@ -4,23 +4,23 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IFaveInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
+import kotlinx.coroutines.flow.flow
 
 class FavePhotosPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IFavePhotosView>(accountId, savedInstanceState) {
     private val faveInteractor: IFaveInteractor = InteractorFactory.createFaveInteractor()
     private val mPhotos: ArrayList<Photo> = ArrayList()
-    private val cacheDisposable = CompositeDisposable()
-    private val netDisposable = CompositeDisposable()
+    private val cacheDisposable = CompositeJob()
+    private val netDisposable = CompositeJob()
     private var mEndOfContent = false
     private var cacheLoadingNow = false
     private var requestNow = false
@@ -43,8 +43,7 @@ class FavePhotosPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun loadAllCachedData() {
         cacheLoadingNow = true
         cacheDisposable.add(faveInteractor.getCachedPhotos(accountId)
-            .fromIOToMain()
-            .subscribe({ photos -> onCachedDataReceived(photos) }) { t ->
+            .fromIOToMain({ photos -> onCachedDataReceived(photos) }) { t ->
                 onCacheGetError(
                     t
                 )
@@ -64,8 +63,8 @@ class FavePhotosPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     override fun onDestroyed() {
-        cacheDisposable.dispose()
-        netDisposable.dispose()
+        cacheDisposable.cancel()
+        netDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -77,8 +76,7 @@ class FavePhotosPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun request(offset: Int) {
         setRequestNow(true)
         netDisposable.add(faveInteractor.getPhotos(accountId, COUNT_PER_REQUEST, offset)
-            .fromIOToMain()
-            .subscribe({ photos ->
+            .fromIOToMain({ photos ->
                 onActualDataReceived(
                     offset,
                     photos
@@ -136,31 +134,30 @@ class FavePhotosPresenter(accountId: Long, savedInstanceState: Bundle?) :
 
     fun firePhotoClick(position: Int) {
         if (FenrirNative.isNativeLoaded && Settings.get().main().isNative_parcel_photo) {
-            appendDisposable(
-                Single.create { v: SingleEmitter<Long> ->
+            appendJob(
+                flow {
                     val mem = ParcelNative.create(ParcelFlags.NULL_LIST)
                     mem.writeInt(mPhotos.size)
                     for (i in mPhotos.indices) {
-                        if (v.isDisposed) {
+                        if (!isActive()) {
                             mem.forceDestroy()
-                            return@create
+                            return@flow
                         }
                         val photo = mPhotos[i]
                         mem.writeParcelable(photo)
                     }
-                    if (v.isDisposed) {
+                    if (!isActive()) {
                         mem.forceDestroy()
                     } else {
-                        v.onSuccess(mem.nativePointer)
+                        emit(mem.nativePointer)
                     }
-                }.fromIOToMain()
-                    .subscribe({
-                        view?.goToGalleryNative(
-                            accountId,
-                            it,
-                            position
-                        )
-                    }) { obj -> obj.printStackTrace() })
+                }.fromIOToMain({
+                    view?.goToGalleryNative(
+                        accountId,
+                        it,
+                        position
+                    )
+                }) { obj -> obj.printStackTrace() })
         } else {
             view?.goToGallery(
                 accountId,

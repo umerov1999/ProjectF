@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.annotation.CallSuper
 import dev.ragnarok.fenrir.fragment.base.core.IMvpView
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.toMainThread
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 
 abstract class AccountDependencyPresenter<V>(
     accountId: Long,
@@ -49,12 +49,11 @@ abstract class AccountDependencyPresenter<V>(
     }
 
     private fun observeChangesAccount() {
-        appendDisposable(
+        appendJob(
             Settings.get()
                 .accounts()
                 .observeChanges
-                .toMainThread()
-                .subscribe { onAccountChange(it) })
+                .sharedFlowToMain { onAccountChange(it) })
     }
 
     init {

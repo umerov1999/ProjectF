@@ -12,7 +12,9 @@ import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class DialogsSearchPresenter(
     accountId: Long,
@@ -39,10 +41,10 @@ class DialogsSearchPresenter(
         accountId: Long,
         criteria: DialogsSearchCriteria,
         startFrom: IntNextFrom
-    ): Single<Pair<List<Conversation>, IntNextFrom>> {
+    ): Flow<Pair<List<Conversation>, IntNextFrom>> {
         val offset = startFrom.offset
         if (offset > 0) {
-            return Single.just(Pair(emptyList(), startFrom))
+            return toFlow(Pair(emptyList(), startFrom))
         }
         return messagesInteractor.searchConversations(accountId, 255, criteria.query)
             .map {

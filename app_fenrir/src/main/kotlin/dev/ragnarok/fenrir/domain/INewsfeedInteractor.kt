@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.domain
 
 import dev.ragnarok.fenrir.model.NewsfeedComment
 import dev.ragnarok.fenrir.util.Pair
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface INewsfeedInteractor {
     fun getNewsfeedComments(
@@ -10,7 +10,7 @@ interface INewsfeedInteractor {
         count: Int,
         startFrom: String?,
         filter: String?
-    ): Single<Pair<List<NewsfeedComment>, String?>>
+    ): Flow<Pair<List<NewsfeedComment>, String?>>
 
     fun getMentions(
         accountId: Long,
@@ -19,5 +19,5 @@ interface INewsfeedInteractor {
         offset: Int?,
         startTime: Long?,
         endTime: Long?
-    ): Single<Pair<List<NewsfeedComment>, String?>>
+    ): Flow<Pair<List<NewsfeedComment>, String?>>
 }

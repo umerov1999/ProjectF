@@ -11,19 +11,19 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.Includes
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.ICaptchaProvider
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.theme.ThemeOverlay
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.fenrir.util.toast.CustomToast
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.filter
 
 class CaptchaActivity : AppCompatActivity() {
-    private val mCompositeDisposable = CompositeDisposable()
+    private val mCompositeJob = CompositeJob()
     private var mTextField: TextInputEditText? = null
     private var captchaProvider: ICaptchaProvider? = null
     private var requestSid: String? = null
@@ -57,17 +57,15 @@ class CaptchaActivity : AppCompatActivity() {
         captchaProvider = Includes.captchaProvider
 
         captchaProvider?.let {
-            mCompositeDisposable.add(
+            mCompositeJob.add(
                 it.observeWaiting()
                     .filter { ob -> ob == requestSid }
-                    .observeOn(provideMainThreadScheduler())
-                    .subscribe({ onWaitingRequestReceived() }, RxUtils.ignore())
+                    .sharedFlowToMain { onWaitingRequestReceived() }
             )
-            mCompositeDisposable.add(
+            mCompositeJob.add(
                 it.observeCanceling()
                     .filter { ob -> ob == requestSid }
-                    .observeOn(provideMainThreadScheduler())
-                    .subscribe({ onRequestCancelled() }, RxUtils.ignore())
+                    .sharedFlowToMain { onRequestCancelled() }
             )
         }
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -90,7 +88,7 @@ class CaptchaActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        mCompositeDisposable.dispose()
+        mCompositeJob.cancel()
         super.onDestroy()
     }
 

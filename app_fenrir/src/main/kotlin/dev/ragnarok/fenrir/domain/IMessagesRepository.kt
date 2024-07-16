@@ -25,49 +25,48 @@ import dev.ragnarok.fenrir.model.SentMsg
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.model.WriteText
 import dev.ragnarok.fenrir.util.Pair
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 
 interface IMessagesRepository {
-    fun observeMessagesSendErrors(): Flowable<Throwable>
+    fun observeMessagesSendErrors(): SharedFlow<Throwable>
     fun handleFlagsUpdates(
         accountId: Long,
         setUpdates: List<MessageFlagsSetUpdate>?,
         resetUpdates: List<MessageFlagsResetUpdate>?
-    ): Completable
+    ): Flow<Boolean>
 
     fun handleReadUpdates(
         accountId: Long,
         setUpdates: List<OutputMessagesSetReadUpdate>?,
         resetUpdates: List<InputMessagesSetReadUpdate>?
-    ): Completable
+    ): Flow<Boolean>
 
     fun handleUnreadBadgeUpdates(
         accountId: Long,
         updates: List<BadgeCountChangeUpdate>?
-    ): Completable
+    ): Flow<Boolean>
 
-    fun handleWriteUpdates(accountId: Long, updates: List<WriteTextInDialogUpdate>?): Completable
+    fun handleWriteUpdates(accountId: Long, updates: List<WriteTextInDialogUpdate>?): Flow<Boolean>
     fun handleMessageReactionsChangedUpdates(
         accountId: Long,
         updates: List<ReactionMessageChangeUpdate>?
-    ): Completable
+    ): Flow<Boolean>
 
-    fun observeSentMessages(): Flowable<SentMsg>
-    fun observePeerUpdates(): Flowable<List<PeerUpdate>>
-    fun observeMessageUpdates(): Flowable<List<MessageUpdate>>
-    fun observeTextWrite(): Flowable<List<WriteText>>
-    fun observePeerDeleting(): Flowable<PeerDeleting>
-    fun getConversationSingle(accountId: Long, peerId: Long, mode: Mode): Single<Conversation>
-    fun getConversation(accountId: Long, peerId: Long, mode: Mode): Flowable<Conversation>
+    fun observeSentMessages(): SharedFlow<SentMsg>
+    fun observePeerUpdates(): SharedFlow<List<PeerUpdate>>
+    fun observeMessageUpdates(): SharedFlow<List<MessageUpdate>>
+    fun observeTextWrite(): SharedFlow<List<WriteText>>
+    fun observePeerDeleting(): SharedFlow<PeerDeleting>
+    fun getConversationSingle(accountId: Long, peerId: Long, mode: Mode): Flow<Conversation>
+    fun getConversation(accountId: Long, peerId: Long, mode: Mode): Flow<Conversation>
     fun edit(
         accountId: Long,
         message: Message,
         text: String?,
         attachments: List<AbsModel>,
         keepForwardMessages: Boolean
-    ): Single<Message>
+    ): Flow<Message>
 
     fun runSendingQueue()
 
@@ -78,7 +77,7 @@ interface IMessagesRepository {
      * @param peerId    идентификатор диалога
      * @return полученные сообщения
      */
-    fun getCachedPeerMessages(accountId: Long, peerId: Long): Single<List<Message>>
+    fun getCachedPeerMessages(accountId: Long, peerId: Long): Flow<List<Message>>
 
     /**
      * Получить все закэшированные диалоги в локальной БД
@@ -86,11 +85,11 @@ interface IMessagesRepository {
      * @param accountId идентификатор аккаунта
      * @return диалоги
      */
-    fun getCachedDialogs(accountId: Long): Single<List<Dialog>>
+    fun getCachedDialogs(accountId: Long): Flow<List<Dialog>>
     fun getMessagesFromLocalJSon(
         accountId: Long,
         context: Context
-    ): Single<Pair<Peer, List<Message>>>
+    ): Flow<Pair<Peer, List<Message>>>
 
     /**
      * Сохранить в локальную БД сообщения
@@ -99,7 +98,7 @@ interface IMessagesRepository {
      * @param messages  сообщения
      * @return Completable
      */
-    fun insertMessages(accountId: Long, messages: List<VKApiMessage>): Completable
+    fun insertMessages(accountId: Long, messages: List<VKApiMessage>): Flow<Boolean>
 
     /**
      * Получить актуальный список сообщений для конкретного диалога
@@ -120,29 +119,29 @@ interface IMessagesRepository {
         startMessageId: Int?,
         cacheData: Boolean,
         rev: Boolean
-    ): Single<List<Message>>
+    ): Flow<List<Message>>
 
     fun getJsonHistory(
         accountId: Long,
         offset: Int?,
         count: Int?,
         peerId: Long
-    ): Single<List<String>>
+    ): Flow<List<String>>
 
     fun getImportantMessages(
         accountId: Long,
         count: Int,
         offset: Int?,
         startMessageId: Int?
-    ): Single<List<Message>>
+    ): Flow<List<Message>>
 
-    fun getDialogs(accountId: Long, count: Int, startMessageId: Int?): Single<List<Dialog>>
-    fun insertDialog(accountId: Long, dialog: Dialog): Completable
-    fun findCachedMessages(accountId: Long, ids: List<Int>): Single<List<Message>>
-    fun put(builder: SaveMessageBuilder): Single<Message>
-    fun sendUnsentMessage(accountIds: Collection<Long>): Single<SentMsg>
-    fun enqueueAgain(accountId: Long, messageId: Int): Completable
-    fun enqueueAgainList(accountId: Long, ids: Collection<Int>): Completable
+    fun getDialogs(accountId: Long, count: Int, startMessageId: Int?): Flow<List<Dialog>>
+    fun insertDialog(accountId: Long, dialog: Dialog): Flow<Boolean>
+    fun findCachedMessages(accountId: Long, ids: List<Int>): Flow<List<Message>>
+    fun put(builder: SaveMessageBuilder): Flow<Message>
+    fun sendUnsentMessage(accountIds: Collection<Long>): Flow<SentMsg>
+    fun enqueueAgain(accountId: Long, messageId: Int): Flow<Boolean>
+    fun enqueueAgainList(accountId: Long, ids: Collection<Int>): Flow<Boolean>
 
     /**
      * Поиск диалогов
@@ -152,60 +151,60 @@ interface IMessagesRepository {
      * @param q         строка поиска
      * @return список найденных диалогов
      */
-    fun searchConversations(accountId: Long, count: Int, q: String?): Single<List<Conversation>>
-    fun updateDialogKeyboard(accountId: Long, peerId: Long, keyboard: Keyboard?): Completable
+    fun searchConversations(accountId: Long, count: Int, q: String?): Flow<List<Conversation>>
+    fun updateDialogKeyboard(accountId: Long, peerId: Long, keyboard: Keyboard?): Flow<Boolean>
     fun searchMessages(
         accountId: Long,
         peerId: Long?,
         count: Int,
         offset: Int,
         q: String?
-    ): Single<List<Message>>
+    ): Flow<List<Message>>
 
-    fun getChatUsers(accountId: Long, chatId: Long): Single<List<AppChatUser>>
-    fun removeChatMember(accountId: Long, chatId: Long, userId: Long): Completable
-    fun addChatUsers(accountId: Long, chatId: Long, users: List<User>): Single<List<AppChatUser>>
-    fun deleteChatPhoto(accountId: Long, chatId: Long): Completable
-    fun deleteDialog(accountId: Long, peedId: Long): Completable
+    fun getChatUsers(accountId: Long, chatId: Long): Flow<List<AppChatUser>>
+    fun removeChatMember(accountId: Long, chatId: Long, userId: Long): Flow<Boolean>
+    fun addChatUsers(accountId: Long, chatId: Long, users: List<User>): Flow<List<AppChatUser>>
+    fun deleteChatPhoto(accountId: Long, chatId: Long): Flow<Boolean>
+    fun deleteDialog(accountId: Long, peedId: Long): Flow<Boolean>
     fun deleteMessages(
         accountId: Long,
         peerId: Long,
         ids: Collection<Int>,
         forAll: Boolean,
         spam: Boolean
-    ): Completable
+    ): Flow<Boolean>
 
-    fun restoreMessage(accountId: Long, peerId: Long, messageId: Int): Completable
-    fun editChat(accountId: Long, chatId: Long, title: String?): Completable
-    fun createGroupChat(accountId: Long, users: Collection<Long>, title: String?): Single<Long>
+    fun restoreMessage(accountId: Long, peerId: Long, messageId: Int): Flow<Boolean>
+    fun editChat(accountId: Long, chatId: Long, title: String?): Flow<Boolean>
+    fun createGroupChat(accountId: Long, users: Collection<Long>, title: String?): Flow<Long>
     fun recogniseAudioMessage(
         accountId: Long,
         message_id: Int?,
         audio_message_id: String?
-    ): Single<Int>
+    ): Flow<Int>
 
     fun setMemberRole(
         accountId: Long,
         chat_id: Long,
         member_id: Long,
         isAdmin: Boolean
-    ): Completable
+    ): Flow<Boolean>
 
-    fun markAsRead(accountId: Long, peerId: Long, toId: Int): Completable
+    fun markAsRead(accountId: Long, peerId: Long, toId: Int): Flow<Boolean>
     fun markAsImportant(
         accountId: Long,
         peerId: Long,
         ids: Collection<Int>,
         important: Int?
-    ): Completable
+    ): Flow<Boolean>
 
-    fun pin(accountId: Long, peerId: Long, message: Message?): Completable
-    fun pinUnPinConversation(accountId: Long, peerId: Long, peen: Boolean): Completable
-    fun markAsListened(accountId: Long, message_id: Int): Completable
+    fun pin(accountId: Long, peerId: Long, message: Message?): Flow<Boolean>
+    fun pinUnPinConversation(accountId: Long, peerId: Long, peen: Boolean): Flow<Boolean>
+    fun markAsListened(accountId: Long, message_id: Int): Flow<Boolean>
     fun sendOrDeleteReaction(
         accountId: Long,
         peer_id: Long, cmid: Int, reaction_id: Int?
-    ): Completable
+    ): Flow<Boolean>
 
-    fun getReactionsAssets(accountId: Long): Single<List<ReactionAsset>>
+    fun getReactionsAssets(accountId: Long): Flow<List<ReactionAsset>>
 }

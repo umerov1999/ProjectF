@@ -13,7 +13,6 @@ import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.longpoll.ILongpollManager
 import dev.ragnarok.fenrir.longpoll.LongpollInstance
@@ -23,11 +22,11 @@ import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 
 class KeepLongpollService : Service() {
-    private val compositeDisposable = CompositeDisposable()
+    private val compositeJob = CompositeJob()
     private lateinit var longpollManager: ILongpollManager
     private var wakeLock: PowerManager.WakeLock? = null
     override fun onCreate() {
@@ -40,16 +39,14 @@ class KeepLongpollService : Service() {
         startWithNotification()
         longpollManager = LongpollInstance.longpollManager
         sendKeepAlive()
-        compositeDisposable.add(
+        compositeJob.add(
             longpollManager.observeKeepAlive()
-                .observeOn(provideMainThreadScheduler())
-                .subscribe({ sendKeepAlive() }, ignore())
+                .sharedFlowToMain { sendKeepAlive() }
         )
-        compositeDisposable.add(
+        compositeJob.add(
             Settings.get().accounts()
                 .observeChanges
-                .observeOn(provideMainThreadScheduler())
-                .subscribe({ sendKeepAlive() }, ignore())
+                .sharedFlowToMain { sendKeepAlive() }
         )
     }
 
@@ -75,7 +72,7 @@ class KeepLongpollService : Service() {
 
     override fun onDestroy() {
         wakeLock?.release()
-        compositeDisposable.dispose()
+        compositeJob.cancel()
         cancelNotification()
         super.onDestroy()
     }

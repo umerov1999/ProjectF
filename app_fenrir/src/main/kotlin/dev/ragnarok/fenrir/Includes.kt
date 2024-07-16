@@ -30,8 +30,6 @@ import dev.ragnarok.fenrir.settings.SettingsImpl
 import dev.ragnarok.fenrir.upload.IUploadManager
 import dev.ragnarok.fenrir.upload.UploadManagerImpl
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.rxutils.io.AndroidSchedulers
-import io.reactivex.rxjava3.core.Scheduler
 
 object Includes {
     val proxySettings: IProxySettings by lazy {
@@ -70,7 +68,7 @@ object Includes {
     }
 
     val captchaProvider: ICaptchaProvider by lazy {
-        CaptchaProvider(provideApplicationContext(), provideMainThreadScheduler())
+        CaptchaProvider(provideApplicationContext())
     }
 
     val validationProvider: IValidateProvider by lazy {
@@ -96,11 +94,6 @@ object Includes {
 
     val settings: ISettings by lazy {
         SettingsImpl(instance)
-    }
-
-
-    fun provideMainThreadScheduler(): Scheduler {
-        return AndroidSchedulers.mainThread()
     }
 
     fun provideApplicationContext(): Context {

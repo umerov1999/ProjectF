@@ -9,7 +9,6 @@ import dev.ragnarok.fenrir.db.Stores
 import dev.ragnarok.fenrir.db.serialize.Serializers
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model
 import dev.ragnarok.fenrir.fragment.messages.conversationattachments.abschatattachments.BaseChatAttachmentsPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.TmpSource
 import dev.ragnarok.fenrir.module.FenrirNative
@@ -17,12 +16,14 @@ import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.util.DisposableHolder
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.PersistentLogger
 import dev.ragnarok.fenrir.util.Utils
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class ChatAttachmentPhotoPresenter(peerId: Long, accountId: Long, savedInstanceState: Bundle?) :
     BaseChatAttachmentsPresenter<Photo, IChatAttachmentPhotosView>(
@@ -30,11 +31,11 @@ class ChatAttachmentPhotoPresenter(peerId: Long, accountId: Long, savedInstanceS
         accountId,
         savedInstanceState
     ) {
-    private val openGalleryDisposableHolder = DisposableHolder<Void>()
+    private val openGalleryDisposableHolder = CompositeJob()
     override fun requestAttachments(
         peerId: Long,
         nextFrom: String?
-    ): Single<Pair<String?, List<Photo>>> {
+    ): Flow<Pair<String?, List<Photo>>> {
         return get().vkDefault(accountId)
             .messages()
             .getHistoryAttachments(peerId, VKApiAttachment.TYPE_PHOTO, nextFrom, 1, 1, 45, 50, null)
@@ -71,7 +72,7 @@ class ChatAttachmentPhotoPresenter(peerId: Long, accountId: Long, savedInstanceS
     }
 
     override fun onDestroyed() {
-        openGalleryDisposableHolder.dispose()
+        openGalleryDisposableHolder.cancel()
         super.onDestroyed()
     }
 
@@ -84,7 +85,7 @@ class ChatAttachmentPhotoPresenter(peerId: Long, accountId: Long, savedInstanceS
             )
         } else {
             val source = TmpSource(fireTempDataUsage(), 0)
-            openGalleryDisposableHolder.append(Stores.instance
+            openGalleryDisposableHolder.add(Stores.instance
                 .tempStore()
                 .putTemporaryData(
                     source.ownerId,
@@ -92,8 +93,7 @@ class ChatAttachmentPhotoPresenter(peerId: Long, accountId: Long, savedInstanceS
                     data,
                     Serializers.PHOTOS_SERIALIZER
                 )
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain({
                     onPhotosSavedToTmpStore(
                         position,
                         source

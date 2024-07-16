@@ -3,11 +3,11 @@ package dev.ragnarok.fenrir.fragment.photos.localimagealbums
 import android.os.Bundle
 import dev.ragnarok.fenrir.db.Stores
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.LocalImageAlbum
 import dev.ragnarok.fenrir.util.AppPerms.hasReadStoragePermission
 import dev.ragnarok.fenrir.util.Objects.safeEquals
 import dev.ragnarok.fenrir.util.PersistentLogger
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import java.util.Locale
 
 class LocalPhotoAlbumsPresenter(savedInstanceState: Bundle?) :
@@ -87,11 +87,10 @@ class LocalPhotoAlbumsPresenter(savedInstanceState: Bundle?) :
     private fun loadData() {
         if (mLoadingNow) return
         changeLoadingNowState(true)
-        appendDisposable(Stores.instance
+        appendJob(Stores.instance
             .localMedia()
             .imageAlbums
-            .fromIOToMain()
-            .subscribe({ onDataLoaded(it) }) { throwable ->
+            .fromIOToMain({ onDataLoaded(it) }) { throwable ->
                 onLoadError(
                     throwable
                 )

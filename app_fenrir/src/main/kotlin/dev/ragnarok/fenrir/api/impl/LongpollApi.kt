@@ -5,7 +5,8 @@ import dev.ragnarok.fenrir.api.interfaces.ILongpollApi
 import dev.ragnarok.fenrir.api.model.longpoll.VKApiGroupLongpollUpdates
 import dev.ragnarok.fenrir.api.model.longpoll.VKApiLongpollUpdates
 import dev.ragnarok.fenrir.api.services.ILongpollUpdatesService
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
 
 class LongpollApi internal constructor(private val provider: IOtherVKRestProvider) :
     ILongpollApi {
@@ -16,9 +17,9 @@ class LongpollApi internal constructor(private val provider: IOtherVKRestProvide
         wait: Long,
         mode: Int,
         version: Int
-    ): Single<VKApiLongpollUpdates> {
+    ): Flow<VKApiLongpollUpdates> {
         return provider.provideLongpollRest()
-            .flatMap {
+            .flatMapConcat {
                 val ret = ILongpollUpdatesService()
                 ret.addon(it)
                 ret.getUpdates(server, "a_check", key, ts, wait, mode, version)
@@ -30,9 +31,9 @@ class LongpollApi internal constructor(private val provider: IOtherVKRestProvide
         key: String?,
         ts: String?,
         wait: Long
-    ): Single<VKApiGroupLongpollUpdates> {
+    ): Flow<VKApiGroupLongpollUpdates> {
         return provider.provideLongpollRest()
-            .flatMap {
+            .flatMapConcat {
                 val ret = ILongpollUpdatesService()
                 ret.addon(it)
                 ret.getGroupUpdates(server, "a_check", key, ts, wait)

@@ -8,7 +8,9 @@ import dev.ragnarok.fenrir.api.HttpLoggerAndParser.vkHeader
 import dev.ragnarok.fenrir.api.rest.SimplePostHttp
 import dev.ragnarok.fenrir.settings.IProxySettings
 import dev.ragnarok.fenrir.settings.Settings
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
@@ -28,8 +30,8 @@ class UploadRestProvider(private val proxySettings: IProxySettings) : IUploadRes
         }
     }
 
-    override fun provideUploadRest(): Single<SimplePostHttp> {
-        return Single.fromCallable {
+    override fun provideUploadRest(): Flow<SimplePostHttp> {
+        return flow {
             if (uploadRestInstance == null) {
                 synchronized(uploadRestLock) {
                     if (uploadRestInstance == null) {
@@ -37,7 +39,7 @@ class UploadRestProvider(private val proxySettings: IProxySettings) : IUploadRes
                     }
                 }
             }
-            uploadRestInstance!!
+            emit(uploadRestInstance ?: return@flow)
         }
     }
 
@@ -65,6 +67,6 @@ class UploadRestProvider(private val proxySettings: IProxySettings) : IUploadRes
 
     init {
         proxySettings.observeActive
-            .subscribe { onProxySettingsChanged() }
+            .sharedFlowToMain { onProxySettingsChanged() }
     }
 }

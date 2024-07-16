@@ -5,11 +5,11 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.model.VKApiCommunity
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Community
 import dev.ragnarok.fenrir.model.GroupSettings
 import dev.ragnarok.fenrir.model.IdOption
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
@@ -47,7 +47,7 @@ class CommunityOptionsPresenter(
         mObsceneStopWords: Int?,
         mObsceneStopWordsText: String?
     ) {
-        appendDisposable(InteractorFactory.createGroupSettingsInteractor().edit(
+        appendJob(InteractorFactory.createGroupSettingsInteractor().edit(
             accountId,
             community.id,
             name,
@@ -61,8 +61,7 @@ class CommunityOptionsPresenter(
                 ?.let { SimpleDateFormat("dd.mm.yyyy", Utils.appLocale).format(it) } else null,
             settings.age, mObsceneFilter, mObsceneStopWords, mObsceneStopWordsText
         )
-            .fromIOToMain()
-            .subscribe({ onEditComplete() }, {
+            .fromIOToMain({ onEditComplete() }, {
                 onEditError(Utils.getCauseIfRuntime(it))
             })
         )

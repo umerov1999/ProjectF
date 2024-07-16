@@ -4,7 +4,7 @@ import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.DefaultCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.TopicsResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class IBoardService : IServiceRest() {
     //https://vk.com/dev/board.getComments
@@ -18,7 +18,7 @@ class IBoardService : IServiceRest() {
         extended: Int?,
         sort: String?,
         fields: String?
-    ): Single<BaseResponse<DefaultCommentsResponse>> {
+    ): Flow<BaseResponse<DefaultCommentsResponse>> {
         return rest.request(
             "board.getComments",
             form(
@@ -40,7 +40,7 @@ class IBoardService : IServiceRest() {
         groupId: Long,
         topicId: Int,
         commentId: Int
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "board.restoreComment",
             form("group_id" to groupId, "topic_id" to topicId, "comment_id" to commentId),
@@ -53,7 +53,7 @@ class IBoardService : IServiceRest() {
         groupId: Long,
         topicId: Int,
         commentId: Int
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "board.deleteComment",
             form("group_id" to groupId, "topic_id" to topicId, "comment_id" to commentId),
@@ -97,7 +97,7 @@ class IBoardService : IServiceRest() {
         preview: Int?,
         previewLength: Int?,
         fields: String?
-    ): Single<BaseResponse<TopicsResponse>> {
+    ): Flow<BaseResponse<TopicsResponse>> {
         return rest.request(
             "board.getTopics",
             form(
@@ -141,7 +141,7 @@ class IBoardService : IServiceRest() {
         commentId: Int,
         message: String?,
         attachments: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "board.editComment",
             form(
@@ -162,7 +162,7 @@ class IBoardService : IServiceRest() {
         fromGroup: Int?,
         stickerId: Int?,
         generatedUniqueId: Int?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "board.addComment",
             form(

@@ -2,10 +2,9 @@ package dev.ragnarok.filegallery.activity.photopager
 
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
-import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.model.Photo
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
+import kotlinx.coroutines.flow.flow
 
 class TmpGalleryPagerPresenter(
     source: Long, index: Int
@@ -29,16 +28,15 @@ class TmpGalleryPagerPresenter(
 
     private fun loadDataFromParcelNative(parcelNative: Long) {
         changeLoadingNowState(true)
-        appendDisposable(
-            Single.create { v: SingleEmitter<ArrayList<Photo>> ->
-                v.onSuccess(
+        appendJob(
+            flow {
+                emit(
                     ParcelNative.loadParcelableArrayList(
                         parcelNative, Photo.NativeCreator, ParcelFlags.MUTABLE_LIST
                     ) ?: ArrayList()
                 )
             }
-                .fromIOToMain()
-                .subscribe({ onInitialLoadingFinished(it) }) {
+                .fromIOToMain({ onInitialLoadingFinished(it) }) {
                     it.printStackTrace()
                 })
     }

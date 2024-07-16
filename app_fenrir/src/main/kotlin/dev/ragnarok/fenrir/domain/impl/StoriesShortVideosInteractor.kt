@@ -22,7 +22,9 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import dev.ragnarok.fenrir.util.VKOwnIds
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 class StoriesShortVideosInteractor(
     private val networker: INetworker,
@@ -35,7 +37,7 @@ class StoriesShortVideosInteractor(
         storyId: Int,
         count: Int,
         offset: Int
-    ): Single<List<Pair<Owner, Boolean>>> {
+    ): Flow<List<Pair<Owner, Boolean>>> {
         return networker.vkDefault(accountId)
             .stories()
             .getStoriesViewers(
@@ -79,21 +81,21 @@ class StoriesShortVideosInteractor(
         owner_id: Long,
         offset: Int?,
         count: Int?
-    ): Single<List<Narratives>> {
+    ): Flow<List<Narratives>> {
         return networker.vkDefault(accountId)
             .stories()
             .getNarratives(owner_id, offset, count)
-            .flatMap { story ->
+            .map { story ->
                 val dtos = listEmptyIfNull(story.items)
-                Single.just(MapUtil.mapAll(dtos) { transformNarrative(it) })
+                MapUtil.mapAll(dtos) { transformNarrative(it) }
             }
     }
 
-    override fun getStoryById(accountId: Long, stories: List<AccessIdPair>): Single<List<Story>> {
+    override fun getStoryById(accountId: Long, stories: List<AccessIdPair>): Flow<List<Story>> {
         return networker.vkDefault(accountId)
             .stories()
             .getStoryById(stories, 1, Fields.FIELDS_BASE_OWNER)
-            .flatMap { story ->
+            .flatMapConcat { story ->
                 val dtos = listEmptyIfNull(story.items)
                 val owners = Dto2Model.transformOwners(story.profiles, story.groups)
                 val ownIds = VKOwnIds()
@@ -116,16 +118,16 @@ class StoriesShortVideosInteractor(
             }
     }
 
-    override fun stories_delete(accountId: Long, owner_id: Long, story_id: Int): Single<Int> {
+    override fun stories_delete(accountId: Long, owner_id: Long, story_id: Int): Flow<Int> {
         return networker.vkDefault(accountId)
             .stories().stories_delete(owner_id, story_id)
     }
 
-    override fun getStories(accountId: Long, owner_id: Long?): Single<List<Story>> {
+    override fun getStories(accountId: Long, owner_id: Long?): Flow<List<Story>> {
         return networker.vkDefault(accountId)
             .stories()
             .getStories(owner_id, 1, Fields.FIELDS_BASE_OWNER)
-            .flatMap { story ->
+            .flatMapConcat { story ->
                 val dtos_multy = listEmptyIfNull(story.items)
                 val dtos: MutableList<VKApiStory> = ArrayList()
                 for (itst in dtos_multy) {
@@ -160,11 +162,11 @@ class StoriesShortVideosInteractor(
         accountId: Long,
         q: String?,
         mentioned_id: Long?
-    ): Single<List<Story>> {
+    ): Flow<List<Story>> {
         return networker.vkDefault(accountId)
             .stories()
             .searchStories(q, mentioned_id, 1000, 1, Fields.FIELDS_BASE_OWNER)
-            .flatMap { story ->
+            .flatMapConcat { story ->
                 val dtos_multy = listEmptyIfNull(story.items)
                 val dtos: MutableList<VKApiStory> = ArrayList()
                 for (itst in dtos_multy) {
@@ -196,7 +198,7 @@ class StoriesShortVideosInteractor(
         ownerId: Long?,
         startFrom: String?,
         count: Int?
-    ): Single<Pair<List<Video>, String?>> {
+    ): Flow<Pair<List<Video>, String?>> {
         return networker.vkDefault(accountId)
             .stories()
             .getShortVideos(ownerId, startFrom, count, 1, Fields.FIELDS_BASE_OWNER)

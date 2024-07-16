@@ -8,7 +8,6 @@ import dev.ragnarok.fenrir.db.serialize.Serializers
 import dev.ragnarok.fenrir.domain.IWallsRepository
 import dev.ragnarok.fenrir.domain.Repository.walls
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Document
 import dev.ragnarok.fenrir.model.Link
 import dev.ragnarok.fenrir.model.Photo
@@ -26,9 +25,9 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.intValueIn
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.dummy
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.dummy
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class WallMultiAttachmentsPresenter(
     accountId: Long,
@@ -44,7 +43,7 @@ class WallMultiAttachmentsPresenter(
     private val mPostsWithComments: ArrayList<Post> = ArrayList()
 
     private val fInteractor: IWallsRepository = walls
-    private val actualDataDisposable = CompositeDisposable()
+    private val actualDataDisposable = CompositeJob()
     private var loaded = 0
     private var actualDataReceived = false
     private var endOfContent = false
@@ -83,8 +82,7 @@ class WallMultiAttachmentsPresenter(
             100,
             WallCriteria.MODE_ALL
         )
-            .fromIOToMain()
-            .subscribe({ data ->
+            .fromIOToMain({ data ->
                 onActualDataReceived(
                     offset,
                     data
@@ -346,8 +344,7 @@ class WallMultiAttachmentsPresenter(
                         mPhotos,
                         Serializers.PHOTOS_SERIALIZER
                     )
-                    .fromIOToMain()
-                    .subscribe({
+                    .fromIOToMain({
                         onPhotosSavedToTmpStore(
                             position,
                             source
@@ -365,7 +362,7 @@ class WallMultiAttachmentsPresenter(
     }
 
     override fun onDestroyed() {
-        actualDataDisposable.dispose()
+        actualDataDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -396,9 +393,8 @@ class WallMultiAttachmentsPresenter(
     }
 
     fun firePostRestoreClick(post: Post) {
-        appendDisposable(fInteractor.restore(accountId, post.ownerId, post.vkid)
-            .fromIOToMain()
-            .subscribe(dummy()) { t ->
+        appendJob(fInteractor.restore(accountId, post.ownerId, post.vkid)
+            .fromIOToMain(dummy()) { t ->
                 showError(t)
             })
     }
@@ -428,9 +424,8 @@ class WallMultiAttachmentsPresenter(
         ) {
             return
         }
-        appendDisposable(fInteractor.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
-            .fromIOToMain()
-            .subscribe(ignore()) { t ->
+        appendJob(fInteractor.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
+            .fromIOToMain(dummy()) { t ->
                 showError(t)
             })
     }

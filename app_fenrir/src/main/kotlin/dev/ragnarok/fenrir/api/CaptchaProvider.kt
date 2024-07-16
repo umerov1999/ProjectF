@@ -5,17 +5,17 @@ import android.content.Context
 import android.content.Intent
 import dev.ragnarok.fenrir.activity.CaptchaActivity.Companion.createIntent
 import dev.ragnarok.fenrir.api.model.Captcha
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Scheduler
-import io.reactivex.rxjava3.subjects.PublishSubject
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.createPublishSubject
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.inMainThread
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.myEmit
+import kotlinx.coroutines.flow.SharedFlow
 import java.util.Collections
 
-class CaptchaProvider(private val app: Context, private val uiScheduler: Scheduler) :
+class CaptchaProvider(private val app: Context) :
     ICaptchaProvider {
     private val entryMap: MutableMap<String, Entry> = Collections.synchronizedMap(HashMap())
-    private val cancelingNotifier: PublishSubject<String> = PublishSubject.create()
-    private val waitingNotifier: PublishSubject<String> = PublishSubject.create()
+    private val cancelingNotifier = createPublishSubject<String>()
+    private val waitingNotifier = createPublishSubject<String>()
     override fun requestCaptcha(sid: String?, captcha: Captcha) {
         sid ?: return
         entryMap[sid] = Entry()
@@ -24,21 +24,19 @@ class CaptchaProvider(private val app: Context, private val uiScheduler: Schedul
 
     @SuppressLint("CheckResult")
     private fun startCaptchaActivity(context: Context, sid: String, captcha: Captcha) {
-        Completable.complete()
-            .observeOn(uiScheduler)
-            .subscribe {
-                val intent = createIntent(context, sid, captcha.img)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                context.startActivity(intent)
-            }
+        inMainThread {
+            val intent = createIntent(context, sid, captcha.img)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+        }
     }
 
     override fun cancel(sid: String) {
         entryMap.remove(sid)
-        cancelingNotifier.onNext(sid)
+        cancelingNotifier.myEmit(sid)
     }
 
-    override fun observeCanceling(): Observable<String> {
+    override fun observeCanceling(): SharedFlow<String> {
         return cancelingNotifier
     }
 
@@ -50,14 +48,14 @@ class CaptchaProvider(private val app: Context, private val uiScheduler: Schedul
             if (System.currentTimeMillis() - lookupEntry.lastActivityTime > MAX_WAIT_DELAY) {
                 iterator.remove()
             } else {
-                waitingNotifier.onNext(lookupsid)
+                waitingNotifier.myEmit(lookupsid)
             }
         }
         val entry = entryMap[sid] ?: throw OutOfDateException()
         return entry.code
     }
 
-    override fun observeWaiting(): Observable<String> {
+    override fun observeWaiting(): SharedFlow<String> {
         return waitingNotifier
     }
 

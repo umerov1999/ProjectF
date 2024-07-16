@@ -4,12 +4,12 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.db.Stores
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.LocalImageAlbum
 import dev.ragnarok.fenrir.model.LocalPhoto
 import dev.ragnarok.fenrir.util.AppPerms.hasReadStoragePermission
 import dev.ragnarok.fenrir.util.Utils.countOfSelection
 import dev.ragnarok.fenrir.util.Utils.getSelected
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class LocalPhotosPresenter(
     private val mLocalImageAlbum: LocalImageAlbum?, private val mSelectionCountMax: Int,
@@ -21,19 +21,17 @@ class LocalPhotosPresenter(
         if (mLoadingNow) return
         changeLoadingState(true)
         if (mLocalImageAlbum != null) {
-            appendDisposable(Stores.instance
+            appendJob(Stores.instance
                 .localMedia()
                 .getPhotos(mLocalImageAlbum.id.toLong())
-                .fromIOToMain()
-                .subscribe({ onDataLoaded(it) }) {
+                .fromIOToMain({ onDataLoaded(it) }) {
                     onLoadError()
                 })
         } else {
-            appendDisposable(Stores.instance
+            appendJob(Stores.instance
                 .localMedia()
                 .photos
-                .fromIOToMain()
-                .subscribe({ onDataLoaded(it) }) {
+                .fromIOToMain({ onDataLoaded(it) }) {
                     onLoadError()
                 })
         }

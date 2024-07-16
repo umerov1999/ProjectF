@@ -44,7 +44,7 @@ import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.BuildConfig
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Extra
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
+import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.Includes.proxySettings
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.UserAgentTool
@@ -93,8 +93,6 @@ import dev.ragnarok.fenrir.view.pager.GateTransformer
 import dev.ragnarok.fenrir.view.pager.SliderTransformer
 import dev.ragnarok.fenrir.view.pager.Transformers_Types
 import dev.ragnarok.fenrir.view.pager.ZoomOutTransformer
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.disposables.Disposable
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import java.io.Closeable
@@ -529,14 +527,6 @@ object Utils {
         return hasChanges
     }
 
-
-    fun safelyDispose(disposable: Disposable?) {
-        if (disposable != null && !disposable.isDisposed) {
-            disposable.dispose()
-        }
-    }
-
-
     fun safelyCloseCursor(cursor: Cursor?) {
         cursor?.close()
     }
@@ -799,6 +789,10 @@ object Utils {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
     }
 
+    fun hasVanillaIceCream(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && Includes.provideApplicationContext().applicationInfo.targetSdkVersion >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+    }
+
     @Suppress("deprecation")
     fun finishActivityImmediate(activity: Activity) {
         activity.finish()
@@ -1012,7 +1006,6 @@ object Utils {
      * @return Application's version code from the `PackageManager`.
      */
 
-    @Suppress("deprecation")
     fun getAppVersionName(context: Context): String? {
         return try {
             val packageInfo = if (hasTiramisu()) context.packageManager.getPackageInfo(
@@ -1324,7 +1317,6 @@ object Utils {
     }
 
     @Suppress("DEPRECATION")
-
     fun prepareDensity(context: Context) {
         val metrics = context.resources.displayMetrics
         density = metrics.density
@@ -1428,14 +1420,6 @@ object Utils {
             return min
         }
         return value
-    }
-
-
-    @SuppressLint("CheckResult")
-    inline fun inMainThread(crossinline function: () -> Unit) {
-        Completable.complete()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { function.invoke() }
     }
 
     fun createOkHttp(timeouts: Long, compressIntercept: Boolean): OkHttpClient.Builder {
@@ -1558,7 +1542,6 @@ object Utils {
         get() = getLocaleSettings(Settings.get().main().language)
 
     @Suppress("DEPRECATION")
-
     private fun getSystemLocale(config: Configuration): Locale? {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             config.locales[0]

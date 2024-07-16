@@ -28,7 +28,7 @@ class BlurTransformation(
         if (radius <= 0 || inputBitmap == null) {
             return inputBitmap
         }
-        val outputBitmap = inputBitmap.copy(inputBitmap.config, true)
+        val outputBitmap = inputBitmap.copy(inputBitmap.config ?: Bitmap.Config.ARGB_8888, true)
         val renderScript = android.renderscript.RenderScript.create(context)
         val blurInput = android.renderscript.Allocation.createFromBitmap(
             renderScript,

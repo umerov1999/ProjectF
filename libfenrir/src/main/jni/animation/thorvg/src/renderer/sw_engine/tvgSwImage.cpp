@@ -29,7 +29,7 @@
 
 static inline bool _onlyShifted(const Matrix* m)
 {
-    if (mathEqual(m->e11, 1.0f) && mathEqual(m->e22, 1.0f) && mathZero(m->e12) && mathZero(m->e21)) return true;
+    if (tvg::equal(m->e11, 1.0f) && tvg::equal(m->e22, 1.0f) && tvg::zero(m->e12) && tvg::zero(m->e21)) return true;
     return false;
 }
 
@@ -114,15 +114,15 @@ bool imagePrepare(SwImage* image, const RenderMesh* mesh, const Matrix* transfor
 
     //Fast track: Non-transformed image but just shifted.
     if (image->direct) {
-        image->ox = -static_cast<int32_t>(round(transform->e13));
-        image->oy = -static_cast<int32_t>(round(transform->e23));
+        image->ox = -static_cast<int32_t>(nearbyint(transform->e13));
+        image->oy = -static_cast<int32_t>(nearbyint(transform->e23));
     //Figure out the scale factor by transform matrix
     } else {
         auto scaleX = sqrtf((transform->e11 * transform->e11) + (transform->e21 * transform->e21));
         auto scaleY = sqrtf((transform->e22 * transform->e22) + (transform->e12 * transform->e12));
         image->scale = (fabsf(scaleX - scaleY) > 0.01f) ? 1.0f : scaleX;
 
-        if (mathZero(transform->e12) && mathZero(transform->e21)) image->scaled = true;
+        if (tvg::zero(transform->e12) && tvg::zero(transform->e21)) image->scaled = true;
         else image->scaled = false;
     }
 

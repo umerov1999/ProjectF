@@ -20,8 +20,11 @@ import dev.ragnarok.fenrir.api.services.IGroupsService
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.checkInt
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.ignoreElement
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 internal class GroupsApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IGroupsApi {
@@ -33,19 +36,18 @@ internal class GroupsApi(accountId: Long, provider: IServiceProvider) :
         contactPosition: String?,
         contactEmail: String?,
         contactPhone: String?,
-    ): Completable {
+    ): Flow<Boolean> {
         return provideService(IGroupsService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMapCompletable { service ->
-                service
-                    .editManager(
-                        groupId,
-                        userId,
-                        role,
-                        integerFromBoolean(isContact),
-                        contactPosition,
-                        contactEmail,
-                        contactPhone
-                    )
+            .flatMapConcat {
+                it.editManager(
+                    groupId,
+                    userId,
+                    role,
+                    integerFromBoolean(isContact),
+                    contactPosition,
+                    contactEmail,
+                    contactPhone
+                )
                     .map(extractResponseWithErrorHandling())
                     .ignoreElement()
             }
@@ -64,29 +66,27 @@ internal class GroupsApi(accountId: Long, provider: IServiceProvider) :
         obscene_filter: Int?,
         obscene_stopwords: Int?,
         obscene_words: String?
-    ): Completable {
+    ): Flow<Boolean> {
         return provideService(IGroupsService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMapCompletable { service ->
-                service
-                    .edit(
-                        groupId,
-                        title,
-                        description,
-                        screen_name,
-                        access,
-                        website,
-                        public_date, age_limits, obscene_filter, obscene_stopwords, obscene_words
-                    )
+            .flatMapConcat {
+                it.edit(
+                    groupId,
+                    title,
+                    description,
+                    screen_name,
+                    access,
+                    website,
+                    public_date, age_limits, obscene_filter, obscene_stopwords, obscene_words
+                )
                     .map(extractResponseWithErrorHandling())
                     .ignoreElement()
             }
     }
 
-    override fun unban(groupId: Long, ownerId: Long): Completable {
+    override fun unban(groupId: Long, ownerId: Long): Flow<Boolean> {
         return provideService(IGroupsService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMapCompletable { service ->
-                service
-                    .unban(groupId, ownerId)
+            .flatMapConcat {
+                it.unban(groupId, ownerId)
                     .map(extractResponseWithErrorHandling())
                     .ignoreElement()
             }
@@ -99,28 +99,26 @@ internal class GroupsApi(accountId: Long, provider: IServiceProvider) :
         reason: Int?,
         comment: String?,
         commentVisible: Boolean?
-    ): Completable {
+    ): Flow<Boolean> {
         return provideService(IGroupsService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMapCompletable { service ->
-                service
-                    .ban(
-                        groupId,
-                        ownerId,
-                        endDate,
-                        reason,
-                        comment,
-                        integerFromBoolean(commentVisible)
-                    )
+            .flatMapConcat {
+                it.ban(
+                    groupId,
+                    ownerId,
+                    endDate,
+                    reason,
+                    comment,
+                    integerFromBoolean(commentVisible)
+                )
                     .map(extractResponseWithErrorHandling())
                     .ignoreElement()
             }
     }
 
-    override fun getSettings(groupId: Long): Single<GroupSettingsDto> {
+    override fun getSettings(groupId: Long): Flow<GroupSettingsDto> {
         return provideService(IGroupsService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service
-                    .getSettings(groupId)
+            .flatMapConcat {
+                it.getSettings(groupId)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -129,10 +127,10 @@ internal class GroupsApi(accountId: Long, provider: IServiceProvider) :
         owner_id: Long,
         offset: Int,
         count: Int
-    ): Single<Items<VKApiMarketAlbum>> {
+    ): Flow<Items<VKApiMarketAlbum>> {
         return provideService(IGroupsService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.getMarketAlbums(owner_id, offset, count)
+            .flatMapConcat {
+                it.getMarketAlbums(owner_id, offset, count)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -143,10 +141,10 @@ internal class GroupsApi(accountId: Long, provider: IServiceProvider) :
         offset: Int,
         count: Int,
         extended: Int?
-    ): Single<Items<VKApiMarket>> {
+    ): Flow<Items<VKApiMarket>> {
         return provideService(IGroupsService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.getMarket(owner_id, album_id, offset, count, extended)
+            .flatMapConcat {
+                it.getMarket(owner_id, album_id, offset, count, extended)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -156,20 +154,20 @@ internal class GroupsApi(accountId: Long, provider: IServiceProvider) :
         offset: Int,
         count: Int,
         extended: Int?
-    ): Single<Items<VKApiMarket>> {
+    ): Flow<Items<VKApiMarket>> {
         return provideService(IGroupsService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.getMarketServices(owner_id, offset, count, extended)
+            .flatMapConcat {
+                it.getMarketServices(owner_id, offset, count, extended)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getMarketById(ids: Collection<AccessIdPair>): Single<Items<VKApiMarket>> {
+    override fun getMarketById(ids: Collection<AccessIdPair>): Flow<Items<VKApiMarket>> {
         val markets =
             join(ids, ",") { AccessIdPair.format(it) }
         return provideService(IGroupsService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.getMarketById(markets, 1)
+            .flatMapConcat {
+                it.getMarketById(markets, 1)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -180,23 +178,23 @@ internal class GroupsApi(accountId: Long, provider: IServiceProvider) :
         count: Int?,
         fields: String?,
         userId: Long?
-    ): Single<Items<VKApiBanned>> {
+    ): Flow<Items<VKApiBanned>> {
         return provideService(IGroupsService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service.getBanned(groupId, offset, count, fields, userId)
+            .flatMapConcat {
+                it.getBanned(groupId, offset, count, fields, userId)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getWallInfo(groupId: String?, fields: String?): Single<VKApiCommunity> {
+    override fun getWallInfo(groupId: String?, fields: String?): Flow<VKApiCommunity> {
         return provideService(
             IGroupsService(),
             TokenType.USER,
             TokenType.SERVICE,
             TokenType.COMMUNITY
         )
-            .flatMap { service ->
-                service.getGroupWallInfo(
+            .flatMapConcat {
+                it.getGroupWallInfo(
                     "var group_id = Args.group_id; var fields = Args.fields; var negative_group_id = -group_id; var group_info = API.groups.getById({\"v\":\"" + Constants.API_VERSION + "\", \"group_id\":group_id, \"fields\":fields}); var all_wall_count = API.wall.get({\"v\":\"" + Constants.API_VERSION + "\",\"owner_id\":negative_group_id, \"count\":1, \"filter\":\"all\"}).count; var owner_wall_count = API.wall.get({\"v\":\"" + Constants.API_VERSION + "\",\"owner_id\":negative_group_id, \"count\":1, \"filter\":\"owner\"}).count; var suggests_wall_count = API.wall.get({\"v\":\"" + Constants.API_VERSION + "\",\"owner_id\":negative_group_id, \"count\":1, \"filter\":\"suggests\"}).count; var postponed_wall_count = API.wall.get({\"v\":\"" + Constants.API_VERSION + "\",\"owner_id\":negative_group_id, \"count\":1, \"filter\":\"postponed\"}).count; var donut_wall_count = API.wall.get({\"v\":\"" + Constants.API_VERSION + "\",\"owner_id\":negative_group_id, \"count\":1, \"filter\":\"donut\"}).count; return {\"group_info\": !group_info ? null : group_info, \"all_wall_count\":all_wall_count, \"owner_wall_count\":owner_wall_count, \"suggests_wall_count\":suggests_wall_count, \"postponed_wall_count\":postponed_wall_count, \"donut_wall_count\":donut_wall_count };",
                     groupId,
                     fields
@@ -218,15 +216,15 @@ internal class GroupsApi(accountId: Long, provider: IServiceProvider) :
         count: Int?,
         fields: String?,
         filter: String?
-    ): Single<Items<VKApiUser>> {
+    ): Flow<Items<VKApiUser>> {
         return provideService(
             IGroupsService(),
             TokenType.USER,
             TokenType.COMMUNITY,
             TokenType.SERVICE
         )
-            .flatMap { service ->
-                service.getMembers(groupId, sort, offset, count, fields, filter)
+            .flatMapConcat {
+                it.getMembers(groupId, sort, offset, count, fields, filter)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -242,33 +240,32 @@ internal class GroupsApi(accountId: Long, provider: IServiceProvider) :
         sort: Int?,
         offset: Int?,
         count: Int?
-    ): Single<Items<VKApiCommunity>> {
+    ): Flow<Items<VKApiCommunity>> {
         return provideService(IGroupsService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .search(
-                        query, type, filter, countryId, cityId, integerFromBoolean(future),
-                        integerFromBoolean(market), sort, offset, count
-                    )
+            .flatMapConcat {
+                it.search(
+                    query, type, filter, countryId, cityId, integerFromBoolean(future),
+                    integerFromBoolean(market), sort, offset, count
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun leave(groupId: Long): Single<Boolean> {
+    override fun leave(groupId: Long): Flow<Boolean> {
         return provideService(IGroupsService(), TokenType.USER)
-            .flatMap { service ->
-                service.leave(groupId)
+            .flatMapConcat {
+                it.leave(groupId)
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
-    override fun join(groupId: Long, notSure: Int?): Single<Boolean> {
+    override fun join(groupId: Long, notSure: Int?): Flow<Boolean> {
         return provideService(IGroupsService(), TokenType.USER)
-            .flatMap { service ->
-                service.join(groupId, notSure)
+            .flatMapConcat {
+                it.join(groupId, notSure)
                     .map(extractResponseWithErrorHandling())
-                    .map { it == 1 }
+                    .checkInt()
             }
     }
 
@@ -279,19 +276,18 @@ internal class GroupsApi(accountId: Long, provider: IServiceProvider) :
         fields: String?,
         offset: Int?,
         count: Int?
-    ): Single<Items<VKApiCommunity>> {
+    ): Flow<Items<VKApiCommunity>> {
         return provideService(IGroupsService(), TokenType.USER)
-            .flatMap { service ->
-                service[userId, integerFromBoolean(extended), filter, fields, offset, count]
+            .flatMapConcat {
+                it[userId, integerFromBoolean(extended), filter, fields, offset, count]
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getLongPollServer(groupId: Long): Single<GroupLongpollServer> {
+    override fun getLongPollServer(groupId: Long): Flow<GroupLongpollServer> {
         return provideService(IGroupsService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service
-                    .getLongPollServer(groupId)
+            .flatMapConcat {
+                it.getLongPollServer(groupId)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -301,7 +297,7 @@ internal class GroupsApi(accountId: Long, provider: IServiceProvider) :
         domains: Collection<String>?,
         groupId: String?,
         fields: String?
-    ): Single<GroupByIdResponse> {
+    ): Flow<GroupByIdResponse> {
         val pds: ArrayList<String> = ArrayList(1)
         join(ids, ",")?.let { pds.add(it) }
         join(domains, ",")?.let { pds.add(it) }
@@ -311,9 +307,8 @@ internal class GroupsApi(accountId: Long, provider: IServiceProvider) :
             TokenType.COMMUNITY,
             TokenType.SERVICE
         )
-            .flatMap { service ->
-                service
-                    .getById(join(pds, ","), groupId, fields)
+            .flatMapConcat {
+                it.getById(join(pds, ","), groupId, fields)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -322,11 +317,10 @@ internal class GroupsApi(accountId: Long, provider: IServiceProvider) :
         groupId: Long,
         offset: Int?,
         count: Int?
-    ): Single<Items<VKApiGroupChats>> {
+    ): Flow<Items<VKApiGroupChats>> {
         return provideService(IGroupsService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service
-                    .getChats(groupId, offset, count)
+            .flatMapConcat {
+                it.getChats(groupId, offset, count)
                     .map(extractResponseWithErrorHandling())
             }
     }

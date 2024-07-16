@@ -17,13 +17,15 @@ import dev.ragnarok.fenrir.api.model.upload.UploadVideoDto
 import dev.ragnarok.fenrir.api.services.IUploadService
 import dev.ragnarok.fenrir.api.util.ProgressRequestBody
 import dev.ragnarok.fenrir.api.util.ProgressRequestBody.UploadCallbacks
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import java.io.InputStream
 
 class UploadApi internal constructor(private val provider: IUploadRestProvider) : IUploadApi {
-    private fun service(): Single<IUploadService> {
+    private fun service(): Flow<IUploadService> {
         return provider.provideUploadRest().map {
             val ret = IUploadService()
             ret.addon(it)
@@ -36,13 +38,15 @@ class UploadApi internal constructor(private val provider: IUploadRestProvider) 
         filename: String?,
         doc: InputStream,
         listener: PercentagePublisher?
-    ): Single<UploadDocDto> {
+    ): Flow<UploadDocDto> {
         val body = ProgressRequestBody(
             doc, wrapPercentageListener(listener),
             "*/*".toMediaTypeOrNull()
         )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("file", filename, body)
-        return service().flatMap { service -> service.uploadDocumentRx(server, part) }
+        return service().flatMapConcat {
+            it.uploadDocumentRx(server, part)
+        }
     }
 
     override fun uploadAudioRx(
@@ -50,13 +54,15 @@ class UploadApi internal constructor(private val provider: IUploadRestProvider) 
         filename: String?,
         inputStream: InputStream,
         listener: PercentagePublisher?
-    ): Single<UploadAudioDto> {
+    ): Flow<UploadAudioDto> {
         val body = ProgressRequestBody(
             inputStream, wrapPercentageListener(listener),
             "*/*".toMediaTypeOrNull()
         )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("file", filename, body)
-        return service().flatMap { service -> service.uploadAudioRx(server, part) }
+        return service().flatMapConcat {
+            it.uploadAudioRx(server, part)
+        }
     }
 
     override fun remotePlayAudioRx(
@@ -64,13 +70,15 @@ class UploadApi internal constructor(private val provider: IUploadRestProvider) 
         filename: String?,
         inputStream: InputStream,
         listener: PercentagePublisher?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         val body = ProgressRequestBody(
             inputStream, wrapPercentageListener(listener),
             "*/*".toMediaTypeOrNull()
         )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("audio", filename, body)
-        return service().flatMap { service -> service.remotePlayAudioRx(server, part) }
+        return service().flatMapConcat {
+            it.remotePlayAudioRx(server, part)
+        }
     }
 
     override fun uploadStoryRx(
@@ -79,7 +87,7 @@ class UploadApi internal constructor(private val provider: IUploadRestProvider) 
         inputStream: InputStream,
         listener: PercentagePublisher?,
         isVideo: Boolean
-    ): Single<CustomResponse<UploadStoryDto>> {
+    ): Flow<CustomResponse<UploadStoryDto>> {
         val body = ProgressRequestBody(
             inputStream, wrapPercentageListener(listener),
             "*/*".toMediaTypeOrNull()
@@ -90,7 +98,9 @@ class UploadApi internal constructor(private val provider: IUploadRestProvider) 
                 filename,
                 body
             )
-        return service().flatMap { service -> service.uploadStoryRx(server, part) }
+        return service().flatMapConcat {
+            it.uploadStoryRx(server, part)
+        }
     }
 
     override fun uploadVideoRx(
@@ -98,83 +108,95 @@ class UploadApi internal constructor(private val provider: IUploadRestProvider) 
         filename: String?,
         video: InputStream,
         listener: PercentagePublisher?
-    ): Single<UploadVideoDto> {
+    ): Flow<UploadVideoDto> {
         val body = ProgressRequestBody(
             video, wrapPercentageListener(listener),
             "*/*".toMediaTypeOrNull()
         )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("file", filename, body)
-        return service().flatMap { service -> service.uploadVideoRx(server, part) }
+        return service().flatMapConcat {
+            it.uploadVideoRx(server, part)
+        }
     }
 
     override fun uploadOwnerPhotoRx(
         server: String,
         photo: InputStream,
         listener: PercentagePublisher?
-    ): Single<UploadOwnerPhotoDto> {
+    ): Flow<UploadOwnerPhotoDto> {
         val body =
             ProgressRequestBody(
                 photo, wrapPercentageListener(listener),
                 "image/*".toMediaTypeOrNull()
             )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("photo", "photo.jpg", body)
-        return service().flatMap { service -> service.uploadOwnerPhotoRx(server, part) }
+        return service().flatMapConcat {
+            it.uploadOwnerPhotoRx(server, part)
+        }
     }
 
     override fun uploadChatPhotoRx(
         server: String,
         photo: InputStream,
         listener: PercentagePublisher?
-    ): Single<UploadChatPhotoDto> {
+    ): Flow<UploadChatPhotoDto> {
         val body =
             ProgressRequestBody(
                 photo, wrapPercentageListener(listener),
                 "image/*".toMediaTypeOrNull()
             )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("photo", "photo.jpg", body)
-        return service().flatMap { service -> service.uploadChatPhotoRx(server, part) }
+        return service().flatMapConcat {
+            it.uploadChatPhotoRx(server, part)
+        }
     }
 
     override fun uploadPhotoToWallRx(
         server: String,
         photo: InputStream,
         listener: PercentagePublisher?
-    ): Single<UploadPhotoToWallDto> {
+    ): Flow<UploadPhotoToWallDto> {
         val body =
             ProgressRequestBody(
                 photo, wrapPercentageListener(listener),
                 "image/*".toMediaTypeOrNull()
             )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("photo", "photo.jpg", body)
-        return service().flatMap { service -> service.uploadPhotoToWallRx(server, part) }
+        return service().flatMapConcat {
+            it.uploadPhotoToWallRx(server, part)
+        }
     }
 
     override fun uploadPhotoToMessageRx(
         server: String,
         inputStream: InputStream,
         listener: PercentagePublisher?
-    ): Single<UploadPhotoToMessageDto> {
+    ): Flow<UploadPhotoToMessageDto> {
         val body =
             ProgressRequestBody(
                 inputStream, wrapPercentageListener(listener),
                 "image/*".toMediaTypeOrNull()
             )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("photo", "photo.jpg", body)
-        return service().flatMap { service -> service.uploadPhotoToMessageRx(server, part) }
+        return service().flatMapConcat {
+            it.uploadPhotoToMessageRx(server, part)
+        }
     }
 
     override fun uploadPhotoToAlbumRx(
         server: String,
         file1: InputStream,
         listener: PercentagePublisher?
-    ): Single<UploadPhotoToAlbumDto> {
+    ): Flow<UploadPhotoToAlbumDto> {
         val body =
             ProgressRequestBody(
                 file1, wrapPercentageListener(listener),
                 "image/*".toMediaTypeOrNull()
             )
         val part: MultipartBody.Part = MultipartBody.Part.createFormData("file1", "photo.jpg", body)
-        return service().flatMap { service -> service.uploadPhotoToAlbumRx(server, part) }
+        return service().flatMapConcat {
+            it.uploadPhotoToAlbumRx(server, part)
+        }
     }
 
     companion object {

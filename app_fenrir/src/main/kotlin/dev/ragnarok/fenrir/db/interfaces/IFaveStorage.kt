@@ -14,12 +14,11 @@ import dev.ragnarok.fenrir.model.criteria.FavePhotosCriteria
 import dev.ragnarok.fenrir.model.criteria.FavePostsCriteria
 import dev.ragnarok.fenrir.model.criteria.FaveProductsCriteria
 import dev.ragnarok.fenrir.model.criteria.FaveVideosCriteria
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IFaveStorage : IStorage {
     @CheckResult
-    fun getFavePosts(criteria: FavePostsCriteria): Single<List<PostDboEntity>>
+    fun getFavePosts(criteria: FavePostsCriteria): Flow<List<PostDboEntity>>
 
     @CheckResult
     fun storePosts(
@@ -27,71 +26,71 @@ interface IFaveStorage : IStorage {
         posts: List<PostDboEntity>,
         owners: OwnerEntities?,
         clearBeforeStore: Boolean
-    ): Completable
+    ): Flow<Boolean>
 
     @CheckResult
-    fun getFaveLinks(accountId: Long): Single<List<FaveLinkEntity>>
-    fun removeLink(accountId: Long, id: String?): Completable
+    fun getFaveLinks(accountId: Long): Flow<List<FaveLinkEntity>>
+    fun removeLink(accountId: Long, id: String?): Flow<Boolean>
     fun storeLinks(
         accountId: Long,
         entities: List<FaveLinkEntity>,
         clearBefore: Boolean
-    ): Completable
+    ): Flow<Boolean>
 
     @CheckResult
     fun storePages(
         accountId: Long,
         users: List<FavePageEntity>,
         clearBeforeStore: Boolean
-    ): Completable
+    ): Flow<Boolean>
 
-    fun getFaveUsers(accountId: Long): Single<List<FavePageEntity>>
-    fun removePage(accountId: Long, ownerId: Long, isUser: Boolean): Completable
+    fun getFaveUsers(accountId: Long): Flow<List<FavePageEntity>>
+    fun removePage(accountId: Long, ownerId: Long, isUser: Boolean): Flow<Boolean>
 
     @CheckResult
     fun storePhotos(
         accountId: Long,
         photos: List<PhotoDboEntity>,
         clearBeforeStore: Boolean
-    ): Single<IntArray>
+    ): Flow<IntArray>
 
     @CheckResult
-    fun getPhotos(criteria: FavePhotosCriteria): Single<List<PhotoDboEntity>>
+    fun getPhotos(criteria: FavePhotosCriteria): Flow<List<PhotoDboEntity>>
 
     @CheckResult
-    fun getVideos(criteria: FaveVideosCriteria): Single<List<VideoDboEntity>>
+    fun getVideos(criteria: FaveVideosCriteria): Flow<List<VideoDboEntity>>
 
     @CheckResult
-    fun getArticles(criteria: FaveArticlesCriteria): Single<List<ArticleDboEntity>>
+    fun getArticles(criteria: FaveArticlesCriteria): Flow<List<ArticleDboEntity>>
 
     @CheckResult
-    fun getProducts(criteria: FaveProductsCriteria): Single<List<MarketDboEntity>>
+    fun getProducts(criteria: FaveProductsCriteria): Flow<List<MarketDboEntity>>
 
     @CheckResult
     fun storeVideos(
         accountId: Long,
         videos: List<VideoDboEntity>,
         clearBeforeStore: Boolean
-    ): Single<IntArray>
+    ): Flow<IntArray>
 
     @CheckResult
     fun storeArticles(
         accountId: Long,
         articles: List<ArticleDboEntity>,
         clearBeforeStore: Boolean
-    ): Single<IntArray>
+    ): Flow<IntArray>
 
     @CheckResult
     fun storeProducts(
         accountId: Long,
         products: List<MarketDboEntity>,
         clearBeforeStore: Boolean
-    ): Single<IntArray>
+    ): Flow<IntArray>
 
-    fun getFaveGroups(accountId: Long): Single<List<FavePageEntity>>
+    fun getFaveGroups(accountId: Long): Flow<List<FavePageEntity>>
     fun storeGroups(
         accountId: Long,
         groups: List<FavePageEntity>,
         clearBeforeStore: Boolean
-    ): Completable
+    ): Flow<Boolean>
 }

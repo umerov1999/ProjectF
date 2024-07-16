@@ -14,7 +14,6 @@ import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import dev.ragnarok.fenrir.Includes
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.model.VKApiPost
 import dev.ragnarok.fenrir.api.model.VKApiProfileInfo
@@ -26,7 +25,6 @@ import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.model.EditingPostType
 import dev.ragnarok.fenrir.model.LoadMoreState
@@ -58,10 +56,12 @@ import dev.ragnarok.fenrir.util.Utils.indexOf
 import dev.ragnarok.fenrir.util.Utils.intValueIn
 import dev.ragnarok.fenrir.util.Utils.intValueNotIn
 import dev.ragnarok.fenrir.util.Utils.isHiddenAccount
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.dummy
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.dummy
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import kotlinx.coroutines.flow.filter
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -80,8 +80,8 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     private val ownersRepository: IOwnersRepository
     private val storiesInteractor: IStoriesShortVideosInteractor
     private val walls: IWallsRepository
-    private val cacheCompositeDisposable = CompositeDisposable()
-    private val netCompositeDisposable = CompositeDisposable()
+    private val cacheCompositeDisposable = CompositeJob()
+    private val netCompositeDisposable = CompositeJob()
     protected var endOfContent = false
     var wallFilter: Int
         private set
@@ -98,30 +98,24 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     }
 
     private fun firePrepared() {
-        appendDisposable(uploadManager[accountId, listOf(Method.STORY, Method.PHOTO_TO_PROFILE)]
-            .fromIOToMain()
-            .subscribe { data -> onUploadsDataReceived(data) })
-        appendDisposable(uploadManager.observeAdding()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { added -> onUploadsAdded(added) })
-        appendDisposable(uploadManager.observeDeleting(true)
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { ids -> onUploadDeleted(ids) })
-        appendDisposable(uploadManager.observeResults()
+        appendJob(uploadManager[accountId, listOf(Method.STORY, Method.PHOTO_TO_PROFILE)]
+            .fromIOToMain { data -> onUploadsDataReceived(data) })
+        appendJob(uploadManager.observeAdding()
+            .sharedFlowToMain { added -> onUploadsAdded(added) })
+        appendJob(uploadManager.observeDeleting(true)
+            .sharedFlowToMain { ids -> onUploadDeleted(ids) })
+        appendJob(uploadManager.observeResults()
             .filter {
                 listOf(
                     Method.STORY,
                     Method.PHOTO_TO_PROFILE
                 ).contains(it.first.destination.method)
             }
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { pair -> onUploadFinished(pair) })
-        appendDisposable(uploadManager.observeStatus()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { upload -> onUploadStatusUpdate(upload) })
-        appendDisposable(uploadManager.observeProgress()
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { updates -> onProgressUpdates(updates) })
+            .sharedFlowToMain { pair -> onUploadFinished(pair) })
+        appendJob(uploadManager.observeStatus()
+            .sharedFlowToMain { upload -> onUploadStatusUpdate(upload) })
+        appendJob(uploadManager.observeProgress()
+            .sharedFlowToMain { updates -> onProgressUpdates(updates) })
     }
 
     fun updateToStory(toStory: String?) {
@@ -207,31 +201,27 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     internal abstract fun getOwner(): Owner
 
     fun fireAddToBlacklistClick() {
-        appendDisposable(InteractorFactory.createAccountInteractor()
+        appendJob(InteractorFactory.createAccountInteractor()
             .banOwners(accountId, listOf(getOwner()))
-            .fromIOToMain()
-            .subscribe({ onExecuteComplete() }) { t -> onExecuteError(t) })
+            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     fun fireRemoveBlacklistClick() {
-        appendDisposable(InteractorFactory.createAccountInteractor()
+        appendJob(InteractorFactory.createAccountInteractor()
             .unbanOwner(accountId, ownerId)
-            .fromIOToMain()
-            .subscribe({ onExecuteComplete() }) { t -> onExecuteError(t) })
+            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     fun fireRemoveStoryClick(storyOwnerId: Long, id: Int) {
-        appendDisposable(
+        appendJob(
             storiesInteractor
                 .stories_delete(accountId, storyOwnerId, id)
-                .fromIOToMain()
-                .subscribe({ fireRefresh() }) { t -> onExecuteError(t) })
+                .fromIOToMain({ fireRefresh() }) { t -> onExecuteError(t) })
     }
 
     private fun loadWallCachedData() {
         cacheCompositeDisposable.add(walls.getCachedWall(accountId, ownerId, wallFilter)
-            .fromIOToMain()
-            .subscribe({ posts -> onCachedDataReceived(posts) }) { obj ->
+            .fromIOToMain({ posts -> onCachedDataReceived(posts) }) { obj ->
                 obj.printStackTrace()
                 actualDataReady = false
                 requestWall(0)
@@ -252,7 +242,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     }
 
     override fun onDestroyed() {
-        cacheCompositeDisposable.dispose()
+        cacheCompositeDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -287,8 +277,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
             wallFilter,
             skipWallOffset <= 0
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 onActualDataReceived(
                     nextOffset,
                     it,
@@ -417,7 +406,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
             .setCancelable(true)
             .setView(root)
             .setPositiveButton(R.string.button_ok) { _, _ ->
-                appendDisposable(InteractorFactory.createAccountInteractor().saveProfileInfo(
+                appendJob(InteractorFactory.createAccountInteractor().saveProfileInfo(
                     accountId,
                     checkEditInfo(
                         root.findViewById<TextInputEditText>(R.id.edit_first_name).editableText.toString()
@@ -448,8 +437,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
                         p.sex
                     )
                 )
-                    .fromIOToMain()
-                    .subscribe({ t ->
+                    .fromIOToMain({ t ->
                         when (t) {
                             0 -> createCustomToast(context).showToastError(R.string.not_changed)
                             1 -> createCustomToast(context).showToastSuccessBottom(R.string.success)
@@ -464,9 +452,8 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     }
 
     fun fireEdit(context: Context) {
-        appendDisposable(InteractorFactory.createAccountInteractor().getProfileInfo(accountId)
-            .fromIOToMain()
-            .subscribe({ t -> fireEdit(context, t) }) { })
+        appendJob(InteractorFactory.createAccountInteractor().getProfileInfo(accountId)
+            .fromIOToMain { t -> fireEdit(context, t) })
     }
 
     fun fireToggleMonitor() {
@@ -495,18 +482,17 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         cacheCompositeDisposable.clear()
         requestWall(0)
         if (!Settings.get().main().isDisable_history) {
-            appendDisposable(storiesInteractor.getStories(
+            appendJob(storiesInteractor.getStories(
                 accountId,
                 if (accountId == ownerId) null else ownerId
             )
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain {
                     if (it.nonNullNoEmpty()) {
                         stories.clear()
                         stories.addAll(it)
                         view?.updateStory(stories)
                     }
-                }) { })
+                })
         }
         onRefresh()
     }
@@ -565,9 +551,8 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     }
 
     fun firePostRestoreClick(post: Post) {
-        appendDisposable(walls.restore(accountId, post.ownerId, post.vkid)
-            .fromIOToMain()
-            .subscribe(dummy()) { t ->
+        appendJob(walls.restore(accountId, post.ownerId, post.vkid)
+            .fromIOToMain(dummy()) { t ->
                 showError(t)
             })
     }
@@ -594,9 +579,8 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         if (Settings.get().main().isDisable_likes || isHiddenAccount(accountId)) {
             return
         }
-        appendDisposable(walls.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
-            .fromIOToMain()
-            .subscribe(ignore()) { t ->
+        appendJob(walls.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
+            .fromIOToMain(dummy()) { t ->
                 showError(t)
             })
     }
@@ -680,9 +664,8 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     }
 
     fun fireButtonRemoveClick(post: Post) {
-        appendDisposable(walls.delete(accountId, ownerId, post.vkid)
-            .fromIOToMain()
-            .subscribe(dummy()) { t ->
+        appendJob(walls.delete(accountId, ownerId, post.vkid)
+            .fromIOToMain(dummy()) { t ->
                 showError(t)
             })
     }
@@ -869,8 +852,8 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         resolveUploadDataVisibility()
     }
 
-    private fun onProgressUpdates(updates: List<IUploadManager.IProgressUpdate>) {
-        for (update in updates) {
+    private fun onProgressUpdates(updates: IUploadManager.IProgressUpdate?) {
+        updates?.let { update ->
             val index = Utils.findIndexById(uploadsData, update.id)
             if (index != -1) {
                 view?.notifyUploadProgressChanged(
@@ -967,34 +950,30 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         storiesInteractor = InteractorFactory.createStoriesInteractor()
         loadWallCachedData()
         if (!Settings.get().main().isDisable_history) {
-            appendDisposable(storiesInteractor.getStories(
+            appendJob(storiesInteractor.getStories(
                 accountId,
                 if (accountId == ownerId) null else ownerId
             )
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain {
                     if (it.nonNullNoEmpty()) {
                         stories.clear()
                         stories.addAll(it)
                         view?.updateStory(stories)
                     }
-                }) { })
+                })
         }
-        appendDisposable(walls
+        appendJob(walls
             .observeMinorChanges()
             .filter { it.accountId == accountId && it.ownerId == ownerId }
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onPostChange(it) })
-        appendDisposable(walls
+            .sharedFlowToMain { onPostChange(it) })
+        appendJob(walls
             .observeChanges()
             .filter { it.ownerId == ownerId }
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onPostChange(it) })
-        appendDisposable(walls
+            .sharedFlowToMain { onPostChange(it) })
+        appendJob(walls
             .observePostInvalidation()
             .filter { it.ownerId == ownerId }
-            .observeOn(provideMainThreadScheduler())
-            .subscribe { onPostInvalid(it.id) })
+            .sharedFlowToMain { onPostInvalid(it.id) })
         firePrepared()
     }
 }

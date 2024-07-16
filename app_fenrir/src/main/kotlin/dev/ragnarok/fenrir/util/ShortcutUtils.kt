@@ -20,8 +20,10 @@ import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import java.io.IOException
 
 object ShortcutUtils {
@@ -59,13 +61,13 @@ object ShortcutUtils {
         accountId: Long,
         title: String,
         url: String
-    ): Completable {
+    ): Flow<Boolean> {
         return Includes.stores.tempStore().addShortcut(
             "fenrir_account_$accountId",
             url.ifEmpty { VKApiUser.CAMERA_50 }, title
-        ).andThen {
+        ).map {
             createAccountShortcut(context, accountId, title, url)
-            it.onComplete()
+            true
         }
     }
 
@@ -101,7 +103,7 @@ object ShortcutUtils {
         ownerId: Long,
         title: String?,
         url: String?
-    ): Completable {
+    ): Flow<Boolean> {
         return Includes.stores.tempStore()
             .addShortcut(
                 "fenrir_wall_" + ownerId + "_aid_" + accountId,
@@ -110,7 +112,7 @@ object ShortcutUtils {
                 }, {
                     VKApiUser.CAMERA_50
                 }), title ?: ("id$ownerId")
-            ).andThen { its ->
+            ).map { its ->
                 createWallShortcut(
                     context,
                     accountId,
@@ -122,7 +124,7 @@ object ShortcutUtils {
                         VKApiUser.CAMERA_50
                     })
                 )
-                its.onComplete()
+                true
             }
     }
 
@@ -192,7 +194,7 @@ object ShortcutUtils {
         accountId: Long,
         peerId: Long,
         title: String
-    ): Completable {
+    ): Flow<Boolean> {
         return Includes.stores.tempStore()
             .addShortcut(
                 "fenrir_peer_" + peerId + "_aid_" + accountId,
@@ -201,29 +203,31 @@ object ShortcutUtils {
                 }, {
                     VKApiUser.CAMERA_50
                 }), title
-            ).andThen {
+            ).map {
                 createChatShortcut(context, url, accountId, peerId, title)
-                it.onComplete()
+                true
             }
     }
 
-    private fun loadRoundAvatar(url: String): Single<Bitmap> {
-        return Single.fromCallable {
-            with()
-                .load(url)
-                .transform(RoundTransformation())
-                .get() ?: throw UnsupportedOperationException()
+    private fun loadRoundAvatar(url: String): Flow<Bitmap> {
+        return flow {
+            emit(
+                with()
+                    .load(url)
+                    .transform(RoundTransformation())
+                    .get() ?: throw UnsupportedOperationException()
+            )
         }
     }
 
 
     @SuppressLint("ReportShortcutUsage")
     @TargetApi(Build.VERSION_CODES.N_MR1)
-    fun addDynamicShortcut(context: Context, accountId: Long, peer: Peer): Completable {
+    fun addDynamicShortcut(context: Context, accountId: Long, peer: Peer): Flow<Boolean> {
         val app = context.applicationContext
         return loadRoundAvatar(peer.avaUrl ?: VKApiUser.CAMERA_50)
-            .flatMapCompletable {
-                Completable.fromAction {
+            .flatMapConcat {
+                flow {
                     val manager = app.getSystemService(ShortcutManager::class.java)
                     val infos: ArrayList<ShortcutInfo> = ArrayList(manager.dynamicShortcuts)
                     val mustBeRemoved: MutableList<String> = ArrayList(1)
@@ -249,6 +253,7 @@ object ShortcutUtils {
                         manager.removeDynamicShortcuts(mustBeRemoved)
                     }
                     manager.addDynamicShortcuts(listOf(builder.build()))
+                    emit(true)
                 }
             }
     }

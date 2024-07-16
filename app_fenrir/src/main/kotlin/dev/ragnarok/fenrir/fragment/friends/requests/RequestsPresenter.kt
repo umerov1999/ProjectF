@@ -5,7 +5,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IRelationshipInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.model.UsersPart
@@ -15,19 +14,20 @@ import dev.ragnarok.fenrir.trimmedIsNullOrEmpty
 import dev.ragnarok.fenrir.util.Objects.safeEquals
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.indexOf
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import kotlinx.coroutines.flow.flatMapConcat
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 
 class RequestsPresenter(accountId: Long, private val userId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IRequestsView>(accountId, savedInstanceState) {
     private val relationshipInteractor: IRelationshipInteractor =
         InteractorFactory.createRelationshipInteractor()
     private val data: ArrayList<UsersPart> = ArrayList(3)
-    private val actualDataDisposable = CompositeDisposable()
-    private val cacheDisposable = CompositeDisposable()
-    private val searchDisposable = CompositeDisposable()
+    private val actualDataDisposable = CompositeJob()
+    private val cacheDisposable = CompositeJob()
+    private val searchDisposable = CompositeJob()
     private val isNotFriendShow: Boolean
     private var q: String? = null
     private var actualDataReceived = false
@@ -51,8 +51,7 @@ class RequestsPresenter(accountId: Long, private val userId: Long, savedInstance
             offset,
             if (isNotFriendShow) 1000 else 200, true
         )
-            .fromIOToMain()
-            .subscribe({ users ->
+            .fromIOToMain({ users ->
                 onActualDataReceived(
                     users,
                     do_scan
@@ -136,8 +135,7 @@ class RequestsPresenter(accountId: Long, private val userId: Long, savedInstance
     private fun loadAllCachedData() {
         cacheLoadingNow = true
         cacheDisposable.add(relationshipInteractor.getCachedRequests(accountId)
-            .fromIOToMain()
-            .subscribe({ users -> onCachedDataReceived(users) }) { t ->
+            .fromIOToMain({ users -> onCachedDataReceived(users) }) { t ->
                 onCacheGetError(
                     t
                 )
@@ -218,22 +216,19 @@ class RequestsPresenter(accountId: Long, private val userId: Long, savedInstance
         searchDisposable.clear()
         searchRunNow = true
         val query = q
-        val single: Single<List<User>>
         val netSingle = relationshipInteractor.getRequests(
             accountId,
             networkOffset,
             1000, false
         )
-        single = if (withDelay) {
-            Single.just(Any())
-                .delay(WEB_SEARCH_DELAY.toLong(), TimeUnit.MILLISECONDS)
-                .flatMap { netSingle }
+        val single = if (withDelay) {
+            delayTaskFlow(WEB_SEARCH_DELAY.toLong())
+                .flatMapConcat { netSingle }
         } else {
             netSingle
         }
         searchDisposable.add(single
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 onSearchDataReceived(
                     it, query
                 )
@@ -304,9 +299,9 @@ class RequestsPresenter(accountId: Long, private val userId: Long, savedInstance
     }
 
     override fun onDestroyed() {
-        searchDisposable.dispose()
-        cacheDisposable.dispose()
-        actualDataDisposable.dispose()
+        searchDisposable.cancel()
+        cacheDisposable.cancel()
+        actualDataDisposable.cancel()
         super.onDestroyed()
     }
 

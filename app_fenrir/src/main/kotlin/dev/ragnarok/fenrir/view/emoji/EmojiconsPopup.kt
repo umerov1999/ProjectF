@@ -33,6 +33,7 @@ import dev.ragnarok.fenrir.model.StickerSet
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingleSafe
 import dev.ragnarok.fenrir.view.emoji.section.Cars
 import dev.ragnarok.fenrir.view.emoji.section.Electronics
 import dev.ragnarok.fenrir.view.emoji.section.Emojicon
@@ -142,7 +143,7 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
             .current
         val stickerSets = InteractorFactory.createStickersInteractor()
             .getStickerSets(accountId)
-            .blockingGet()
+            .syncSingleSafe()
         val view = LayoutInflater.from(mContext).inflate(R.layout.emojicons, parent, false)
         emojisPager = view.findViewById(R.id.emojis_pager)
         val views = listOf(
@@ -189,7 +190,7 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
             )
         )
         val stickersGridViews: MutableList<StickerSet> = ArrayList()
-        for (stickerSet in stickerSets) {
+        for (stickerSet in stickerSets.orEmpty()) {
             stickersGridViews.add(stickerSet)
             sections.add(StickerSection(stickerSet))
         }

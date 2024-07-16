@@ -3,8 +3,10 @@ package dev.ragnarok.filegallery.view.natives.rlottie
 import android.content.Context
 import android.util.Log
 import dev.ragnarok.filegallery.Constants
+import okio.BufferedSource
+import okio.buffer
+import okio.sink
 import java.io.File
-import java.io.InputStream
 
 class RLottieNetworkCache(context: Context) {
     private val appContext = context.applicationContext
@@ -21,13 +23,12 @@ class RLottieNetworkCache(context: Context) {
         return File(parentDir(), filenameForUrl(url, false)).exists()
     }
 
-    fun writeTempCacheFile(url: String, stream: InputStream): File {
+    fun writeTempCacheFile(url: String, source: BufferedSource): File {
         val fileName = filenameForUrl(url, true)
         val file = File(parentDir(), fileName)
-        file.outputStream().use {
-            stream.copyTo(it)
-            it.flush()
-            it.close()
+
+        file.sink().buffer().use { output ->
+            output.writeAll(source)
         }
         return file
     }

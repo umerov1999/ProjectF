@@ -6,7 +6,6 @@ import dev.ragnarok.fenrir.db.serialize.Serializers
 import dev.ragnarok.fenrir.domain.ILocalServerInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.TmpSource
 import dev.ragnarok.fenrir.module.FenrirNative
@@ -17,17 +16,19 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.FindAt
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.disposables.Disposable
-import java.util.concurrent.TimeUnit
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
+import kotlinx.coroutines.flow.flow
 
 class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IPhotosLocalServerView>(accountId, savedInstanceState) {
     private val photos: MutableList<Photo> = ArrayList()
     private val fInteractor: ILocalServerInteractor =
         InteractorFactory.createLocalServerInteractor()
-    private var actualDataDisposable = Disposable.disposed()
+    private var actualDataDisposable = CancelableJob()
     private var Foffset = 0
     private var actualDataReceived = false
     private var endOfContent = false
@@ -48,9 +49,8 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun loadActualData(offset: Int) {
         actualDataLoading = true
         resolveRefreshingView()
-        appendDisposable(fInteractor.getPhotos(offset, GET_COUNT, reverse)
-            .fromIOToMain()
-            .subscribe({
+        appendJob(fInteractor.getPhotos(offset, GET_COUNT, reverse)
+            .fromIOToMain({
                 onActualDataReceived(
                     offset,
                     it
@@ -102,7 +102,7 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     override fun onDestroyed() {
-        actualDataDisposable.dispose()
+        actualDataDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -121,14 +121,13 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun doSearch() {
         actualDataLoading = true
         resolveRefreshingView()
-        appendDisposable(fInteractor.searchPhotos(
+        appendJob(fInteractor.searchPhotos(
             search_at.getQuery(),
             search_at.getOffset(),
             SEARCH_COUNT,
             reverse
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 onSearched(
                     FindAt(
                         search_at.getQuery(),
@@ -167,11 +166,9 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
             doSearch()
             return
         }
-        actualDataDisposable.dispose()
-        actualDataDisposable = Single.just(Any())
-            .delay(WEB_SEARCH_DELAY.toLong(), TimeUnit.MILLISECONDS)
-            .fromIOToMain()
-            .subscribe({ doSearch() }) { t -> onActualDataGetError(t) }
+        actualDataDisposable.cancel()
+        actualDataDisposable += delayTaskFlow(WEB_SEARCH_DELAY.toLong())
+            .toMain { doSearch() }
     }
 
     fun fireSearchRequestChanged(q: String?) {
@@ -179,7 +176,7 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
         if (!search_at.do_compare(query)) {
             actualDataLoading = false
             if (query.isNullOrEmpty()) {
-                actualDataDisposable.dispose()
+                actualDataDisposable.cancel()
                 fireRefresh(false)
             } else {
                 fireRefresh(true)
@@ -190,23 +187,22 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     fun updateInfo(position: Int, ptr: Long) {
         actualDataLoading = true
         resolveRefreshingView()
-        appendDisposable(
-            Single.create { v ->
+        appendJob(
+            flow {
                 ParcelNative.fromNative(ptr).readParcelableList(Photo.NativeCreator)?.let {
-                    v.onSuccess(
+                    emit(
                         it
                     )
                 }
-            }.fromIOToMain()
-                .subscribe({
-                    actualDataLoading = false
-                    resolveRefreshingView()
-                    photos.clear()
-                    photos.addAll(it)
-                    view?.scrollTo(
-                        position
-                    )
-                }) { it.printStackTrace() })
+            }.fromIOToMain({
+                actualDataLoading = false
+                resolveRefreshingView()
+                photos.clear()
+                photos.addAll(it)
+                view?.scrollTo(
+                    position
+                )
+            }) { it.printStackTrace() })
     }
 
     fun firePhotoClick(wrapper: Photo) {
@@ -222,7 +218,7 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
             }
             val finalIndex = Index
             val source = TmpSource(fireTempDataUsage(), 0)
-            appendDisposable(Stores.instance
+            appendJob(Stores.instance
                 .tempStore()
                 .putTemporaryData(
                     source.ownerId,
@@ -230,8 +226,7 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
                     photos,
                     Serializers.PHOTOS_SERIALIZER
                 )
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain({
                     view?.displayGallery(
                         accountId,
                         -311,
@@ -242,14 +237,14 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
                     )
                 }) { obj -> obj.printStackTrace() })
         } else {
-            appendDisposable(
-                Single.create { v: SingleEmitter<Pair<Long, Int>> ->
+            appendJob(
+                flow {
                     val mem = ParcelNative.create(ParcelFlags.NULL_LIST)
                     mem.writeInt(photos.size)
                     for (i in photos.indices) {
-                        if (v.isDisposed) {
+                        if (!isActive()) {
                             mem.forceDestroy()
-                            return@create
+                            return@flow
                         }
                         val photo = photos[i]
                         mem.writeParcelable(photo)
@@ -258,22 +253,21 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
                             trig = true
                         }
                     }
-                    if (v.isDisposed) {
+                    if (!isActive()) {
                         mem.forceDestroy()
                     } else {
-                        v.onSuccess(Pair(mem.nativePointer, Index))
+                        emit(Pair(mem.nativePointer, Index))
                     }
-                }.fromIOToMain()
-                    .subscribe({
-                        view?.displayGalleryUnSafe(
-                            accountId,
-                            -311,
-                            accountId,
-                            it.first,
-                            it.second,
-                            reverse
-                        )
-                    }) { obj -> obj.printStackTrace() })
+                }.fromIOToMain({
+                    view?.displayGalleryUnSafe(
+                        accountId,
+                        -311,
+                        accountId,
+                        it.first,
+                        it.second,
+                        reverse
+                    )
+                }) { obj -> obj.printStackTrace() })
         }
     }
 

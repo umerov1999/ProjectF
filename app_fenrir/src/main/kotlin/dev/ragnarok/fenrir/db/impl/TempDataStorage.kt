@@ -26,9 +26,11 @@ import dev.ragnarok.fenrir.model.ShortcutStored
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Exestime.log
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.emptyTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 
@@ -42,8 +44,8 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         ownerId: Long,
         sourceId: Int,
         serializer: ISerializeAdapter<T>
-    ): Single<List<T>> {
-        return Single.fromCallable {
+    ): Flow<List<T>> {
+        return flow {
             val start = System.currentTimeMillis()
             val where = TempDataColumns.OWNER_ID + " = ? AND " + TempDataColumns.SOURCE_ID + " = ?"
             val args = arrayOf(ownerId.toString(), sourceId.toString())
@@ -59,7 +61,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                 }
             }
             log("TempDataStorage.getData", start, "count: " + data.size)
-            data
+            emit(data)
         }
     }
 
@@ -68,8 +70,8 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         sourceId: Int,
         data: List<T>,
         serializer: ISerializeAdapter<T>
-    ): Completable {
-        return Completable.create { emitter ->
+    ): Flow<Boolean> {
+        return flow {
             val start = System.currentTimeMillis()
             val db = helper.writableDatabase
             db.beginTransaction()
@@ -81,7 +83,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                     arrayOf(ownerId.toString(), sourceId.toString())
                 )
                 for (t in data) {
-                    if (emitter.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     val cv = ContentValues()
@@ -90,30 +92,31 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                     cv.put(TempDataColumns.DATA, serializer.serialize(t))
                     db.insert(TempDataColumns.TABLENAME, null, cv)
                 }
-                if (!emitter.isDisposed) {
+                if (!isActive()) {
                     db.setTransactionSuccessful()
                 }
             } finally {
                 db.endTransaction()
             }
             log("TempDataStorage.put", start, "count: " + data.size)
-            emitter.onComplete()
+            emit(true)
         }
     }
 
-    override fun deleteTemporaryData(ownerId: Long): Completable {
-        return Completable.fromAction {
+    override fun deleteTemporaryData(ownerId: Long): Flow<Boolean> {
+        return flow {
             val start = System.currentTimeMillis()
             val count = helper.writableDatabase.delete(
                 TempDataColumns.TABLENAME,
                 TempDataColumns.OWNER_ID + " = ?", arrayOf(ownerId.toString())
             )
             log("TempDataStorage.delete", start, "count: $count")
+            emit(true)
         }
     }
 
-    override fun getSearchQueries(sourceId: Int): Single<List<String>> {
-        return Single.fromCallable {
+    override fun getSearchQueries(sourceId: Int): Flow<List<String>> {
+        return flow {
             val start = System.currentTimeMillis()
             val where = SearchRequestColumns.SOURCE_ID + " = ?"
             val args = arrayOf(sourceId.toString())
@@ -128,23 +131,22 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                 }
             }
             log("SearchRequestHelperStorage.getQueries", start, "count: " + data.size)
-            data
+            emit(data)
         }
     }
 
-    override fun insertSearchQuery(sourceId: Int, query: String?): Completable {
+    override fun insertSearchQuery(sourceId: Int, query: String?): Flow<Boolean> {
         if (query == null) {
-            return Completable.complete()
+            return emptyTaskFlow()
         }
         val queryClean = query.trim { it <= ' ' }
         return if (queryClean.isEmpty()) {
-            Completable.complete()
-        } else Completable.create { emitter ->
+            emptyTaskFlow()
+        } else flow {
             val db = helper.writableDatabase
             db.beginTransaction()
-            if (emitter.isDisposed) {
+            if (!isActive()) {
                 db.endTransaction()
-                emitter.onComplete()
             } else {
                 db.delete(
                     SearchRequestColumns.TABLENAME,
@@ -155,35 +157,35 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                     cv.put(SearchRequestColumns.SOURCE_ID, sourceId)
                     cv.put(SearchRequestColumns.QUERY, queryClean)
                     db.insert(SearchRequestColumns.TABLENAME, null, cv)
-                    if (!emitter.isDisposed) {
+                    if (isActive()) {
                         db.setTransactionSuccessful()
                     }
                 } finally {
                     db.endTransaction()
                 }
-                emitter.onComplete()
+                emit(true)
             }
         }
     }
 
-    override fun deleteSearch(sourceId: Int): Completable {
-        return Completable.fromAction {
+    override fun deleteSearch(sourceId: Int): Flow<Boolean> {
+        return flow {
             val start = System.currentTimeMillis()
             val count = helper.writableDatabase.delete(
                 SearchRequestColumns.TABLENAME,
                 SearchRequestColumns.SOURCE_ID + " = ?", arrayOf(sourceId.toString())
             )
             log("SearchRequestHelperStorage.delete", start, "count: $count")
+            emit(true)
         }
     }
 
-    override fun addShortcut(action: String, cover: String, name: String): Completable {
-        return Completable.create {
+    override fun addShortcut(action: String, cover: String, name: String): Flow<Boolean> {
+        return flow {
             val db = helper.writableDatabase
             db.beginTransaction()
-            if (it.isDisposed) {
+            if (!isActive()) {
                 db.endTransaction()
-                it.onComplete()
             } else {
                 db.delete(
                     ShortcutsColumns.TABLENAME,
@@ -195,24 +197,23 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                     cv.put(ShortcutsColumns.NAME, name)
                     cv.put(ShortcutsColumns.COVER, cover)
                     db.insert(ShortcutsColumns.TABLENAME, null, cv)
-                    if (!it.isDisposed) {
+                    if (isActive()) {
                         db.setTransactionSuccessful()
                     }
                 } finally {
                     db.endTransaction()
                 }
-                it.onComplete()
+                emit(true)
             }
         }
     }
 
-    override fun addShortcuts(list: List<ShortcutStored>): Completable {
-        return Completable.create {
+    override fun addShortcuts(list: List<ShortcutStored>): Flow<Boolean> {
+        return flow {
             val db = helper.writableDatabase
             db.beginTransaction()
-            if (it.isDisposed) {
+            if (!isActive()) {
                 db.endTransaction()
-                it.onComplete()
             } else {
                 try {
                     for (i in list) {
@@ -226,24 +227,26 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                         cv.put(ShortcutsColumns.COVER, i.cover)
                         db.insert(ShortcutsColumns.TABLENAME, null, cv)
                     }
-                    if (!it.isDisposed) {
+                    if (isActive()) {
                         db.setTransactionSuccessful()
                     }
                 } finally {
                     db.endTransaction()
                 }
-                it.onComplete()
+                emit(true)
             }
         }
     }
 
-    override fun addReactionsAssets(accountId: Long, list: List<ReactionAssetEntity>): Completable {
-        return Completable.create {
+    override fun addReactionsAssets(
+        accountId: Long,
+        list: List<ReactionAssetEntity>
+    ): Flow<Boolean> {
+        return flow {
             val db = helper.writableDatabase
             db.beginTransaction()
-            if (it.isDisposed) {
+            if (isActive()) {
                 db.endTransaction()
-                it.onComplete()
             } else {
                 try {
                     db.delete(
@@ -259,19 +262,19 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                         cv.put(ReactionsColumns.STATIC, i.static)
                         db.insert(ReactionsColumns.TABLENAME, null, cv)
                     }
-                    if (!it.isDisposed) {
+                    if (isActive()) {
                         db.setTransactionSuccessful()
                     }
                 } finally {
                     db.endTransaction()
                 }
-                it.onComplete()
+                emit(true)
             }
         }
     }
 
-    override fun getReactionsAssets(accountId: Long): Single<List<ReactionAssetEntity>> {
-        return Single.fromCallable {
+    override fun getReactionsAssets(accountId: Long): Flow<List<ReactionAssetEntity>> {
+        return flow {
             val start = System.currentTimeMillis()
             val where = ReactionsColumns.ACCOUNT_ID + " = ?"
             val args = arrayOf(accountId.toString())
@@ -291,13 +294,13 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                 }
             }
             log("SearchRequestHelperStorage.getReactionsAssets", start, "count: " + data.size)
-            data
+            emit(data)
         }
     }
 
-    override fun clearReactionAssets(accountId: Long): Completable {
+    override fun clearReactionAssets(accountId: Long): Flow<Boolean> {
         Settings.get().main().del_last_reaction_assets_sync(accountId)
-        return Completable.create { e ->
+        return flow {
             val db = TempDataHelper.helper.writableDatabase
             db.beginTransaction()
             try {
@@ -305,27 +308,28 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                 db.delete(ReactionsColumns.TABLENAME, whereDel, arrayOf(accountId.toString()))
                 db.setTransactionSuccessful()
                 db.endTransaction()
-                e.onComplete()
+                emit(true)
             } catch (exception: Exception) {
                 db.endTransaction()
-                e.tryOnError(exception)
+                throw exception
             }
         }
     }
 
-    override fun deleteShortcut(action: String): Completable {
-        return Completable.fromAction {
+    override fun deleteShortcut(action: String): Flow<Boolean> {
+        return flow {
             val start = System.currentTimeMillis()
             val count = helper.writableDatabase.delete(
                 ShortcutsColumns.TABLENAME,
                 ShortcutsColumns.ACTION + " = ?", arrayOf(action)
             )
             log("SearchRequestHelperStorage.delete", start, "count: $count")
+            emit(true)
         }
     }
 
-    override fun getShortcutAll(): Single<List<ShortcutStored>> {
-        return Single.fromCallable {
+    override fun getShortcutAll(): Flow<List<ShortcutStored>> {
+        return flow {
             val cursor = helper.writableDatabase.query(
                 ShortcutsColumns.TABLENAME,
                 PROJECTION_SHORTCUT,
@@ -340,12 +344,12 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                 data.add(mapShortcut(cursor))
             }
             cursor.close()
-            data
+            emit(data)
         }
     }
 
-    override fun addLog(type: Int, tag: String, body: String): Single<LogEvent> {
-        return Single.fromCallable {
+    override fun addLog(type: Int, tag: String, body: String): Flow<LogEvent> {
+        return flow {
             val now = System.currentTimeMillis()
             val cv = ContentValues()
             cv.put(LogsColumns.TYPE, type)
@@ -353,35 +357,39 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
             cv.put(LogsColumns.BODY, body)
             cv.put(LogsColumns.DATE, now)
             val id = helper.writableDatabase.insert(LogsColumns.TABLENAME, null, cv)
-            LogEvent(id.toInt())
-                .setBody(body)
-                .setTag(tag)
-                .setDate(now)
-                .setType(type)
+            emit(
+                LogEvent(id.toInt())
+                    .setBody(body)
+                    .setTag(tag)
+                    .setDate(now)
+                    .setType(type)
+            )
         }
     }
 
-    override fun deleteAudio(sourceOwner: Long, id: Int, ownerId: Long): Completable {
-        return Completable.fromAction {
+    override fun deleteAudio(sourceOwner: Long, id: Int, ownerId: Long): Flow<Boolean> {
+        return flow {
             helper.writableDatabase.delete(
                 AudiosColumns.TABLENAME,
                 AudiosColumns.SOURCE_OWNER_ID + " = ? AND " + AudiosColumns.AUDIO_ID + " = ? AND " + AudiosColumns.AUDIO_OWNER_ID + " = ?",
                 arrayOf(sourceOwner.toString(), id.toString(), ownerId.toString())
             )
+            emit(true)
         }
     }
 
-    override fun deleteAudios(): Completable {
-        return Completable.fromAction {
+    override fun deleteAudios(): Flow<Boolean> {
+        return flow {
             helper.writableDatabase.delete(
                 AudiosColumns.TABLENAME,
                 null, null
             )
+            emit(true)
         }
     }
 
-    override fun getAudiosAll(sourceOwner: Long): Single<List<Audio>> {
-        return Single.fromCallable {
+    override fun getAudiosAll(sourceOwner: Long): Flow<List<Audio>> {
+        return flow {
             val cursor = helper.writableDatabase.query(
                 AudiosColumns.TABLENAME,
                 PROJECTION_AUDIO,
@@ -396,17 +404,16 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                 data.add(mapAudio(cursor))
             }
             cursor.close()
-            data
+            emit(data)
         }
     }
 
-    override fun addAudios(sourceOwner: Long, list: List<Audio>, clear: Boolean): Completable {
-        return Completable.create { it1 ->
+    override fun addAudios(sourceOwner: Long, list: List<Audio>, clear: Boolean): Flow<Boolean> {
+        return flow {
             val db = helper.writableDatabase
             db.beginTransaction()
-            if (it1.isDisposed) {
+            if (!isActive()) {
                 db.endTransaction()
-                it1.onComplete()
             } else {
                 Settings.get().main().set_last_audio_sync(System.currentTimeMillis() / 1000L)
                 try {
@@ -453,19 +460,19 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                         cv.put(AudiosColumns.IS_HQ, i.isHq)
                         db.insert(AudiosColumns.TABLENAME, null, cv)
                     }
-                    if (!it1.isDisposed) {
+                    if (isActive()) {
                         db.setTransactionSuccessful()
                     }
                 } finally {
                     db.endTransaction()
                 }
-                it1.onComplete()
+                emit(true)
             }
         }
     }
 
-    override fun getLogAll(type: Int): Single<List<LogEvent>> {
-        return Single.fromCallable {
+    override fun getLogAll(type: Int): Flow<List<LogEvent>> {
+        return flow {
             val cursor = helper.writableDatabase.query(
                 LogsColumns.TABLENAME,
                 PROJECTION_LOG,
@@ -480,7 +487,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                 data.add(mapLog(cursor))
             }
             cursor.close()
-            data
+            emit(data)
         }
     }
 

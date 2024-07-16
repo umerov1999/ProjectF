@@ -18,7 +18,6 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.RelativeLayout
 import androidx.activity.OnBackPressedCallback
-import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.appcompat.widget.Toolbar
@@ -45,7 +44,6 @@ import dev.ragnarok.filegallery.activity.slidr.model.SlidrListener
 import dev.ragnarok.filegallery.activity.slidr.model.SlidrPosition
 import dev.ragnarok.filegallery.fragment.AudioPlayerFragment
 import dev.ragnarok.filegallery.fragment.base.horizontal.ImageListAdapter
-import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.listener.AppStyleable
 import dev.ragnarok.filegallery.model.Photo
 import dev.ragnarok.filegallery.model.Video
@@ -54,17 +52,20 @@ import dev.ragnarok.filegallery.place.Place
 import dev.ragnarok.filegallery.place.PlaceFactory
 import dev.ragnarok.filegallery.place.PlaceProvider
 import dev.ragnarok.filegallery.settings.CurrentTheme
+import dev.ragnarok.filegallery.settings.CurrentTheme.getNavigationBarColor
+import dev.ragnarok.filegallery.settings.CurrentTheme.getStatusBarColor
+import dev.ragnarok.filegallery.settings.CurrentTheme.getStatusBarNonColored
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.util.DownloadWorkUtils
 import dev.ragnarok.filegallery.util.Utils
-import dev.ragnarok.filegallery.util.rxutils.RxUtils
+import dev.ragnarok.filegallery.util.Utils.hasVanillaIceCream
+import dev.ragnarok.filegallery.util.coroutines.CancelableJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.filegallery.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.filegallery.view.TouchImageView
 import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
 import dev.ragnarok.filegallery.view.pager.WeakPicassoLoadCallback
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.disposables.Disposable
-import java.util.concurrent.TimeUnit
 
 
 class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>(), IPhotoPagerView,
@@ -109,7 +110,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
     private var mViewPager: ViewPager2? = null
     private var mContentRoot: RelativeLayout? = null
     private var mLoadingProgressBar: RLottieImageView? = null
-    private var mLoadingProgressBarDispose = Disposable.disposed()
+    private var mLoadingProgressBarDispose = CancelableJob()
     private var mLoadingProgressBarLoaded = false
     private var mToolbar: Toolbar? = null
     private var mPreviewsRecycler: RecyclerView? = null
@@ -351,12 +352,15 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         supportActionBar?.title = getString(R.string.image_number, currentIndex, count)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mLoadingProgressBarDispose.cancel()
+    }
+
     override fun displayPhotoListLoading(loading: Boolean) {
-        mLoadingProgressBarDispose.dispose()
+        mLoadingProgressBarDispose.cancel()
         if (loading) {
-            mLoadingProgressBarDispose = Completable.create {
-                it.onComplete()
-            }.delay(300, TimeUnit.MILLISECONDS).fromIOToMain().subscribe({
+            mLoadingProgressBarDispose.set(delayTaskFlow(300).toMain {
                 mLoadingProgressBarLoaded = true
                 mLoadingProgressBar?.visibility = View.VISIBLE
                 mLoadingProgressBar?.fromRes(
@@ -371,7 +375,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                     )
                 )
                 mLoadingProgressBar?.playAnimation()
-            }, RxUtils.ignore())
+            })
         } else if (mLoadingProgressBarLoaded) {
             mLoadingProgressBarLoaded = false
             mLoadingProgressBar?.visibility = View.GONE
@@ -430,13 +434,15 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
 
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val statusBarNonColored = CurrentTheme.getStatusBarNonColored(this)
-        val statusBarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.statusBarColor = if (colored) statusBarColored else statusBarNonColored
-        @ColorInt val navigationColor =
-            if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
-        w.navigationBarColor = navigationColor
+        if (!hasVanillaIceCream()) {
+            w.statusBarColor =
+                if (colored) getStatusBarColor(this) else getStatusBarNonColored(
+                    this
+                )
+            w.navigationBarColor =
+                if (colored) getNavigationBarColor(this) else Color.BLACK
+        }
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons
@@ -462,7 +468,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         val photo: TouchImageView
         val selected: View
         val progress: RLottieImageView
-        var animationDispose: Disposable = Disposable.disposed()
+        var animationDispose = CancelableJob()
         private var mAnimationLoaded = false
         private var mLoadingNow = false
         fun bindTo(photo_image: Photo) {
@@ -506,7 +512,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         }
 
         private fun resolveProgressVisibility(forceStop: Boolean) {
-            animationDispose.dispose()
+            animationDispose.cancel()
             if (mAnimationLoaded && !mLoadingNow && !forceStop) {
                 mAnimationLoaded = false
                 val k = ObjectAnimator.ofFloat(progress, View.ALPHA, 0.0f).setDuration(1000)
@@ -529,9 +535,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 progress.clearAnimationDrawable()
                 progress.visibility = View.GONE
             } else if (mLoadingNow) {
-                animationDispose = Completable.create {
-                    it.onComplete()
-                }.delay(300, TimeUnit.MILLISECONDS).fromIOToMain().subscribe({
+                animationDispose.set(delayTaskFlow(300).toMain {
                     mAnimationLoaded = true
                     progress.visibility = View.VISIBLE
                     progress.fromRes(
@@ -546,7 +550,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                         )
                     )
                     progress.playAnimation()
-                }, RxUtils.ignore())
+                })
             }
         }
 
@@ -562,7 +566,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             mLoadingNow = true
             resolveProgressVisibility(true)
             PicassoInstance.with().cancelRequest(photo)
-            if (!image.isGif) {
+            if (!image.isAnimation) {
                 PicassoInstance.with()
                     .load(image.photo_url)
                     .into(photo, mPicassoLoadCallback)

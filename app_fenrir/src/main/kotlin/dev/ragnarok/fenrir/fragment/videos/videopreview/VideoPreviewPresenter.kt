@@ -14,7 +14,6 @@ import dev.ragnarok.fenrir.domain.IVideosInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Commented
 import dev.ragnarok.fenrir.model.Owner
@@ -23,6 +22,7 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 
 class VideoPreviewPresenter(
@@ -59,26 +59,24 @@ class VideoPreviewPresenter(
     fun fireFaveVideo() {
         val pVideo = video ?: return
         if (!pVideo.isFavorite) {
-            appendDisposable(faveInteractor.addVideo(
+            appendJob(faveInteractor.addVideo(
                 accountId,
                 pVideo.ownerId,
                 pVideo.id,
                 pVideo.accessKey
             )
-                .fromIOToMain()
-                .subscribe({ onVideoAddedToBookmarks() }) { t ->
+                .fromIOToMain({ onVideoAddedToBookmarks() }) { t ->
                     showError(
                         getCauseIfRuntime(t)
                     )
                 })
         } else {
-            appendDisposable(faveInteractor.removeVideo(
+            appendJob(faveInteractor.removeVideo(
                 accountId,
                 pVideo.ownerId,
                 pVideo.id
             )
-                .fromIOToMain()
-                .subscribe({ onVideoAddedToBookmarks() }) { t ->
+                .fromIOToMain({ onVideoAddedToBookmarks() }) { t ->
                     showError(
                         getCauseIfRuntime(t)
                     )
@@ -98,14 +96,13 @@ class VideoPreviewPresenter(
                 .setCancelable(true)
                 .setView(root)
                 .setPositiveButton(R.string.button_ok) { _, _ ->
-                    appendDisposable(interactor.edit(
+                    appendJob(interactor.edit(
                         accountId, vd.ownerId, vd.id,
                         root.findViewById<TextInputEditText>(R.id.edit_title).text.toString(),
                         root.findViewById<TextInputEditText>(R.id.edit_description).text.toString()
-                    ).fromIOToMain()
-                        .subscribe({ refreshVideoInfo() }) { t ->
-                            showError(getCauseIfRuntime(t))
-                        })
+                    ).fromIOToMain({ refreshVideoInfo() }) { t ->
+                        showError(getCauseIfRuntime(t))
+                    })
                 }
                 .setNegativeButton(R.string.button_cancel, null)
                 .show()
@@ -140,13 +137,12 @@ class VideoPreviewPresenter(
         view.setCommentButtonVisible(video.isCanComment || video.commentsCount > 0 || isMy)
         view.displayLikes(video.likesCount, video.isUserLikes)
         if (owner == null) {
-            appendDisposable(ownerInteractor.getBaseOwnerInfo(
+            appendJob(ownerInteractor.getBaseOwnerInfo(
                 accountId,
                 ownerId,
                 IOwnersRepository.MODE_ANY
             )
-                .fromIOToMain()
-                .subscribe({ info -> onOwnerReceived(info) }) { e ->
+                .fromIOToMain({ info -> onOwnerReceived(info) }) { e ->
                     showError(e)
                 })
         } else {
@@ -201,9 +197,8 @@ class VideoPreviewPresenter(
         if (video == null) {
             view?.displayLoading()
         }
-        appendDisposable(interactor.getById(accountId, ownerId, videoId, accessKey, false)
-            .fromIOToMain()
-            .subscribe({ video -> onActualInfoReceived(video) }) { throwable ->
+        appendJob(interactor.getById(accountId, ownerId, videoId, accessKey, false)
+            .fromIOToMain({ video -> onActualInfoReceived(video) }) { throwable ->
                 onVideoInfoGetError(
                     getCauseIfRuntime(throwable)
                 )
@@ -227,9 +222,8 @@ class VideoPreviewPresenter(
     }
 
     fun fireAddToMyClick() {
-        appendDisposable(interactor.addToMy(accountId, accountId, ownerId, videoId)
-            .fromIOToMain()
-            .subscribe({ onAddComplete() }) { throwable ->
+        appendJob(interactor.addToMy(accountId, accountId, ownerId, videoId)
+            .fromIOToMain({ onAddComplete() }) { throwable ->
                 onAddError(
                     getCauseIfRuntime(throwable)
                 )
@@ -237,9 +231,8 @@ class VideoPreviewPresenter(
     }
 
     fun fireDeleteMyClick() {
-        appendDisposable(interactor.delete(accountId, videoId, ownerId, accountId)
-            .fromIOToMain()
-            .subscribe({ onAddComplete() }) { throwable ->
+        appendJob(interactor.delete(accountId, videoId, ownerId, accountId)
+            .fromIOToMain({ onAddComplete() }) { throwable ->
                 onAddError(
                     getCauseIfRuntime(throwable)
                 )
@@ -307,9 +300,8 @@ class VideoPreviewPresenter(
         }
         video?.let {
             val add = !it.isUserLikes
-            appendDisposable(interactor.likeOrDislike(accountId, ownerId, videoId, accessKey, add)
-                .fromIOToMain()
-                .subscribe(
+            appendJob(interactor.likeOrDislike(accountId, ownerId, videoId, accessKey, add)
+                .fromIOToMain(
                     { pair: Pair<Int, Boolean> -> onLikesResponse(pair.first, pair.second) }
                 ) { throwable -> onLikeError(getCauseIfRuntime(throwable)) })
         }

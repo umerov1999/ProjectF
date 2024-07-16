@@ -10,21 +10,20 @@ import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.animation.AnimatedFileDrawable
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.R
-import dev.ragnarok.filegallery.fromIOToMain
-import dev.ragnarok.filegallery.util.rxutils.RxUtils
+import dev.ragnarok.filegallery.util.coroutines.CancelableJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.filegallery.view.natives.animation.AnimationNetworkCache.Companion.filenameForRes
 import dev.ragnarok.filegallery.view.natives.animation.AnimationNetworkCache.Companion.parentResDir
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.coroutines.flow.flow
+import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
+import kotlin.coroutines.cancellation.CancellationException
 
-class AnimatedShapeableImageView @JvmOverloads constructor(
+open class AnimatedShapeableImageView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : ShapeableImageView(context, attrs) {
@@ -35,7 +34,7 @@ class AnimatedShapeableImageView @JvmOverloads constructor(
     private var attachedToWindow = false
     private var playing = false
     private var decoderCallback: OnDecoderInit? = null
-    private var mDisposable: Disposable? = null
+    private var mDisposable = CancelableJob()
     fun setDecoderCallback(decoderCallback: OnDecoderInit?) {
         this.decoderCallback = decoderCallback
     }
@@ -106,37 +105,35 @@ class AnimatedShapeableImageView @JvmOverloads constructor(
             setAnimationByUrlCache(key, true)
             return
         }
-        mDisposable = Single.create { u: SingleEmitter<Boolean> ->
+        mDisposable.set(flow {
+            var call: Call? = null
             try {
                 val request: Request = Request.Builder()
                     .url(url)
                     .build()
-                val response: Response = client.build().newCall(request).execute()
+                call = client.build().newCall(request)
+                val response: Response = call.execute()
                 if (!response.isSuccessful) {
-                    u.onSuccess(false)
-                    return@create
+                    emit(false)
+                    return@flow
                 }
-                val bfr = response.body.byteStream()
-                val input = BufferedInputStream(bfr)
-                cache.writeTempCacheFile(key, input)
-                input.close()
+                cache.writeTempCacheFile(key, response.body.source())
                 response.close()
                 cache.renameTempFile(key)
-            } catch (e: Exception) {
-                u.onSuccess(false)
-                return@create
+                emit(true)
+            } catch (e: CancellationException) {
+                call?.cancel()
+                throw e
             }
-            u.onSuccess(true)
-        }.fromIOToMain()
-            .subscribe(
-                { u ->
-                    if (u) {
-                        setAnimationByUrlCache(key, true)
-                    } else {
-                        decoderCallback?.onLoaded(false)
-                    }
-                }, RxUtils.ignore()
-            )
+        }.fromIOToMain({ u ->
+            if (u) {
+                setAnimationByUrlCache(key, true)
+            } else {
+                decoderCallback?.onLoaded(false)
+            }
+        }, {
+            decoderCallback?.onLoaded(false)
+        }))
     }
 
     fun fromRes(@RawRes res: Int) {
@@ -149,28 +146,25 @@ class AnimatedShapeableImageView @JvmOverloads constructor(
             setAnimationByResCache(res, true)
             return
         }
-        mDisposable = Single.create { u: SingleEmitter<Boolean> ->
+        mDisposable.set(flow {
             try {
                 if (!copyRes(res)) {
-                    u.onSuccess(false)
-                    return@create
+                    emit(false)
+                    return@flow
                 }
                 cache.renameTempFile(res)
             } catch (e: Exception) {
-                u.onSuccess(false)
-                return@create
+                emit(false)
+                return@flow
             }
-            u.onSuccess(true)
-        }.fromIOToMain()
-            .subscribe(
-                { u ->
-                    if (u) {
-                        setAnimationByResCache(res, true)
-                    } else {
-                        decoderCallback?.onLoaded(false)
-                    }
-                }, RxUtils.ignore()
-            )
+            emit(true)
+        }.fromIOToMain {
+            if (it) {
+                setAnimationByResCache(res, true)
+            } else {
+                decoderCallback?.onLoaded(false)
+            }
+        })
     }
 
     private fun setAnimation(videoDrawable: AnimatedFileDrawable) {
@@ -204,7 +198,7 @@ class AnimatedShapeableImageView @JvmOverloads constructor(
     }
 
     fun clearAnimationDrawable() {
-        mDisposable?.dispose()
+        mDisposable.cancel()
         animatedDrawable?.let {
             it.stop()
             it.callback = null
@@ -225,7 +219,7 @@ class AnimatedShapeableImageView @JvmOverloads constructor(
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        mDisposable?.dispose()
+        mDisposable.cancel()
         attachedToWindow = false
         animatedDrawable?.stop()
         animatedDrawable?.callback = null
@@ -238,7 +232,7 @@ class AnimatedShapeableImageView @JvmOverloads constructor(
     override fun setImageDrawable(dr: Drawable?) {
         super.setImageDrawable(dr)
         if (dr !is AnimatedFileDrawable) {
-            mDisposable?.dispose()
+            mDisposable.cancel()
             animatedDrawable?.let {
                 it.stop()
                 it.callback = null
@@ -250,7 +244,7 @@ class AnimatedShapeableImageView @JvmOverloads constructor(
 
     override fun setImageBitmap(bm: Bitmap?) {
         super.setImageBitmap(bm)
-        mDisposable?.dispose()
+        mDisposable.cancel()
         animatedDrawable?.let {
             it.stop()
             it.callback = null
@@ -261,7 +255,7 @@ class AnimatedShapeableImageView @JvmOverloads constructor(
 
     override fun setImageResource(resId: Int) {
         super.setImageResource(resId)
-        mDisposable?.dispose()
+        mDisposable.cancel()
         animatedDrawable?.let {
             it.stop()
             it.callback = null

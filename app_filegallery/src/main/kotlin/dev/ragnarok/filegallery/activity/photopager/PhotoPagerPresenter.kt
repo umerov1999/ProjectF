@@ -110,11 +110,7 @@ open class PhotoPagerPresenter internal constructor(
         if (!get().main().isDownload_photo_tap) {
             return true
         }
-        if (current.isGif && current.photo_url != null && !current.photo_url!!.endsWith(
-                "gif",
-                true
-            )
-        ) {
+        if (current.isAnimation && current.photo_url != null) {
             val v = Video()
             v.setId(current.id)
             v.setOwnerId(current.ownerId)
@@ -145,7 +141,6 @@ open class PhotoPagerPresenter internal constructor(
         return false
     }
 
-    @Suppress("deprecation")
     private fun getCustomTabsPackages(context: Context): ArrayList<ResolveInfo> {
         val pm = context.packageManager
         val activityIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com"))

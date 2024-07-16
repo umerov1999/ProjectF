@@ -33,7 +33,6 @@ import dev.ragnarok.fenrir.activity.CreatePinActivity
 import dev.ragnarok.fenrir.crypt.KeyLocationPolicy
 import dev.ragnarok.fenrir.db.Stores
 import dev.ragnarok.fenrir.fragment.pin.createpin.CreatePinFragment
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.listener.BackPressCallback
 import dev.ragnarok.fenrir.listener.CanBackPressedCallback
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
@@ -44,14 +43,13 @@ import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.SecuritySettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingleSafe
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.MySearchView
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.Disposable
-import java.util.concurrent.TimeUnit
-
 
 class SecurityPreferencesFragment : AbsPreferencesFragment(),
     PreferencesAdapter.OnScreenChangeListener,
@@ -59,7 +57,7 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
     private var preferencesView: RecyclerView? = null
     private var layoutManager: LinearLayoutManager? = null
     private var searchView: MySearchView? = null
-    private var sleepDataDisposable = Disposable.disposed()
+    private var sleepDataDisposable = CancelableJob()
     private val SEARCH_DELAY = 2000
     override val keyInstanceState: String = "security_preferences"
 
@@ -131,7 +129,7 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
             })
             it.setOnQueryTextListener(object : MySearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
-                    sleepDataDisposable.dispose()
+                    sleepDataDisposable.cancel()
                     if (query.nonNullNoEmpty() && query.trimmedNonNullNoEmpty()) {
                         preferencesAdapter?.findPreferences(requireActivity(), query, root)
                     }
@@ -139,11 +137,9 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    sleepDataDisposable.dispose()
-                    sleepDataDisposable = Single.just(Any())
-                        .delay(SEARCH_DELAY.toLong(), TimeUnit.MILLISECONDS)
-                        .fromIOToMain()
-                        .subscribe({
+                    sleepDataDisposable.cancel()
+                    sleepDataDisposable += delayTaskFlow(SEARCH_DELAY.toLong())
+                        .toMain {
                             if (newText.nonNullNoEmpty() && newText.trimmedNonNullNoEmpty()) {
                                 preferencesAdapter?.findPreferences(
                                     requireActivity(),
@@ -151,7 +147,7 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
                                     root
                                 )
                             }
-                        }, { RxUtils.dummy() })
+                        }
                     return false
                 }
             })
@@ -195,7 +191,6 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
     }
 
 
-    @Suppress("DEPRECATION")
     private fun createRootScreen() = screen(requireActivity()) {
         collapseIcon = true
         collapse("security_preferences") {
@@ -366,11 +361,11 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
         Stores.instance
             .keys(KeyLocationPolicy.PERSIST)
             .deleteAll(accountId)
-            .blockingAwait()
+            .syncSingleSafe()
         Stores.instance
             .keys(KeyLocationPolicy.RAM)
             .deleteAll(accountId)
-            .blockingAwait()
+            .syncSingleSafe()
     }
 
     private fun startCreatePinActivity(preference: TwoStatePreference) {
@@ -411,7 +406,7 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
     }
 
     override fun onDestroy() {
-        sleepDataDisposable.dispose()
+        sleepDataDisposable.cancel()
         preferencesView?.let { preferencesAdapter?.stopObserveScrollPosition(it) }
         preferencesAdapter?.onScreenChangeListener = null
         preferencesView?.adapter = null

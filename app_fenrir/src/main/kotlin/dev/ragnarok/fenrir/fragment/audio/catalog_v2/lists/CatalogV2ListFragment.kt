@@ -27,7 +27,6 @@ import dev.ragnarok.fenrir.fragment.audio.catalog_v2.sections.CatalogV2SectionFr
 import dev.ragnarok.fenrir.fragment.audio.local.audioslocal.AudiosLocalFragment
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.localserver.audioslocalserver.AudiosLocalServerFragment
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2List
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory.Companion.TYPE_AUDIO
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory.Companion.TYPE_CATALOG
@@ -41,11 +40,10 @@ import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.disposables.Disposable
-import java.util.concurrent.TimeUnit
 
 class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2ListView>(),
     ICatalogV2ListView, MenuProvider {
@@ -53,7 +51,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
     private var mAdapter: Adapter? = null
     private var loading: RLottieImageView? = null
     private var animLoad: ObjectAnimator? = null
-    private var animationDispose = Disposable.disposed()
+    private var animationDispose = CancelableJob()
     private var mAnimationLoaded = false
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -194,19 +192,17 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
 
     override fun onDestroy() {
         super.onDestroy()
-        animationDispose.dispose()
+        animationDispose.cancel()
     }
 
     override fun resolveLoading(visible: Boolean) {
-        animationDispose.dispose()
+        animationDispose.cancel()
         if (mAnimationLoaded && !visible) {
             mAnimationLoaded = false
             animLoad?.start()
         } else if (!mAnimationLoaded && visible) {
             animLoad?.end()
-            animationDispose = Completable.create {
-                it.onComplete()
-            }.delay(300, TimeUnit.MILLISECONDS).fromIOToMain().subscribe({
+            animationDispose += delayTaskFlow(300).toMain {
                 mAnimationLoaded = true
                 loading?.visibility = View.VISIBLE
                 loading?.alpha = 1f
@@ -222,7 +218,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                     )
                 )
                 loading?.playAnimation()
-            }, RxUtils.ignore())
+            }
         }
     }
 

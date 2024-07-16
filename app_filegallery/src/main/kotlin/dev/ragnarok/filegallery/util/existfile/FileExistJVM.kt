@@ -5,7 +5,10 @@ import dev.ragnarok.filegallery.Includes.stores
 import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.settings.Settings.get
 import dev.ragnarok.filegallery.util.AppPerms.hasReadWriteStoragePermission
-import io.reactivex.rxjava3.core.Completable
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.emptyTaskFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.single
 import java.io.File
 import java.util.LinkedList
 import java.util.Locale
@@ -33,28 +36,30 @@ class FileExistJVM : AbsFileExist {
         setBusy(false)
     }
 
-    override fun findAllAudios(context: Context): Completable {
-        return if (!hasReadWriteStoragePermission(context)) Completable.complete() else Completable.create { t ->
+    override fun findAllAudios(context: Context): Flow<Boolean> {
+        return if (!hasReadWriteStoragePermission(context)) emptyTaskFlow() else flow {
             if (!setBusy(true)) {
-                return@create
+                emit(false)
+                return@flow
             }
             val temp = File(get().main().musicDir)
             if (!temp.exists()) {
                 setBusy(false)
-                t.onComplete()
-                return@create
+                emit(false)
+                return@flow
             }
             val file_list = temp.listFiles()
             if (file_list == null || file_list.isEmpty()) {
                 setBusy(false)
-                t.onComplete()
-                return@create
+                emit(false)
+                return@flow
             }
             CachedAudios.clear()
             for (u in file_list) {
                 if (u.isFile) CachedAudios.add(u.name.lowercase(Locale.getDefault()))
             }
             setBusy(false)
+            emit(true)
         }
     }
 
@@ -91,17 +96,19 @@ class FileExistJVM : AbsFileExist {
         setBusy(false)
     }
 
-    override fun findAllTags(): Completable {
-        return Completable.create {
+    override fun findAllTags(): Flow<Boolean> {
+        return flow {
             if (!setBusy(true)) {
-                return@create
+                emit(false)
+            } else {
+                val list = stores.searchQueriesStore().getAllTagDirs().single()
+                CachedTags.clear()
+                for (u in list) {
+                    u.path?.let { it1 -> CachedTags.add(it1) }
+                }
+                setBusy(false)
+                emit(true)
             }
-            val list = stores.searchQueriesStore().getAllTagDirs().blockingGet()
-            CachedTags.clear()
-            for (u in list) {
-                u.path?.let { it1 -> CachedTags.add(it1) }
-            }
-            setBusy(false)
         }
     }
 

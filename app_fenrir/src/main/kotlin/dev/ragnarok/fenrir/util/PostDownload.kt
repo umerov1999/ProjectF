@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.util
 
-import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -12,7 +11,6 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.FileProvider
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.longpoll.AppNotificationChannels
 import dev.ragnarok.fenrir.longpoll.NotificationHelper
 import dev.ragnarok.fenrir.model.Owner
@@ -23,12 +21,15 @@ import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.push.OwnerInfo
 import dev.ragnarok.fenrir.service.ChatDownloadWorker
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.inMainThread
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingle
 import dev.ragnarok.fenrir.util.toast.CustomToast
-import io.reactivex.rxjava3.core.Completable
+import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.math.abs
 
 class PostDownload(private val context: Context) {
@@ -157,8 +158,8 @@ class PostDownload(private val context: Context) {
             for (s in i.getCopyHierarchy().orEmpty()) {
                 val ownerT: Owner =
                     if (s.authorId.orZero() == 0L) OwnerInfo.getRx(context, accountId, s.ownerId)
-                        .blockingGet().owner else OwnerInfo.getRx(context, accountId, s.authorId)
-                        .blockingGet().owner
+                        .syncSingle().owner else OwnerInfo.getRx(context, accountId, s.authorId)
+                        .syncSingle().owner
                 val fwd = Build_Post(accountId, ownerT, s, true)
                 var result_msgs = "<ul><#MESSAGE_LIST#></ul>"
                 result_msgs = Apply("<#MESSAGE_LIST#>", fwd, result_msgs)
@@ -343,8 +344,8 @@ class PostDownload(private val context: Context) {
             for (s in i.getCopyHierarchy().orEmpty()) {
                 val ownerT: Owner =
                     if (s.authorId.orZero() == 0L) OwnerInfo.getRx(context, accountId, s.ownerId)
-                        .blockingGet().owner else OwnerInfo.getRx(context, accountId, s.authorId)
-                        .blockingGet().owner
+                        .syncSingle().owner else OwnerInfo.getRx(context, accountId, s.authorId)
+                        .syncSingle().owner
                 val fwd = Build_Post(accountId, ownerT, s, true)
                 msg_html.append(fwd)
             }
@@ -352,10 +353,14 @@ class PostDownload(private val context: Context) {
         return msg_html.toString()
     }
 
-    @SuppressLint("MissingPermission", "CheckResult")
-    @Suppress("DEPRECATION")
+    @Suppress(
+        "DEPRECATION",
+        "MissingPermission",
+        "CheckResult",
+        "BlockingMethodInNonBlockingContext"
+    )
     fun doDownloadAsHTML(account_id: Long, post: Post) {
-        Completable.create {
+        flow {
             try {
                 val id = post.ownerId.toString() + "_" + post.vkid
                 val owner: Owner =
@@ -364,12 +369,12 @@ class PostDownload(private val context: Context) {
                         account_id,
                         post.ownerId
                     )
-                        .blockingGet().owner else OwnerInfo.getRx(
+                        .syncSingle().owner else OwnerInfo.getRx(
                         context,
                         account_id,
                         post.authorId
                     )
-                        .blockingGet().owner
+                        .syncSingle().owner
                 val peer_title = getTitle(owner, post)
                 val mBuilder = NotificationCompat.Builder(
                     context,
@@ -469,7 +474,7 @@ class PostDownload(private val context: Context) {
                         mBuilder.build()
                     )
                 }
-                Utils.inMainThread {
+                inMainThread {
                     CustomToast.createCustomToast(
                         context
                     ).showToastSuccessBottom(
@@ -479,14 +484,17 @@ class PostDownload(private val context: Context) {
                     )
                 }
             } catch (e: Throwable) {
+                if (e is CancellationException) {
+                    throw e
+                }
                 e.printStackTrace()
-                Utils.inMainThread {
+                inMainThread {
                     CustomToast.createCustomToast(
                         context
                     ).showToastError(e.localizedMessage)
                 }
             }
-            it.onComplete()
-        }.fromIOToMain().subscribe(RxUtils.dummy(), RxUtils.ignore())
+            emit(true)
+        }.hiddenIO()
     }
 }

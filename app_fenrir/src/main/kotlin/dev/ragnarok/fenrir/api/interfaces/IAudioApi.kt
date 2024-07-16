@@ -15,34 +15,34 @@ import dev.ragnarok.fenrir.api.model.response.AddToPlaylistResponse
 import dev.ragnarok.fenrir.api.model.response.ServicePlaylistResponse
 import dev.ragnarok.fenrir.api.model.server.VKApiAudioUploadServer
 import dev.ragnarok.fenrir.model.Audio
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IAudioApi {
     @CheckResult
-    fun setBroadcast(audio: AccessIdPair, targetIds: Collection<Long>): Single<List<Int>>
+    fun setBroadcast(audio: AccessIdPair, targetIds: Collection<Long>): Flow<List<Int>>
 
     @CheckResult
     fun search(
         query: String?, autoComplete: Boolean?, lyrics: Boolean?,
         performerOnly: Boolean?, sort: Int?, searchOwn: Boolean?,
         offset: Int?, count: Int?
-    ): Single<Items<VKApiAudio>>
+    ): Flow<Items<VKApiAudio>>
 
     @CheckResult
-    fun searchArtists(query: String?, offset: Int?, count: Int?): Single<Items<VKApiArtist>>
+    fun searchArtists(query: String?, offset: Int?, count: Int?): Flow<Items<VKApiArtist>>
 
     @CheckResult
     fun searchPlaylists(
         query: String?,
         offset: Int?,
         count: Int?
-    ): Single<Items<VKApiAudioPlaylist>>
+    ): Flow<Items<VKApiAudioPlaylist>>
 
     @CheckResult
-    fun restore(audioId: Int, ownerId: Long?): Single<VKApiAudio>
+    fun restore(audioId: Int, ownerId: Long?): Flow<VKApiAudio>
 
     @CheckResult
-    fun delete(audioId: Int, ownerId: Long): Single<Boolean>
+    fun delete(audioId: Int, ownerId: Long): Flow<Boolean>
 
     @CheckResult
     fun edit(
@@ -50,17 +50,17 @@ interface IAudioApi {
         audioId: Int,
         artist: String?,
         title: String?
-    ): Single<Int>
+    ): Flow<Int>
 
     @CheckResult
-    fun add(audioId: Int, ownerId: Long, groupId: Long?, accessKey: String?): Single<Int>
+    fun add(audioId: Int, ownerId: Long, groupId: Long?, accessKey: String?): Flow<Int>
 
     @CheckResult
     fun createPlaylist(
         ownerId: Long,
         title: String?,
         description: String?
-    ): Single<VKApiAudioPlaylist>
+    ): Flow<VKApiAudioPlaylist>
 
     @CheckResult
     fun editPlaylist(
@@ -68,90 +68,90 @@ interface IAudioApi {
         playlist_id: Int,
         title: String?,
         description: String?
-    ): Single<Int>
+    ): Flow<Int>
 
     @CheckResult
     fun removeFromPlaylist(
         ownerId: Long,
         playlist_id: Int,
         audio_ids: Collection<AccessIdPair>
-    ): Single<Int>
+    ): Flow<Int>
 
     @CheckResult
     fun addToPlaylist(
         ownerId: Long,
         playlist_id: Int,
         audio_ids: Collection<AccessIdPair>
-    ): Single<List<AddToPlaylistResponse>>
+    ): Flow<List<AddToPlaylistResponse>>
 
     @CheckResult
-    fun reorder(ownerId: Long, audio_id: Int, before: Int?, after: Int?): Single<Int>
+    fun reorder(ownerId: Long, audio_id: Int, before: Int?, after: Int?): Flow<Int>
 
     @CheckResult
-    fun trackEvents(events: String?): Single<Int>
+    fun trackEvents(events: String?): Flow<Int>
 
     @CheckResult
     operator fun get(
         playlist_id: Int?, ownerId: Long?,
         offset: Int?, count: Int?, accessKey: String?
-    ): Single<Items<VKApiAudio>>
+    ): Flow<Items<VKApiAudio>>
 
     @CheckResult
     fun getAudiosByArtist(
         artist_id: String?,
         offset: Int?,
         count: Int?
-    ): Single<Items<VKApiAudio>>
+    ): Flow<Items<VKApiAudio>>
 
     @CheckResult
     fun getPopular(
         foreign: Int?,
         genre: Int?, count: Int?
-    ): Single<List<VKApiAudio>>
+    ): Flow<List<VKApiAudio>>
 
     @CheckResult
-    fun deletePlaylist(playlist_id: Int, ownerId: Long): Single<Int>
+    fun deletePlaylist(playlist_id: Int, ownerId: Long): Flow<Int>
 
     @CheckResult
     fun followPlaylist(
         playlist_id: Int,
         ownerId: Long,
         accessKey: String?
-    ): Single<VKApiAudioPlaylist>
+    ): Flow<VKApiAudioPlaylist>
 
     @CheckResult
-    fun clonePlaylist(playlist_id: Int, ownerId: Long): Single<VKApiAudioPlaylist>
+    fun clonePlaylist(playlist_id: Int, ownerId: Long): Flow<VKApiAudioPlaylist>
 
     @CheckResult
     fun getPlaylistById(
         playlist_id: Int,
         ownerId: Long,
         accessKey: String?
-    ): Single<VKApiAudioPlaylist>
+    ): Flow<VKApiAudioPlaylist>
 
     @CheckResult
-    fun getRecommendations(audioOwnerId: Long?, count: Int?): Single<Items<VKApiAudio>>
+    fun getRecommendations(audioOwnerId: Long?, count: Int?): Flow<Items<VKApiAudio>>
 
     @CheckResult
-    fun getRecommendationsByAudio(audio: String?, count: Int?): Single<Items<VKApiAudio>>
+    fun getRecommendationsByAudio(audio: String?, count: Int?): Flow<Items<VKApiAudio>>
 
     @CheckResult
-    fun getById(audios: List<Audio>): Single<List<VKApiAudio>>
+    fun getById(audios: List<Audio>): Flow<List<VKApiAudio>>
 
     @CheckResult
-    fun getByIdOld(audios: List<Audio>): Single<List<VKApiAudio>>
+    fun getByIdOld(audios: List<Audio>): Flow<List<VKApiAudio>>
 
     @CheckResult
-    fun getLyrics(audio: Audio): Single<VKApiLyrics>
+    fun getLyrics(audio: Audio): Flow<VKApiLyrics>
 
     @CheckResult
-    fun getPlaylists(owner_id: Long, offset: Int, count: Int): Single<Items<VKApiAudioPlaylist>>
+    fun getPlaylists(owner_id: Long, offset: Int, count: Int): Flow<Items<VKApiAudioPlaylist>>
 
     @CheckResult
-    fun getPlaylistsCustom(code: String?): Single<ServicePlaylistResponse>
+    fun getPlaylistsCustom(code: String?): Flow<ServicePlaylistResponse>
 
     @get:CheckResult
-    val uploadServer: Single<VKApiAudioUploadServer>
+    val uploadServer: Flow<VKApiAudioUploadServer>
 
     @CheckResult
     fun save(
@@ -160,26 +160,26 @@ interface IAudioApi {
         hash: String?,
         artist: String?,
         title: String?
-    ): Single<VKApiAudio>
+    ): Flow<VKApiAudio>
 
     @CheckResult
     fun getCatalogV2Sections(
         owner_id: Long, artist_id: String?, url: String?, query: String?, context: String?
-    ): Single<VKApiCatalogV2ListResponse>
+    ): Flow<VKApiCatalogV2ListResponse>
 
     @CheckResult
     fun getCatalogV2Section(
         section_id: String,
         start_from: String?
-    ): Single<VKApiCatalogV2SectionResponse>
+    ): Flow<VKApiCatalogV2SectionResponse>
 
     @CheckResult
     fun getCatalogV2BlockItems(
         block_id: String, start_from: String?
-    ): Single<VKApiCatalogV2BlockResponse>
+    ): Flow<VKApiCatalogV2BlockResponse>
 
     @CheckResult
     fun getArtistById(
         artist_id: String
-    ): Single<ArtistInfo>
+    ): Flow<ArtistInfo>
 }

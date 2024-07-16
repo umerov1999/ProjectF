@@ -2,11 +2,11 @@ package dev.ragnarok.fenrir.fragment.messages.conversationattachments.abschatatt
 
 import android.os.Bundle
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
-import dev.ragnarok.fenrir.util.DisposableHolder
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import kotlinx.coroutines.flow.Flow
 
 abstract class BaseChatAttachmentsPresenter<T, V : IBaseChatAttachmentsView<T>> internal constructor(
     private val peerId: Long, accountId: Long, savedInstanceState: Bundle?
@@ -14,7 +14,7 @@ abstract class BaseChatAttachmentsPresenter<T, V : IBaseChatAttachmentsView<T>> 
     val data: MutableList<T> = ArrayList()
     private var nextFrom: String? = null
     private var endOfContent = false
-    private var loadingHolder: DisposableHolder<Void> = DisposableHolder()
+    private var loadingHolder = CompositeJob()
     override fun onGuiCreated(viewHost: V) {
         super.onGuiCreated(viewHost)
         viewHost.displayAttachments(data)
@@ -22,7 +22,7 @@ abstract class BaseChatAttachmentsPresenter<T, V : IBaseChatAttachmentsView<T>> 
     }
 
     override fun onDestroyed() {
-        loadingHolder.dispose()
+        loadingHolder.cancel()
         super.onDestroyed()
     }
 
@@ -32,7 +32,7 @@ abstract class BaseChatAttachmentsPresenter<T, V : IBaseChatAttachmentsView<T>> 
     }
 
     private fun resolveLoadingView() {
-        view?.showLoading(loadingHolder.isActive)
+        view?.showLoading(loadingHolder.size() > 0)
     }
 
     private fun initLoading() {
@@ -40,10 +40,9 @@ abstract class BaseChatAttachmentsPresenter<T, V : IBaseChatAttachmentsView<T>> 
     }
 
     private fun load(startFrom: String?) {
-        loadingHolder.append(
+        loadingHolder.add(
             requestAttachments(peerId, startFrom)
-                .fromIOToMain()
-                .subscribe(
+                .fromIOToMain(
                     {
                         onDataReceived(
                             startFrom,
@@ -62,13 +61,13 @@ abstract class BaseChatAttachmentsPresenter<T, V : IBaseChatAttachmentsView<T>> 
     }
 
     private fun onRequestError(throwable: Throwable) {
-        loadingHolder.dispose()
+        loadingHolder.clear()
         resolveLoadingView()
         view?.showError(throwable.message)
     }
 
     private fun onDataReceived(startFrom: String?, result: Pair<String?, List<T>>) {
-        loadingHolder.dispose()
+        loadingHolder.clear()
         resolveLoadingView()
         nextFrom = result.first
         endOfContent = nextFrom.isNullOrEmpty()
@@ -92,7 +91,7 @@ abstract class BaseChatAttachmentsPresenter<T, V : IBaseChatAttachmentsView<T>> 
 
     open fun onDataChanged() {}
     private fun canLoadMore(): Boolean {
-        return !endOfContent && !loadingHolder.isActive
+        return !endOfContent && loadingHolder.size() <= 0
     }
 
     fun fireScrollToEnd() {
@@ -102,7 +101,7 @@ abstract class BaseChatAttachmentsPresenter<T, V : IBaseChatAttachmentsView<T>> 
     }
 
     fun fireRefresh() {
-        loadingHolder.dispose()
+        loadingHolder.clear()
         nextFrom = null
         initLoading()
     }
@@ -110,7 +109,7 @@ abstract class BaseChatAttachmentsPresenter<T, V : IBaseChatAttachmentsView<T>> 
     abstract fun requestAttachments(
         peerId: Long,
         nextFrom: String?
-    ): Single<Pair<String?, List<T>>>
+    ): Flow<Pair<String?, List<T>>>
 
     init {
         initLoading()

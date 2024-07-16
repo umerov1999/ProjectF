@@ -23,10 +23,10 @@ import dev.ragnarok.filegallery.picasso.PicassoInstance
 import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.toColor
-import dev.ragnarok.filegallery.toMainThread
 import dev.ragnarok.filegallery.util.Utils
+import dev.ragnarok.filegallery.util.coroutines.CancelableJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
-import io.reactivex.rxjava3.disposables.Disposable
 
 
 class TagDirAdapter(context: Context, private var data: List<TagDir>) :
@@ -36,7 +36,7 @@ class TagDirAdapter(context: Context, private var data: List<TagDir>) :
     private var recyclerView: RecyclerView? = null
     private val colorOnSurface = CurrentTheme.getColorOnSurface(context)
     private var currAudio: Audio? = MusicPlaybackController.currentAudio
-    private var mPlayerDisposable = Disposable.disposed()
+    private var mPlayerDisposable = CancelableJob()
 
     fun setItems(data: List<TagDir>) {
         this.data = data
@@ -242,19 +242,18 @@ class TagDirAdapter(context: Context, private var data: List<TagDir>) :
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
-        mPlayerDisposable = MusicPlaybackController.observeServiceBinding()
-            .toMainThread()
-            .subscribe { status ->
+        mPlayerDisposable.set(MusicPlaybackController.observeServiceBinding()
+            .sharedFlowToMain {
                 onServiceBindEvent(
-                    status
+                    it
                 )
-            }
+            })
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
         this.recyclerView = null
-        mPlayerDisposable.dispose()
+        mPlayerDisposable.cancel()
     }
 
     interface ClickListener {

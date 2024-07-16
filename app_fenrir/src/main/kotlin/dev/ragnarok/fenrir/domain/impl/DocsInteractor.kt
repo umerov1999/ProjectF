@@ -13,12 +13,13 @@ import dev.ragnarok.fenrir.fragment.search.criteria.DocumentSearchCriteria
 import dev.ragnarok.fenrir.model.Document
 import dev.ragnarok.fenrir.model.criteria.DocsCriteria
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 class DocsInteractor(private val networker: INetworker, private val cache: IDocsStorage) :
     IDocsInteractor {
-    override fun request(accountId: Long, ownerId: Long, filter: Int): Single<List<Document>> {
+    override fun request(accountId: Long, ownerId: Long, filter: Int): Flow<List<Document>> {
         return networker.vkDefault(accountId)
             .docs()[ownerId, null, null, filter]
             .map { items ->
@@ -26,7 +27,7 @@ class DocsInteractor(private val networker: INetworker, private val cache: IDocs
                     items.items
                 )
             }
-            .flatMap { dtos ->
+            .flatMapConcat { dtos ->
                 val documents: MutableList<Document> = ArrayList(dtos.size)
                 val entities: MutableList<DocumentDboEntity> = ArrayList(dtos.size)
                 for (dto in dtos) {
@@ -34,11 +35,13 @@ class DocsInteractor(private val networker: INetworker, private val cache: IDocs
                     entities.add(mapDoc(dto))
                 }
                 cache.store(accountId, ownerId, entities, true)
-                    .andThen(Single.just(documents))
+                    .map {
+                        documents
+                    }
             }
     }
 
-    override fun getCacheData(accountId: Long, ownerId: Long, filter: Int): Single<List<Document>> {
+    override fun getCacheData(accountId: Long, ownerId: Long, filter: Int): Flow<List<Document>> {
         return cache[DocsCriteria(accountId, ownerId).setFilter(filter)]
             .map { entities ->
                 val documents: MutableList<Document> = ArrayList(entities.size)
@@ -49,7 +52,7 @@ class DocsInteractor(private val networker: INetworker, private val cache: IDocs
             }
     }
 
-    override fun add(accountId: Long, docId: Int, ownerId: Long, accessKey: String?): Single<Int> {
+    override fun add(accountId: Long, docId: Int, ownerId: Long, accessKey: String?): Flow<Int> {
         return networker.vkDefault(accountId)
             .docs()
             .add(ownerId, docId, accessKey)
@@ -60,7 +63,7 @@ class DocsInteractor(private val networker: INetworker, private val cache: IDocs
         ownerId: Long,
         docId: Int,
         accessKey: String?
-    ): Single<Document> {
+    ): Flow<Document> {
         return networker.vkDefault(accountId)
             .docs()
             .getById(listOf(AccessIdPair(docId, ownerId, accessKey)))
@@ -77,7 +80,7 @@ class DocsInteractor(private val networker: INetworker, private val cache: IDocs
         criteria: DocumentSearchCriteria,
         count: Int,
         offset: Int
-    ): Single<List<Document>> {
+    ): Flow<List<Document>> {
         return networker.vkDefault(accountId)
             .docs()
             .search(criteria.query, count, offset)
@@ -93,10 +96,10 @@ class DocsInteractor(private val networker: INetworker, private val cache: IDocs
             }
     }
 
-    override fun delete(accountId: Long, docId: Int, ownerId: Long): Completable {
+    override fun delete(accountId: Long, docId: Int, ownerId: Long): Flow<Boolean> {
         return networker.vkDefault(accountId)
             .docs()
             .delete(ownerId, docId)
-            .flatMapCompletable { cache.delete(accountId, docId, ownerId) }
+            .flatMapConcat { cache.delete(accountId, docId, ownerId) }
     }
 }

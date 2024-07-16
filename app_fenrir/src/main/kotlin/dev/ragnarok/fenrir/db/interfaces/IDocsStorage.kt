@@ -3,12 +3,11 @@ package dev.ragnarok.fenrir.db.interfaces
 import androidx.annotation.CheckResult
 import dev.ragnarok.fenrir.db.model.entity.DocumentDboEntity
 import dev.ragnarok.fenrir.model.criteria.DocsCriteria
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IDocsStorage : IStorage {
     @CheckResult
-    operator fun get(criteria: DocsCriteria): Single<List<DocumentDboEntity>>
+    operator fun get(criteria: DocsCriteria): Flow<List<DocumentDboEntity>>
 
     @CheckResult
     fun store(
@@ -16,8 +15,8 @@ interface IDocsStorage : IStorage {
         ownerId: Long,
         entities: List<DocumentDboEntity>,
         clearBeforeInsert: Boolean
-    ): Completable
+    ): Flow<Boolean>
 
     @CheckResult
-    fun delete(accountId: Long, docId: Int, ownerId: Long): Completable
+    fun delete(accountId: Long, docId: Int, ownerId: Long): Flow<Boolean>
 }

@@ -4,8 +4,12 @@ import android.annotation.SuppressLint
 import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.model.LogEvent
 import dev.ragnarok.fenrir.settings.Settings
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.schedulers.Schedulers
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.ignoreElement
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingleSafe
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
 import java.io.PrintWriter
 import java.io.StringWriter
 
@@ -17,13 +21,10 @@ object PersistentLogger {
         val cause = Utils.getCauseIfRuntime(throwable)
         cause.printStackTrace()
         getStackTrace(cause)
-            .flatMapCompletable { s ->
+            .flatMapConcat { s ->
                 store.addLog(LogEvent.Type.ERROR, tag, s)
                     .ignoreElement()
-            }
-            .onErrorComplete()
-            .subscribeOn(Schedulers.io())
-            .subscribe({}) { }
+            }.hiddenIO()
     }
 
     fun logThrowableSync(tag: String, throwable: Throwable) {
@@ -31,20 +32,19 @@ object PersistentLogger {
         val store = Includes.stores.tempStore()
         val cause = Utils.getCauseIfRuntime(throwable)
         getStackTrace(cause)
-            .flatMapCompletable { s ->
+            .flatMapConcat { s ->
                 store.addLog(LogEvent.Type.ERROR, tag, s)
                     .ignoreElement()
             }
-            .onErrorComplete()
-            .blockingAwait()
+            .syncSingleSafe()
     }
 
-    private fun getStackTrace(throwable: Throwable): Single<String> {
-        return Single.fromCallable {
+    private fun getStackTrace(throwable: Throwable): Flow<String> {
+        return flow {
             StringWriter().use { sw ->
                 PrintWriter(sw).use { pw ->
                     throwable.printStackTrace(pw)
-                    return@fromCallable sw.toString()
+                    emit(sw.toString())
                 }
             }
         }

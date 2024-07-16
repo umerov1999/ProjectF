@@ -54,7 +54,6 @@ namespace tvg
         BlendMethod blendMethod = BlendMethod::Normal;   //uint8_t
         uint8_t renderFlag = RenderUpdateFlag::None;
         uint8_t ctxFlag = ContextFlag::Invalid;
-        uint8_t id;
         uint8_t opacity = 255;
         uint8_t refCnt = 0;                              //reference count
 
@@ -85,9 +84,8 @@ namespace tvg
         bool transform(const Matrix& m)
         {
             if (!rTransform) {
-                if (mathIdentity(&m)) return true;
+                if (identity(&m)) return true;
                 rTransform = new RenderTransform();
-                if (!rTransform) return false;
             }
             rTransform->override(m);
             renderFlag |= RenderUpdateFlag::Transform;
@@ -98,7 +96,7 @@ namespace tvg
         Matrix* transform()
         {
             if (rTransform) {
-                rTransform->update();
+                if (renderFlag & RenderUpdateFlag::Transform) rTransform->update();
                 return &rTransform->m;
             }
             return nullptr;

@@ -18,7 +18,6 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.RequiresApi
@@ -46,7 +45,6 @@ import dev.ragnarok.filegallery.fragment.localserver.LocalServerTabsFragment
 import dev.ragnarok.filegallery.fragment.tagdir.TagDirFragment
 import dev.ragnarok.filegallery.fragment.tagowner.TagOwnerFragment
 import dev.ragnarok.filegallery.fragment.theme.ThemeFragment
-import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.listener.AppStyleable
 import dev.ragnarok.filegallery.listener.BackPressCallback
 import dev.ragnarok.filegallery.listener.CanBackPressedCallback
@@ -66,7 +64,9 @@ import dev.ragnarok.filegallery.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.filegallery.place.PlaceFactory.getPreferencesPlace
 import dev.ragnarok.filegallery.place.PlaceFactory.getTagsPlace
 import dev.ragnarok.filegallery.place.PlaceProvider
-import dev.ragnarok.filegallery.settings.CurrentTheme
+import dev.ragnarok.filegallery.settings.CurrentTheme.getNavigationBarColor
+import dev.ragnarok.filegallery.settings.CurrentTheme.getStatusBarColor
+import dev.ragnarok.filegallery.settings.CurrentTheme.getStatusBarNonColored
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.settings.theme.ThemesController.currentStyle
 import dev.ragnarok.filegallery.settings.theme.ThemesController.nextRandom
@@ -77,10 +77,12 @@ import dev.ragnarok.filegallery.util.HelperSimple.NOTIFICATION_PERMISSION
 import dev.ragnarok.filegallery.util.HelperSimple.needHelp
 import dev.ragnarok.filegallery.util.Logger
 import dev.ragnarok.filegallery.util.Utils
+import dev.ragnarok.filegallery.util.Utils.hasVanillaIceCream
 import dev.ragnarok.filegallery.util.ViewUtils.keyboardHide
-import dev.ragnarok.filegallery.util.rxutils.RxUtils
+import dev.ragnarok.filegallery.util.coroutines.CompositeJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.filegallery.util.toast.CustomToast.Companion.createCustomToast
-import io.reactivex.rxjava3.disposables.CompositeDisposable
 import java.io.File
 
 class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable, PlaceProvider,
@@ -96,7 +98,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
     private val DOUBLE_BACK_PRESSED_TIMEOUT = 2000
     private var mAudioPlayServiceToken: ServiceToken? = null
     private val TAG = "MainActivity_LOG"
-    private val mCompositeDisposable = CompositeDisposable()
+    private val mCompositeDisposable = CompositeJob()
     private val requestReadWritePermission = requestPermissionsResultAbs(
         arrayOf(
             Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE
@@ -161,26 +163,24 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
         resolveToolbarNavigationIcon()
         savedInstanceState ?: run {
             if (Settings.get().main().localServer.enabled_audio_local_sync) {
-                mCompositeDisposable.add(MusicPlaybackController.tracksExist.findAllAudios(
-                    this
+                mCompositeDisposable.add(
+                    MusicPlaybackController.tracksExist.findAllAudios(
+                        this
+                    ).fromIOToMain({},
+                        {
+                            if (Settings.get().main().isDeveloper_mode) {
+                                createCustomToast(
+                                    this,
+                                    mViewFragment,
+                                    mBottomNavigation
+                                )?.showToastThrowable(it)
+                            }
+                        })
                 )
-                    .fromIOToMain()
-                    .subscribe(
-                        RxUtils.dummy()
-                    ) {
-                        if (Settings.get().main().isDeveloper_mode) {
-                            createCustomToast(
-                                this,
-                                mViewFragment,
-                                mBottomNavigation
-                            )?.showToastThrowable(it)
-                        }
-                    })
             }
             mCompositeDisposable.add(MusicPlaybackController.tracksExist.findAllTags()
-                .fromIOToMain()
-                .subscribe(
-                    RxUtils.dummy()
+                .fromIOToMain(
+                    CoroutinesUtils.dummy()
                 ) {
                     if (Settings.get().main().isDeveloper_mode) {
                         createCustomToast(this, mViewFragment, mBottomNavigation)
@@ -362,13 +362,15 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
 
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val statusBarNonColored = CurrentTheme.getStatusBarNonColored(this)
-        val statusBarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.statusBarColor = if (colored) statusBarColored else statusBarNonColored
-        @ColorInt val navigationColor =
-            if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
-        w.navigationBarColor = navigationColor
+        if (!hasVanillaIceCream()) {
+            w.statusBarColor =
+                if (colored) getStatusBarColor(this) else getStatusBarNonColored(
+                    this
+                )
+            w.navigationBarColor =
+                if (colored) getNavigationBarColor(this) else Color.BLACK
+        }
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons
@@ -510,7 +512,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
     }
 
     override fun onDestroy() {
-        mCompositeDisposable.dispose()
+        mCompositeDisposable.cancel()
         supportFragmentManager.removeOnBackStackChangedListener(mOnBackStackChangedListener)
 
         if (!isChangingConfigurations) {
@@ -547,7 +549,6 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
         mCurrentFrontSection = item
         when (item) {
             SectionItem.FILE_MANAGER -> {
-                @Suppress("DEPRECATION")
                 val path: File =
                     if (Environment.getExternalStorageDirectory().isDirectory && Environment.getExternalStorageDirectory()
                             .canRead()

@@ -26,7 +26,9 @@ import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import dev.ragnarok.fenrir.util.VKOwnIds
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 class NewsfeedInteractor(
     private val networker: INetworker,
@@ -39,11 +41,11 @@ class NewsfeedInteractor(
         offset: Int?,
         startTime: Long?,
         endTime: Long?
-    ): Single<Pair<List<NewsfeedComment>, String?>> {
+    ): Flow<Pair<List<NewsfeedComment>, String?>> {
         return networker.vkDefault(accountId)
             .newsfeed()
             .getMentions(owner_id, count, offset, startTime, endTime)
-            .flatMap { response ->
+            .flatMapConcat { response ->
                 val owners = transformOwners(response.profiles, response.groups)
                 val ownIds = VKOwnIds()
                 val dtos = listEmptyIfNull(response.items)
@@ -78,14 +80,14 @@ class NewsfeedInteractor(
         count: Int,
         startFrom: String?,
         filter: String?
-    ): Single<Pair<List<NewsfeedComment>, String?>> {
+    ): Flow<Pair<List<NewsfeedComment>, String?>> {
         return networker.vkDefault(accountId)
             .newsfeed()
             .getComments(
                 count, filter, null, null, null,
                 1, startFrom, Fields.FIELDS_BASE_OWNER
             )
-            .flatMap { response ->
+            .flatMapConcat { response ->
                 val owners = transformOwners(response.profiles, response.groups)
                 val ownIds = VKOwnIds()
                 val dtos = listEmptyIfNull(response.items)

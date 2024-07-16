@@ -4,10 +4,9 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IVideosInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.VideoAlbum
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class VideoAlbumsPresenter(
     accountId: Long,
@@ -17,8 +16,8 @@ class VideoAlbumsPresenter(
 ) : AccountDependencyPresenter<IVideoAlbumsView>(accountId, savedInstanceState) {
     private val data: MutableList<VideoAlbum> = ArrayList()
     private val videosInteractor: IVideosInteractor = InteractorFactory.createVideosInteractor()
-    private val netDisposable = CompositeDisposable()
-    private val cacheDisposable = CompositeDisposable()
+    private val netDisposable = CompositeJob()
+    private val cacheDisposable = CompositeJob()
     private var endOfContent = false
     private var actualDataReceived = false
     private var netLoadingNow = false
@@ -50,8 +49,7 @@ class VideoAlbumsPresenter(
             COUNT_PER_LOAD,
             offset
         )
-            .fromIOToMain()
-            .subscribe({ albums ->
+            .fromIOToMain({ albums ->
                 onActualDataReceived(
                     offset,
                     albums
@@ -89,8 +87,7 @@ class VideoAlbumsPresenter(
     private fun loadAllDataFromDb() {
         cacheDisposable.add(
             videosInteractor.getCachedAlbums(accountId, ownerId)
-                .fromIOToMain()
-                .subscribe({ albums -> onCachedDataReceived(albums) }, ignore())
+                .fromIOToMain { albums -> onCachedDataReceived(albums) }
         )
     }
 
@@ -102,8 +99,8 @@ class VideoAlbumsPresenter(
     }
 
     override fun onDestroyed() {
-        cacheDisposable.dispose()
-        netDisposable.dispose()
+        cacheDisposable.cancel()
+        netDisposable.cancel()
         super.onDestroyed()
     }
 

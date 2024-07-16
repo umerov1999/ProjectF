@@ -30,7 +30,11 @@ class MonochromeTransformation : Transformation {
             obj = Picture()
             canvas = obj.beginRecording(bitmapWidth, bitmapHeight)
         } else {
-            output = Bitmap.createBitmap(bitmapWidth, bitmapHeight, source.config)
+            output = Bitmap.createBitmap(
+                bitmapWidth,
+                bitmapHeight,
+                source.config ?: Bitmap.Config.ARGB_8888
+            )
             canvas = Canvas(output)
         }
         val matrix = ColorMatrix()

@@ -20,21 +20,19 @@ import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.StubAnimatorListener
 import dev.ragnarok.filegallery.fragment.base.BaseMvpFragment
-import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.listener.BackPressCallback
 import dev.ragnarok.filegallery.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.filegallery.listener.UpdatableNavigation
 import dev.ragnarok.filegallery.model.FileItemSelect
 import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.util.Utils
-import dev.ragnarok.filegallery.util.rxutils.RxUtils
+import dev.ragnarok.filegallery.util.coroutines.CancelableJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.filegallery.util.toast.CustomToast
 import dev.ragnarok.filegallery.view.MySearchView
 import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.disposables.Disposable
 import java.io.File
-import java.util.concurrent.TimeUnit
 
 class FileManagerSelectFragment :
     BaseMvpFragment<FileManagerSelectPresenter, IFileManagerSelectView>(),
@@ -48,7 +46,7 @@ class FileManagerSelectFragment :
     private var mSelected: FloatingActionButton? = null
     private var mHeader: MaterialTextView? = null
 
-    private var animationDispose = Disposable.disposed()
+    private var animationDispose = CancelableJob()
     private var mAnimationLoaded = false
     private var animLoad: ObjectAnimator? = null
     private var mySearchView: MySearchView? = null
@@ -65,7 +63,7 @@ class FileManagerSelectFragment :
 
     override fun onDestroy() {
         super.onDestroy()
-        animationDispose.dispose()
+        animationDispose.cancel()
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?) = FileManagerSelectPresenter(
@@ -165,15 +163,13 @@ class FileManagerSelectFragment :
     }
 
     override fun resolveLoading(visible: Boolean) {
-        animationDispose.dispose()
+        animationDispose.cancel()
         if (mAnimationLoaded && !visible) {
             mAnimationLoaded = false
             animLoad?.start()
         } else if (!mAnimationLoaded && visible) {
             animLoad?.end()
-            animationDispose = Completable.create {
-                it.onComplete()
-            }.delay(300, TimeUnit.MILLISECONDS).fromIOToMain().subscribe({
+            animationDispose.set(delayTaskFlow(300).toMain {
                 mAnimationLoaded = true
                 loading?.visibility = View.VISIBLE
                 loading?.alpha = 1f
@@ -189,7 +185,7 @@ class FileManagerSelectFragment :
                     )
                 )
                 loading?.playAnimation()
-            }, RxUtils.ignore())
+            })
         }
     }
 

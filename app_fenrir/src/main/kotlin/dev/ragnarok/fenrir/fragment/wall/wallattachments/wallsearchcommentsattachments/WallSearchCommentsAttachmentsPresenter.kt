@@ -8,12 +8,12 @@ import dev.ragnarok.fenrir.domain.ICommentsInteractor
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.domain.impl.CommentsInteractor
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Comment
 import dev.ragnarok.fenrir.model.CommentedType
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class WallSearchCommentsAttachmentsPresenter(
     accountId: Long,
@@ -24,7 +24,7 @@ class WallSearchCommentsAttachmentsPresenter(
     private val data: MutableList<Comment> = ArrayList()
     private val interactor: ICommentsInteractor =
         CommentsInteractor(networkInterfaces, stores, owners)
-    private val actualDataDisposable = CompositeDisposable()
+    private val actualDataDisposable = CompositeJob()
     private var loaded = 0
     private var offset = 0
     private var index = 0
@@ -46,8 +46,7 @@ class WallSearchCommentsAttachmentsPresenter(
             posts[index],
             offset
         )
-            .fromIOToMain()
-            .subscribe({ onActualDataReceived(it) }) {
+            .fromIOToMain({ onActualDataReceived(it) }) {
                 onActualDataGetError(
                     it
                 )
@@ -110,7 +109,7 @@ class WallSearchCommentsAttachmentsPresenter(
     }
 
     override fun onDestroyed() {
-        actualDataDisposable.dispose()
+        actualDataDisposable.cancel()
         super.onDestroyed()
     }
 

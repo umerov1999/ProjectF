@@ -22,7 +22,7 @@ import dev.ragnarok.fenrir.api.model.response.MessageImportantResponse
 import dev.ragnarok.fenrir.api.model.response.SendMessageResponse
 import dev.ragnarok.fenrir.api.model.response.UploadChatPhotoResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.builtins.serializer
 
 class IMessageService : IServiceRest() {
@@ -33,7 +33,7 @@ class IMessageService : IServiceRest() {
         attachment: String?,
         keepForwardMessages: Int?,
         keepSnippets: Int?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "messages.edit", form(
                 "peer_id" to peedId,
@@ -49,7 +49,7 @@ class IMessageService : IServiceRest() {
     fun pin(
         peerId: Long,
         messageId: Int
-    ): Single<BaseResponse<VKApiMessage>> {
+    ): Flow<BaseResponse<VKApiMessage>> {
         return rest.request(
             "messages.pin", form(
                 "peer_id" to peerId,
@@ -58,19 +58,19 @@ class IMessageService : IServiceRest() {
         )
     }
 
-    fun pinConversation(peerId: Long): Single<BaseResponse<Int>> {
+    fun pinConversation(peerId: Long): Flow<BaseResponse<Int>> {
         return rest.request("messages.pinConversation", form("peer_id" to peerId), baseInt)
     }
 
-    fun unpinConversation(peerId: Long): Single<BaseResponse<Int>> {
+    fun unpinConversation(peerId: Long): Flow<BaseResponse<Int>> {
         return rest.request("messages.unpinConversation", form("peer_id" to peerId), baseInt)
     }
 
-    fun markAsListened(message_id: Int): Single<BaseResponse<Int>> {
+    fun markAsListened(message_id: Int): Flow<BaseResponse<Int>> {
         return rest.request("messages.markAsListened", form("message_id" to message_id), baseInt)
     }
 
-    fun unpin(peerId: Long): Single<BaseResponse<Int>> {
+    fun unpin(peerId: Long): Flow<BaseResponse<Int>> {
         return rest.request("messages.unpin", form("peer_id" to peerId), baseInt)
     }
 
@@ -85,7 +85,7 @@ class IMessageService : IServiceRest() {
     fun removeChatUser(
         chatId: Long,
         memberId: Long
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "messages.removeChatUser", form(
                 "chat_id" to chatId,
@@ -94,7 +94,7 @@ class IMessageService : IServiceRest() {
         )
     }
 
-    fun deleteChatPhoto(chatId: Long): Single<BaseResponse<UploadChatPhotoResponse>> {
+    fun deleteChatPhoto(chatId: Long): Flow<BaseResponse<UploadChatPhotoResponse>> {
         return rest.request(
             "messages.deleteChatPhoto",
             form("chat_id" to chatId),
@@ -112,7 +112,7 @@ class IMessageService : IServiceRest() {
     fun addChatUser(
         chatId: Long,
         userId: Long
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "messages.addChatUser", form(
                 "chat_id" to chatId,
@@ -141,7 +141,7 @@ class IMessageService : IServiceRest() {
         chatIds: String?,
         fields: String?,
         nameCase: String?
-    ): Single<BaseResponse<ChatsInfoResponse>> {
+    ): Flow<BaseResponse<ChatsInfoResponse>> {
         return rest.request(
             "messages.getChat", form(
                 "chat_id" to chatId,
@@ -155,7 +155,7 @@ class IMessageService : IServiceRest() {
     fun getConversationMembers(
         peer_id: Long?,
         fields: String?
-    ): Single<BaseResponse<ConversationMembersResponse>> {
+    ): Flow<BaseResponse<ConversationMembersResponse>> {
         return rest.request(
             "messages.getConversationMembers",
             form(
@@ -176,7 +176,7 @@ class IMessageService : IServiceRest() {
     fun editChat(
         chatId: Long,
         title: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "messages.editChat", form(
                 "chat_id" to chatId,
@@ -195,7 +195,7 @@ class IMessageService : IServiceRest() {
     fun createChat(
         userIds: String?,
         title: String?
-    ): Single<BaseResponse<Long>> {
+    ): Flow<BaseResponse<Long>> {
         return rest.request(
             "messages.createChat", form(
                 "user_ids" to userIds,
@@ -210,7 +210,7 @@ class IMessageService : IServiceRest() {
      * @param peerId Destination ID.
      * @return 1
      */
-    fun deleteDialog(peerId: Long): Single<BaseResponse<ConversationDeleteResult>> {
+    fun deleteDialog(peerId: Long): Flow<BaseResponse<ConversationDeleteResult>> {
         return rest.request(
             "messages.deleteConversation",
             form("peer_id" to peerId),
@@ -224,7 +224,7 @@ class IMessageService : IServiceRest() {
      * @param messageId ID of a previously-deleted message to restore
      * @return 1
      */
-    fun restore(messageId: Int): Single<BaseResponse<Int>> {
+    fun restore(messageId: Int): Flow<BaseResponse<Int>> {
         return rest.request("messages.restore", form("message_id" to messageId), baseInt)
     }
 
@@ -239,7 +239,7 @@ class IMessageService : IServiceRest() {
         messageIds: String?,
         deleteForAll: Int?,
         spam: Int?
-    ): Single<BaseResponse<List<MessageDeleteResponse>>> {
+    ): Flow<BaseResponse<List<MessageDeleteResponse>>> {
         return rest.request(
             "messages.delete",
             form(
@@ -261,7 +261,7 @@ class IMessageService : IServiceRest() {
     fun markAsRead(
         peerId: Long?,
         startMessageId: Int?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "messages.markAsRead", form(
                 "peer_id" to peerId,
@@ -273,7 +273,7 @@ class IMessageService : IServiceRest() {
     fun markAsImportant(
         messageIds: String?,
         important: Int?
-    ): Single<BaseResponse<List<Int>>> {
+    ): Flow<BaseResponse<List<Int>>> {
         return rest.request(
             "messages.markAsImportant", form(
                 "message_ids" to messageIds,
@@ -292,7 +292,7 @@ class IMessageService : IServiceRest() {
     fun setActivity(
         peerId: Long,
         type: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "messages.setActivity", form(
                 "peer_id" to peerId,
@@ -321,7 +321,7 @@ class IMessageService : IServiceRest() {
         previewLength: Int?,
         offset: Int?,
         count: Int?
-    ): Single<BaseResponse<Items<VKApiMessage>>> {
+    ): Flow<BaseResponse<Items<VKApiMessage>>> {
         return rest.request(
             "messages.search", form(
                 "q" to query,
@@ -369,7 +369,7 @@ class IMessageService : IServiceRest() {
         eventsLimit: Int?,
         msgsLimit: Int?,
         maxMsgId: Int?
-    ): Single<BaseResponse<LongpollHistoryResponse>> {
+    ): Flow<BaseResponse<LongpollHistoryResponse>> {
         return rest.request(
             "messages.getLongPollHistory",
             form(
@@ -407,7 +407,7 @@ class IMessageService : IServiceRest() {
         preserve_order: Int?,
         max_forwards_level: Int?,
         fields: String?
-    ): Single<BaseResponse<AttachmentsHistoryResponse>> {
+    ): Flow<BaseResponse<AttachmentsHistoryResponse>> {
         return rest.request(
             "messages.getHistoryAttachments",
             form(
@@ -452,7 +452,7 @@ class IMessageService : IServiceRest() {
         stickerId: Int?,
         payload: String?,
         reply_to: Int?
-    ): Single<BaseResponse<List<SendMessageResponse>>> {
+    ): Flow<BaseResponse<List<SendMessageResponse>>> {
         return rest.request(
             "messages.send", form(
                 "random_id" to randomId,
@@ -482,7 +482,7 @@ class IMessageService : IServiceRest() {
     fun getById(
         messageIds: String?,
         previewLength: Int?
-    ): Single<BaseResponse<Items<VKApiMessage>>> {
+    ): Flow<BaseResponse<Items<VKApiMessage>>> {
         return rest.request(
             "messages.getById", form(
                 "message_ids" to messageIds,
@@ -498,7 +498,7 @@ class IMessageService : IServiceRest() {
         startMessageId: Int?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<DialogsResponse>> {
+    ): Flow<BaseResponse<DialogsResponse>> {
         return rest.request(
             "messages.getConversations", form(
                 "offset" to offset,
@@ -515,7 +515,7 @@ class IMessageService : IServiceRest() {
         peerIds: String?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<ItemsProfilesGroupsResponse<VKApiConversation>>> {
+    ): Flow<BaseResponse<ItemsProfilesGroupsResponse<VKApiConversation>>> {
         return rest.request(
             "messages.getConversationsById",
             form(
@@ -530,7 +530,7 @@ class IMessageService : IServiceRest() {
     fun getLongpollServer(
         needPts: Int,
         lpVersion: Int
-    ): Single<BaseResponse<VKApiLongpollServer>> {
+    ): Flow<BaseResponse<VKApiLongpollServer>> {
         return rest.request(
             "messages.getLongPollServer",
             form(
@@ -561,7 +561,7 @@ class IMessageService : IServiceRest() {
         rev: Int?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<MessageHistoryResponse>> {
+    ): Flow<BaseResponse<MessageHistoryResponse>> {
         return rest.request(
             "messages.getHistory",
             form(
@@ -581,7 +581,7 @@ class IMessageService : IServiceRest() {
         offset: Int?,
         count: Int?,
         peerId: Long
-    ): Single<BaseResponse<Items<VKApiJsonString>>> {
+    ): Flow<BaseResponse<Items<VKApiJsonString>>> {
         return rest.request(
             "messages.getHistory", form(
                 "offset" to offset,
@@ -597,7 +597,7 @@ class IMessageService : IServiceRest() {
         startMessageId: Int?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<MessageImportantResponse>> {
+    ): Flow<BaseResponse<MessageImportantResponse>> {
         return rest.request(
             "messages.getImportantMessages",
             form(
@@ -617,7 +617,7 @@ class IMessageService : IServiceRest() {
         count: Int?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<ConversationsResponse>> {
+    ): Flow<BaseResponse<ConversationsResponse>> {
         return rest.request(
             "messages.searchConversations",
             form(
@@ -633,7 +633,7 @@ class IMessageService : IServiceRest() {
     fun recogniseAudioMessage(
         message_id: Int?,
         audio_message_id: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "messages.recogniseAudioMessage", form(
                 "message_id" to message_id,
@@ -646,7 +646,7 @@ class IMessageService : IServiceRest() {
         peer_id: Long?,
         member_id: Long?,
         role: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "messages.setMemberRole", form(
                 "peer_id" to peer_id,
@@ -658,7 +658,7 @@ class IMessageService : IServiceRest() {
 
     fun getReactionsAssets(
         client_version: Int?
-    ): Single<BaseResponse<Assets<VKApiReactionAsset>>> {
+    ): Flow<BaseResponse<Assets<VKApiReactionAsset>>> {
         return rest.request(
             "messages.getReactionsAssets", form(
                 "client_version" to client_version
@@ -670,7 +670,7 @@ class IMessageService : IServiceRest() {
         peer_id: Long,
         cmid: Int,
         reaction_id: Int
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "messages.sendReaction", form(
                 "peer_id" to peer_id,
@@ -683,7 +683,7 @@ class IMessageService : IServiceRest() {
     fun deleteReaction(
         peer_id: Long,
         cmid: Int
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "messages.deleteReaction", form(
                 "peer_id" to peer_id,

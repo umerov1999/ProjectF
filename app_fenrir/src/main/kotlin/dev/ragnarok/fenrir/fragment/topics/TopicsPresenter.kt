@@ -4,18 +4,17 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IBoardInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.LoadMoreState
 import dev.ragnarok.fenrir.model.Topic
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class TopicsPresenter(accountId: Long, private val ownerId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<ITopicsView>(accountId, savedInstanceState) {
     private val topics: MutableList<Topic> = ArrayList()
     private val boardInteractor: IBoardInteractor = InteractorFactory.createBoardInteractor()
-    private val cacheDisposable = CompositeDisposable()
-    private val netDisposable = CompositeDisposable()
+    private val cacheDisposable = CompositeJob()
+    private val netDisposable = CompositeJob()
     private var endOfContent = false
     private var actualDataReceived = false
     private var cacheLoadingNow = false
@@ -24,8 +23,7 @@ class TopicsPresenter(accountId: Long, private val ownerId: Long, savedInstanceS
     private fun loadCachedData() {
         cacheDisposable.add(
             boardInteractor.getCachedTopics(accountId, ownerId)
-                .fromIOToMain()
-                .subscribe({ topics -> onCachedDataReceived(topics) }, ignore())
+                .fromIOToMain { topics -> onCachedDataReceived(topics) }
         )
     }
 
@@ -47,8 +45,7 @@ class TopicsPresenter(accountId: Long, private val ownerId: Long, savedInstanceS
             COUNT_PER_REQUEST,
             offset
         )
-            .fromIOToMain()
-            .subscribe({ topics ->
+            .fromIOToMain({ topics ->
                 onActualDataReceived(
                     offset,
                     topics
@@ -93,8 +90,8 @@ class TopicsPresenter(accountId: Long, private val ownerId: Long, savedInstanceS
     }
 
     override fun onDestroyed() {
-        cacheDisposable.dispose()
-        netDisposable.dispose()
+        cacheDisposable.cancel()
+        netDisposable.cancel()
         super.onDestroyed()
     }
 

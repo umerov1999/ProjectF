@@ -5,7 +5,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IGroupSettingsInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Banned
 import dev.ragnarok.fenrir.model.BlockReason
 import dev.ragnarok.fenrir.model.IdOption
@@ -13,6 +12,7 @@ import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.util.Logger.wtf
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import java.text.DateFormat
 import java.util.Calendar
 import java.util.Date
@@ -166,7 +166,7 @@ class CommunityBanEditPresenter : AccountDependencyPresenter<ICommunityBanEditVi
         val ownerId = currentBanned().ownerId
         val endDate = blockFor.unblockingDate
         val endDateUnixtime = if (endDate != null) endDate.time / 1000 else null
-        appendDisposable(interactor.ban(
+        appendJob(interactor.ban(
             accountId,
             groupId,
             ownerId,
@@ -175,8 +175,7 @@ class CommunityBanEditPresenter : AccountDependencyPresenter<ICommunityBanEditVi
             comment,
             showCommentToUser
         )
-            .fromIOToMain()
-            .subscribe({ onAddBanComplete() }) { throwable ->
+            .fromIOToMain({ onAddBanComplete() }) { throwable ->
                 onAddBanError(
                     getCauseIfRuntime(throwable)
                 )

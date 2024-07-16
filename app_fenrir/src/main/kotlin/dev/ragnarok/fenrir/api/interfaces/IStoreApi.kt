@@ -5,10 +5,10 @@ import dev.ragnarok.fenrir.api.model.Items
 import dev.ragnarok.fenrir.api.model.VKApiSticker
 import dev.ragnarok.fenrir.api.model.VKApiStickerSet
 import dev.ragnarok.fenrir.api.model.VKApiStickersKeywords
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IStoreApi {
-    val stickerKeywords: Single<Dictionary<VKApiStickersKeywords>>
-    val stickersSets: Single<Items<VKApiStickerSet.Product>>
-    val recentStickers: Single<Items<VKApiSticker>>
+    val stickerKeywords: Flow<Dictionary<VKApiStickersKeywords>>
+    val stickersSets: Flow<Items<VKApiStickerSet.Product>>
+    val recentStickers: Flow<Items<VKApiSticker>>
 }

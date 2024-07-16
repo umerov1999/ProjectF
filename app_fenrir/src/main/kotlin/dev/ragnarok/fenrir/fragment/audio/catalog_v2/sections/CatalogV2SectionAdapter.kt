@@ -36,7 +36,6 @@ import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder
 import dev.ragnarok.fenrir.fragment.base.RecyclerBindableAdapter
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.AudioSearchCriteria
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController
@@ -81,13 +80,15 @@ import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.toColor
-import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.Mp3InfoHelper
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.fenrir.util.hls.M3U8
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast
@@ -95,7 +96,6 @@ import dev.ragnarok.fenrir.view.AudioContainer
 import dev.ragnarok.fenrir.view.VP2NestedRecyclerView
 import dev.ragnarok.fenrir.view.WeakViewAnimatorAdapter
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
-import io.reactivex.rxjava3.disposables.Disposable
 import java.lang.ref.WeakReference
 
 class CatalogV2SectionAdapter(
@@ -104,13 +104,13 @@ class CatalogV2SectionAdapter(
     private val mContext: Context
 ) : RecyclerBindableAdapter<AbsModel, IViewHolder>(data) {
     private var clickListener: ClickListener? = null
-    private var disposable: Disposable = Disposable.disposed()
+    private var disposable = CancelableJob()
     private val mAudioInteractor: IAudioInteractor = InteractorFactory.createAudioInteractor()
 
     private val isLongPressDownload: Boolean = Settings.get().main().isUse_long_click_download
     private val isAudio_round_icon: Boolean = Settings.get().main().isAudio_round_icon
-    private var audioListDisposable = Disposable.disposed()
-    private var mPlayerDisposable = Disposable.disposed()
+    private var audioListDisposable = CancelableJob()
+    private var mPlayerDisposable = CancelableJob()
     private var currAudio: Audio? = currentAudio
     private val isDark: Boolean = Settings.get().ui().isDarkModeEnabled(mContext)
     private var recyclerView: RecyclerView? = null
@@ -209,13 +209,12 @@ class CatalogV2SectionAdapter(
                 override fun onScrollToLastElement() {
                     if (itemDataHolder.next_from.nonNullNoEmpty()) {
                         clickListener?.onNext(true)
-                        disposable = mAudioInteractor.getCatalogV2BlockItems(
+                        disposable += mAudioInteractor.getCatalogV2BlockItems(
                             account_id,
                             itemDataHolder.id.orEmpty(),
                             itemDataHolder.next_from
                         )
-                            .fromIOToMain()
-                            .subscribe({ data ->
+                            .fromIOToMain({ data ->
                                 val s = itemDataHolder.items?.size.orZero()
                                 itemDataHolder.update(data)
                                 adapter.get()?.notifyItemBindableRangeInserted(
@@ -312,29 +311,26 @@ class CatalogV2SectionAdapter(
 
     ///////////////////////////////////////PLAYLIST_HOLDER////////////////////////////////////////////
     private fun onDelete(index: Int, album: AudioPlaylist) {
-        audioListDisposable =
-            mAudioInteractor.deletePlaylist(account_id, album.id, album.owner_id)
-                .fromIOToMain()
-                .subscribe({
-                    getItems().removeAt(index)
-                    notifyItemBindableRemoved(index)
-                    CustomToast.createCustomToast(mContext).showToast(R.string.deleted)
-                }) { throwable ->
-                    clickListener?.onError(
-                        throwable
-                    )
-                }
+        audioListDisposable += mAudioInteractor.deletePlaylist(account_id, album.id, album.owner_id)
+            .fromIOToMain({
+                getItems().removeAt(index)
+                notifyItemBindableRemoved(index)
+                CustomToast.createCustomToast(mContext).showToast(R.string.deleted)
+            }) { throwable ->
+                clickListener?.onError(
+                    throwable
+                )
+            }
     }
 
     private fun onAddPlaylist(album: AudioPlaylist) {
-        audioListDisposable = mAudioInteractor.followPlaylist(
+        audioListDisposable += mAudioInteractor.followPlaylist(
             account_id,
             album.id,
             album.owner_id,
             album.access_key
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 CustomToast.createCustomToast(mContext).showToast(R.string.success)
             }) {
                 clickListener?.onError(
@@ -590,24 +586,23 @@ class CatalogV2SectionAdapter(
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
-        mPlayerDisposable = MusicPlaybackController.observeServiceBinding()
-            .toMainThread()
-            .subscribe { onServiceBindEvent(it) }
+        mPlayerDisposable += MusicPlaybackController.observeServiceBinding()
+            .sharedFlowToMain { onServiceBindEvent(it) }
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
         this.recyclerView = null
-        disposable.dispose()
+        disposable.cancel()
         clickListener?.onNext(false)
-        mPlayerDisposable.dispose()
-        audioListDisposable.dispose()
+        mPlayerDisposable.cancel()
+        audioListDisposable.cancel()
     }
 
 
     private fun deleteTrack(accountId: Long, audio: Audio, position: Int) {
-        audioListDisposable =
-            mAudioInteractor.delete(accountId, audio.id, audio.ownerId).fromIOToMain().subscribe(
+        audioListDisposable += mAudioInteractor.delete(accountId, audio.id, audio.ownerId)
+            .fromIOToMain(
                 {
                     getItems().removeAt(position)
                     notifyItemBindableRemoved(position)
@@ -616,7 +611,7 @@ class CatalogV2SectionAdapter(
     }
 
     private fun addTrack(accountId: Long, audio: Audio) {
-        audioListDisposable = mAudioInteractor.add(accountId, audio, null).fromIOToMain().subscribe(
+        audioListDisposable += mAudioInteractor.add(accountId, audio, null).fromIOToMain(
             { CustomToast.createCustomToast(mContext).showToast(R.string.added) }) { t ->
             CustomToast.createCustomToast(mContext).showToastThrowable(t)
         }
@@ -625,13 +620,15 @@ class CatalogV2SectionAdapter(
     private fun getMp3AndBitrate(accountId: Long, audio: Audio) {
         val mode = audio.needRefresh()
         if (mode.first) {
-            audioListDisposable =
-                mAudioInteractor.getByIdOld(accountId, listOf(audio), mode.second).fromIOToMain()
-                    .subscribe({ t -> getBitrate(t[0]) }) {
-                        getBitrate(
-                            audio
-                        )
-                    }
+            audioListDisposable += mAudioInteractor.getByIdOld(
+                accountId,
+                listOf(audio),
+                mode.second
+            ).fromIOToMain({ t -> getBitrate(t[0]) }) {
+                getBitrate(
+                    audio
+                )
+            }
         } else {
             getBitrate(audio)
         }
@@ -642,45 +639,41 @@ class CatalogV2SectionAdapter(
         if (pUrl.isNullOrEmpty()) {
             return
         }
-        audioListDisposable = if (audio.isHLS) {
-            M3U8(pUrl).length.fromIOToMain()
-                .subscribe(
-                    { r ->
-                        CustomToast.createCustomToast(mContext).showToast(
-                            Mp3InfoHelper.getBitrate(
-                                mContext,
-                                audio.duration,
-                                r
-                            )
+        audioListDisposable += if (audio.isHLS) {
+            M3U8(pUrl).length.fromIOToMain(
+                { r ->
+                    CustomToast.createCustomToast(mContext).showToast(
+                        Mp3InfoHelper.getBitrate(
+                            mContext,
+                            audio.duration,
+                            r
                         )
-                    }
-                ) { e -> CustomToast.createCustomToast(mContext).showToastThrowable(e) }
+                    )
+                }
+            ) { e -> CustomToast.createCustomToast(mContext).showToastThrowable(e) }
         } else {
-            Mp3InfoHelper.getLength(pUrl).fromIOToMain()
-                .subscribe(
-                    { r ->
-                        CustomToast.createCustomToast(mContext).showToast(
-                            Mp3InfoHelper.getBitrate(
-                                mContext,
-                                audio.duration,
-                                r
-                            )
+            Mp3InfoHelper.getLength(pUrl).fromIOToMain(
+                { r ->
+                    CustomToast.createCustomToast(mContext).showToast(
+                        Mp3InfoHelper.getBitrate(
+                            mContext,
+                            audio.duration,
+                            r
                         )
-                    }
-                ) { e -> CustomToast.createCustomToast(mContext).showToastThrowable(e) }
+                    )
+                }
+            ) { e -> CustomToast.createCustomToast(mContext).showToastThrowable(e) }
         }
     }
 
     private fun get_lyrics(audio: Audio) {
-        audioListDisposable =
-            mAudioInteractor.getLyrics(Settings.get().accounts().current, audio)
-                .fromIOToMain()
-                .subscribe({ t ->
-                    onAudioLyricsReceived(
-                        t,
-                        audio
-                    )
-                }) { t -> CustomToast.createCustomToast(mContext).showToastThrowable(t) }
+        audioListDisposable += mAudioInteractor.getLyrics(Settings.get().accounts().current, audio)
+            .fromIOToMain({ t ->
+                onAudioLyricsReceived(
+                    t,
+                    audio
+                )
+            }) { t -> CustomToast.createCustomToast(mContext).showToastThrowable(t) }
     }
 
     private fun onAudioLyricsReceived(Text: String, audio: Audio) {
@@ -774,19 +767,18 @@ class CatalogV2SectionAdapter(
                     root.findViewById<TextInputEditText>(R.id.edit_artist).text.toString()
                 val title =
                     root.findViewById<TextInputEditText>(R.id.edit_title).text.toString()
-                audioListDisposable = mAudioInteractor.edit(
+                audioListDisposable += mAudioInteractor.edit(
                     account_id,
                     audio.ownerId,
                     audio.id,
                     artist,
                     title
-                ).fromIOToMain()
-                    .subscribe({
-                        audio.setTitle(title).setArtist(artist)
-                        notifyItemBindableChanged(position)
-                    }) { t ->
-                        clickListener?.onError(Utils.getCauseIfRuntime(t))
-                    }
+                ).fromIOToMain({
+                    audio.setTitle(title).setArtist(artist)
+                    notifyItemBindableChanged(position)
+                }) { t ->
+                    clickListener?.onError(Utils.getCauseIfRuntime(t))
+                }
             }
             .setNegativeButton(R.string.button_cancel, null)
             .show()

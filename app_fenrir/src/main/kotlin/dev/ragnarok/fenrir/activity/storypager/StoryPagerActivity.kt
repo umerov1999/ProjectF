@@ -18,7 +18,6 @@ import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.annotation.ColorInt
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
@@ -41,7 +40,6 @@ import dev.ragnarok.fenrir.activity.slidr.model.SlidrConfig
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrListener
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrPosition
 import dev.ragnarok.fenrir.fragment.audio.AudioPlayerFragment
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableArrayListCompat
 import dev.ragnarok.fenrir.link.LinkHelper
 import dev.ragnarok.fenrir.listener.AppStyleable
@@ -58,28 +56,29 @@ import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.place.PlaceProvider
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.settings.CurrentTheme.getNavigationBarColor
+import dev.ragnarok.fenrir.settings.CurrentTheme.getStatusBarColor
+import dev.ragnarok.fenrir.settings.CurrentTheme.getStatusBarNonColored
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.toColor
-import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.HelperSimple
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCream
 import dev.ragnarok.fenrir.util.ViewUtils
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.CircleCounterButton
 import dev.ragnarok.fenrir.view.ExpandableSurfaceView
 import dev.ragnarok.fenrir.view.TouchImageView
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 import dev.ragnarok.fenrir.view.pager.WeakPicassoLoadCallback
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.Disposable
 import java.lang.ref.WeakReference
 import java.util.Calendar
-import java.util.concurrent.TimeUnit
 
 class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>(),
     IStoryPagerView, PlaceProvider, AppStyleable {
@@ -96,8 +95,8 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
     private var mFullscreen = false
     private var hasExternalUrl = false
     private var mPlaySpeed: ImageView? = null
-    private var helpDisposable = Disposable.disposed()
-    private var playDispose = Disposable.disposed()
+    private var helpDisposable = CancelableJob()
+    private var playDispose = CancelableJob()
 
     @LayoutRes
     override fun getNoMainContentView(): Int {
@@ -138,12 +137,10 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                 intArrayOf(0x333333, CurrentTheme.getColorSecondary(this))
             )
             mHelper?.playAnimation()
-            helpDisposable = Completable.create {
-                it.onComplete()
-            }.delay(5, TimeUnit.SECONDS).fromIOToMain().subscribe({
+            helpDisposable += delayTaskFlow(5000).toMain {
                 mHelper?.clearAnimationDrawable()
                 mHelper?.visibility = View.GONE
-            }, RxUtils.ignore())
+            }
         } else {
             mHelper?.visibility = View.GONE
         }
@@ -217,13 +214,15 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
 
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val statusBarNonColored = CurrentTheme.getStatusBarNonColored(this)
-        val statusBarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.statusBarColor = if (colored) statusBarColored else statusBarNonColored
-        @ColorInt val navigationColor =
-            if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
-        w.navigationBarColor = navigationColor
+        if (!hasVanillaIceCream()) {
+            w.statusBarColor =
+                if (colored) getStatusBarColor(this) else getStatusBarNonColored(
+                    this
+                )
+            w.navigationBarColor =
+                if (colored) getNavigationBarColor(this) else Color.BLACK
+        }
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons
@@ -317,11 +316,9 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
     private val pageChangeListener = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
-            playDispose.dispose()
-            playDispose = Observable.just(Object())
-                .delay(400, TimeUnit.MILLISECONDS)
-                .toMainThread()
-                .subscribe { presenter?.firePageSelected(position) }
+            playDispose.cancel()
+            playDispose += delayTaskFlow(400)
+                .toMain { presenter?.firePageSelected(position) }
         }
     }
 
@@ -435,8 +432,8 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
 
     override fun onDestroy() {
         super.onDestroy()
-        helpDisposable.dispose()
-        playDispose.dispose()
+        helpDisposable.cancel()
+        playDispose.cancel()
     }
 
     override fun onNext() {
@@ -525,7 +522,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         private val mPicassoLoadCallback: WeakPicassoLoadCallback
         val photo: TouchImageView
         val progress: RLottieImageView
-        var animationDispose: Disposable = Disposable.disposed()
+        var animationDispose = CancelableJob()
         private var mAnimationLoaded = false
         private var mLoadingNow = false
         override fun bindTo(story: Story) {
@@ -554,7 +551,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         }
 
         private fun resolveProgressVisibility(forceStop: Boolean) {
-            animationDispose.dispose()
+            animationDispose.cancel()
             if (mAnimationLoaded && !mLoadingNow && !forceStop) {
                 mAnimationLoaded = false
                 val k = ObjectAnimator.ofFloat(progress, View.ALPHA, 0.0f).setDuration(1000)
@@ -577,9 +574,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                 progress.clearAnimationDrawable()
                 progress.visibility = View.GONE
             } else if (mLoadingNow) {
-                animationDispose = Completable.create {
-                    it.onComplete()
-                }.delay(300, TimeUnit.MILLISECONDS).fromIOToMain().subscribe({
+                animationDispose += delayTaskFlow(300).toMain {
                     mAnimationLoaded = true
                     progress.visibility = View.VISIBLE
                     progress.fromRes(
@@ -594,7 +589,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                         )
                     )
                     progress.playAnimation()
-                }, RxUtils.ignore())
+                }
             }
         }
 

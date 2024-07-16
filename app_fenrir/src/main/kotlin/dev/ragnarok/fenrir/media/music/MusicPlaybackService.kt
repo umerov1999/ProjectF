@@ -46,31 +46,31 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.domain.IAudioInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
 import dev.ragnarok.fenrir.insertAfter
 import dev.ragnarok.fenrir.media.exo.ExoUtil
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.GetLocalTrackLink
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.TrackIsDownloaded
 import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.makeMediaItem
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.andThen
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import java.lang.ref.WeakReference
-import java.util.concurrent.TimeUnit
 
 class MusicPlaybackService : Service() {
     private val mBinder: IBinder = ServiceStub(this)
     private var mPlayer: MultiPlayer? = null
-    private var shutdownDelayedDisposable = Disposable.disposed()
+    private var shutdownDelayedDisposable = CancelableJob()
     var isPlaying = false
         private set
 
@@ -262,7 +262,7 @@ class MusicPlaybackService : Service() {
         }
 
     override fun onDestroy() {
-        shutdownDelayedDisposable.dispose()
+        shutdownDelayedDisposable.cancel()
         wakeLock?.release()
         wakeLock = null
         if (Constants.IS_DEBUG) Logger.d(TAG, "Destroying service")
@@ -385,12 +385,10 @@ class MusicPlaybackService : Service() {
     }
 
     private fun scheduleDelayedShutdown() {
-        shutdownDelayedDisposable.dispose()
+        shutdownDelayedDisposable.cancel()
         if (Constants.IS_DEBUG) Log.v(TAG, "Scheduling shutdown in $IDLE_DELAY ms")
-        shutdownDelayedDisposable = Observable.just(Any())
-            .delay(IDLE_DELAY.toLong(), TimeUnit.MILLISECONDS)
-            .toMainThread()
-            .subscribe { terminate() }
+        shutdownDelayedDisposable.set(delayTaskFlow(IDLE_DELAY.toLong())
+            .toMain { terminate() })
     }
 
     private fun cancelShutdown() {
@@ -398,7 +396,7 @@ class MusicPlaybackService : Service() {
             TAG,
             "Cancelling delayed shutdown"
         )
-        shutdownDelayedDisposable.dispose()
+        shutdownDelayedDisposable.cancel()
     }
 
     /**
@@ -988,7 +986,7 @@ class MusicPlaybackService : Service() {
         val factoryLocal =
             DefaultDataSource.Factory(service)
         val audioInteractor: IAudioInteractor = InteractorFactory.createAudioInteractor()
-        val compositeDisposable = CompositeDisposable()
+        val compositeJob = CompositeJob()
 
         /**
          * @param remoteUrl The path of the file, or the http/rtsp URL of the stream
@@ -1050,19 +1048,17 @@ class MusicPlaybackService : Service() {
                         )
                     )
                 }
-                compositeDisposable.add(
+                compositeJob.add(
                     single
-                        .fromIOToMain()
-                        .subscribe(RxUtils.dummy(), RxUtils.ignore())
+                        .hiddenIO()
                 )
             }
             if (audio.url.isNullOrEmpty() || "https://vk.com/mp3/audio_api_unavailable.mp3" == audio.url) {
-                compositeDisposable.add(audioInteractor.getById(
+                compositeJob.add(audioInteractor.getById(
                     accountId,
                     listOf(audio)
                 )
-                    .fromIOToMain()
-                    .subscribe({ remoteUrl -> setDataSource(remoteUrl[0].url) }) {
+                    .fromIOToMain({ remoteUrl -> setDataSource(remoteUrl[0].url) }) {
                         setDataSource(
                             audio.url
                         )
@@ -1086,7 +1082,7 @@ class MusicPlaybackService : Service() {
         fun release() {
             stop()
             mCurrentMediaPlayer.release()
-            compositeDisposable.dispose()
+            compositeJob.cancel()
         }
 
         fun pause() {

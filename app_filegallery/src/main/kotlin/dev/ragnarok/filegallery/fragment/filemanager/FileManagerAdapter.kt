@@ -21,7 +21,6 @@ import com.squareup.picasso3.Picasso
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.R
-import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.media.music.MusicPlaybackController
 import dev.ragnarok.filegallery.media.music.PlayerStatus
 import dev.ragnarok.filegallery.modalbottomsheetdialogfragment.ModalBottomSheetDialogFragment
@@ -35,12 +34,13 @@ import dev.ragnarok.filegallery.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.toColor
-import dev.ragnarok.filegallery.toMainThread
 import dev.ragnarok.filegallery.util.Utils
+import dev.ragnarok.filegallery.util.coroutines.CancelableJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.filegallery.util.toast.CustomToast
 import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.io.File
 
 class FileManagerAdapter(private var context: Context, private var data: List<FileItem>) :
@@ -49,8 +49,8 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
     private val colorOnSurface = CurrentTheme.getColorOnSurface(context)
     private val messageBubbleColor = CurrentTheme.getMessageBubbleColor(context)
     private var clickListener: ClickListener? = null
-    private var mPlayerDisposable = Disposable.disposed()
-    private var audioListDisposable = Disposable.disposed()
+    private var mPlayerDisposable = CancelableJob()
+    private var audioListDisposable = CancelableJob()
     private var currAudio: Audio? = MusicPlaybackController.currentAudio
     private var isSelectMode = false
 
@@ -65,13 +65,12 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        mPlayerDisposable = MusicPlaybackController.observeServiceBinding()
-            .toMainThread()
-            .subscribe { status ->
+        mPlayerDisposable.set(MusicPlaybackController.observeServiceBinding()
+            .fromIOToMain { status ->
                 onServiceBindEvent(
                     status
                 )
-            }
+            })
     }
 
     private fun onServiceBindEvent(@PlayerStatus status: Int) {
@@ -105,8 +104,8 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
-        mPlayerDisposable.dispose()
-        audioListDisposable.dispose()
+        mPlayerDisposable.cancel()
+        audioListDisposable.cancel()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -179,32 +178,28 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         }
     }
 
-    private fun doLocalBitrate(url: String): Single<Pair<Int, Long>> {
-        return Single.create { v ->
-            try {
-                val retriever = MediaMetadataRetriever()
-                var finalUrl = url
-                if (!Utils.hasR()) {
-                    val uri = Uri.parse(url)
-                    if ("file" == uri.scheme) {
-                        finalUrl = uri.path.toString()
-                    }
+    private fun doLocalBitrate(url: String): Flow<Pair<Int, Long>> {
+        return flow {
+            val retriever = MediaMetadataRetriever()
+            var finalUrl = url
+            if (!Utils.hasR()) {
+                val uri = Uri.parse(url)
+                if ("file" == uri.scheme) {
+                    finalUrl = uri.path.toString()
                 }
-                retriever.setDataSource(finalUrl)
-                val bitrate =
-                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)
-                if (bitrate != null) {
-                    v.onSuccess(
-                        Pair(
-                            (bitrate.toLong() / 1000).toInt(),
-                            Uri.parse(url).toFile().length()
-                        )
+            }
+            retriever.setDataSource(finalUrl)
+            val bitrate =
+                retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)
+            if (bitrate != null) {
+                emit(
+                    Pair(
+                        (bitrate.toLong() / 1000).toInt(),
+                        Uri.parse(url).toFile().length()
                     )
-                } else {
-                    v.tryOnError(Throwable("Can't receipt bitrate "))
-                }
-            } catch (e: RuntimeException) {
-                v.tryOnError(e)
+                )
+            } else {
+                throw Throwable("Can't receipt bitrate ")
             }
         }
     }
@@ -213,23 +208,20 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         if (url.isNullOrEmpty()) {
             return
         }
-        audioListDisposable = doLocalBitrate(url).fromIOToMain()
-            .subscribe(
-                { (first, second) ->
-                    CustomToast.createCustomToast(
-                        context, null
-                    )?.showToast(
-                        context.resources.getString(
-                            R.string.bitrate,
-                            first,
-                            Utils.BytesToSize(second)
-                        )
-                    )
-                }
-            ) {
-                CustomToast.createCustomToast(context, null)?.setDuration(Toast.LENGTH_LONG)
-                    ?.showToastThrowable(it)
-            }
+        audioListDisposable.set(doLocalBitrate(url).fromIOToMain({
+            CustomToast.createCustomToast(
+                context, null
+            )?.showToast(
+                context.resources.getString(
+                    R.string.bitrate,
+                    it.first,
+                    Utils.BytesToSize(it.second)
+                )
+            )
+        }, {
+            CustomToast.createCustomToast(context, null)?.setDuration(Toast.LENGTH_LONG)
+                ?.showToastThrowable(it)
+        }))
     }
 
     private fun doAudioMenu(position: Int, audio: FileItem) {

@@ -11,13 +11,13 @@ import dev.ragnarok.fenrir.db.model.entity.CountryDboEntity
 import dev.ragnarok.fenrir.getInt
 import dev.ragnarok.fenrir.getString
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class DatabaseStorage internal constructor(base: AppStorages) : AbsStorage(base), IDatabaseStore {
-    override fun storeCountries(accountId: Long, dbos: List<CountryDboEntity>): Completable {
-        return Completable.create { emitter ->
+    override fun storeCountries(accountId: Long, dbos: List<CountryDboEntity>): Flow<Boolean> {
+        return flow {
             val uri = getCountriesContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>(dbos.size + 1)
             operations.add(ContentProviderOperation.newDelete(uri).build())
@@ -32,18 +32,18 @@ class DatabaseStorage internal constructor(base: AppStorages) : AbsStorage(base)
                 )
             }
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            emitter.onComplete()
+            emit(true)
         }
     }
 
-    override fun getCountries(accountId: Long): Single<List<CountryDboEntity>> {
-        return Single.create { emitter: SingleEmitter<List<CountryDboEntity>> ->
+    override fun getCountries(accountId: Long): Flow<List<CountryDboEntity>> {
+        return flow {
             val uri = getCountriesContentUriFor(accountId)
             val cursor = contentResolver.query(uri, null, null, null, null)
             val dbos: MutableList<CountryDboEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (emitter.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     val id = cursor.getInt(BaseColumns._ID)
@@ -53,7 +53,7 @@ class DatabaseStorage internal constructor(base: AppStorages) : AbsStorage(base)
                 }
                 cursor.close()
             }
-            emitter.onSuccess(dbos)
+            emit(dbos)
         }
     }
 }

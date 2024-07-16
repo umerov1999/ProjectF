@@ -12,7 +12,9 @@ import dev.ragnarok.fenrir.api.services.IUsersService
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 
 internal class UsersApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), IUsersApi {
@@ -20,33 +22,32 @@ internal class UsersApi(accountId: Long, provider: IServiceProvider) :
         userId: Long,
         fields: String?,
         nameCase: String?
-    ): Single<VKApiUser> {
+    ): Flow<VKApiUser> {
         return provideService(IUsersService(), TokenType.USER, TokenType.SERVICE)
-            .flatMap { service ->
-                service
-                    .getUserWallInfo(
-                        "var user_id = Args.user_id;\n" +
-                                "var fields =Args.fields;\n" +
-                                "var name_case = Args.name_case;\n" +
-                                "\n" +
-                                "var user_info = API.users.get({\"v\":\"" + Constants.API_VERSION + "\",\"user_ids\":user_id,\n" +
-                                "    \"fields\":fields, \"name_case\":name_case});\n" +
-                                "\n" +
-                                "var all_wall_count =API.wall.get({\"v\":\"" + Constants.API_VERSION + "\",\"owner_id\":user_id,\n" +
-                                "    \"count\":1, \"filter\":\"all\"}).count;\n" +
-                                "    \n" +
-                                "var owner_wall_count =API.wall.get({\"v\":\"" + Constants.API_VERSION + "\",\"owner_id\":user_id,\n" +
-                                "    \"count\":1, \"filter\":\"owner\"}).count;\n" +
-                                "\n" +
-                                "var postponed_wall_count =API.wall.get({\"v\":\"" + Constants.API_VERSION + "\",\"owner_id\":user_id,\n" +
-                                "    \"count\":1, \"filter\":\"postponed\"}).count;\n" +
-                                "\n" +
-                                "return {\"user_info\": user_info, \n" +
-                                "    \"all_wall_count\":all_wall_count,\n" +
-                                "    \"owner_wall_count\":owner_wall_count,\n" +
-                                "    \"postponed_wall_count\":postponed_wall_count\n" +
-                                "};", userId, fields, nameCase
-                    )
+            .flatMapConcat {
+                it.getUserWallInfo(
+                    "var user_id = Args.user_id;\n" +
+                            "var fields =Args.fields;\n" +
+                            "var name_case = Args.name_case;\n" +
+                            "\n" +
+                            "var user_info = API.users.get({\"v\":\"" + Constants.API_VERSION + "\",\"user_ids\":user_id,\n" +
+                            "    \"fields\":fields, \"name_case\":name_case});\n" +
+                            "\n" +
+                            "var all_wall_count =API.wall.get({\"v\":\"" + Constants.API_VERSION + "\",\"owner_id\":user_id,\n" +
+                            "    \"count\":1, \"filter\":\"all\"}).count;\n" +
+                            "    \n" +
+                            "var owner_wall_count =API.wall.get({\"v\":\"" + Constants.API_VERSION + "\",\"owner_id\":user_id,\n" +
+                            "    \"count\":1, \"filter\":\"owner\"}).count;\n" +
+                            "\n" +
+                            "var postponed_wall_count =API.wall.get({\"v\":\"" + Constants.API_VERSION + "\",\"owner_id\":user_id,\n" +
+                            "    \"count\":1, \"filter\":\"postponed\"}).count;\n" +
+                            "\n" +
+                            "return {\"user_info\": user_info, \n" +
+                            "    \"all_wall_count\":all_wall_count,\n" +
+                            "    \"owner_wall_count\":owner_wall_count,\n" +
+                            "    \"postponed_wall_count\":postponed_wall_count\n" +
+                            "};", userId, fields, nameCase
+                )
                     .map(extractResponseWithErrorHandling())
                     .map { response ->
                         if (safeCountOf(response.users) != 1) {
@@ -63,10 +64,10 @@ internal class UsersApi(accountId: Long, provider: IServiceProvider) :
         count: Int?,
         fields: String?,
         nameCase: String?
-    ): Single<Items<VKApiUser>> {
+    ): Flow<Items<VKApiUser>> {
         return provideService(IUsersService(), TokenType.USER, TokenType.SERVICE)
-            .flatMap { service ->
-                service.getFollowers(userId, offset, count, fields, nameCase)
+            .flatMapConcat {
+                it.getFollowers(userId, offset, count, fields, nameCase)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -77,10 +78,10 @@ internal class UsersApi(accountId: Long, provider: IServiceProvider) :
         extended: Int?,
         out: Int?,
         fields: String?
-    ): Single<Items<VKApiUser>> {
+    ): Flow<Items<VKApiUser>> {
         return provideService(IUsersService(), TokenType.USER)
-            .flatMap { service ->
-                service.getRequests(offset, count, extended, out, fields)
+            .flatMapConcat {
+                it.getRequests(offset, count, extended, out, fields)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -119,74 +120,71 @@ internal class UsersApi(accountId: Long, provider: IServiceProvider) :
         position: String?,
         groupId: Long?,
         fromList: String?
-    ): Single<Items<VKApiUser>> {
+    ): Flow<Items<VKApiUser>> {
         return provideService(IUsersService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .search(
-                        query,
-                        sort,
-                        offset,
-                        count,
-                        fields,
-                        city,
-                        country,
-                        hometown,
-                        universityCountry,
-                        university,
-                        universityYear,
-                        universityFaculty,
-                        universityChair,
-                        sex,
-                        status,
-                        ageFrom,
-                        ageTo,
-                        birthDay,
-                        birthMonth,
-                        birthYear,
-                        integerFromBoolean(online),
-                        integerFromBoolean(hasPhoto),
-                        schoolCountry,
-                        schoolCity,
-                        schoolClass,
-                        school,
-                        schoolYear,
-                        religion,
-                        interests,
-                        company,
-                        position,
-                        groupId,
-                        fromList
-                    )
+            .flatMapConcat {
+                it.search(
+                    query,
+                    sort,
+                    offset,
+                    count,
+                    fields,
+                    city,
+                    country,
+                    hometown,
+                    universityCountry,
+                    university,
+                    universityYear,
+                    universityFaculty,
+                    universityChair,
+                    sex,
+                    status,
+                    ageFrom,
+                    ageTo,
+                    birthDay,
+                    birthMonth,
+                    birthYear,
+                    integerFromBoolean(online),
+                    integerFromBoolean(hasPhoto),
+                    schoolCountry,
+                    schoolCity,
+                    schoolClass,
+                    school,
+                    schoolYear,
+                    religion,
+                    interests,
+                    company,
+                    position,
+                    groupId,
+                    fromList
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun report(userId: Long?, type: String?, comment: String?): Single<Int> {
+    override fun report(userId: Long?, type: String?, comment: String?): Flow<Int> {
         return provideService(IUsersService(), TokenType.USER, TokenType.COMMUNITY)
-            .flatMap { service ->
-                service
-                    .report(userId, type, comment)
+            .flatMapConcat {
+                it.report(userId, type, comment)
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun checkAndAddFriend(userId: Long?): Single<Int> {
+    override fun checkAndAddFriend(userId: Long?): Flow<Int> {
         return provideService(IUsersService(), TokenType.USER)
-            .flatMap { service ->
-                service
-                    .checkAndAddFriend(
-                        "var user_id = Args.user_id; if(API.users.get({\"v\":\"" + Constants.API_VERSION + "\", \"user_ids\": user_id, \"fields\": \"friend_status\"})[0].friend_status == 0) {return API.friends.add({\"v\":\"" + Constants.API_VERSION + "\", \"user_id\": user_id});} return 0;",
-                        userId
-                    )
+            .flatMapConcat {
+                it.checkAndAddFriend(
+                    "var user_id = Args.user_id; if(API.users.get({\"v\":\"" + Constants.API_VERSION + "\", \"user_ids\": user_id, \"fields\": \"friend_status\"})[0].friend_status == 0) {return API.friends.add({\"v\":\"" + Constants.API_VERSION + "\", \"user_id\": user_id});} return 0;",
+                    userId
+                )
                     .map(extractResponseWithErrorHandling())
             }
     }
 
-    override fun getGifts(user_id: Long?, count: Int?, offset: Int?): Single<Items<VKApiGift>> {
+    override fun getGifts(user_id: Long?, count: Int?, offset: Int?): Flow<Items<VKApiGift>> {
         return provideService(IUsersService(), TokenType.USER)
-            .flatMap { service ->
-                service.getGifts(user_id, count, offset)
+            .flatMapConcat {
+                it.getGifts(user_id, count, offset)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -196,7 +194,7 @@ internal class UsersApi(accountId: Long, provider: IServiceProvider) :
         domains: Collection<String>?,
         fields: String?,
         nameCase: String?
-    ): Single<List<VKApiUser>> {
+    ): Flow<List<VKApiUser>> {
         val ids = ArrayList<String?>(1)
         if (userIds != null) {
             ids.add(join(userIds, ","))
@@ -210,8 +208,8 @@ internal class UsersApi(accountId: Long, provider: IServiceProvider) :
             TokenType.COMMUNITY,
             TokenType.SERVICE
         )
-            .flatMap { service ->
-                service[join(ids, ","), fields, nameCase]
+            .flatMapConcat {
+                it[join(ids, ","), fields, nameCase]
                     .map(extractResponseWithErrorHandling())
             }
     }

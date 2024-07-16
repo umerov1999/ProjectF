@@ -6,13 +6,15 @@ import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.Repository.messages
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.nonNullNoEmpty
-import io.reactivex.rxjava3.core.Completable
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.andThen
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.emptyTaskFlow
+import kotlinx.coroutines.flow.Flow
 
 class LongPollEventSaver {
     private val messagesInteractor: IMessagesRepository = messages
     private val ownersRepository: IOwnersRepository = owners
-    fun save(accountId: Long, updates: VKApiLongpollUpdates): Completable {
-        var completable = Completable.complete()
+    fun save(accountId: Long, updates: VKApiLongpollUpdates): Flow<Boolean> {
+        var completable = emptyTaskFlow()
         if (updates.output_messages_set_read_updates.nonNullNoEmpty() || updates.input_messages_set_read_updates.nonNullNoEmpty()) {
             completable = completable.andThen(
                 messagesInteractor.handleReadUpdates(

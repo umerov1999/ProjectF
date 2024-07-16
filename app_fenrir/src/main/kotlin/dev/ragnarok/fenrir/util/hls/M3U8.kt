@@ -3,7 +3,8 @@ package dev.ragnarok.fenrir.util.hls
 import com.google.common.io.ByteStreams
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.util.Utils
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.BufferedReader
@@ -27,6 +28,7 @@ import javax.crypto.CipherInputStream
 import javax.crypto.NoSuchPaddingException
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
+import kotlin.coroutines.cancellation.CancellationException
 
 class M3U8 {
     private val url: String
@@ -48,8 +50,8 @@ class M3U8 {
         output = null
     }
 
-    val length: Single<Long>
-        get() = Single.create { pp ->
+    val length: Flow<Long>
+        get() = flow {
             var ret = 0L
             val client = Utils.createOkHttp(Constants.API_TIMEOUT, false).build()
             try {
@@ -57,8 +59,8 @@ class M3U8 {
                 var m3u8Url = URL(url)
                 getStream(client, m3u8Url).use { im ->
                     if (im == null) {
-                        pp.onSuccess(0L)
-                        return@create
+                        emit(0L)
+                        return@flow
                     }
                     BufferedReader(InputStreamReader(im)).use { br ->
                         var line: String?
@@ -67,7 +69,7 @@ class M3U8 {
                         while (br.readLine().also { line = it } != null) {
                             line = line?.trim { it <= ' ' }
                             line ?: continue
-                            val property = checkProperty(line ?: return@create)
+                            val property = checkProperty(line ?: return@flow)
                             newurl = if (property == null) {
                                 0
                             } else if (property.type == "EXT-X-STREAM-INF") {
@@ -94,8 +96,8 @@ class M3U8 {
                 val list = ArrayList<TSDownload>()
                 val iis = getStream(client, mediaURL)
                 if (iis == null) {
-                    pp.onSuccess(0L)
-                    return@create
+                    emit(0L)
+                    return@flow
                 }
                 BufferedReader(InputStreamReader(iis)).use { br ->
                     val type = KeyType.NONE
@@ -131,25 +133,28 @@ class M3U8 {
                             response.body.close()
                             response.close()
                             if (v.isNullOrEmpty()) {
-                                pp.onSuccess(0L)
-                                return@create
+                                emit(0L)
+                                return@flow
                             }
                             v.toLong()
                         } else {
-                            pp.onSuccess(0L)
+                            emit(0L)
                             response.close()
-                            return@create
+                            return@flow
                         }
                         j++
                     }
                 }
             } catch (ex: Exception) {
+                if (ex is CancellationException) {
+                    throw ex
+                }
                 ex.printStackTrace()
-                pp.onSuccess(0L)
-                return@create
+                emit(0L)
+                return@flow
             }
             val vtt = ret / 188L
-            pp.onSuccess(ret - vtt * 4)
+            emit(ret - vtt * 4)
         }
 
     @Suppress("ASSIGNED_BUT_NEVER_ACCESSED_VARIABLE", "UNUSED_VALUE")

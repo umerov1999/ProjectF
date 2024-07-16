@@ -1,14 +1,14 @@
 package dev.ragnarok.fenrir.domain
 
 import dev.ragnarok.fenrir.model.Topic
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IBoardInteractor {
-    fun getCachedTopics(accountId: Long, ownerId: Long): Single<List<Topic>>
+    fun getCachedTopics(accountId: Long, ownerId: Long): Flow<List<Topic>>
     fun getActualTopics(
         accountId: Long,
         ownerId: Long,
         count: Int,
         offset: Int
-    ): Single<List<Topic>>
+    ): Flow<List<Topic>>
 }

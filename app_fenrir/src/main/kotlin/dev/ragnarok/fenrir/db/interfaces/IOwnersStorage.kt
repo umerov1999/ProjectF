@@ -13,43 +13,46 @@ import dev.ragnarok.fenrir.model.Manager
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Pair
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
 
 interface IOwnersStorage : IStorage {
     fun findFriendsListsByIds(
         accountId: Long,
         userId: Long,
         ids: Collection<Long>
-    ): Single<MutableMap<Long, FriendListEntity>>
+    ): Flow<MutableMap<Long, FriendListEntity>>
 
     @CheckResult
-    fun getLocalizedUserActivity(accountId: Long, userId: Long): Maybe<String>
-    fun findUserDboById(accountId: Long, ownerId: Long): Single<Optional<UserEntity>>
-    fun findCommunityDboById(accountId: Long, ownerId: Long): Single<Optional<CommunityEntity>>
-    fun findUserByDomain(accountId: Long, domain: String?): Single<Optional<UserEntity>>
-    fun findCommunityByDomain(accountId: Long, domain: String?): Single<Optional<CommunityEntity>>
-    fun findUserDbosByIds(accountId: Long, ids: List<Long>): Single<List<UserEntity>>
-    fun findCommunityDbosByIds(accountId: Long, ids: List<Long>): Single<List<CommunityEntity>>
-    fun storeUserDbos(accountId: Long, users: List<UserEntity>): Completable
-    fun storeCommunityDbos(accountId: Long, communityEntities: List<CommunityEntity>): Completable
-    fun storeOwnerEntities(accountId: Long, entities: OwnerEntities?): Completable
+    fun getLocalizedUserActivity(accountId: Long, userId: Long): Flow<String?>
+    fun findUserDboById(accountId: Long, ownerId: Long): Flow<Optional<UserEntity>>
+    fun findCommunityDboById(accountId: Long, ownerId: Long): Flow<Optional<CommunityEntity>>
+    fun findUserByDomain(accountId: Long, domain: String?): Flow<Optional<UserEntity>>
+    fun findCommunityByDomain(accountId: Long, domain: String?): Flow<Optional<CommunityEntity>>
+    fun findUserDbosByIds(accountId: Long, ids: List<Long>): Flow<List<UserEntity>>
+    fun findCommunityDbosByIds(accountId: Long, ids: List<Long>): Flow<List<CommunityEntity>>
+    fun storeUserDbos(accountId: Long, users: List<UserEntity>): Flow<Boolean>
+    fun storeCommunityDbos(accountId: Long, communityEntities: List<CommunityEntity>): Flow<Boolean>
+    fun storeOwnerEntities(accountId: Long, entities: OwnerEntities?): Flow<Boolean>
 
     @CheckResult
-    fun getMissingUserIds(accountId: Long, ids: Collection<Long>): Single<Collection<Long>>
+    fun getMissingUserIds(accountId: Long, ids: Collection<Long>): Flow<Collection<Long>>
 
     @CheckResult
-    fun getMissingCommunityIds(accountId: Long, ids: Collection<Long>): Single<Collection<Long>>
-    fun fireBanAction(action: BanAction): Completable
-    fun observeBanActions(): Observable<BanAction>
-    fun fireManagementChangeAction(manager: Pair<Long, Manager>): Completable
-    fun observeManagementChanges(): Observable<Pair<Long, Manager>>
-    fun getGroupsDetails(accountId: Long, groupId: Long): Single<Optional<CommunityDetailsEntity>>
-    fun storeGroupsDetails(accountId: Long, groupId: Long, dbo: CommunityDetailsEntity): Completable
-    fun getUserDetails(accountId: Long, userId: Long): Single<Optional<UserDetailsEntity>>
-    fun storeUserDetails(accountId: Long, userId: Long, dbo: UserDetailsEntity): Completable
-    fun applyPathes(accountId: Long, patches: List<UserPatch>): Completable
-    fun findFriendBirtday(accountId: Long): Single<List<User>>
+    fun getMissingCommunityIds(accountId: Long, ids: Collection<Long>): Flow<Collection<Long>>
+    fun fireBanAction(action: BanAction): Flow<Boolean>
+    fun observeBanActions(): SharedFlow<BanAction>
+    fun fireManagementChangeAction(manager: Pair<Long, Manager>): Flow<Boolean>
+    fun observeManagementChanges(): SharedFlow<Pair<Long, Manager>>
+    fun getGroupsDetails(accountId: Long, groupId: Long): Flow<Optional<CommunityDetailsEntity>>
+    fun storeGroupsDetails(
+        accountId: Long,
+        groupId: Long,
+        dbo: CommunityDetailsEntity
+    ): Flow<Boolean>
+
+    fun getUserDetails(accountId: Long, userId: Long): Flow<Optional<UserDetailsEntity>>
+    fun storeUserDetails(accountId: Long, userId: Long, dbo: UserDetailsEntity): Flow<Boolean>
+    fun applyPathes(accountId: Long, patches: List<UserPatch>): Flow<Boolean>
+    fun findFriendBirtday(accountId: Long): Flow<List<User>>
 }

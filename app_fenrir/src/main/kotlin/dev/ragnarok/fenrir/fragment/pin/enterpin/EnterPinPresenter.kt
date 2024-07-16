@@ -8,11 +8,11 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.ISettings.ISecuritySettings
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import java.util.Arrays
 
 class EnterPinPresenter(savedState: Bundle?) : RxSupportPresenter<IEnterPinView>(savedState) {
@@ -28,13 +28,12 @@ class EnterPinPresenter(savedState: Bundle?) : RxSupportPresenter<IEnterPinView>
             .accounts()
             .current
         if (accountId != ISettings.IAccountsSettings.INVALID_ID) {
-            appendDisposable(ownersRepository.getBaseOwnerInfo(
+            appendJob(ownersRepository.getBaseOwnerInfo(
                 accountId,
                 accountId,
                 IOwnersRepository.MODE_ANY
             )
-                .fromIOToMain()
-                .subscribe({ owner -> onOwnerInfoReceived(owner) }) { })
+                .fromIOToMain({ owner -> onOwnerInfoReceived(owner) }) { })
         }
     }
 

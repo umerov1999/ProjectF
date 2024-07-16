@@ -23,7 +23,6 @@ import android.view.animation.LinearInterpolator
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowInsetsControllerCompat
@@ -41,7 +40,6 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.Includes.networkInterfaces
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.Includes.proxySettings
 import dev.ragnarok.fenrir.Includes.pushRegistrationResolver
 import dev.ragnarok.fenrir.R
@@ -147,7 +145,6 @@ import dev.ragnarok.fenrir.fragment.wall.userdetails.UserDetailsFragment.Compani
 import dev.ragnarok.fenrir.fragment.wall.wallattachments.WallAttachmentsFragmentFactory
 import dev.ragnarok.fenrir.fragment.wall.wallattachments.wallsearchcommentsattachments.WallSearchCommentsAttachmentsFragment
 import dev.ragnarok.fenrir.fragment.wall.wallpost.WallPostFragment
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableArrayListCompat
 import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
 import dev.ragnarok.fenrir.getParcelableCompat
@@ -184,13 +181,14 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.place.PlaceProvider
-import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.settings.CurrentTheme.getNavigationBarColor
+import dev.ragnarok.fenrir.settings.CurrentTheme.getStatusBarColor
+import dev.ragnarok.fenrir.settings.CurrentTheme.getStatusBarNonColored
 import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.SwipesChatMode
 import dev.ragnarok.fenrir.settings.theme.ThemesController.currentStyle
 import dev.ragnarok.fenrir.settings.theme.ThemesController.nextRandom
-import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.upload.UploadUtils
 import dev.ragnarok.fenrir.util.Accounts
 import dev.ragnarok.fenrir.util.Action
@@ -201,20 +199,26 @@ import dev.ragnarok.fenrir.util.MainActivityTransforms
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCream
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.andThen
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayedFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.dummy
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView.NavigationDrawerCallbacks
 import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.getInstance
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.flow.filter
 import java.util.regex.Pattern
 
 open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSectionResumeCallback,
     AppStyleable, PlaceProvider, ServiceConnection, UpdatableNavigation,
     NavigationBarView.OnItemSelectedListener {
-    private val mCompositeDisposable = CompositeDisposable()
+    private val mCompositeJob = CompositeJob()
     private val postResumeActions: MutableList<Action<MainActivity>> = ArrayList(0)
     private val requestEnterPin = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -406,22 +410,19 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
 
         super.onCreate(savedInstanceState)
         isZoomPhoto = Settings.get().main().isDo_zoom_photo
-        mCompositeDisposable.add(
+        mCompositeJob.add(
             Settings.get()
                 .accounts()
                 .observeChanges
-                .observeOn(provideMainThreadScheduler())
-                .subscribe { onCurrentAccountChange(it) })
-        mCompositeDisposable.add(
+                .sharedFlowToMain { onCurrentAccountChange(it) })
+        mCompositeJob.add(
             proxySettings
-                .observeActive.observeOn(provideMainThreadScheduler())
-                .subscribe { stop() })
-        mCompositeDisposable.add(Stores.instance
+                .observeActive.sharedFlowToMain { stop() })
+        mCompositeJob.add(Stores.instance
             .dialogs()
             .observeUnreadDialogsCount()
             .filter { it.first == mAccountId }
-            .toMainThread()
-            .subscribe { updateMessagesBagde(it.second) })
+            .sharedFlowToMain { updateMessagesBagde(it.second) })
         bindToAudioPlayService()
         setContentView(mLayoutRes)
         mAccountId = Settings.get()
@@ -494,12 +495,11 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             } else {
                 if (getMainActivityTransform() == MainActivityTransforms.MAIN) {
                     checkFCMRegistration(false)
-                    mCompositeDisposable.add(MusicPlaybackController.tracksExist.findAllAudios(this)
+                    mCompositeJob.add(MusicPlaybackController.tracksExist.findAllAudios(this)
                         .andThen(
                             InteractorFactory.createStickersInteractor().placeToStickerCache(this)
                         )
-                        .fromIOToMain()
-                        .subscribe(RxUtils.dummy()) { t ->
+                        .fromIOToMain(dummy()) { t ->
                             if (Settings.get().main().isDeveloper_mode) {
                                 createCustomToast(this).showToastThrowable(t)
                             }
@@ -507,10 +507,9 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     Settings.get().main().last_audio_sync.let {
                         if (it > 0 && (System.currentTimeMillis() / 1000L) - it > 900) {
                             Settings.get().main().set_last_audio_sync(-1)
-                            mCompositeDisposable.add(
+                            mCompositeJob.add(
                                 Includes.stores.tempStore().deleteAudios()
-                                    .fromIOToMain()
-                                    .subscribe(RxUtils.dummy(), RxUtils.ignore())
+                                    .hiddenIO()
                             )
                         }
                     }
@@ -578,9 +577,8 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     }
 
     private fun updateNotificationCount(account: Long) {
-        mCompositeDisposable.add(CountersInteractor(networkInterfaces).getApiCounters(account)
-            .fromIOToMain()
-            .subscribe({ counters -> updateNotificationsBadge(counters) }) { removeNotificationsBadge() })
+        mCompositeJob.add(CountersInteractor(networkInterfaces).getApiCounters(account)
+            .fromIOToMain({ counters -> updateNotificationsBadge(counters) }) { removeNotificationsBadge() })
     }
 
     override fun onPause() {
@@ -623,10 +621,9 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         if (onlyCheckGMS) {
             return
         }
-        mCompositeDisposable.add(
+        mCompositeJob.add(
             pushRegistrationResolver.resolvePushRegistration()
-                .fromIOToMain()
-                .subscribe(RxUtils.dummy(), RxUtils.ignore())
+                .hiddenIO()
         )
 
         //RequestHelper.checkPushRegistration(this);
@@ -709,12 +706,11 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     ) { _, option ->
                         when (option.id) {
                             0 -> {
-                                mCompositeDisposable.add(InteractorFactory.createAccountInteractor()
+                                mCompositeJob.add(InteractorFactory.createAccountInteractor()
                                     .setOffline(
                                         Settings.get().accounts().current
                                     )
-                                    .fromIOToMain()
-                                    .subscribe({ onSetOffline(it) }) {
+                                    .fromIOToMain({ onSetOffline(it) }) {
                                         onSetOffline(
                                             false
                                         )
@@ -740,13 +736,12 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                             }
 
                             2 -> {
-                                mCompositeDisposable.add(InteractorFactory.createStoriesInteractor()
+                                mCompositeJob.add(InteractorFactory.createStoriesInteractor()
                                     .getStories(
                                         Settings.get().accounts().current,
                                         null
                                     )
-                                    .fromIOToMain()
-                                    .subscribe({
+                                    .fromIOToMain({
                                         if (it.isEmpty()) {
                                             createCustomToast(this@MainActivity).showToastError(
                                                 R.string.list_is_empty
@@ -1202,7 +1197,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     }
 
     override fun onDestroy() {
-        mCompositeDisposable.dispose()
+        mCompositeJob.cancel()
         supportFragmentManager.removeOnBackStackChangedListener(mOnBackStackChangedListener)
 
         unbindFromAudioPlayService()
@@ -1299,17 +1294,16 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
 
     override fun readAllNotifications() {
         if (Utils.isHiddenAccount(mAccountId)) return
-        mCompositeDisposable.add(
+        mCompositeJob.add(
             InteractorFactory.createFeedbackInteractor()
                 .markAsViewed(mAccountId)
-                .delay(1, TimeUnit.SECONDS)
-                .fromIOToMain()
-                .subscribe({
+                .delayedFlow(1000)
+                .fromIOToMain {
                     if (it) {
                         mBottomNavigation?.removeBadge(R.id.menu_feedback)
                         navigationView?.onUnreadNotificationsCountChange(0)
                     }
-                }, RxUtils.ignore())
+                }
         )
     }
 
@@ -1327,13 +1321,15 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
 
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
-        val statusBarNonColored = CurrentTheme.getStatusBarNonColored(this)
-        val statusBarColored = CurrentTheme.getStatusBarColor(this)
         val w = window
-        w.statusBarColor = if (colored) statusBarColored else statusBarNonColored
-        @ColorInt val navigationColor =
-            if (colored) CurrentTheme.getNavigationBarColor(this) else Color.BLACK
-        w.navigationBarColor = navigationColor
+        if (!hasVanillaIceCream()) {
+            w.statusBarColor =
+                if (colored) getStatusBarColor(this) else getStatusBarNonColored(
+                    this
+                )
+            w.navigationBarColor =
+                if (colored) getNavigationBarColor(this) else Color.BLACK
+        }
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons

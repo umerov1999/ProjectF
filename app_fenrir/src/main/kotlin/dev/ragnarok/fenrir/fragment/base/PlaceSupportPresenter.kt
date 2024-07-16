@@ -6,7 +6,6 @@ import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.core.IMvpView
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
 import dev.ragnarok.fenrir.fragment.search.criteria.NewsFeedCriteria
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Article
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.model.AudioArtist
@@ -27,7 +26,8 @@ import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.model.WallReply
 import dev.ragnarok.fenrir.model.WikiPage
 import dev.ragnarok.fenrir.nonNullNoEmpty
-import dev.ragnarok.fenrir.util.rxutils.RxUtils
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
 
 abstract class PlaceSupportPresenter<V>(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<V>(
@@ -51,16 +51,14 @@ abstract class PlaceSupportPresenter<V>(accountId: Long, savedInstanceState: Bun
     }
 
     fun fireNarrativeClick(narratives: Narratives) {
-        appendDisposable(
+        appendJob(
             InteractorFactory.createStoriesInteractor()
                 .getStoryById(accountId, narratives.getStoriesIds())
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain {
                     if (it.nonNullNoEmpty()) {
                         view?.openHistoryVideo(accountId, ArrayList(it), 0)
                     }
-                }, {
-                })
+                }
         )
     }
 
@@ -159,15 +157,17 @@ abstract class PlaceSupportPresenter<V>(accountId: Long, savedInstanceState: Bun
 
     fun fireFaveArticleClick(article: Article) {
         if (!article.isFavorite) {
-            appendDisposable(InteractorFactory.createFaveInteractor()
-                .addArticle(accountId, article.uRL)
-                .fromIOToMain()
-                .subscribe(RxUtils.dummy()) { RxUtils.dummy() })
+            appendJob(
+                InteractorFactory.createFaveInteractor()
+                    .addArticle(accountId, article.uRL)
+                    .hiddenIO()
+            )
         } else {
-            appendDisposable(InteractorFactory.createFaveInteractor()
-                .removeArticle(accountId, article.ownerId, article.id)
-                .fromIOToMain()
-                .subscribe({ RxUtils.dummy() }) { RxUtils.dummy() })
+            appendJob(
+                InteractorFactory.createFaveInteractor()
+                    .removeArticle(accountId, article.ownerId, article.id)
+                    .hiddenIO()
+            )
         }
     }
 

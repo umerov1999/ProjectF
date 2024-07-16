@@ -23,15 +23,15 @@ import dev.ragnarok.fenrir.ifNonNull
 import dev.ragnarok.fenrir.model.criteria.TopicsCriteria
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlin.math.abs
 
 internal class TopicsStorage(base: AppStorages) : AbsStorage(base), ITopicsStore {
-    override fun getByCriteria(criteria: TopicsCriteria): Single<List<TopicDboEntity>> {
-        return Single.create { e: SingleEmitter<List<TopicDboEntity>> ->
+    override fun getByCriteria(criteria: TopicsCriteria): Flow<List<TopicDboEntity>> {
+        return flow {
             val uri = getTopicsContentUriFor(criteria.accountId)
             val where: String
             val args: Array<String>
@@ -47,14 +47,14 @@ internal class TopicsStorage(base: AppStorages) : AbsStorage(base), ITopicsStore
             val topics = ArrayList<TopicDboEntity>(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     topics.add(mapDbo(cursor))
                 }
                 cursor.close()
             }
-            e.onSuccess(topics)
+            emit(topics)
         }
     }
 
@@ -66,8 +66,8 @@ internal class TopicsStorage(base: AppStorages) : AbsStorage(base), ITopicsStore
         canAddTopic: Boolean,
         defaultOrder: Int,
         clearBefore: Boolean
-    ): Completable {
-        return Completable.create { e ->
+    ): Flow<Boolean> {
+        return flow {
             val operations = ArrayList<ContentProviderOperation>()
             val uri = getTopicsContentUriFor(accountId)
             if (owners != null) {
@@ -98,7 +98,7 @@ internal class TopicsStorage(base: AppStorages) : AbsStorage(base), ITopicsStore
                     .build()
             )
             contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            e.onComplete()
+            emit(true)
         }
     }
 
@@ -107,8 +107,8 @@ internal class TopicsStorage(base: AppStorages) : AbsStorage(base), ITopicsStore
         ownerId: Long,
         topicId: Int,
         pollDbo: PollDboEntity?
-    ): Completable {
-        return Completable.create { e ->
+    ): Flow<Boolean> {
+        return flow {
             val cv = ContentValues()
             pollDbo.ifNonNull({
                 cv.put(
@@ -122,7 +122,7 @@ internal class TopicsStorage(base: AppStorages) : AbsStorage(base), ITopicsStore
             val where = TopicsColumns.TOPIC_ID + " = ? AND " + TopicsColumns.OWNER_ID + " = ?"
             val args = arrayOf(topicId.toString(), topicId.toString())
             contentResolver.update(uri, cv, where, args)
-            e.onComplete()
+            emit(true)
         }
     }
 

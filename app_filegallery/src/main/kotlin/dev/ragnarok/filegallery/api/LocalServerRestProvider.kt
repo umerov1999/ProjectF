@@ -8,7 +8,9 @@ import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.settings.ISettings.IMainSettings
 import dev.ragnarok.filegallery.util.UncompressDefaultInterceptor
 import dev.ragnarok.filegallery.util.Utils.firstNonEmptyString
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import okhttp3.FormBody
 import okhttp3.Interceptor
 import okhttp3.MultipartBody
@@ -66,8 +68,8 @@ class LocalServerRestProvider @SuppressLint("CheckResult") constructor(private v
         return SimplePostHttp("$url/method", builder)
     }
 
-    override fun provideLocalServerRest(): Single<SimplePostHttp> {
-        return Single.fromCallable {
+    override fun provideLocalServerRest(): Flow<SimplePostHttp> {
+        return flow {
             if (localServerRestInstance == null) {
                 synchronized(localServerRestLock) {
                     if (localServerRestInstance == null) {
@@ -75,12 +77,12 @@ class LocalServerRestProvider @SuppressLint("CheckResult") constructor(private v
                     }
                 }
             }
-            localServerRestInstance!!
+            emit(localServerRestInstance ?: return@flow)
         }
     }
 
     init {
         mainSettings.observeLocalServer
-            .subscribe { onLocalServerSettingsChanged() }
+            .sharedFlowToMain { onLocalServerSettingsChanged() }
     }
 }

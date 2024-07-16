@@ -7,7 +7,7 @@ import dev.ragnarok.filegallery.model.LocalServerSettings
 import dev.ragnarok.filegallery.model.PlayerCoverBackgroundSettings
 import dev.ragnarok.filegallery.model.SlidrSettings
 import dev.ragnarok.filegallery.settings.theme.ThemeOverlay
-import io.reactivex.rxjava3.core.Observable
+import kotlinx.coroutines.flow.SharedFlow
 
 interface ISettings {
     fun main(): IMainSettings
@@ -54,7 +54,7 @@ interface ISettings {
         val isPlayer_Has_Background: Boolean
         val isShow_mini_player: Boolean
 
-        val observeLocalServer: Observable<LocalServerSettings>
+        val observeLocalServer: SharedFlow<LocalServerSettings>
         val isShow_photos_line: Boolean
         val isInstant_photo_display: Boolean
         val isDownload_photo_tap: Boolean

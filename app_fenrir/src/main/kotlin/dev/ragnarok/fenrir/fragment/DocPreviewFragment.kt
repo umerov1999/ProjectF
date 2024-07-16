@@ -23,7 +23,6 @@ import dev.ragnarok.fenrir.activity.SendAttachmentsActivity.Companion.startForSe
 import dev.ragnarok.fenrir.domain.IDocsInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.BaseFragment
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.model.Document
@@ -39,6 +38,7 @@ import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.AppTextUtils.getSizeString
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.doDownloadDoc
 import dev.ragnarok.fenrir.util.Utils.shareLink
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.view.CircleCounterButton
 import dev.ragnarok.fenrir.view.TouchImageView
@@ -207,10 +207,9 @@ class DocPreviewFragment : BaseFragment(), MenuProvider {
 
     private fun requestVideoInfo() {
         mLoadingNow = true
-        appendDisposable(
+        appendJob(
             docsInteractor.findById(accountId, ownerId, documentId, documentAccessKey)
-                .fromIOToMain()
-                .subscribe({ document -> onDocumentInfoReceived(document) }) {
+                .fromIOToMain({ document -> onDocumentInfoReceived(document) }) {
                     onDocumentInfoGetError()
                 })
     }
@@ -257,10 +256,9 @@ class DocPreviewFragment : BaseFragment(), MenuProvider {
     }
 
     private fun doRemove() {
-        appendDisposable(
+        appendJob(
             docsInteractor.delete(accountId, documentId, ownerId)
-                .fromIOToMain()
-                .subscribe({ onDeleteSuccess() }) { })
+                .fromIOToMain({ onDeleteSuccess() }) { })
     }
 
     private fun onDeleteSuccess() {
@@ -336,9 +334,8 @@ class DocPreviewFragment : BaseFragment(), MenuProvider {
     private fun doAddYourSelf() {
         val docsInteractor = InteractorFactory.createDocsInteractor()
         val accessKey = document?.accessKey
-        appendDisposable(docsInteractor.add(accountId, documentId, ownerId, accessKey)
-            .fromIOToMain()
-            .subscribe({ onDocumentAdded() }) { t -> onDocAddError(t) })
+        appendJob(docsInteractor.add(accountId, documentId, ownerId, accessKey)
+            .fromIOToMain({ onDocumentAdded() }) { t -> onDocAddError(t) })
     }
 
     private fun onDocAddError(t: Throwable) {

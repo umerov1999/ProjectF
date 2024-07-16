@@ -17,14 +17,15 @@ import dev.ragnarok.filegallery.model.PlayerCoverBackgroundSettings
 import dev.ragnarok.filegallery.model.SlidrSettings
 import dev.ragnarok.filegallery.settings.ISettings.IMainSettings
 import dev.ragnarok.filegallery.settings.theme.ThemeOverlay
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.myEmit
 import dev.ragnarok.filegallery.view.pager.Transformers_Types
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.subjects.PublishSubject
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import java.io.File
 
 internal class MainSettings(context: Context) : IMainSettings {
     private val app: Context = context.applicationContext
-    private val localServerPublisher: PublishSubject<LocalServerSettings> = PublishSubject.create()
+    private val localServerPublisher = MutableSharedFlow<LocalServerSettings>(replay = 1)
 
     override val fontSize: Int
         get() = getPreferences(app).getInt("font_size_int", 0)
@@ -83,7 +84,6 @@ internal class MainSettings(context: Context) : IMainSettings {
     override val isDeleteDisabled: Boolean
         get() = getPreferences(app).getBoolean("delete_disabled", false)
 
-    @Suppress("DEPRECATION")
     override val musicDir: String
         get() {
             var ret = getPreferences(app).getString("music_dir", null)
@@ -95,7 +95,6 @@ internal class MainSettings(context: Context) : IMainSettings {
             return ret!!
         }
 
-    @Suppress("DEPRECATION")
     override val photoDir: String
         get() {
             var ret = getPreferences(app).getString("photo_dir", null)
@@ -107,7 +106,6 @@ internal class MainSettings(context: Context) : IMainSettings {
             return ret
         }
 
-    @Suppress("DEPRECATION")
     override val videoDir: String
         get() {
             var ret = getPreferences(app).getString("video_dir", null)
@@ -135,11 +133,11 @@ internal class MainSettings(context: Context) : IMainSettings {
                 "local_media_server",
                 kJson.encodeToString(LocalServerSettings.serializer(), settings)
             ).apply()
-        localServerPublisher.onNext(settings)
+        localServerPublisher.myEmit(settings)
     }
 
     override fun updateLocalServer() {
-        localServerPublisher.onNext(localServer)
+        localServerPublisher.myEmit(localServer)
     }
 
     override val playerCoverBackgroundSettings: PlayerCoverBackgroundSettings
@@ -231,7 +229,7 @@ internal class MainSettings(context: Context) : IMainSettings {
     override val isShow_mini_player: Boolean
         get() = getPreferences(app).getBoolean("show_mini_player", true)
 
-    override val observeLocalServer: Observable<LocalServerSettings>
+    override val observeLocalServer: SharedFlow<LocalServerSettings>
         get() = localServerPublisher
 
     override val isUse_internal_downloader: Boolean
@@ -278,7 +276,7 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override val photoExt: Set<String>
         get() = getPreferences(app)
-            .getStringSet("photo_ext", setOf("gif", "jpg", "jpeg", "jpg", "webp", "png", "tiff"))!!
+            .getStringSet("photo_ext", setOf("jpg", "jpeg", "heic", "webp", "png", "tiff"))!!
 
     override val audioExt: Set<String>
         get() = getPreferences(app)

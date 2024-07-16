@@ -1,14 +1,13 @@
 package dev.ragnarok.fenrir.activity.photopager
 
 import android.os.Bundle
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.AccessIdPairModel
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.util.Utils
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import kotlinx.coroutines.flow.flow
 
 class SimplePhotoPresenter : PhotoPagerPresenter {
     private var mDataRefreshSuccessfully = false
@@ -39,16 +38,15 @@ class SimplePhotoPresenter : PhotoPagerPresenter {
 
     private fun loadDataFromParcelNative(parcelNative: Long, needToRefreshData: Boolean) {
         changeLoadingNowState(true)
-        appendDisposable(
-            Single.create { v: SingleEmitter<ArrayList<Photo>> ->
-                v.onSuccess(
+        appendJob(
+            flow {
+                emit(
                     ParcelNative.loadParcelableArrayList(
                         parcelNative, Photo.NativeCreator, ParcelFlags.MUTABLE_LIST
                     ) ?: ArrayList()
                 )
             }
-                .fromIOToMain()
-                .subscribe({ onInitialLoadingParcelNativeFinished(it, needToRefreshData) }) {
+                .fromIOToMain({ onInitialLoadingParcelNativeFinished(it, needToRefreshData) }) {
                     it.printStackTrace()
                 })
     }
@@ -74,9 +72,8 @@ class SimplePhotoPresenter : PhotoPagerPresenter {
         for (photo in mPhotos) {
             ids.add(AccessIdPairModel(photo.getObjectId(), photo.ownerId, photo.accessKey))
         }
-        appendDisposable(photosInteractor.getPhotosByIds(accountId, ids)
-            .fromIOToMain()
-            .subscribe({ onPhotosReceived(it) }) { t ->
+        appendJob(photosInteractor.getPhotosByIds(accountId, ids)
+            .fromIOToMain({ onPhotosReceived(it) }) { t ->
                 view?.let {
                     showError(
                         it,

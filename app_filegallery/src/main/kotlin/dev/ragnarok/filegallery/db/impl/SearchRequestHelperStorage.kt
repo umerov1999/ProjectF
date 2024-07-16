@@ -21,9 +21,9 @@ import dev.ragnarok.filegallery.model.tags.TagFull
 import dev.ragnarok.filegallery.model.tags.TagOwner
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.trimmedIsNullOrEmpty
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.isActive
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.io.File
 
 class SearchRequestHelperStorage internal constructor(context: Context) :
@@ -33,8 +33,8 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
         SearchRequestHelper(app)
     }
 
-    override fun getQueries(sourceId: Int): Single<List<String>> {
-        return Single.fromCallable {
+    override fun getQueries(sourceId: Int): Flow<List<String>> {
+        return flow {
             val where = SearchRequestColumns.SOURCE_ID + " = ?"
             val args = arrayOf(sourceId.toString())
             val cursor = helper.writableDatabase.query(
@@ -47,46 +47,51 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
                     data.add(it.getString(SearchRequestColumns.QUERY) ?: return@use)
                 }
             }
-            data
+            emit(data)
         }
     }
 
-    override fun insertQuery(sourceId: Int, query: String?): Completable {
-        if (query == null) {
-            return Completable.complete()
-        }
-        val queryClean = query.trim { it <= ' ' }
-        return if (queryClean.isEmpty()) {
-            Completable.complete()
-        } else Completable.create { emitter ->
-            val db = helper.writableDatabase
-            db.beginTransaction()
-            if (emitter.isDisposed) {
-                db.endTransaction()
-                emitter.onComplete()
-                return@create
+    override fun insertQuery(sourceId: Int, query: String?): Flow<Boolean> {
+        return flow {
+            if (query == null) {
+                emit(false)
+            } else {
+                val queryClean = query.trim { it <= ' ' }
+                emit(
+                    if (queryClean.isEmpty()) {
+                        false
+                    } else {
+                        val db = helper.writableDatabase
+                        db.beginTransaction()
+                        if (!isActive()) {
+                            db.endTransaction()
+                            false
+                        } else {
+                            db.delete(
+                                SearchRequestColumns.TABLENAME,
+                                SearchRequestColumns.QUERY + " = ?", arrayOf(queryClean)
+                            )
+                            try {
+                                val cv = ContentValues()
+                                cv.put(SearchRequestColumns.SOURCE_ID, sourceId)
+                                cv.put(SearchRequestColumns.QUERY, queryClean)
+                                db.insert(SearchRequestColumns.TABLENAME, null, cv)
+                                if (isActive()) {
+                                    db.setTransactionSuccessful()
+                                }
+                            } finally {
+                                db.endTransaction()
+                            }
+                            true
+                        }
+                    }
+                )
             }
-            db.delete(
-                SearchRequestColumns.TABLENAME,
-                SearchRequestColumns.QUERY + " = ?", arrayOf(queryClean)
-            )
-            try {
-                val cv = ContentValues()
-                cv.put(SearchRequestColumns.SOURCE_ID, sourceId)
-                cv.put(SearchRequestColumns.QUERY, queryClean)
-                db.insert(SearchRequestColumns.TABLENAME, null, cv)
-                if (!emitter.isDisposed) {
-                    db.setTransactionSuccessful()
-                }
-            } finally {
-                db.endTransaction()
-            }
-            emitter.onComplete()
         }
     }
 
-    override fun getFiles(parent: String): Single<List<FileItem>> {
-        return Single.fromCallable {
+    override fun getFiles(parent: String): Flow<List<FileItem>> {
+        return flow {
             val where = FilesColumns.PARENT_DIR + " = ?"
             val args = arrayOf(parent)
             val cursor = helper.writableDatabase.query(
@@ -98,6 +103,10 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
                 null,
                 FilesColumns.IS_DIR + " DESC," + FilesColumns.MODIFICATIONS + " DESC"
             )
+            if (!isActive()) {
+                emit(emptyList())
+                return@flow
+            }
             val data: MutableList<FileItem> = ArrayList(cursor.count)
             cursor.use {
                 while (it.moveToNext()) {
@@ -115,18 +124,17 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
                     )
                 }
             }
-            data
+            emit(data)
         }
     }
 
-    override fun insertFiles(parent: String, files: List<FileItem>): Completable {
-        return Completable.create { emitter ->
+    override fun insertFiles(parent: String, files: List<FileItem>): Flow<Boolean> {
+        return flow {
             val db = helper.writableDatabase
             db.beginTransaction()
-            if (emitter.isDisposed) {
+            if (!isActive()) {
                 db.endTransaction()
-                emitter.onComplete()
-                return@create
+                return@flow
             }
             db.delete(
                 FilesColumns.TABLENAME,
@@ -147,13 +155,13 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
                     cv.put(FilesColumns.CAN_READ, if (i.isCanRead) 1 else 0)
                     db.insert(FilesColumns.TABLENAME, null, cv)
                 }
-                if (!emitter.isDisposed) {
+                if (isActive()) {
                     db.setTransactionSuccessful()
                 }
             } finally {
                 db.endTransaction()
             }
-            emitter.onComplete()
+            emit(true)
         }
     }
 
@@ -165,17 +173,18 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
         helper.writableDatabase.delete(FilesColumns.TABLENAME, null, null)
     }
 
-    override fun deleteQuery(sourceId: Int): Completable {
-        return Completable.fromAction {
+    override fun deleteQuery(sourceId: Int): Flow<Boolean> {
+        return flow {
             helper.writableDatabase.delete(
                 SearchRequestColumns.TABLENAME,
                 SearchRequestColumns.SOURCE_ID + " = ?", arrayOf(sourceId.toString())
             )
+            emit(true)
         }
     }
 
-    override fun deleteTagOwner(ownerId: Int): Completable {
-        return Completable.create {
+    override fun deleteTagOwner(ownerId: Long): Flow<Boolean> {
+        return flow {
             helper.writableDatabase.delete(
                 TagDirsColumns.TABLENAME,
                 TagDirsColumns.OWNER_ID + " = ?", arrayOf(ownerId.toString())
@@ -184,27 +193,28 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
                 TagOwnerColumns.TABLENAME,
                 BaseColumns._ID + " = ?", arrayOf(ownerId.toString())
             )
-            it.onComplete()
+            emit(true)
         }
     }
 
-    override fun deleteTagDir(sourceId: Int): Completable {
-        return Completable.fromAction {
+    override fun deleteTagDir(sourceId: Long): Flow<Boolean> {
+        return flow {
             helper.writableDatabase.delete(
                 TagDirsColumns.TABLENAME,
                 BaseColumns._ID + " = ?", arrayOf(sourceId.toString())
             )
+            emit(true)
         }
     }
 
-    override fun deleteTagDirByPath(path: String): Completable {
-        return Completable.create {
+    override fun deleteTagDirByPath(path: String): Flow<Boolean> {
+        return flow {
             helper.writableDatabase.delete(
                 TagDirsColumns.TABLENAME,
                 TagDirsColumns.PATH + " = ?", arrayOf(path)
             )
             MusicPlaybackController.tracksExist.deleteTag(path)
-            it.onComplete()
+            emit(true)
         }
     }
 
@@ -214,129 +224,132 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
         db.delete(TagOwnerColumns.TABLENAME, null, null)
     }
 
-    override fun insertTagOwner(name: String?): Single<TagOwner> {
-        return Single.create { emitter: SingleEmitter<TagOwner> ->
+    override fun insertTagOwner(name: String?): Flow<TagOwner> {
+        return flow {
             if (name.trimmedIsNullOrEmpty()) {
-                emitter.tryOnError(Throwable("require name not null!!!"))
+                throw Throwable("require name not null!!!")
             } else {
                 val nameClean = name.trim { it <= ' ' }
                 val db = helper.writableDatabase
                 db.beginTransaction()
-                if (emitter.isDisposed) {
+                if (!isActive()) {
                     db.endTransaction()
-                    emitter.onSuccess(TagOwner())
-                    return@create
-                }
-                val cCheck = db.query(
-                    TagOwnerColumns.TABLENAME,
-                    arrayOf(BaseColumns._ID, TagOwnerColumns.NAME),
-                    TagOwnerColumns.NAME + " = ?",
-                    arrayOf(nameClean),
-                    null,
-                    null,
-                    null
-                )
-                val checkCount = cCheck.count
-                cCheck.close()
-                if (checkCount > 0) {
-                    if (!emitter.isDisposed) {
-                        db.setTransactionSuccessful()
+                    emit(TagOwner())
+                } else {
+                    val cCheck = db.query(
+                        TagOwnerColumns.TABLENAME,
+                        arrayOf(BaseColumns._ID, TagOwnerColumns.NAME),
+                        TagOwnerColumns.NAME + " = ?",
+                        arrayOf(nameClean),
+                        null,
+                        null,
+                        null
+                    )
+                    val checkCount = cCheck.count
+                    cCheck.close()
+                    if (checkCount > 0) {
+                        if (isActive()) {
+                            db.setTransactionSuccessful()
+                        }
+                        db.endTransaction()
+                        throw Throwable("require name not equals!!!")
+                    } else {
+                        val cv = ContentValues()
+                        cv.put(TagOwnerColumns.NAME, name)
+                        val ret = db.insert(TagOwnerColumns.TABLENAME, null, cv)
+                        if (isActive()) {
+                            db.setTransactionSuccessful()
+                        }
+                        db.endTransaction()
+                        emit(TagOwner().setId(ret).setName(nameClean))
                     }
-                    db.endTransaction()
-                    emitter.tryOnError(Throwable("require name not equals!!!"))
-                    return@create
                 }
-                val cv = ContentValues()
-                cv.put(TagOwnerColumns.NAME, name)
-                val ret = Math.toIntExact(db.insert(TagOwnerColumns.TABLENAME, null, cv))
-                if (!emitter.isDisposed) {
-                    db.setTransactionSuccessful()
-                }
-                db.endTransaction()
-                emitter.onSuccess(TagOwner().setId(ret).setName(nameClean))
             }
         }
     }
 
-    override fun updateNameTagOwner(id: Int, name: String?): Completable {
-        return Completable.create { iti ->
+    override fun updateNameTagOwner(id: Long, name: String?): Flow<Boolean> {
+        return flow {
             if (name.trimmedIsNullOrEmpty()) {
-                iti.tryOnError(Throwable("require name not null!!!"))
+                throw Throwable("require name not null!!!")
             } else {
                 val nameClean = name.trim { it <= ' ' }
                 val db = helper.writableDatabase
                 db.beginTransaction()
-                if (iti.isDisposed) {
+                if (!isActive()) {
                     db.endTransaction()
-                    iti.onComplete()
-                    return@create
-                }
-                val cCheck = db.query(
-                    TagOwnerColumns.TABLENAME,
-                    arrayOf(BaseColumns._ID, TagOwnerColumns.NAME),
-                    TagOwnerColumns.NAME + " = ?",
-                    arrayOf(nameClean),
-                    null,
-                    null,
-                    null
-                )
-                val checkCount = cCheck.count
-                cCheck.close()
-                if (checkCount > 0) {
-                    if (!iti.isDisposed) {
-                        db.setTransactionSuccessful()
+                    emit(false)
+                } else {
+                    val cCheck = db.query(
+                        TagOwnerColumns.TABLENAME,
+                        arrayOf(BaseColumns._ID, TagOwnerColumns.NAME),
+                        TagOwnerColumns.NAME + " = ?",
+                        arrayOf(nameClean),
+                        null,
+                        null,
+                        null
+                    )
+                    val checkCount = cCheck.count
+                    cCheck.close()
+                    if (checkCount > 0) {
+                        if (isActive()) {
+                            db.setTransactionSuccessful()
+                        }
+                        db.endTransaction()
+                        emit(false)
+                    } else {
+                        val cv = ContentValues()
+                        cv.put(TagOwnerColumns.NAME, nameClean)
+                        db.update(
+                            TagOwnerColumns.TABLENAME, cv,
+                            BaseColumns._ID + " = ?", arrayOf(id.toString())
+                        )
+                        if (isActive()) {
+                            db.setTransactionSuccessful()
+                        }
+                        db.endTransaction()
+                        emit(true)
                     }
-                    db.endTransaction()
-                    iti.onComplete()
-                    return@create
                 }
-
-                val cv = ContentValues()
-                cv.put(TagOwnerColumns.NAME, nameClean)
-                db.update(
-                    TagOwnerColumns.TABLENAME, cv,
-                    BaseColumns._ID + " = ?", arrayOf(id.toString())
-                )
-                if (!iti.isDisposed) {
-                    db.setTransactionSuccessful()
-                }
-                db.endTransaction()
-                iti.onComplete()
             }
         }
     }
 
-    override fun insertTagDir(ownerId: Int, item: FileItem): Completable {
-        return if (item.file_name.isNullOrEmpty() || item.file_path.isNullOrEmpty()) {
-            Completable.complete()
-        } else Completable.create { emitter ->
-            val db = helper.writableDatabase
-            db.beginTransaction()
-            if (emitter.isDisposed) {
-                db.endTransaction()
-                emitter.onComplete()
-                return@create
-            }
-            db.delete(
-                TagDirsColumns.TABLENAME,
-                TagDirsColumns.PATH + " = ?", arrayOf(item.file_path)
+    override fun insertTagDir(ownerId: Long, item: FileItem): Flow<Boolean> {
+        return flow {
+            emit(
+                if (item.file_name.isNullOrEmpty() || item.file_path.isNullOrEmpty()) {
+                    false
+                } else {
+                    val db = helper.writableDatabase
+                    db.beginTransaction()
+                    if (!isActive()) {
+                        db.endTransaction()
+                        false
+                    } else {
+                        db.delete(
+                            TagDirsColumns.TABLENAME,
+                            TagDirsColumns.PATH + " = ?", arrayOf(item.file_path)
+                        )
+                        MusicPlaybackController.tracksExist.deleteTag(item.file_path)
+                        try {
+                            val cv = ContentValues()
+                            cv.put(TagDirsColumns.OWNER_ID, ownerId)
+                            cv.put(TagDirsColumns.NAME, item.file_name)
+                            cv.put(TagDirsColumns.PATH, item.file_path)
+                            cv.put(TagDirsColumns.TYPE, item.type)
+                            db.insert(TagDirsColumns.TABLENAME, null, cv)
+                            if (isActive()) {
+                                db.setTransactionSuccessful()
+                            }
+                        } finally {
+                            db.endTransaction()
+                        }
+                        MusicPlaybackController.tracksExist.addTag(item.file_path)
+                        true
+                    }
+                }
             )
-            MusicPlaybackController.tracksExist.deleteTag(item.file_path)
-            try {
-                val cv = ContentValues()
-                cv.put(TagDirsColumns.OWNER_ID, ownerId)
-                cv.put(TagDirsColumns.NAME, item.file_name)
-                cv.put(TagDirsColumns.PATH, item.file_path)
-                cv.put(TagDirsColumns.TYPE, item.type)
-                db.insert(TagDirsColumns.TABLENAME, null, cv)
-                if (!emitter.isDisposed) {
-                    db.setTransactionSuccessful()
-                }
-            } finally {
-                db.endTransaction()
-            }
-            MusicPlaybackController.tracksExist.addTag(item.file_path)
-            emitter.onComplete()
         }
     }
 
@@ -369,8 +382,8 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
         }
     }
 
-    override fun getTagDirs(ownerId: Int): Single<List<TagDir>> {
-        return Single.fromCallable {
+    override fun getTagDirs(ownerId: Long): Flow<List<TagDir>> {
+        return flow {
             val where = TagDirsColumns.OWNER_ID + " = ?"
             val args = arrayOf(ownerId.toString())
             val cursor = helper.writableDatabase.query(
@@ -383,8 +396,8 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
                     val path = it.getString(TagDirsColumns.PATH)
                     val type = it.getInt(TagDirsColumns.TYPE)
                     data.add(
-                        TagDir().setId(it.getInt(BaseColumns._ID))
-                            .setOwner_id(it.getInt(TagDirsColumns.OWNER_ID))
+                        TagDir().setId(it.getLong(BaseColumns._ID))
+                            .setOwner_id(it.getLong(TagDirsColumns.OWNER_ID))
                             .setName(it.getString(TagDirsColumns.NAME))
                             .setPath(path)
                             .setType(type)
@@ -397,12 +410,12 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
                 }
             }
             data.sortWith(ItemModificationComparator())
-            data
+            emit(data)
         }
     }
 
-    override fun getAllTagDirs(): Single<List<TagDir>> {
-        return Single.fromCallable {
+    override fun getAllTagDirs(): Flow<List<TagDir>> {
+        return flow {
             val cursor = helper.writableDatabase.query(
                 TagDirsColumns.TABLENAME,
                 TAG_DIR_PROJECTION, null, null, null, null, BaseColumns._ID + " DESC"
@@ -413,8 +426,8 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
                     val path = it.getString(TagDirsColumns.PATH)
                     val type = it.getInt(TagDirsColumns.TYPE)
                     data.add(
-                        TagDir().setId(it.getInt(BaseColumns._ID))
-                            .setOwner_id(it.getInt(TagDirsColumns.OWNER_ID))
+                        TagDir().setId(it.getLong(BaseColumns._ID))
+                            .setOwner_id(it.getLong(TagDirsColumns.OWNER_ID))
                             .setName(it.getString(TagDirsColumns.NAME))
                             .setPath(path)
                             .setType(type)
@@ -426,25 +439,25 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
                     )
                 }
             }
-            data
+            emit(data)
         }
     }
 
-    override fun putTagFull(pp: List<TagFull>): Completable {
-        return Completable.create { emitter ->
+    override fun putTagFull(pp: List<TagFull>): Flow<Boolean> {
+        return flow {
             clearTagsAll()
             val db = helper.writableDatabase
             db.beginTransaction()
             try {
-                if (emitter.isDisposed) {
+                if (!isActive()) {
                     db.endTransaction()
-                    emitter.onComplete()
-                    return@create
+                    emit(false)
+                    return@flow
                 }
                 for (p in pp) {
                     val cv = ContentValues()
                     cv.put(TagOwnerColumns.NAME, p.name)
-                    val v = Math.toIntExact(db.insert(TagOwnerColumns.TABLENAME, null, cv))
+                    val v = db.insert(TagOwnerColumns.TABLENAME, null, cv)
                     for (kk in (p.dirs ?: emptyList())) {
                         val cvDir = ContentValues()
                         cvDir.put(TagDirsColumns.OWNER_ID, v)
@@ -454,26 +467,26 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
                         db.insert(TagDirsColumns.TABLENAME, null, cvDir)
                     }
                 }
-                if (!emitter.isDisposed) {
+                if (isActive()) {
                     db.setTransactionSuccessful()
                 }
             } finally {
                 db.endTransaction()
             }
-            emitter.onComplete()
+            emit(true)
         }
     }
 
-    override fun getTagFull(): Single<List<TagFull>> {
-        return Single.create { emitter: SingleEmitter<List<TagFull>> ->
+    override fun getTagFull(): Flow<List<TagFull>> {
+        return flow {
             val pp: MutableList<TagFull> = ArrayList()
             val db = helper.writableDatabase
             db.beginTransaction()
             try {
-                if (emitter.isDisposed) {
+                if (!isActive()) {
                     db.endTransaction()
-                    emitter.onSuccess(pp)
-                    return@create
+                    emit(pp)
+                    return@flow
                 }
                 db.query(
                     TagOwnerColumns.TABLENAME,
@@ -502,18 +515,18 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
                         pp.add(kk)
                     }
                 }
-                if (!emitter.isDisposed) {
+                if (isActive()) {
                     db.setTransactionSuccessful()
                 }
             } finally {
                 db.endTransaction()
             }
-            emitter.onSuccess(pp)
+            emit(pp)
         }
     }
 
-    override fun getTagOwners(): Single<List<TagOwner>> {
-        return Single.fromCallable {
+    override fun getTagOwners(): Flow<List<TagOwner>> {
+        return flow {
             val db = helper.writableDatabase
             val cursor = db.query(
                 TagOwnerColumns.TABLENAME,
@@ -522,7 +535,7 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
             val data: MutableList<TagOwner> = ArrayList(cursor.count)
             cursor.use {
                 while (it.moveToNext()) {
-                    val id = it.getInt(BaseColumns._ID)
+                    val id = it.getLong(BaseColumns._ID)
                     val where = TagDirsColumns.OWNER_ID + " = ?"
                     val args = arrayOf(id.toString())
                     val c = db.query(
@@ -541,7 +554,7 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
                     c.close()
                 }
             }
-            data
+            emit(data)
         }
     }
 

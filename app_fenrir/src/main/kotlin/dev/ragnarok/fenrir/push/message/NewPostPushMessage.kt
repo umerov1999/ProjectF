@@ -23,6 +23,7 @@ import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.Logger.wtf
 import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 import java.util.regex.Pattern
 
 class NewPostPushMessage {
@@ -49,13 +50,13 @@ class NewPostPushMessage {
             matcher.group(1)?.let {
                 val app = context.applicationContext
                 getRx(app, accountId, it.toLong())
-                    .subscribeOn(INSTANCE)
-                    .subscribe({ ownerInfo ->
-                        notifyImpl(
-                            app,
-                            ownerInfo.avatar
-                        )
-                    }) { notifyImpl(app, null) }
+                    .fromScopeToMain(INSTANCE,
+                        { ownerInfo ->
+                            notifyImpl(
+                                app,
+                                ownerInfo.avatar
+                            )
+                        }, { notifyImpl(app, null) })
             } ?: notifyImpl(context, null)
         } else {
             notifyImpl(context, null)

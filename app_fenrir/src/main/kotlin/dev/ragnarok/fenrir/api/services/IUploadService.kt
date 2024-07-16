@@ -12,29 +12,29 @@ import dev.ragnarok.fenrir.api.model.upload.UploadPhotoToWallDto
 import dev.ragnarok.fenrir.api.model.upload.UploadStoryDto
 import dev.ragnarok.fenrir.api.model.upload.UploadVideoDto
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
 
 class IUploadService : IServiceRest() {
-    fun uploadDocumentRx(server: String, file: MultipartBody.Part): Single<UploadDocDto> {
+    fun uploadDocumentRx(server: String, file: MultipartBody.Part): Flow<UploadDocDto> {
         return rest.doMultipartFormFullUrl(server, file, UploadDocDto.serializer())
     }
 
-    fun uploadAudioRx(server: String, file: MultipartBody.Part): Single<UploadAudioDto> {
+    fun uploadAudioRx(server: String, file: MultipartBody.Part): Flow<UploadAudioDto> {
         return rest.doMultipartFormFullUrl(server, file, UploadAudioDto.serializer())
     }
 
     fun remotePlayAudioRx(
         server: String,
         file: MultipartBody.Part
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.doMultipartFormFullUrl(server, file, baseInt)
     }
 
     fun uploadStoryRx(
         server: String,
         file: MultipartBody.Part
-    ): Single<CustomResponse<UploadStoryDto>> {
+    ): Flow<CustomResponse<UploadStoryDto>> {
         return rest.doMultipartFormFullUrl(
             server,
             file,
@@ -42,42 +42,42 @@ class IUploadService : IServiceRest() {
         )
     }
 
-    fun uploadVideoRx(server: String, file: MultipartBody.Part): Single<UploadVideoDto> {
+    fun uploadVideoRx(server: String, file: MultipartBody.Part): Flow<UploadVideoDto> {
         return rest.doMultipartFormFullUrl(server, file, UploadVideoDto.serializer())
     }
 
     fun uploadOwnerPhotoRx(
         server: String,
         photo: MultipartBody.Part
-    ): Single<UploadOwnerPhotoDto> {
+    ): Flow<UploadOwnerPhotoDto> {
         return rest.doMultipartFormFullUrl(server, photo, UploadOwnerPhotoDto.serializer())
     }
 
     fun uploadChatPhotoRx(
         server: String,
         photo: MultipartBody.Part
-    ): Single<UploadChatPhotoDto> {
+    ): Flow<UploadChatPhotoDto> {
         return rest.doMultipartFormFullUrl(server, photo, UploadChatPhotoDto.serializer())
     }
 
     fun uploadPhotoToWallRx(
         server: String,
         photo: MultipartBody.Part
-    ): Single<UploadPhotoToWallDto> {
+    ): Flow<UploadPhotoToWallDto> {
         return rest.doMultipartFormFullUrl(server, photo, UploadPhotoToWallDto.serializer())
     }
 
     fun uploadPhotoToMessageRx(
         server: String,
         photo: MultipartBody.Part
-    ): Single<UploadPhotoToMessageDto> {
+    ): Flow<UploadPhotoToMessageDto> {
         return rest.doMultipartFormFullUrl(server, photo, UploadPhotoToMessageDto.serializer())
     }
 
     fun uploadPhotoToAlbumRx(
         server: String,
         file1: MultipartBody.Part
-    ): Single<UploadPhotoToAlbumDto> {
+    ): Flow<UploadPhotoToAlbumDto> {
         return rest.doMultipartFormFullUrl(server, file1, UploadPhotoToAlbumDto.serializer())
     }
 }

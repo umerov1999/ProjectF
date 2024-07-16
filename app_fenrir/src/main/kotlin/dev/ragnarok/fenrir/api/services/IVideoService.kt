@@ -8,7 +8,7 @@ import dev.ragnarok.fenrir.api.model.response.DefaultCommentsResponse
 import dev.ragnarok.fenrir.api.model.response.SearchVideoResponse
 import dev.ragnarok.fenrir.api.model.server.VKApiVideosUploadServer
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class IVideoService : IServiceRest() {
     fun getComments(
@@ -21,7 +21,7 @@ class IVideoService : IServiceRest() {
         sort: String?,
         extended: Int?,
         fields: String?
-    ): Single<BaseResponse<DefaultCommentsResponse>> {
+    ): Flow<BaseResponse<DefaultCommentsResponse>> {
         return rest.request(
             "video.getComments", form(
                 "owner_id" to ownerId,
@@ -41,7 +41,7 @@ class IVideoService : IServiceRest() {
         targetId: Long?,
         videoId: Int?,
         ownerId: Long?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "video.add", form(
                 "target_id" to targetId,
@@ -55,7 +55,7 @@ class IVideoService : IServiceRest() {
         videoId: Int?,
         ownerId: Long?,
         targetId: Long?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "video.delete", form(
                 "video_id" to videoId,
@@ -71,7 +71,7 @@ class IVideoService : IServiceRest() {
         count: Int?,
         extended: Int?,
         needSystem: Int?
-    ): Single<BaseResponse<Items<VKApiVideoAlbum>>> {
+    ): Flow<BaseResponse<Items<VKApiVideoAlbum>>> {
         return rest.request(
             "video.getAlbums", form(
                 "owner_id" to ownerId,
@@ -88,7 +88,7 @@ class IVideoService : IServiceRest() {
         owner_id: Long?,
         video_id: Int?,
         extended: Int?
-    ): Single<BaseResponse<Items<VKApiVideoAlbum>>> {
+    ): Flow<BaseResponse<Items<VKApiVideoAlbum>>> {
         return rest.request(
             "video.getAlbumsByVideo", form(
                 "target_id" to target_id,
@@ -111,7 +111,7 @@ class IVideoService : IServiceRest() {
         shorter: Int?,
         count: Int?,
         extended: Int?
-    ): Single<BaseResponse<SearchVideoResponse>> {
+    ): Flow<BaseResponse<SearchVideoResponse>> {
         return rest.request(
             "video.search", form(
                 "q" to query,
@@ -132,7 +132,7 @@ class IVideoService : IServiceRest() {
     fun restoreComment(
         ownerId: Long?,
         commentId: Int
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "video.restoreComment", form(
                 "owner_id" to ownerId,
@@ -144,7 +144,7 @@ class IVideoService : IServiceRest() {
     fun deleteComment(
         ownerId: Long?,
         commentId: Int
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "video.deleteComment", form(
                 "owner_id" to ownerId,
@@ -160,7 +160,7 @@ class IVideoService : IServiceRest() {
         count: Int?,
         offset: Int?,
         extended: Int?
-    ): Single<BaseResponse<Items<VKApiVideo>>> {
+    ): Flow<BaseResponse<Items<VKApiVideo>>> {
         return rest.request(
             "video.get", form(
                 "owner_id" to ownerId,
@@ -182,7 +182,7 @@ class IVideoService : IServiceRest() {
         replyToComment: Int?,
         stickerId: Int?,
         uniqueGeneratedId: Int?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "video.createComment", form(
                 "owner_id" to ownerId,
@@ -202,7 +202,7 @@ class IVideoService : IServiceRest() {
         commentId: Int,
         message: String?,
         attachments: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "video.editComment", form(
                 "owner_id" to ownerId,
@@ -218,7 +218,7 @@ class IVideoService : IServiceRest() {
         video_id: Int,
         name: String?,
         desc: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "video.edit", form(
                 "owner_id" to ownerId,
@@ -233,7 +233,7 @@ class IVideoService : IServiceRest() {
         is_private: Int?,
         group_id: Long?,
         name: String?
-    ): Single<BaseResponse<VKApiVideosUploadServer>> {
+    ): Flow<BaseResponse<VKApiVideosUploadServer>> {
         return rest.request(
             "video.save", form(
                 "is_private" to is_private,

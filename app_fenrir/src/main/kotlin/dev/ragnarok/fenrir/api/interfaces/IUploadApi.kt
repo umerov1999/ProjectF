@@ -12,7 +12,7 @@ import dev.ragnarok.fenrir.api.model.upload.UploadPhotoToMessageDto
 import dev.ragnarok.fenrir.api.model.upload.UploadPhotoToWallDto
 import dev.ragnarok.fenrir.api.model.upload.UploadStoryDto
 import dev.ragnarok.fenrir.api.model.upload.UploadVideoDto
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 import java.io.InputStream
 
 interface IUploadApi {
@@ -21,21 +21,21 @@ interface IUploadApi {
         filename: String?,
         doc: InputStream,
         listener: PercentagePublisher?
-    ): Single<UploadDocDto>
+    ): Flow<UploadDocDto>
 
     fun uploadAudioRx(
         server: String,
         filename: String?,
         inputStream: InputStream,
         listener: PercentagePublisher?
-    ): Single<UploadAudioDto>
+    ): Flow<UploadAudioDto>
 
     fun remotePlayAudioRx(
         server: String,
         filename: String?,
         inputStream: InputStream,
         listener: PercentagePublisher?
-    ): Single<BaseResponse<Int>>
+    ): Flow<BaseResponse<Int>>
 
     fun uploadStoryRx(
         server: String,
@@ -43,42 +43,42 @@ interface IUploadApi {
         inputStream: InputStream,
         listener: PercentagePublisher?,
         isVideo: Boolean
-    ): Single<CustomResponse<UploadStoryDto>>
+    ): Flow<CustomResponse<UploadStoryDto>>
 
     fun uploadVideoRx(
         server: String,
         filename: String?,
         video: InputStream,
         listener: PercentagePublisher?
-    ): Single<UploadVideoDto>
+    ): Flow<UploadVideoDto>
 
     fun uploadOwnerPhotoRx(
         server: String,
         photo: InputStream,
         listener: PercentagePublisher?
-    ): Single<UploadOwnerPhotoDto>
+    ): Flow<UploadOwnerPhotoDto>
 
     fun uploadChatPhotoRx(
         server: String,
         photo: InputStream,
         listener: PercentagePublisher?
-    ): Single<UploadChatPhotoDto>
+    ): Flow<UploadChatPhotoDto>
 
     fun uploadPhotoToWallRx(
         server: String,
         photo: InputStream,
         listener: PercentagePublisher?
-    ): Single<UploadPhotoToWallDto>
+    ): Flow<UploadPhotoToWallDto>
 
     fun uploadPhotoToMessageRx(
         server: String,
         inputStream: InputStream,
         listener: PercentagePublisher?
-    ): Single<UploadPhotoToMessageDto>
+    ): Flow<UploadPhotoToMessageDto>
 
     fun uploadPhotoToAlbumRx(
         server: String,
         file1: InputStream,
         listener: PercentagePublisher?
-    ): Single<UploadPhotoToAlbumDto>
+    ): Flow<UploadPhotoToAlbumDto>
 }

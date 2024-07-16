@@ -16,10 +16,14 @@ import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.upload.UploadResult
 import dev.ragnarok.fenrir.upload.UploadUtils
 import dev.ragnarok.fenrir.util.Utils.safelyClose
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.safelyCloseAction
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlowThrowable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import java.io.InputStream
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.math.abs
 
 class Photo2WallUploadable(
@@ -32,25 +36,24 @@ class Photo2WallUploadable(
         upload: Upload,
         initialServer: UploadServer?,
         listener: PercentagePublisher?
-    ): Single<UploadResult<Photo>> {
+    ): Flow<UploadResult<Photo>> {
         val subjectOwnerId = upload.destination.ownerId
         val userId = if (subjectOwnerId > 0) subjectOwnerId else null
         val groupId = if (subjectOwnerId < 0) abs(subjectOwnerId) else null
         val accountId = upload.accountId
-        val serverSingle: Single<UploadServer> = if (initialServer != null) {
-            Single.just(initialServer)
+        val serverSingle = if (initialServer != null) {
+            toFlow(initialServer)
         } else {
             networker.vkDefault(accountId)
                 .photos()
                 .getWallUploadServer(groupId)
-                .map { it }
         }
-        return serverSingle.flatMap { server ->
+        return serverSingle.flatMapConcat { server ->
             var inputStream: InputStream? = null
             try {
                 inputStream = UploadUtils.openStream(context, upload.fileUri, upload.size)
                 if (inputStream == null) {
-                    Single.error(
+                    toFlowThrowable(
                         NotFoundException(
                             "Unable to open InputStream, URI: ${upload.fileUri}"
                         )
@@ -62,10 +65,10 @@ class Photo2WallUploadable(
                             inputStream,
                             listener
                         )
-                        .doFinally(safelyCloseAction(inputStream))
-                        .flatMap { dto ->
+                        .onCompletion { safelyClose(inputStream) }
+                        .flatMapConcat { dto ->
                             if (dto.photo.isNullOrEmpty()) {
-                                Single.error(NotFoundException("VK doesn't upload this file"))
+                                toFlowThrowable(NotFoundException("VK doesn't upload this file"))
                             } else {
                                 networker.vkDefault(accountId)
                                     .photos()
@@ -79,9 +82,9 @@ class Photo2WallUploadable(
                                         null,
                                         null
                                     )
-                                    .flatMap {
+                                    .flatMapConcat {
                                         if (it.isEmpty()) {
-                                            Single.error(
+                                            toFlowThrowable(
                                                 NotFoundException()
                                             )
                                         } else {
@@ -92,9 +95,11 @@ class Photo2WallUploadable(
                                                     attachmentsRepository,
                                                     upload,
                                                     photo
-                                                ).andThen(Single.just(result))
+                                                ).map {
+                                                    result
+                                                }
                                             } else {
-                                                Single.just(result)
+                                                toFlow(result)
                                             }
                                         }
                                     }
@@ -103,7 +108,10 @@ class Photo2WallUploadable(
                 }
             } catch (e: Exception) {
                 safelyClose(inputStream)
-                Single.error(e)
+                if (e is CancellationException) {
+                    throw e
+                }
+                toFlowThrowable(e)
             }
         }
     }
@@ -112,7 +120,7 @@ class Photo2WallUploadable(
         repository: IAttachmentsRepository,
         upload: Upload,
         photo: Photo
-    ): Completable {
+    ): Flow<Boolean> {
         val accountId = upload.accountId
         val dest = upload.destination
         when (dest.method) {
@@ -122,6 +130,6 @@ class Photo2WallUploadable(
             Method.TO_WALL -> return repository
                 .attach(accountId, AttachToType.POST, dest.id, listOf(photo))
         }
-        return Completable.error(UnsupportedOperationException())
+        return toFlowThrowable(UnsupportedOperationException())
     }
 }

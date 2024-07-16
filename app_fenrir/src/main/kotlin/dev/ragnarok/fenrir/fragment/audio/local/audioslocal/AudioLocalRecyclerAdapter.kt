@@ -21,7 +21,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso3.Transformation
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getString
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.canPlayAfterCurrent
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.currentAudio
@@ -45,25 +44,25 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.toColor
-import dev.ragnarok.fenrir.toMainThread
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.WeakViewAnimatorAdapter
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
-import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.io.File
 
 class AudioLocalRecyclerAdapter(private val mContext: Context, private var data: List<Audio>) :
     RecyclerView.Adapter<AudioLocalRecyclerAdapter.AudioHolder>() {
     private var mClickListener: ClickListener? = null
-    private var mPlayerDisposable = Disposable.disposed()
-    private var audioListDisposable = Disposable.disposed()
+    private var mPlayerDisposable = CancelableJob()
+    private var audioListDisposable = CancelableJob()
     private var currAudio: Audio?
     private val isAudio_round_icon: Boolean = Settings.get().main().isAudio_round_icon
     fun setItems(data: List<Audio>) {
@@ -71,68 +70,58 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
         notifyDataSetChanged()
     }
 
-    @Suppress("DEPRECATION")
-    private fun doLocalBitrate(url: String): Single<Pair<Int, Long>> {
-        return Single.create { v: SingleEmitter<Pair<Int, Long>> ->
-            try {
-                val cursor = mContext.contentResolver.query(
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    arrayOf(MediaStore.MediaColumns.DATA),
-                    BaseColumns._ID + "=? ",
-                    arrayOf(Uri.parse(url).lastPathSegment),
-                    null
-                )
-                if (cursor != null && cursor.moveToFirst()) {
-                    val retriever = MediaMetadataRetriever()
-                    val fl =
-                        cursor.getString(MediaStore.MediaColumns.DATA)
-                    retriever.setDataSource(fl)
-                    cursor.close()
-                    val bitrate =
-                        retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)
-                    if (bitrate != null && fl != null) {
-                        v.onSuccess(Pair((bitrate.toLong() / 1000).toInt(), File(fl).length()))
-                    } else {
-                        v.tryOnError(Throwable("Can't receipt bitrate "))
-                    }
+    private fun doLocalBitrate(url: String): Flow<Pair<Int, Long>> {
+        return flow {
+            val cursor = mContext.contentResolver.query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                arrayOf(MediaStore.MediaColumns.DATA),
+                BaseColumns._ID + "=? ",
+                arrayOf(Uri.parse(url).lastPathSegment),
+                null
+            )
+            if (cursor != null && cursor.moveToFirst()) {
+                val retriever = MediaMetadataRetriever()
+                val fl =
+                    cursor.getString(MediaStore.MediaColumns.DATA)
+                retriever.setDataSource(fl)
+                cursor.close()
+                val bitrate =
+                    retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)
+                if (bitrate != null && fl != null) {
+                    emit(Pair((bitrate.toLong() / 1000).toInt(), File(fl).length()))
                 } else {
-                    v.tryOnError(Throwable("Can't receipt bitrate "))
+                    throw Throwable("Can't receipt bitrate!")
                 }
-            } catch (e: RuntimeException) {
-                v.tryOnError(e)
+            } else {
+                throw Throwable("Can't receipt bitrate!")
             }
         }
     }
 
-    @Suppress("DEPRECATION")
-    private fun stripMetadata(url: String): Completable {
-        return Completable.create {
-            try {
-                val cursor = mContext.contentResolver.query(
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    arrayOf(MediaStore.MediaColumns.DATA),
-                    BaseColumns._ID + "=? ",
-                    arrayOf(Uri.parse(url).lastPathSegment),
-                    null
-                )
-                if (cursor != null && cursor.moveToFirst()) {
-                    val fl =
-                        cursor.getString(MediaStore.MediaColumns.DATA)
-                    cursor.close()
-                    if (fl.nonNullNoEmpty()) {
-                        if (FileUtils.audioTagStrip(fl)) {
-                            it.onComplete()
-                        } else {
-                            it.tryOnError(Throwable("Can't strip metadata"))
-                        }
+    private fun stripMetadata(url: String): Flow<Boolean> {
+        return flow {
+            val cursor = mContext.contentResolver.query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                arrayOf(MediaStore.MediaColumns.DATA),
+                BaseColumns._ID + "=? ",
+                arrayOf(Uri.parse(url).lastPathSegment),
+                null
+            )
+            if (cursor != null && cursor.moveToFirst()) {
+                val fl =
+                    cursor.getString(MediaStore.MediaColumns.DATA)
+                cursor.close()
+                if (fl.nonNullNoEmpty()) {
+                    if (FileUtils.audioTagStrip(fl)) {
+                        emit(true)
                     } else {
-                        it.tryOnError(Throwable("Can't find file"))
+                        throw Throwable("Can't strip metadata")
                     }
                 } else {
-                    it.tryOnError(Throwable("Can't find file"))
+                    throw Throwable("Can't find file")
                 }
-            } catch (e: RuntimeException) {
-                it.tryOnError(e)
+            } else {
+                throw Throwable("Can't find file")
             }
         }
     }
@@ -141,18 +130,17 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
         if (url.isNullOrEmpty()) {
             return
         }
-        audioListDisposable = doLocalBitrate(url).fromIOToMain()
-            .subscribe(
-                { r: Pair<Int, Long> ->
-                    createCustomToast(mContext).showToast(
-                        mContext.resources.getString(
-                            R.string.bitrate,
-                            r.first,
-                            Utils.BytesToSize(r.second)
-                        )
+        audioListDisposable += doLocalBitrate(url).fromIOToMain(
+            {
+                createCustomToast(mContext).showToast(
+                    mContext.resources.getString(
+                        R.string.bitrate,
+                        it.first,
+                        Utils.BytesToSize(it.second)
                     )
-                }
-            ) { e -> createCustomToast(mContext).showToastThrowable(e) }
+                )
+            }
+        ) { e -> createCustomToast(mContext).showToastThrowable(e) }
     }
 
     @get:DrawableRes
@@ -279,7 +267,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                 AudioLocalOption.bitrate_item_audio -> getLocalBitrate(audio.url)
                 AudioLocalOption.strip_metadata_item_audio -> {
                     audio.url?.let { it ->
-                        audioListDisposable = stripMetadata(it).fromIOToMain().subscribe(
+                        audioListDisposable += stripMetadata(it).fromIOToMain(
                             {
                                 CustomSnackbars.createCustomSnackbars(view)
                                     ?.setDurationSnack(Snackbar.LENGTH_LONG)
@@ -390,15 +378,14 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        mPlayerDisposable = observeServiceBinding()
-            .toMainThread()
-            .subscribe { onServiceBindEvent(it) }
+        mPlayerDisposable += observeServiceBinding()
+            .sharedFlowToMain { onServiceBindEvent(it) }
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
-        mPlayerDisposable.dispose()
-        audioListDisposable.dispose()
+        mPlayerDisposable.cancel()
+        audioListDisposable.cancel()
     }
 
     private fun onServiceBindEvent(@PlayerStatus status: Int) {

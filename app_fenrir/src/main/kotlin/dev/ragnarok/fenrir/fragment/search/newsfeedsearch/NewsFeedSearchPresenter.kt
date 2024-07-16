@@ -10,7 +10,6 @@ import dev.ragnarok.fenrir.fragment.search.abssearch.AbsSearchPresenter
 import dev.ragnarok.fenrir.fragment.search.criteria.NewsFeedCriteria
 import dev.ragnarok.fenrir.fragment.search.nextfrom.StringNextFrom
 import dev.ragnarok.fenrir.fragment.search.options.SimpleGPSOption
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Commented
 import dev.ragnarok.fenrir.model.Post
@@ -19,8 +18,10 @@ import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.dummy
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class NewsFeedSearchPresenter(
     accountId: Long,
@@ -49,7 +50,7 @@ class NewsFeedSearchPresenter(
         accountId: Long,
         criteria: NewsFeedCriteria,
         startFrom: StringNextFrom
-    ): Single<Pair<List<Post>, StringNextFrom>> {
+    ): Flow<Pair<List<Post>, StringNextFrom>> {
         return feedInteractor.search(accountId, criteria, 50, startFrom.nextFrom)
             .map {
                 create(
@@ -91,9 +92,8 @@ class NewsFeedSearchPresenter(
         ) {
             return
         }
-        appendDisposable(walls.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
-            .fromIOToMain()
-            .subscribe(ignore()) { t ->
+        appendJob(walls.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
+            .fromIOToMain(dummy()) { t ->
                 showError(t)
             })
     }

@@ -1,16 +1,16 @@
 package dev.ragnarok.fenrir.api
 
-import io.reactivex.rxjava3.core.Observable
+import kotlinx.coroutines.flow.SharedFlow
 
 interface IValidateProvider {
     fun requestValidate(url: String?, accountId: Long)
     fun cancel(url: String)
-    fun observeCanceling(): Observable<String>
+    fun observeCanceling(): SharedFlow<String>
 
     @Throws(OutOfDateException::class)
     fun lookupState(url: String): Boolean
 
-    fun observeWaiting(): Observable<String>
+    fun observeWaiting(): SharedFlow<String>
 
     fun notifyThatValidateEntryActive(url: String)
 

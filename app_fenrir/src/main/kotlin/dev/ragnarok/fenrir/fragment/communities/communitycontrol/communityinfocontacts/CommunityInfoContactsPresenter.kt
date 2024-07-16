@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.fragment.communities.communitycontrol.communityinfoc
 
 import android.os.Bundle
 import dev.ragnarok.fenrir.Includes.networkInterfaces
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.Includes.stores
 import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.model.VKApiCommunity
@@ -11,12 +10,14 @@ import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.domain.impl.GroupSettingsInteractor
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformUser
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Community
 import dev.ragnarok.fenrir.model.ContactInfo
 import dev.ragnarok.fenrir.model.Manager
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import kotlinx.coroutines.flow.filter
 
 class CommunityInfoContactsPresenter(
     accountId: Long,
@@ -65,10 +66,9 @@ class CommunityInfoContactsPresenter(
     private fun onContactsReceived(contacts: List<ContactInfo>) {
         val Ids: MutableList<Long> = ArrayList(contacts.size)
         for (it in contacts) Ids.add(it.userId)
-        appendDisposable(
+        appendJob(
             networkInterfaces.vkDefault(accountId).users()[Ids, null, Fields.FIELDS_BASE_USER, null]
-                .fromIOToMain()
-                .subscribe({
+                .fromIOToMain({
                     setLoadingNow(false)
                     val managers: MutableList<Manager> = ArrayList(it.size)
                     for (user in it) {
@@ -84,9 +84,8 @@ class CommunityInfoContactsPresenter(
     }
 
     private fun requestContacts() {
-        appendDisposable(interactor.getContacts(accountId, groupId.id)
-            .fromIOToMain()
-            .subscribe({ contacts -> onContactsReceived(contacts) }) { throwable ->
+        appendJob(interactor.getContacts(accountId, groupId.id)
+            .fromIOToMain({ contacts -> onContactsReceived(contacts) }) { throwable ->
                 onRequestError(
                     throwable
                 )
@@ -99,9 +98,8 @@ class CommunityInfoContactsPresenter(
             requestContacts()
             return
         }
-        appendDisposable(interactor.getManagers(accountId, groupId.id)
-            .fromIOToMain()
-            .subscribe({ managers -> onDataReceived(managers) }) { throwable ->
+        appendJob(interactor.getManagers(accountId, groupId.id)
+            .fromIOToMain({ managers -> onDataReceived(managers) }) { throwable ->
                 onRequestError(
                     throwable
                 )
@@ -153,12 +151,11 @@ class CommunityInfoContactsPresenter(
     }
 
     init {
-        appendDisposable(stores
+        appendJob(stores
             .owners()
             .observeManagementChanges()
             .filter { it.first == groupId.id }
-            .observeOn(provideMainThreadScheduler())
-            .subscribe({ pair -> onManagerActionReceived(pair.second) }) { obj -> obj.printStackTrace() })
+            .sharedFlowToMain { pair -> onManagerActionReceived(pair.second) })
         requestData()
     }
 }

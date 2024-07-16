@@ -1,32 +1,37 @@
 package dev.ragnarok.fenrir.longpoll
 
 import dev.ragnarok.fenrir.Constants
-import dev.ragnarok.fenrir.Includes.provideMainThreadScheduler
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.longpoll.VKApiGroupLongpollUpdates
 import dev.ragnarok.fenrir.api.model.response.GroupLongpollServer
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.PersistentLogger.logThrowable
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import java.util.concurrent.TimeUnit
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 internal class GroupLongpoll(
     private val networker: INetworker,
     private val groupId: Long,
     private val callback: Callback
 ) : ILongpoll {
-    private val compositeDisposable = CompositeDisposable()
-    private val delayedObservable = Observable.interval(
-        DELAY_ON_ERROR.toLong(), DELAY_ON_ERROR.toLong(),
-        TimeUnit.MILLISECONDS, provideMainThreadScheduler()
-    )
+    private val compositeJob = CompositeJob()
     private var key: String? = null
     private var server: String? = null
     private var ts: String? = null
     override val accountId: Long
         get() = -groupId
+
+    private val delayedObservable: Flow<Boolean> = flow {
+        while (isActive()) {
+            delay(DELAY_ON_ERROR.toLong())
+            emit(true)
+        }
+    }
 
     private fun resetServerAttrs() {
         server = null
@@ -35,7 +40,7 @@ internal class GroupLongpoll(
     }
 
     override fun shutdown() {
-        compositeDisposable.dispose()
+        compositeJob.cancel()
     }
 
     override fun connect() {
@@ -45,7 +50,7 @@ internal class GroupLongpoll(
     }
 
     private val isListeningNow: Boolean
-        get() = compositeDisposable.size() > 0
+        get() = compositeJob.size() > 0
 
     private fun onServerInfoReceived(info: GroupLongpollServer) {
         ts = info.ts
@@ -60,25 +65,23 @@ internal class GroupLongpoll(
     }
 
     private fun get() {
-        compositeDisposable.clear()
+        compositeJob.clear()
         val validServer = server.nonNullNoEmpty() && key.nonNullNoEmpty() && ts.nonNullNoEmpty()
         if (validServer) {
-            compositeDisposable.add(
+            compositeJob.add(
                 networker.longpoll()
                     .getGroupUpdates(server ?: return, key, ts, Constants.LONGPOLL_WAIT)
-                    .fromIOToMain()
-                    .subscribe({ updates -> onUpdates(updates) }) { throwable ->
+                    .fromIOToMain({ updates -> onUpdates(updates) }) { throwable ->
                         onUpdatesGetError(
                             throwable
                         )
                     })
         } else {
-            compositeDisposable.add(
+            compositeJob.add(
                 networker.vkDefault(accountId)
                     .groups()
                     .getLongPollServer(groupId)
-                    .fromIOToMain()
-                    .subscribe({ info -> onServerInfoReceived(info) }) { throwable ->
+                    .fromIOToMain({ info -> onServerInfoReceived(info) }) { throwable ->
                         onServerGetError(
                             throwable
                         )
@@ -106,7 +109,7 @@ internal class GroupLongpoll(
 
     private val withDelay: Unit
         get() {
-            compositeDisposable.add(delayedObservable.subscribe { get() })
+            compositeJob.add(delayedObservable.toMain { get() })
         }
 
     interface Callback {

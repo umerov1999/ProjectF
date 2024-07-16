@@ -7,7 +7,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Icon
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.Peer
@@ -23,7 +22,7 @@ import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.util.AppTextUtils.getDateWithZeros
 import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.joinNonEmptyStrings
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.ignore
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class UserDetailsPresenter(
     accountId: Long,
@@ -663,10 +662,9 @@ class UserDetailsPresenter(
     init {
         createData()
         view?.notifyChanges()
-        appendDisposable(
+        appendJob(
             InteractorFactory.createPhotosInteractor()[accountId, user.ownerId, -6, 50, 0, true]
-                .fromIOToMain()
-                .subscribe({ displayUserProfileAlbum(it) }, ignore())
+                .fromIOToMain { displayUserProfileAlbum(it) }
         )
     }
 }

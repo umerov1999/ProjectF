@@ -5,29 +5,29 @@ import dev.ragnarok.fenrir.api.model.AccessIdPair
 import dev.ragnarok.fenrir.api.model.Items
 import dev.ragnarok.fenrir.api.model.VKApiDoc
 import dev.ragnarok.fenrir.api.model.server.VKApiDocsUploadServer
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IDocsApi {
     @CheckResult
-    fun delete(ownerId: Long?, docId: Int): Single<Boolean>
+    fun delete(ownerId: Long?, docId: Int): Flow<Boolean>
 
     @CheckResult
-    fun add(ownerId: Long, docId: Int, accessKey: String?): Single<Int>
+    fun add(ownerId: Long, docId: Int, accessKey: String?): Flow<Int>
 
     @CheckResult
-    fun getById(pairs: Collection<AccessIdPair>): Single<List<VKApiDoc>>
+    fun getById(pairs: Collection<AccessIdPair>): Flow<List<VKApiDoc>>
 
     @CheckResult
-    fun search(query: String?, count: Int?, offset: Int?): Single<Items<VKApiDoc>>
+    fun search(query: String?, count: Int?, offset: Int?): Flow<Items<VKApiDoc>>
 
     @CheckResult
-    fun save(file: String?, title: String?, tags: String?): Single<VKApiDoc.Entry>
+    fun save(file: String?, title: String?, tags: String?): Flow<VKApiDoc.Entry>
 
     @CheckResult
-    fun getUploadServer(groupId: Long?): Single<VKApiDocsUploadServer>
+    fun getUploadServer(groupId: Long?): Flow<VKApiDocsUploadServer>
 
     @CheckResult
-    fun getMessagesUploadServer(peerId: Long?, type: String?): Single<VKApiDocsUploadServer>
+    fun getMessagesUploadServer(peerId: Long?, type: String?): Flow<VKApiDocsUploadServer>
 
     @CheckResult
     operator fun get(
@@ -35,5 +35,5 @@ interface IDocsApi {
         count: Int?,
         offset: Int?,
         type: Int?
-    ): Single<Items<VKApiDoc>>
+    ): Flow<Items<VKApiDoc>>
 }

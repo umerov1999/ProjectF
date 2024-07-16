@@ -4,17 +4,17 @@ import androidx.annotation.CheckResult
 import dev.ragnarok.fenrir.api.model.Items
 import dev.ragnarok.fenrir.api.model.VKApiGift
 import dev.ragnarok.fenrir.api.model.VKApiUser
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface IUsersApi {
     @CheckResult
-    fun getUserWallInfo(userId: Long, fields: String?, nameCase: String?): Single<VKApiUser>
+    fun getUserWallInfo(userId: Long, fields: String?, nameCase: String?): Flow<VKApiUser>
 
     @CheckResult
     fun getFollowers(
         userId: Long?, offset: Int?, count: Int?,
         fields: String?, nameCase: String?
-    ): Single<Items<VKApiUser>>
+    ): Flow<Items<VKApiUser>>
 
     @CheckResult
     fun getRequests(
@@ -23,7 +23,7 @@ interface IUsersApi {
         extended: Int?,
         out: Int?,
         fields: String?
-    ): Single<Items<VKApiUser>>
+    ): Flow<Items<VKApiUser>>
 
     @CheckResult
     fun search(
@@ -37,20 +37,20 @@ interface IUsersApi {
         schoolClass: Int?, school: Int?, schoolYear: Int?,
         religion: String?, interests: String?, company: String?,
         position: String?, groupId: Long?, fromList: String?
-    ): Single<Items<VKApiUser>>
+    ): Flow<Items<VKApiUser>>
 
     @CheckResult
     operator fun get(
         userIds: Collection<Long>?, domains: Collection<String>?,
         fields: String?, nameCase: String?
-    ): Single<List<VKApiUser>>
+    ): Flow<List<VKApiUser>>
 
     @CheckResult
-    fun checkAndAddFriend(userId: Long?): Single<Int>
+    fun checkAndAddFriend(userId: Long?): Flow<Int>
 
     @CheckResult
-    fun getGifts(user_id: Long?, count: Int?, offset: Int?): Single<Items<VKApiGift>>
+    fun getGifts(user_id: Long?, count: Int?, offset: Int?): Flow<Items<VKApiGift>>
 
     @CheckResult
-    fun report(userId: Long?, type: String?, comment: String?): Single<Int>
+    fun report(userId: Long?, type: String?, comment: String?): Flow<Int>
 }

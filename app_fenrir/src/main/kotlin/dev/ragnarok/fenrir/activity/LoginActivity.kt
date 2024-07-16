@@ -38,7 +38,6 @@ class LoginActivity : AppCompatActivity() {
         webview.settings.domStorageEnabled = true
         webview.settings.blockNetworkLoads = false
         webview.settings.blockNetworkImage = false
-        webview.settings.databaseEnabled = true
         webview.clearCache(true)
         webview.settings.userAgentString = getUserAgentByType(Constants.DEFAULT_ACCOUNT_TYPE)
 

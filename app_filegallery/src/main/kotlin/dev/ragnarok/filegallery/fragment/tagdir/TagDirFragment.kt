@@ -101,7 +101,7 @@ class TagDirFragment : BaseMvpFragment<TagDirPresenter, ITagDirView>(), ITagDirV
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?) =
-        TagDirPresenter(requireArguments().getInt(Extra.OWNER_ID))
+        TagDirPresenter(requireArguments().getLong(Extra.OWNER_ID))
 
     override fun displayData(data: List<TagDir>) {
         mAdapter?.setItems(data)
@@ -168,9 +168,9 @@ class TagDirFragment : BaseMvpFragment<TagDirPresenter, ITagDirView>(), ITagDirV
     }
 
     companion object {
-        fun buildArgs(ownerId: Int, isSelect: Boolean): Bundle {
+        fun buildArgs(ownerId: Long, isSelect: Boolean): Bundle {
             val args = Bundle()
-            args.putInt(Extra.OWNER_ID, ownerId)
+            args.putLong(Extra.OWNER_ID, ownerId)
             args.putBoolean(Extra.SELECT, isSelect)
             return args
         }

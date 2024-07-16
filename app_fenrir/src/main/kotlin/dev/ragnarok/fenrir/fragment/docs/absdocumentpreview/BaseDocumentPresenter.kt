@@ -7,9 +7,9 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.IDocsInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Document
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 open class BaseDocumentPresenter<V : IBasicDocumentView>(
     accountId: Long,
@@ -27,9 +27,8 @@ open class BaseDocumentPresenter<V : IBasicDocumentView>(
     protected fun addYourself(document: Document) {
         val docId = document.id
         val ownerId = document.ownerId
-        appendDisposable(docsInteractor.add(accountId, docId, ownerId, document.accessKey)
-            .fromIOToMain()
-            .subscribe({
+        appendJob(docsInteractor.add(accountId, docId, ownerId, document.accessKey)
+            .fromIOToMain({
                 onDocAddedSuccessfully()
             }) {
                 showError(getCauseIfRuntime(it))
@@ -37,9 +36,8 @@ open class BaseDocumentPresenter<V : IBasicDocumentView>(
     }
 
     protected fun delete(id: Int, ownerId: Long) {
-        appendDisposable(docsInteractor.delete(accountId, id, ownerId)
-            .fromIOToMain()
-            .subscribe({
+        appendJob(docsInteractor.delete(accountId, id, ownerId)
+            .fromIOToMain({
                 onDocDeleteSuccessfully()
             }) { t -> onDocDeleteError(t) })
     }

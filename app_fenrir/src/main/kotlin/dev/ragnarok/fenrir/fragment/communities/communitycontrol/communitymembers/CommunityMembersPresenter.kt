@@ -4,11 +4,11 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IRelationshipInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class CommunityMembersPresenter(
     accountId: Long,
@@ -18,7 +18,7 @@ class CommunityMembersPresenter(
     private val relationshipInteractor: IRelationshipInteractor =
         InteractorFactory.createRelationshipInteractor()
     private val mMembers: ArrayList<Owner> = ArrayList()
-    private val netDisposable = CompositeDisposable()
+    private val netDisposable = CompositeJob()
     private var mEndOfContent = false
     private var netLoadingNow = false
     private var offset = 0
@@ -31,7 +31,7 @@ class CommunityMembersPresenter(
     }
 
     override fun onDestroyed() {
-        netDisposable.dispose()
+        netDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -57,8 +57,7 @@ class CommunityMembersPresenter(
             offset,
             if (isNotFriendShow) 1000 else COUNT_PER_REQUEST, filter
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 onNetDataReceived(
                     it, do_scan
                 )
@@ -151,8 +150,7 @@ class CommunityMembersPresenter(
 
     private fun loadAllCachedData() {
         netDisposable.add(relationshipInteractor.getCachedGroupMembers(accountId, group_id)
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 mMembers.clear()
                 mMembers.addAll(it)
                 view?.notifyDataSetChanged()

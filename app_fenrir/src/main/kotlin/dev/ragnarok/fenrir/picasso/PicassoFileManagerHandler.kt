@@ -201,7 +201,7 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
             isExtension(
                 requestUri.toString(),
                 Settings.get().main().videoExt
-            ) || requestUri.toString().endsWith("gif", true) -> {
+            ) -> {
                 var target =
                     if (FenrirNative.isNativeLoaded) AnimatedFileFrame.getThumbnail(requestUri.toFile().absoluteFile) else null
                 if (target == null) {

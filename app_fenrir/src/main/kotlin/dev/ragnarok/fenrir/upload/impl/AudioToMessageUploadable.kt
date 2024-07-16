@@ -15,12 +15,17 @@ import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.upload.UploadResult
 import dev.ragnarok.fenrir.upload.UploadUtils
 import dev.ragnarok.fenrir.util.Utils.safelyClose
-import dev.ragnarok.fenrir.util.rxutils.RxUtils.safelyCloseAction
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.andThen
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlowThrowable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
+import kotlin.coroutines.cancellation.CancellationException
 
 class AudioToMessageUploadable(
     private val context: Context, private val networker: INetworker,
@@ -28,22 +33,22 @@ class AudioToMessageUploadable(
     private val messagesStorage: IMessagesStorage
 ) :
     IUploadable<Audio> {
+    @Suppress("BlockingMethodInNonBlockingContext")
     override fun doUpload(
         upload: Upload,
         initialServer: UploadServer?,
         listener: PercentagePublisher?
-    ): Single<UploadResult<Audio>> {
+    ): Flow<UploadResult<Audio>> {
         val accountId = upload.accountId
         val messageId = upload.destination.id
-        val serverSingle: Single<UploadServer> = if (initialServer == null) {
+        val serverSingle = if (initialServer == null) {
             networker.vkDefault(accountId)
                 .audio()
                 .uploadServer
-                .map { it }
         } else {
-            Single.just(initialServer)
+            toFlow(initialServer)
         }
-        return serverSingle.flatMap { server ->
+        return serverSingle.flatMapConcat { server ->
             var inputStream: InputStream? = null
             try {
                 val uri = upload.fileUri
@@ -54,7 +59,7 @@ class AudioToMessageUploadable(
                     context.contentResolver.openInputStream(uri)
                 }
                 if (inputStream == null) {
-                    Single.error(
+                    toFlowThrowable(
                         NotFoundException(
                             "Unable to open InputStream, URI: $uri"
                         )
@@ -77,10 +82,10 @@ class AudioToMessageUploadable(
                             inputStream,
                             listener
                         )
-                        .doFinally(safelyCloseAction(inputStream))
-                        .flatMap { dto ->
+                        .onCompletion { safelyClose(inputStream) }
+                        .flatMapConcat { dto ->
                             if (dto.audio.isNullOrEmpty()) {
-                                Single.error(NotFoundException("VK doesn't upload this file"))
+                                toFlowThrowable(NotFoundException("VK doesn't upload this file"))
                             } else {
                                 networker
                                     .vkDefault(accountId)
@@ -92,7 +97,7 @@ class AudioToMessageUploadable(
                                         finalArtist,
                                         finalTrackName
                                     )
-                                    .flatMap {
+                                    .flatMapConcat {
                                         val audio = Dto2Model.transform(it)
                                         val result = UploadResult(server, audio)
                                         if (upload.isAutoCommit) {
@@ -102,10 +107,11 @@ class AudioToMessageUploadable(
                                                 accountId,
                                                 messageId,
                                                 audio
-                                            )
-                                                .andThen(Single.just(result))
+                                            ).map {
+                                                result
+                                            }
                                         } else {
-                                            Single.just(result)
+                                            toFlow(result)
                                         }
                                     }
                             }
@@ -113,7 +119,10 @@ class AudioToMessageUploadable(
                 }
             } catch (e: Exception) {
                 safelyClose(inputStream)
-                Single.error(e)
+                if (e is CancellationException) {
+                    throw e
+                }
+                toFlowThrowable(e)
             }
         }
     }
@@ -122,7 +131,7 @@ class AudioToMessageUploadable(
         fun attachIntoDatabaseRx(
             repository: IAttachmentsRepository, storage: IMessagesStorage,
             accountId: Long, messageId: Int, audio: Audio
-        ): Completable {
+        ): Flow<Boolean> {
             return repository
                 .attach(accountId, AttachToType.MESSAGE, messageId, listOf(audio))
                 .andThen(storage.notifyMessageHasAttachments(accountId, messageId))

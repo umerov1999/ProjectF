@@ -5,7 +5,7 @@ import dev.ragnarok.fenrir.api.model.response.IsLikeResponse
 import dev.ragnarok.fenrir.api.model.response.LikeResponse
 import dev.ragnarok.fenrir.api.model.response.LikesListResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 class ILikesService : IServiceRest() {
     //https://vk.com/dev/likes.getList
@@ -21,7 +21,7 @@ class ILikesService : IServiceRest() {
         count: Int?,
         skipOwn: Int?,
         fields: String?
-    ): Single<BaseResponse<LikesListResponse>> {
+    ): Flow<BaseResponse<LikesListResponse>> {
         return rest.request(
             "likes.getList", form(
                 "type" to type,
@@ -45,7 +45,7 @@ class ILikesService : IServiceRest() {
         ownerId: Long?,
         itemId: Int,
         accessKey: String?
-    ): Single<BaseResponse<LikeResponse>> {
+    ): Flow<BaseResponse<LikeResponse>> {
         return rest.request(
             "likes.delete", form(
                 "type" to type,
@@ -62,7 +62,7 @@ class ILikesService : IServiceRest() {
         ownerId: Long?,
         itemId: Int,
         accessKey: String?
-    ): Single<BaseResponse<LikeResponse>> {
+    ): Flow<BaseResponse<LikeResponse>> {
         return rest.request(
             "likes.add", form(
                 "type" to type,
@@ -78,7 +78,7 @@ class ILikesService : IServiceRest() {
         type: String?,
         ownerId: Long?,
         itemId: Int
-    ): Single<BaseResponse<IsLikeResponse>> {
+    ): Flow<BaseResponse<IsLikeResponse>> {
         return rest.request(
             "likes.isLiked", form(
                 "type" to type,
@@ -94,7 +94,7 @@ class ILikesService : IServiceRest() {
         ownerId: Long?,
         itemId: Int,
         accessKey: String?
-    ): Single<BaseResponse<Int>> {
+    ): Flow<BaseResponse<Int>> {
         return rest.request(
             "execute", form(
                 "code" to code,

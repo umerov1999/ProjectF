@@ -10,7 +10,11 @@ import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.empty
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 class OwnerInfo private constructor(val owner: Owner, val avatar: Bitmap?) {
     val user: User
@@ -19,20 +23,24 @@ class OwnerInfo private constructor(val owner: Owner, val avatar: Bitmap?) {
         get() = owner as Community
 
     companion object {
-        fun getRx(context: Context, accountId: Long, ownerId: Long): Single<OwnerInfo> {
+        fun getRx(context: Context, accountId: Long, ownerId: Long): Flow<OwnerInfo> {
             val app = context.applicationContext
             val interactor = owners
             return interactor.getBaseOwnerInfo(accountId, ownerId, IOwnersRepository.MODE_ANY)
-                .flatMap { owner ->
-                    Single.fromCallable {
-                        NotificationUtils.loadRoundedImage(
-                            app,
-                            owner.get100photoOrSmaller(),
-                            R.drawable.ic_avatar_unknown
+                .flatMapConcat { owner ->
+                    flow {
+                        emit(
+                            NotificationUtils.loadRoundedImage(
+                                app,
+                                owner.get100photoOrSmaller(),
+                                R.drawable.ic_avatar_unknown
+                            )
                         )
                     }
                         .map { Optional.wrap(it) }
-                        .onErrorReturnItem(empty())
+                        .catch {
+                            emit(empty())
+                        }
                         .map { optional -> OwnerInfo(owner, optional.get()) }
                 }
         }

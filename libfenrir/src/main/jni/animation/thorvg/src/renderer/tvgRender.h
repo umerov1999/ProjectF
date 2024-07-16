@@ -110,9 +110,7 @@ struct RenderRegion
 
 struct RenderTransform
 {
-    Matrix m;             //3x3 Matrix Elements
-    float x = 0.0f;
-    float y = 0.0f;
+    Matrix m;
     float degree = 0.0f;  //rotation degree
     float scale = 1.0f;   //scale factor
     bool overriding = false;  //user transform?
@@ -120,7 +118,11 @@ struct RenderTransform
     void update();
     void override(const Matrix& m);
 
-    RenderTransform() {}
+    RenderTransform()
+    {
+        m.e13 = m.e23 = 0.0f;
+    }
+
     RenderTransform(const RenderTransform* lhs, const RenderTransform* rhs);
 };
 
@@ -244,17 +246,8 @@ private:
     Key key;
 
 public:
-    uint32_t ref()
-    {
-        ScopedLock lock(key);
-        return (++refCnt);
-    }
-
-    uint32_t unref()
-    {
-        ScopedLock lock(key);
-        return (--refCnt);
-    }
+    uint32_t ref();
+    uint32_t unref();
 
     virtual ~RenderMethod() {}
     virtual RenderData prepare(const RenderShape& rshape, RenderData data, const RenderTransform* transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flags, bool clipper) = 0;

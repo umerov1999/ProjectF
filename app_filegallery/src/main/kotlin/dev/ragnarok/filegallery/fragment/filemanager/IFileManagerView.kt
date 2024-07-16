@@ -7,6 +7,7 @@ import dev.ragnarok.filegallery.fragment.base.core.IMvpView
 import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.model.FileItem
 import dev.ragnarok.filegallery.model.Video
+import dev.ragnarok.filegallery.upload.Upload
 
 interface IFileManagerView : IMvpView, IErrorView {
     fun displayData(items: ArrayList<FileItem>)
@@ -26,4 +27,11 @@ interface IFileManagerView : IMvpView, IErrorView {
 
     fun updateSelectedMode(show: Boolean)
     fun onBusy(path: String)
+
+    fun setUploadDataVisible(visible: Boolean)
+    fun displayUploads(data: List<Upload>)
+    fun notifyUploadItemsAdded(position: Int, count: Int)
+    fun notifyUploadItemChanged(position: Int)
+    fun notifyUploadItemRemoved(position: Int)
+    fun notifyUploadProgressChanged(position: Int, progress: Int, smoothly: Boolean)
 }

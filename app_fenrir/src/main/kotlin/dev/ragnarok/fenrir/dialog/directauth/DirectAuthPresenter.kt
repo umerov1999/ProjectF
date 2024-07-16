@@ -10,12 +10,12 @@ import dev.ragnarok.fenrir.api.NeedValidationException
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.LoginResponse
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Captcha
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
-import java.util.concurrent.TimeUnit
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayedFlow
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class DirectAuthPresenter(savedInstanceState: Bundle?) :
     RxSupportPresenter<IDirectAuthView>(savedInstanceState) {
@@ -49,14 +49,14 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
             null
         }
         setLoginNow(true)
-        appendDisposable(networker.vkDirectAuth()
+        appendJob(networker.vkDirectAuth()
             .directLogin(
                 "password",
                 Constants.API_ID,
                 Constants.SECRET,
                 trimmedUsername,
                 trimmedPass,
-                Constants.AUTH_VERSION,
+                Constants.AUTH_API_VERSION,
                 Constants.DEFAULT_ACCOUNT_TYPE == AccountType.VK_ANDROID,
                 scope,
                 code,
@@ -65,8 +65,7 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
                 forceSms,
                 Constants.DEFAULT_ACCOUNT_TYPE == AccountType.VK_ANDROID
             )
-            .fromIOToMain()
-            .subscribe({ response -> onLoginResponse(response) }) { t ->
+            .fromIOToMain({ response -> onLoginResponse(response) }) { t ->
                 onLoginError(
                     getCauseIfRuntime(t)
                 )
@@ -113,18 +112,17 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
                     }
                 }
                 if (!sid.isNullOrEmpty() && requireSmsCode) {
-                    appendDisposable(networker.vkAuth()
+                    appendJob(networker.vkAuth()
                         .validatePhone(
                             Constants.API_ID,
                             Constants.API_ID,
                             Constants.SECRET,
                             sid,
-                            Constants.AUTH_VERSION,
+                            Constants.AUTH_API_VERSION,
                             true
                         )
-                        .delay(1, TimeUnit.SECONDS)
-                        .fromIOToMain()
-                        .subscribe({ }) {
+                        .delayedFlow(1000)
+                        .fromIOToMain({ }) {
                             showError(getCauseIfRuntime(t))
                         })
                 }

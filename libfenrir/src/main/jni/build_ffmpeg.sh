@@ -27,7 +27,6 @@ COMMON_OPTIONS="
     --disable-debug
     --disable-v4l2-m2m
     --disable-vulkan
-    --enable-demuxer=gif
     --enable-demuxer=mov
     --enable-demuxer=mp3
     --enable-demuxer=flac

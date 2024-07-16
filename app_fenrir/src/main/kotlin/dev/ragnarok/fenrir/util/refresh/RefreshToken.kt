@@ -6,7 +6,9 @@ import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingleSafe
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 object RefreshToken {
     /*
@@ -40,7 +42,7 @@ object RefreshToken {
         val gms = TokenModKate.requestToken() ?: return false
         val token =
             InteractorFactory.createAccountInteractor().refreshToken(account, gms, null, null, null)
-                .blockingGet().token
+                .syncSingleSafe()?.token
         Log.w("refresh", "$oldToken $token $gms")
         if (oldToken == token || token.isNullOrEmpty()) {
             return false
@@ -62,7 +64,7 @@ object RefreshToken {
             TokenModOfficialVK.getNonce(timestamp),
             timestamp
         )
-            .blockingGet().token
+            .syncSingleSafe()?.token
         Log.w("refresh", "$oldToken $token $gms")
         if (oldToken == token || token.isNullOrEmpty()) {
             return false
@@ -80,13 +82,9 @@ object RefreshToken {
         return false
     }
 
-    fun upgradeTokenRxPref(account: Long, oldToken: String): Single<Boolean> {
-        return Single.create {
-            try {
-                it.onSuccess(upgradeToken(account, oldToken, true))
-            } catch (ignored: Exception) {
-                it.onSuccess(false)
-            }
+    fun upgradeTokenRxPref(account: Long, oldToken: String): Flow<Boolean> {
+        return flow {
+            emit(upgradeToken(account, oldToken, true))
         }
     }
 }

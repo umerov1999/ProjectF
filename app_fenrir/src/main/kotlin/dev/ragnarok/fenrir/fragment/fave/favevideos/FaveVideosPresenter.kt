@@ -4,16 +4,16 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IFaveInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Video
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class FaveVideosPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IFaveVideosView>(accountId, savedInstanceState) {
     private val faveInteractor: IFaveInteractor = InteractorFactory.createFaveInteractor()
     private val mVideos: ArrayList<Video> = ArrayList()
-    private val cacheDisposable = CompositeDisposable()
-    private val netDisposable = CompositeDisposable()
+    private val cacheDisposable = CompositeJob()
+    private val netDisposable = CompositeJob()
     private var mEndOfContent = false
     private var cacheLoadingNow = false
     private var netLoadingNow = false
@@ -36,8 +36,7 @@ class FaveVideosPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun loadCachedData() {
         cacheLoadingNow = true
         cacheDisposable.add(faveInteractor.getCachedVideos(accountId)
-            .fromIOToMain()
-            .subscribe({ videos -> onCachedDataReceived(videos) }) { t ->
+            .fromIOToMain({ videos -> onCachedDataReceived(videos) }) { t ->
                 onCacheGetError(
                     t
                 )
@@ -57,8 +56,8 @@ class FaveVideosPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     override fun onDestroyed() {
-        cacheDisposable.dispose()
-        netDisposable.dispose()
+        cacheDisposable.cancel()
+        netDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -66,8 +65,7 @@ class FaveVideosPresenter(accountId: Long, savedInstanceState: Bundle?) :
         netLoadingNow = true
         resolveRefreshingView()
         netDisposable.add(faveInteractor.getVideos(accountId, COUNT_PER_REQUEST, offset)
-            .fromIOToMain()
-            .subscribe({ videos ->
+            .fromIOToMain({ videos ->
                 onNetDataReceived(
                     offset,
                     videos
@@ -134,8 +132,7 @@ class FaveVideosPresenter(accountId: Long, savedInstanceState: Bundle?) :
 
     fun fireVideoDelete(index: Int, video: Video) {
         netDisposable.add(faveInteractor.removeVideo(accountId, video.ownerId, video.id)
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 mVideos.removeAt(index)
                 view?.notifyDataSetChanged()
             }) { t -> onNetDataGetError(t) })

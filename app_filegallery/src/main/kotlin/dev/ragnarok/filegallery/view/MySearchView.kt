@@ -18,14 +18,14 @@ import androidx.annotation.DrawableRes
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import dev.ragnarok.filegallery.Includes.stores
 import dev.ragnarok.filegallery.R
-import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.getParcelableCompat
 import dev.ragnarok.filegallery.listener.TextWatcherAdapter
 import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.trimmedNonNullNoEmpty
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.ViewUtils
-import io.reactivex.rxjava3.disposables.Disposable
+import dev.ragnarok.filegallery.util.coroutines.CancelableJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class MySearchView : FrameLayout {
     private var mQuery: String? = null
@@ -35,7 +35,7 @@ class MySearchView : FrameLayout {
     private var mButtonClear: ImageView? = null
     private var mButtonAdditional: ImageView? = null
     private var mOnQueryChangeListener: OnQueryTextListener? = null
-    private var mQueryDisposable = Disposable.disposed()
+    private var mQueryDisposable = CancelableJob()
     private var listQueries = ArrayList<String?>()
     private var isFetchedListQueries = false
     private var searchId = 0
@@ -79,19 +79,19 @@ class MySearchView : FrameLayout {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        mQueryDisposable.dispose()
+        mQueryDisposable.cancel()
     }
 
     private fun loadQueries() {
-        mQueryDisposable.dispose()
-        mQueryDisposable = stores.searchQueriesStore().getQueries(searchId)
-            .fromIOToMain()
-            .subscribe({ s ->
-                isFetchedListQueries = true
-                listQueries.clear()
-                listQueries.addAll(s)
-                updateQueriesAdapter()
-            }, { Log.e(TAG, it.localizedMessage.orEmpty()) })
+        mQueryDisposable.set(
+            stores.searchQueriesStore().getQueries(searchId)
+                .fromIOToMain({ s ->
+                    isFetchedListQueries = true
+                    listQueries.clear()
+                    listQueries.addAll(s)
+                    updateQueriesAdapter()
+                }, { Log.e(TAG, it.localizedMessage.orEmpty()) })
+        )
     }
 
     private fun updateQueriesAdapter() {
@@ -168,16 +168,15 @@ class MySearchView : FrameLayout {
     private fun onSubmitQuery() {
         val query: CharSequence? = mInput?.text
         if (query.trimmedNonNullNoEmpty()) {
-            mQueryDisposable.dispose()
-            mQueryDisposable =
+            mQueryDisposable.set(
                 stores.searchQueriesStore().insertQuery(searchId, query.toString())
-                    .fromIOToMain()
-                    .subscribe({
+                    .fromIOToMain({
                         if (!listQueries.contains(query.toString())) {
                             listQueries.add(0, query.toString())
                             updateQueriesAdapter()
                         }
                     }, { Log.e(TAG, it.localizedMessage.orEmpty()) })
+            )
             if (mOnQueryChangeListener != null && mOnQueryChangeListener?.onQueryTextSubmit(query.toString()) == true) {
                 val imm =
                     context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?

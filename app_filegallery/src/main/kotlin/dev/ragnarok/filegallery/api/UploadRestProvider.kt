@@ -8,7 +8,9 @@ import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.settings.ISettings
 import dev.ragnarok.filegallery.util.UncompressDefaultInterceptor
 import dev.ragnarok.filegallery.util.Utils
-import io.reactivex.rxjava3.core.Single
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.sharedFlowToMain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import okhttp3.FormBody
 import okhttp3.Interceptor
 import okhttp3.MultipartBody
@@ -30,8 +32,8 @@ class UploadRestProvider(private val mainSettings: ISettings.IMainSettings) : IU
         }
     }
 
-    override fun provideUploadRest(): Single<SimplePostHttp> {
-        return Single.fromCallable {
+    override fun provideUploadRest(): Flow<SimplePostHttp> {
+        return flow {
             if (uploadRestInstance == null) {
                 synchronized(uploadRestLock) {
                     if (uploadRestInstance == null) {
@@ -39,7 +41,7 @@ class UploadRestProvider(private val mainSettings: ISettings.IMainSettings) : IU
                     }
                 }
             }
-            uploadRestInstance!!
+            emit(uploadRestInstance ?: return@flow)
         }
     }
 
@@ -85,6 +87,6 @@ class UploadRestProvider(private val mainSettings: ISettings.IMainSettings) : IU
 
     init {
         mainSettings.observeLocalServer
-            .subscribe { onLocalServerSettingsChanged() }
+            .sharedFlowToMain { onLocalServerSettingsChanged() }
     }
 }

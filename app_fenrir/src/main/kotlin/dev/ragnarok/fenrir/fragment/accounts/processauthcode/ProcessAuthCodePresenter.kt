@@ -6,11 +6,11 @@ import dev.ragnarok.fenrir.api.model.VKApiProcessAuthCode
 import dev.ragnarok.fenrir.domain.IAccountsInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Icon
 import dev.ragnarok.fenrir.model.Text
 import dev.ragnarok.fenrir.model.menu.AdvancedItem
 import dev.ragnarok.fenrir.model.menu.Section
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class ProcessAuthCodePresenter(
     accountId: Long,
@@ -28,9 +28,8 @@ class ProcessAuthCodePresenter(
     }
 
     private fun requestData(action: Int) {
-        appendDisposable(pInteractor.processAuthCode(accountId, authCode, action)
-            .fromIOToMain()
-            .subscribe({ onDataReceived(it) }) { t ->
+        appendJob(pInteractor.processAuthCode(accountId, authCode, action)
+            .fromIOToMain({ onDataReceived(it) }) { t ->
                 onDataGetError(
                     t
                 )

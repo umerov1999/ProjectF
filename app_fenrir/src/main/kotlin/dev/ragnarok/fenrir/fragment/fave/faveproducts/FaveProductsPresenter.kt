@@ -4,17 +4,17 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IFaveInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.Market
 import dev.ragnarok.fenrir.util.Utils
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class FaveProductsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     AccountDependencyPresenter<IFaveProductsView>(accountId, savedInstanceState) {
     private val faveInteractor: IFaveInteractor = InteractorFactory.createFaveInteractor()
     private val mMarkets: ArrayList<Market> = ArrayList()
-    private val cacheDisposable = CompositeDisposable()
-    private val netDisposable = CompositeDisposable()
+    private val cacheDisposable = CompositeJob()
+    private val netDisposable = CompositeJob()
     private var mEndOfContent = false
     private var cacheLoadingNow = false
     private var netLoadingNow = false
@@ -40,8 +40,7 @@ class FaveProductsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun loadCachedData() {
         cacheLoadingNow = true
         cacheDisposable.add(faveInteractor.getCachedProducts(accountId)
-            .fromIOToMain()
-            .subscribe({ markets -> onCachedDataReceived(markets) }) { t ->
+            .fromIOToMain({ markets -> onCachedDataReceived(markets) }) { t ->
                 onCacheGetError(
                     t
                 )
@@ -61,8 +60,8 @@ class FaveProductsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     override fun onDestroyed() {
-        cacheDisposable.dispose()
-        netDisposable.dispose()
+        cacheDisposable.cancel()
+        netDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -70,8 +69,7 @@ class FaveProductsPresenter(accountId: Long, savedInstanceState: Bundle?) :
         netLoadingNow = true
         resolveRefreshingView()
         netDisposable.add(faveInteractor.getProducts(accountId, COUNT, offset)
-            .fromIOToMain()
-            .subscribe({ products ->
+            .fromIOToMain({ products ->
                 onNetDataReceived(
                     offset,
                     products

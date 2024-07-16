@@ -4,9 +4,9 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.Repository.owners
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
-import dev.ragnarok.fenrir.fromIOToMain
 import dev.ragnarok.fenrir.model.MarketAlbum
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import dev.ragnarok.fenrir.util.coroutines.CompositeJob
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class ProductAlbumsPresenter(
     accountId: Long,
@@ -16,7 +16,7 @@ class ProductAlbumsPresenter(
 ) : AccountDependencyPresenter<IProductAlbumsView>(accountId, savedInstanceState) {
     private val ownerInteractor: IOwnersRepository = owners
     private val mMarkets: ArrayList<MarketAlbum> = ArrayList()
-    private val netDisposable = CompositeDisposable()
+    private val netDisposable = CompositeJob()
     private var mEndOfContent = false
     private var cacheLoadingNow = false
     private var netLoadingNow = false
@@ -27,7 +27,7 @@ class ProductAlbumsPresenter(
     }
 
     override fun onDestroyed() {
-        netDisposable.dispose()
+        netDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -40,8 +40,7 @@ class ProductAlbumsPresenter(
             (offset - 1).coerceAtLeast(0),
             COUNT_PER_REQUEST
         )
-            .fromIOToMain()
-            .subscribe({ products ->
+            .fromIOToMain({ products ->
                 onNetDataReceived(
                     offset,
                     products

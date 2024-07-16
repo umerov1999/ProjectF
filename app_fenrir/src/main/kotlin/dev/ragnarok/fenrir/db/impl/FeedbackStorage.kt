@@ -14,9 +14,10 @@ import dev.ragnarok.fenrir.getBlob
 import dev.ragnarok.fenrir.model.FeedbackVKOfficial
 import dev.ragnarok.fenrir.model.criteria.NotificationsCriteria
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.core.SingleEmitter
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFeedbackStorage {
     override fun insert(
@@ -24,8 +25,8 @@ internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFee
         dbos: List<FeedbackEntity>,
         owners: OwnerEntities?,
         clearBefore: Boolean
-    ): Single<IntArray> {
-        return Single.create { emitter: SingleEmitter<IntArray> ->
+    ): Flow<IntArray> {
+        return flow {
             val uri = getNotificationsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             if (clearBefore) {
@@ -60,12 +61,12 @@ internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFee
                 val result = results[index]
                 ids[i] = extractId(result)
             }
-            emitter.onSuccess(ids)
+            emit(ids)
         }
     }
 
-    override fun findByCriteria(criteria: NotificationsCriteria): Single<List<FeedbackEntity>> {
-        return Single.create { e: SingleEmitter<List<FeedbackEntity>> ->
+    override fun findByCriteria(criteria: NotificationsCriteria): Flow<List<FeedbackEntity>> {
+        return flow {
             val range = criteria.range
             val uri = getNotificationsContentUriFor(criteria.accountId)
             val cursor: Cursor? = if (range != null) {
@@ -90,7 +91,7 @@ internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFee
             val dtos: MutableList<FeedbackEntity> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     val dto = mapDto(cursor)
@@ -98,7 +99,7 @@ internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFee
                 }
                 cursor.close()
             }
-            e.onSuccess(dtos)
+            emit(dtos)
         }
     }
 
@@ -112,8 +113,8 @@ internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFee
         accountId: Long,
         dbos: List<FeedbackVKOfficial>,
         clearBefore: Boolean
-    ): Single<IntArray> {
-        return Single.create { emitter: SingleEmitter<IntArray> ->
+    ): Flow<IntArray> {
+        return flow {
             val uri = getNotificationsContentUriFor(accountId)
             val operations = ArrayList<ContentProviderOperation>()
             if (clearBefore) {
@@ -147,12 +148,12 @@ internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFee
                 val result = results[index]
                 ids[i] = extractId(result)
             }
-            emitter.onSuccess(ids)
+            emit(ids)
         }
     }
 
-    override fun findByCriteriaOfficial(criteria: NotificationsCriteria): Single<List<FeedbackVKOfficial>> {
-        return Single.create { e: SingleEmitter<List<FeedbackVKOfficial>> ->
+    override fun findByCriteriaOfficial(criteria: NotificationsCriteria): Flow<List<FeedbackVKOfficial>> {
+        return flow {
             val range = criteria.range
             val uri = getNotificationsContentUriFor(criteria.accountId)
             val cursor: Cursor? = if (range != null) {
@@ -177,7 +178,7 @@ internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFee
             val dtos: MutableList<FeedbackVKOfficial> = ArrayList(safeCountOf(cursor))
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    if (e.isDisposed) {
+                    if (!isActive()) {
                         break
                     }
                     val dto = mapDtoOfficial(cursor)
@@ -185,7 +186,7 @@ internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFee
                 }
                 cursor.close()
             }
-            e.onSuccess(dtos)
+            emit(dtos)
         }
     }
 

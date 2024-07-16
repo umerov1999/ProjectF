@@ -7,12 +7,10 @@ import dev.ragnarok.fenrir.model.Commented
 import dev.ragnarok.fenrir.model.CommentsBundle
 import dev.ragnarok.fenrir.model.DraftComment
 import dev.ragnarok.fenrir.model.Owner
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.Single
+import kotlinx.coroutines.flow.Flow
 
 interface ICommentsInteractor {
-    fun getAllCachedData(accountId: Long, commented: Commented): Single<List<Comment>>
+    fun getAllCachedData(accountId: Long, commented: Commented): Flow<List<Comment>>
     fun getCommentsPortion(
         accountId: Long,
         commented: Commented,
@@ -22,49 +20,49 @@ interface ICommentsInteractor {
         threadComment: Int?,
         invalidateCache: Boolean,
         sort: String?
-    ): Single<CommentsBundle>
+    ): Flow<CommentsBundle>
 
     fun getCommentsNoCache(
         accountId: Long,
         ownerId: Long,
         postId: Int,
         offset: Int
-    ): Single<List<Comment>>
+    ): Flow<List<Comment>>
 
-    fun restoreDraftComment(accountId: Long, commented: Commented): Maybe<DraftComment>?
+    fun restoreDraftComment(accountId: Long, commented: Commented): Flow<DraftComment?>
     fun safeDraftComment(
         accountId: Long,
         commented: Commented,
         text: String?,
         replyToCommentId: Int,
         replyToUserId: Long
-    ): Single<Int>
+    ): Flow<Int>
 
-    fun like(accountId: Long, commented: Commented, commentId: Int, add: Boolean): Completable
-    fun checkAndAddLike(accountId: Long, commented: Commented, commentId: Int): Single<Int>
-    fun isLiked(accountId: Long, commented: Commented, commentId: Int): Single<Boolean>
+    fun like(accountId: Long, commented: Commented, commentId: Int, add: Boolean): Flow<Boolean>
+    fun checkAndAddLike(accountId: Long, commented: Commented, commentId: Int): Flow<Int>
+    fun isLiked(accountId: Long, commented: Commented, commentId: Int): Flow<Boolean>
     fun deleteRestore(
         accountId: Long,
         commented: Commented,
         commentId: Int,
         delete: Boolean
-    ): Completable
+    ): Flow<Boolean>
 
     fun send(
         accountId: Long,
         commented: Commented,
         commentThread: Int?,
         intent: CommentIntent
-    ): Single<Comment>
+    ): Flow<Comment>
 
     fun getAllCommentsRange(
         accountId: Long,
         commented: Commented,
         startFromCommentId: Int,
         continueToCommentId: Int
-    ): Single<List<Comment>>
+    ): Flow<List<Comment>>
 
-    fun getAvailableAuthors(accountId: Long): Single<List<Owner>>
+    fun getAvailableAuthors(accountId: Long): Flow<List<Owner>>
     fun edit(
         accountId: Long,
         commented: Commented,
@@ -72,7 +70,7 @@ interface ICommentsInteractor {
         text: String?,
         commentThread: Int?,
         attachments: List<AbsModel>?
-    ): Single<Comment>
+    ): Flow<Comment>
 
-    fun reportComment(accountId: Long, owner_id: Long, post_id: Int, reason: Int): Single<Int>
+    fun reportComment(accountId: Long, owner_id: Long, post_id: Int, reason: Int): Flow<Int>
 }

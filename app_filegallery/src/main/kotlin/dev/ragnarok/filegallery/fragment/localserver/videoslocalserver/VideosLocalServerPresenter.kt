@@ -3,20 +3,20 @@ package dev.ragnarok.filegallery.fragment.localserver.videoslocalserver
 import dev.ragnarok.filegallery.Includes.networkInterfaces
 import dev.ragnarok.filegallery.api.interfaces.ILocalServerApi
 import dev.ragnarok.filegallery.fragment.base.RxSupportPresenter
-import dev.ragnarok.filegallery.fromIOToMain
 import dev.ragnarok.filegallery.model.Video
 import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.util.FindAt
 import dev.ragnarok.filegallery.util.Utils
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.Disposable
-import java.util.concurrent.TimeUnit
+import dev.ragnarok.filegallery.util.coroutines.CancelableJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.toMain
 
 class VideosLocalServerPresenter :
     RxSupportPresenter<IVideosLocalServerView>() {
     private val videos: MutableList<Video> = ArrayList()
     private val fInteractor: ILocalServerApi = networkInterfaces.localServerApi()
-    private var actualDataDisposable = Disposable.disposed()
+    private var actualDataDisposable = CancelableJob()
     private var Foffset = 0
     private var actualDataReceived = false
     private var endOfContent = false
@@ -37,9 +37,8 @@ class VideosLocalServerPresenter :
     private fun loadActualData(offset: Int) {
         actualDataLoading = true
         resolveRefreshingView()
-        appendDisposable(fInteractor.getVideos(offset, GET_COUNT, reverse)
-            .fromIOToMain()
-            .subscribe({
+        appendJob(fInteractor.getVideos(offset, GET_COUNT, reverse)
+            .fromIOToMain({
                 onActualDataReceived(
                     offset,
                     it
@@ -96,7 +95,7 @@ class VideosLocalServerPresenter :
     }
 
     override fun onDestroyed() {
-        actualDataDisposable.dispose()
+        actualDataDisposable.cancel()
         super.onDestroyed()
     }
 
@@ -115,17 +114,16 @@ class VideosLocalServerPresenter :
     private fun doSearch() {
         actualDataLoading = true
         resolveRefreshingView()
-        appendDisposable(fInteractor.searchVideos(
+        appendJob(fInteractor.searchVideos(
             search_at.getQuery(),
             search_at.getOffset(),
             SEARCH_COUNT,
             reverse
         )
-            .fromIOToMain()
-            .subscribe({
+            .fromIOToMain({
                 onSearched(
                     FindAt(
-                        search_at.getQuery() ?: return@subscribe,
+                        search_at.getQuery() ?: return@fromIOToMain,
                         search_at.getOffset() + SEARCH_COUNT,
                         it.size < SEARCH_COUNT
                     ), it
@@ -161,11 +159,9 @@ class VideosLocalServerPresenter :
             doSearch()
             return
         }
-        actualDataDisposable.dispose()
-        actualDataDisposable = Single.just(Any())
-            .delay(WEB_SEARCH_DELAY.toLong(), TimeUnit.MILLISECONDS)
-            .fromIOToMain()
-            .subscribe({ doSearch() }) { onActualDataGetError(it) }
+        actualDataDisposable.cancel()
+        actualDataDisposable.set(delayTaskFlow(WEB_SEARCH_DELAY.toLong())
+            .toMain { doSearch() })
     }
 
     fun fireSearchRequestChanged(q: String?) {
@@ -173,7 +169,7 @@ class VideosLocalServerPresenter :
         if (!search_at.do_compare(query)) {
             actualDataLoading = false
             if (query.isNullOrEmpty()) {
-                actualDataDisposable.dispose()
+                actualDataDisposable.cancel()
                 fireRefresh(false)
             } else {
                 fireRefresh(true)
