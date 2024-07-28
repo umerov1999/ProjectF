@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "2.0.0"
-    id("org.jetbrains.intellij") version "1.17.3"
+    id("org.jetbrains.intellij") version "1.17.4"
 }
 
 group = "dev.ragnarok"
@@ -18,7 +18,7 @@ repositories {
 }
 
 intellij {
-    version = "2024.1.1.9"
+    version = "2024.1.2.10"
     type = "AI"
     plugins = ["android"]
     pluginName = "getter_setter-idea-plugin"

@@ -1846,6 +1846,19 @@ public:
      */
     static Result term(CanvasEngine engine = tvg::CanvasEngine::All) noexcept;
 
+    /**
+     * @brief Retrieves the version of the TVG engine.
+     *
+     * @param[out] major A major version number.
+     * @param[out] minor A minor version number.
+     * @param[out] micro A micro version number.
+     *
+     * @return The version of the engine in the format major.minor.micro, or a @p nullptr in case of an internal error.
+     *
+     * @note Experimental API
+     */
+    static const char* version(uint32_t* major, uint32_t* minor, uint32_t* micro) noexcept;
+
     _TVG_DISABLE_CTOR(Initializer);
 };
 
@@ -1944,7 +1957,7 @@ public:
      * @retval Result::InsufficientCondition In case the animation is not loaded.
      * @retval Result::NonSupport When it's not animatable.
      *
-     * @note Range from 0.0~1.0
+     * @note Animation allows a range from 0.0 to 1.0. @p end should not be higher than @p begin.
      * @note If a marker has been specified, its range will be disregarded.
      * @see LottieAnimation::segment(const char* marker)
      * @note Experimental API

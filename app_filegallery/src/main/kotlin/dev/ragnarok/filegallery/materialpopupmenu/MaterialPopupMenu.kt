@@ -120,9 +120,9 @@ internal constructor(
         return resolvedStyle
     }
 
-    data class PopupMenuSection internal constructor(
-        internal val data: MaterialPopupMenuBuilder.Section.Data,
-        internal val items: List<AbstractPopupMenuItem>
+    data class PopupMenuSection(
+        val data: MaterialPopupMenuBuilder.Section.Data,
+        val items: List<AbstractPopupMenuItem>
     )
 
     sealed class PopupMenuNormalItem(
@@ -169,37 +169,37 @@ internal constructor(
         }
     }
 
-    data class PopupMenuItem internal constructor(
+    data class PopupMenuItem(
         override val data: MaterialPopupMenuBuilder.Item.Data,
         override val onShowCallback: OnShowCallback
     ) : PopupMenuNormalItem(data, onShowCallback)
 
-    data class PopupMenuCheckboxItem internal constructor(
+    data class PopupMenuCheckboxItem(
         override val data: MaterialPopupMenuBuilder.CheckboxItem.Data,
         override val onShowCallback: OnShowCallback
     ) : PopupMenuToggleItem(data, onShowCallback)
 
-    data class PopupMenuSwitchItem internal constructor(
+    data class PopupMenuSwitchItem(
         override val data: MaterialPopupMenuBuilder.SwitchItem.Data,
         override val onShowCallback: OnShowCallback
     ) : PopupMenuToggleItem(data, onShowCallback)
 
-    data class PopupMenuCustomItem internal constructor(
+    data class PopupMenuCustomItem(
         override val data: MaterialPopupMenuBuilder.CustomItem.Data,
         override val onShowCallback: OnShowCallback
     ) : AbstractPopupMenuItem(data, onShowCallback)
 
-    data class PopupMenuRadioGroupItem internal constructor(
+    data class PopupMenuRadioGroupItem(
         override val data: MaterialPopupMenuBuilder.RadioGroupItem.Data,
         override val onShowCallback: OnShowCallback
     ) : AbstractPopupMenuItem(data, onShowCallback)
 
-    data class PopupMenuRadioButtonItem internal constructor(
+    data class PopupMenuRadioButtonItem(
         override val data: MaterialPopupMenuBuilder.RadioButtonItem.Data,
         override val onShowCallback: OnShowCallback
     ) : PopupMenuToggleItem(data, onShowCallback)
 
-    data class PopupMenuNavBackItem internal constructor(
+    data class PopupMenuNavBackItem(
         override val data: MaterialPopupMenuBuilder.NavBackItem.Data,
         override val onShowCallback: OnShowCallback
     ) : PopupMenuNormalItem(data, onShowCallback)

@@ -578,6 +578,7 @@ extern "C" {
 #define HAS_RGBATOYROW_NEON_DOTPROD
 
 #define HAS_ARGBCOLORMATRIXROW_NEON_I8MM
+#define HAS_ARGBTOUV444ROW_NEON_I8MM
 #endif
 
 // The following are available on AArch64 SVE platforms:
@@ -600,9 +601,8 @@ extern "C" {
 #define HAS_I422TORGBAROW_SVE2
 #define HAS_I444ALPHATOARGBROW_SVE2
 #define HAS_I444TOARGBROW_SVE2
-// Any support for NV12 SVE2 fails
-//#define HAS_NV12TOARGBROW_SVE2
-//#define HAS_NV21TOARGBROW_SVE2
+#define HAS_NV12TOARGBROW_SVE2
+#define HAS_NV21TOARGBROW_SVE2
 #define HAS_RAWTOARGBROW_SVE2
 #define HAS_RAWTORGB24ROW_SVE2
 #define HAS_RAWTORGBAROW_SVE2
@@ -1612,6 +1612,10 @@ void ARGBToUV444Row_NEON(const uint8_t* src_argb,
                          uint8_t* dst_u,
                          uint8_t* dst_v,
                          int width);
+void ARGBToUV444Row_NEON_I8MM(const uint8_t* src_argb,
+                              uint8_t* dst_u,
+                              uint8_t* dst_v,
+                              int width);
 void ARGBToUVRow_NEON(const uint8_t* src_argb,
                       int src_stride_argb,
                       uint8_t* dst_u,
@@ -2119,6 +2123,10 @@ void ARGBToUV444Row_Any_NEON(const uint8_t* src_ptr,
                              uint8_t* dst_u,
                              uint8_t* dst_v,
                              int width);
+void ARGBToUV444Row_Any_NEON_I8MM(const uint8_t* src_ptr,
+                                  uint8_t* dst_u,
+                                  uint8_t* dst_v,
+                                  int width);
 void ARGBToUVRow_Any_NEON(const uint8_t* src_ptr,
                           int src_stride,
                           uint8_t* dst_u,

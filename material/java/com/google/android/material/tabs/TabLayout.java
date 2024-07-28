@@ -2713,7 +2713,7 @@ public class TabLayout extends HorizontalScrollView {
 
         final float curTextSize = textView.getTextSize();
         final int curLineCount = textView.getLineCount();
-        final int curMaxLines = TextViewCompat.getMaxLines(textView);
+        final int curMaxLines = textView.getMaxLines();
 
         if (textSize != curTextSize || (curMaxLines >= 0 && maxLines != curMaxLines)) {
           // We've got a new text size and/or max lines...
@@ -2782,7 +2782,7 @@ public class TabLayout extends HorizontalScrollView {
 
         customTextView = custom.findViewById(android.R.id.text1);
         if (customTextView != null) {
-          defaultMaxLines = TextViewCompat.getMaxLines(customTextView);
+          defaultMaxLines = customTextView.getMaxLines();
         }
         customIconView = custom.findViewById(android.R.id.icon);
       } else {
@@ -2802,7 +2802,7 @@ public class TabLayout extends HorizontalScrollView {
         }
         if (this.textView == null) {
           inflateAndAddDefaultTextView();
-          defaultMaxLines = TextViewCompat.getMaxLines(this.textView);
+          defaultMaxLines = this.textView.getMaxLines();
         }
         TextViewCompat.setTextAppearance(this.textView, defaultTabTextAppearance);
         if (isSelected() && selectedTabTextAppearance != -1) {

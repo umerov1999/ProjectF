@@ -8,7 +8,7 @@ rm -r -f ".git"
 
 ENABLED_DECODERS=(mpeg4 h264 hevc mp3 aac ac3 eac3 flac vorbis alac)
 HOST_PLATFORM="linux-x86_64"
-NDK_PATH="/home/umerov/Android/Sdk/ndk/27.0.11902837"
+NDK_PATH="/home/umerov/Android/Sdk/ndk/27.0.12077973"
 
 echo 'Please input platform version (Example 21 - Android 5.0): '
 read ANDROID_PLATFORM

@@ -102,6 +102,11 @@ public final class MathUtils {
     return x - r * y;
   }
 
+  /**
+   * Returns whether the array contains all same elements.
+   *
+   * @param array Input array of floats.
+   */
   public static boolean areAllElementsEqual(@NonNull float[] array) {
     if (array.length <= 1) {
       return true;

@@ -310,6 +310,7 @@ public class ShapeAppearancePathProvider {
     }
   }
 
+  @NonNull
   CornerSize getCornerSizeForIndex(int index, @NonNull ShapeAppearanceModel shapeAppearanceModel) {
     switch (index) {
       case 1:

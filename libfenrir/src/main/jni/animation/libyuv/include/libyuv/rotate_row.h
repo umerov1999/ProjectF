@@ -26,6 +26,14 @@ extern "C" {
 #if defined(__native_client__)
 #define LIBYUV_DISABLE_NEON
 #endif
+
+// clang >= 19.0.0 required for SME
+#if !defined(LIBYUV_DISABLE_SME) && defined(__clang__) && defined(__aarch64__)
+#if __clang_major__ < 19
+#define LIBYUV_DISABLE_SME
+#endif
+#endif
+
 // MemorySanitizer does not support assembly code yet. http://crbug.com/344505
 #if defined(__has_feature)
 #if __has_feature(memory_sanitizer) && !defined(LIBYUV_DISABLE_NEON)
@@ -66,6 +74,11 @@ extern "C" {
 #define HAS_TRANSPOSE4X4_32_NEON
 #endif
 
+#if !defined(LIBYUV_DISABLE_SME) && defined(__aarch64__)
+#define HAS_TRANSPOSEWXH_SME
+#define HAS_TRANSPOSEUVWXH_SME
+#endif
+
 #if !defined(LIBYUV_DISABLE_MSA) && defined(__mips_msa)
 #define HAS_TRANSPOSEWX16_MSA
 #define HAS_TRANSPOSEUVWX16_MSA
@@ -103,6 +116,12 @@ void TransposeWx16_NEON(const uint8_t* src,
                         uint8_t* dst,
                         int dst_stride,
                         int width);
+void TransposeWxH_SME(const uint8_t* src,
+                      int src_stride,
+                      uint8_t* dst,
+                      int dst_stride,
+                      int width,
+                      int height);
 void TransposeWx8_SSSE3(const uint8_t* src,
                         int src_stride,
                         uint8_t* dst,
@@ -192,6 +211,14 @@ void TransposeUVWx8_NEON(const uint8_t* src,
                          uint8_t* dst_b,
                          int dst_stride_b,
                          int width);
+void TransposeUVWxH_SME(const uint8_t* src,
+                        int src_stride,
+                        uint8_t* dst_a,
+                        int dst_stride_a,
+                        uint8_t* dst_b,
+                        int dst_stride_b,
+                        int width,
+                        int height);
 void TransposeUVWx16_MSA(const uint8_t* src,
                          int src_stride,
                          uint8_t* dst_a,
