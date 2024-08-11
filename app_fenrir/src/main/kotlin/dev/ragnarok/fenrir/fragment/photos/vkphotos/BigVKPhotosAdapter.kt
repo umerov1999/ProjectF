@@ -48,16 +48,17 @@ class BigVKPhotosAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        when (viewType) {
-            VIEW_TYPE_PHOTO -> return PhotoViewHolder(
+        return when (viewType) {
+            VIEW_TYPE_PHOTO -> PhotoViewHolder(
                 LayoutInflater.from(mContext).inflate(R.layout.vk_photo_item_big, parent, false)
             )
 
-            VIEW_TYPE_UPLOAD -> return UploadViewHolder(
+            VIEW_TYPE_UPLOAD -> UploadViewHolder(
                 LayoutInflater.from(mContext).inflate(R.layout.vk_upload_photo_item, parent, false)
             )
+
+            else -> throw UnsupportedOperationException()
         }
-        throw UnsupportedOperationException()
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, adapterPosition: Int) {
@@ -160,11 +161,11 @@ class BigVKPhotosAdapter(
 
     override fun getItemViewType(adapterPosition: Int): Int {
         val dataType = getDataTypeByAdapterPosition(adapterPosition)
-        when (dataType) {
-            DATA_TYPE_PHOTO -> return VIEW_TYPE_PHOTO
-            DATA_TYPE_UPLOAD -> return VIEW_TYPE_UPLOAD
+        return when (dataType) {
+            DATA_TYPE_PHOTO -> VIEW_TYPE_PHOTO
+            DATA_TYPE_UPLOAD -> VIEW_TYPE_UPLOAD
+            else -> throw IllegalStateException("Unknown data type, dataType: $dataType")
         }
-        throw IllegalStateException("Unknown data type, dataType: $dataType")
     }
 
     fun setPhotosActionListener(photosActionListener: PhotosActionListener?) {

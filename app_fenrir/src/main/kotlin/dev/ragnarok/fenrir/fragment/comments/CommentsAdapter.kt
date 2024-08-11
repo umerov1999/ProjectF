@@ -219,11 +219,11 @@ class CommentsAdapter(
     }
 
     override fun layoutId(type: Int): Int {
-        when (type) {
-            TYPE_DELETED -> return R.layout.item_comment_deleted
-            TYPE_NORMAL -> return R.layout.item_comment
+        return when (type) {
+            TYPE_DELETED -> R.layout.item_comment_deleted
+            TYPE_NORMAL -> R.layout.item_comment
+            else -> throw IllegalArgumentException()
         }
-        throw IllegalArgumentException()
     }
 
     fun setListener(listener: OnCommentActionListener?) {

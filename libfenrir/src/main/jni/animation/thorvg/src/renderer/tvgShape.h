@@ -96,7 +96,7 @@ struct Shape::Impl
         return true;
     }
 
-    RenderData update(RenderMethod* renderer, const RenderTransform* transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag pFlag, bool clipper)
+    RenderData update(RenderMethod* renderer, const Matrix& transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag pFlag, bool clipper)
     {
         if (static_cast<RenderUpdateFlag>(pFlag | flag) == RenderUpdateFlag::None) return rd;
 
@@ -216,23 +216,6 @@ struct Shape::Impl
 
         if (tvg::equal(rs.stroke->trim.begin, begin) && tvg::equal(rs.stroke->trim.end, end) &&
             rs.stroke->trim.simultaneous == simultaneous) return;
-
-        auto loop = true;
-
-        if (begin > 1.0f && end > 1.0f) loop = false;
-        if (begin < 0.0f && end < 0.0f) loop = false;
-        if (begin >= 0.0f && begin <= 1.0f && end >= 0.0f  && end <= 1.0f) loop = false;
-
-        if (begin > 1.0f) begin -= 1.0f;
-        if (begin < 0.0f) begin += 1.0f;
-        if (end > 1.0f) end -= 1.0f;
-        if (end < 0.0f) end += 1.0f;
-
-        if ((loop && begin < end) || (!loop && begin > end)) {
-            auto tmp = begin;
-            begin = end;
-            end = tmp;
-        }
 
         rs.stroke->trim.begin = begin;
         rs.stroke->trim.end = end;

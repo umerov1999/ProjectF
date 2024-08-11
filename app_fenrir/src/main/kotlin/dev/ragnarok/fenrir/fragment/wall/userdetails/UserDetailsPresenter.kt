@@ -529,26 +529,28 @@ class UserDetailsPresenter(
     @StringRes
     private fun getRelationStringByType(relation: Int): Int {
         when (user.sex) {
-            Sex.MAN, Sex.UNKNOWN -> when (relation) {
-                VKApiUser.Relation.SINGLE -> return R.string.relationship_man_single
-                VKApiUser.Relation.RELATIONSHIP -> return R.string.relationship_man_in_relationship
-                VKApiUser.Relation.ENGAGED -> return R.string.relationship_man_engaged
-                VKApiUser.Relation.MARRIED -> return R.string.relationship_man_married
-                VKApiUser.Relation.COMPLICATED -> return R.string.relationship_man_its_complicated
-                VKApiUser.Relation.SEARCHING -> return R.string.relationship_man_activelly_searching
-                VKApiUser.Relation.IN_LOVE -> return R.string.relationship_man_in_love
-                VKApiUser.Relation.IN_A_CIVIL_UNION -> return R.string.in_a_civil_union
+            Sex.MAN, Sex.UNKNOWN -> return when (relation) {
+                VKApiUser.Relation.SINGLE -> R.string.relationship_man_single
+                VKApiUser.Relation.RELATIONSHIP -> R.string.relationship_man_in_relationship
+                VKApiUser.Relation.ENGAGED -> R.string.relationship_man_engaged
+                VKApiUser.Relation.MARRIED -> R.string.relationship_man_married
+                VKApiUser.Relation.COMPLICATED -> R.string.relationship_man_its_complicated
+                VKApiUser.Relation.SEARCHING -> R.string.relationship_man_activelly_searching
+                VKApiUser.Relation.IN_LOVE -> R.string.relationship_man_in_love
+                VKApiUser.Relation.IN_A_CIVIL_UNION -> R.string.in_a_civil_union
+                else -> R.string.relatives_others
             }
 
-            Sex.WOMAN -> when (relation) {
-                VKApiUser.Relation.SINGLE -> return R.string.relationship_woman_single
-                VKApiUser.Relation.RELATIONSHIP -> return R.string.relationship_woman_in_relationship
-                VKApiUser.Relation.ENGAGED -> return R.string.relationship_woman_engaged
-                VKApiUser.Relation.MARRIED -> return R.string.relationship_woman_married
-                VKApiUser.Relation.COMPLICATED -> return R.string.relationship_woman_its_complicated
-                VKApiUser.Relation.SEARCHING -> return R.string.relationship_woman_activelly_searching
-                VKApiUser.Relation.IN_LOVE -> return R.string.relationship_woman_in_love
-                VKApiUser.Relation.IN_A_CIVIL_UNION -> return R.string.in_a_civil_union
+            Sex.WOMAN -> return when (relation) {
+                VKApiUser.Relation.SINGLE -> R.string.relationship_woman_single
+                VKApiUser.Relation.RELATIONSHIP -> R.string.relationship_woman_in_relationship
+                VKApiUser.Relation.ENGAGED -> R.string.relationship_woman_engaged
+                VKApiUser.Relation.MARRIED -> R.string.relationship_woman_married
+                VKApiUser.Relation.COMPLICATED -> R.string.relationship_woman_its_complicated
+                VKApiUser.Relation.SEARCHING -> R.string.relationship_woman_activelly_searching
+                VKApiUser.Relation.IN_LOVE -> R.string.relationship_woman_in_love
+                VKApiUser.Relation.IN_A_CIVIL_UNION -> R.string.in_a_civil_union
+                else -> R.string.relatives_others
             }
         }
         return R.string.relatives_others

@@ -100,14 +100,14 @@ class DualTabPhotosFragment : BaseFragment(), BackPressCallback {
     private inner class Adapter(fm: Fragment, private val mSources: Sources) :
         FragmentStateAdapter(fm) {
         fun getPageTitle(position: Int): CharSequence {
-            when (mSources[position].type) {
-                Types.LOCAL_PHOTOS -> return getString(R.string.local_photos_tab_title)
-                Types.LOCAL_GALLERY -> return getString(R.string.local_gallery_tab_title)
-                Types.VIDEOS -> return getString(R.string.videos)
-                Types.VK_PHOTOS -> return getString(R.string.vk_photos_tab_title)
-                Types.FILES -> return getString(R.string.files_tab_title)
+            return when (mSources[position].type) {
+                Types.LOCAL_PHOTOS -> getString(R.string.local_photos_tab_title)
+                Types.LOCAL_GALLERY -> getString(R.string.local_gallery_tab_title)
+                Types.VIDEOS -> getString(R.string.videos)
+                Types.VK_PHOTOS -> getString(R.string.vk_photos_tab_title)
+                Types.FILES -> getString(R.string.files_tab_title)
+                else -> throw UnsupportedOperationException()
             }
-            throw UnsupportedOperationException()
         }
 
         override fun createFragment(position: Int): Fragment {

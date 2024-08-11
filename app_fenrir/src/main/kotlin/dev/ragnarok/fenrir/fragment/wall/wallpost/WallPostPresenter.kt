@@ -390,11 +390,11 @@ class WallPostPresenter(
         if (post != null) {
             var type = IWallPostView.SUBTITLE_NORMAL
             if (post?.source != null) {
-                when ((post ?: return).source?.getData()) {
-                    VKApiPostSource.Data.PROFILE_ACTIVITY -> type =
-                        IWallPostView.SUBTITLE_STATUS_UPDATE
+                type = when ((post ?: return).source?.getData()) {
+                    VKApiPostSource.Data.PROFILE_ACTIVITY -> IWallPostView.SUBTITLE_STATUS_UPDATE
 
-                    VKApiPostSource.Data.PROFILE_PHOTO -> type = IWallPostView.SUBTITLE_PHOTO_UPDATE
+                    VKApiPostSource.Data.PROFILE_PHOTO -> IWallPostView.SUBTITLE_PHOTO_UPDATE
+                    else -> IWallPostView.SUBTITLE_NORMAL
                 }
             }
             val finalType = type

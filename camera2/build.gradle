@@ -3,7 +3,7 @@ plugins {
     id("kotlin-android")
 }
 
-//1.4.0-beta02
+//1.4.0-rc01
 
 android {
     namespace "androidx.camera"
@@ -43,7 +43,7 @@ dependencies {
     implementation("androidx.activity:activity-ktx:$activityVersion")
     implementation("androidx.fragment:fragment-ktx:$fragmentVersion")
     implementation("androidx.collection:collection:$collectionVersion")
-    implementation("androidx.tracing:tracing:$tracingVersion")
+    implementation("androidx.tracing:tracing-ktx:$tracingVersion")
     implementation("com.google.errorprone:error_prone_annotations:${errorProneVersion}")
     implementation("androidx.exifinterface:exifinterface:$exifinterfaceVersion")
     implementation("androidx.concurrent:concurrent-futures-ktx:$concurentVersion")

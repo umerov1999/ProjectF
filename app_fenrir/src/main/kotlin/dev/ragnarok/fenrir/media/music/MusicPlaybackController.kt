@@ -25,19 +25,16 @@ object MusicPlaybackController {
     lateinit var tracksExist: AbsFileExist
 
     fun publishFromServiceState(action: String) {
-        var result = PlayerStatus.SERVICE_KILLED
-        when (action) {
-            MusicPlaybackService.PREPARED, MusicPlaybackService.PLAYSTATE_CHANGED -> result =
-                PlayerStatus.UPDATE_PLAY_PAUSE
+        val result = when (action) {
+            MusicPlaybackService.PREPARED, MusicPlaybackService.PLAYSTATE_CHANGED -> PlayerStatus.UPDATE_PLAY_PAUSE
 
-            MusicPlaybackService.SHUFFLEMODE_CHANGED -> result =
-                PlayerStatus.SHUFFLEMODE_CHANGED
+            MusicPlaybackService.SHUFFLEMODE_CHANGED -> PlayerStatus.SHUFFLEMODE_CHANGED
 
-            MusicPlaybackService.REPEATMODE_CHANGED -> result =
-                PlayerStatus.REPEATMODE_CHANGED
+            MusicPlaybackService.REPEATMODE_CHANGED -> PlayerStatus.REPEATMODE_CHANGED
 
-            MusicPlaybackService.META_CHANGED -> result = PlayerStatus.UPDATE_TRACK_INFO
-            MusicPlaybackService.QUEUE_CHANGED -> result = PlayerStatus.UPDATE_PLAY_LIST
+            MusicPlaybackService.META_CHANGED -> PlayerStatus.UPDATE_TRACK_INFO
+            MusicPlaybackService.QUEUE_CHANGED -> PlayerStatus.UPDATE_PLAY_LIST
+            else -> PlayerStatus.SERVICE_KILLED
         }
         SERVICE_BIND_PUBLISHER.myEmit(result)
     }

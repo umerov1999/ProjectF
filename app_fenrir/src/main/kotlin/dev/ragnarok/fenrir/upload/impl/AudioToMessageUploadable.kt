@@ -33,7 +33,6 @@ class AudioToMessageUploadable(
     private val messagesStorage: IMessagesStorage
 ) :
     IUploadable<Audio> {
-    @Suppress("BlockingMethodInNonBlockingContext")
     override fun doUpload(
         upload: Upload,
         initialServer: UploadServer?,

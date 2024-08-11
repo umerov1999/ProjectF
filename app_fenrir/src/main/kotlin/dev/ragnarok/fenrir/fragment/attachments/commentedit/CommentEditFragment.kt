@@ -58,7 +58,7 @@ class CommentEditFragment : AbsAttachmentsEditFragment<CommentEditPresenter, ICo
     }
 
     override fun onBackPressed(): Boolean {
-        return presenter?.onBackPressed() ?: false
+        return presenter?.onBackPressed() == true
     }
 
     override fun goBackWithResult(comment: Comment) {

@@ -589,10 +589,10 @@ class AudioContainer : LinearLayout {
             if (childCount > 0) {
                 removeAllViews()
             }
-            visibility = View.GONE
+            visibility = GONE
             return
         }
-        visibility = View.VISIBLE
+        visibility = VISIBLE
         this.audios = audios
         this.holderPosition = holderPosition
         val i = audios.size - childCount

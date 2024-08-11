@@ -1,10 +1,10 @@
 package dev.ragnarok.fenrir
 
 import android.content.Context
+import android.graphics.Color
 import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes
 import androidx.annotation.StringRes
-import androidx.core.graphics.toColorInt
 import dev.ragnarok.fenrir_common.R
 
 object Common {
@@ -24,7 +24,7 @@ object Common {
     private fun getColorFromAttrs(resId: Int, context: Context, defaultColor: String): Int {
         val attribute = intArrayOf(resId)
         val array = context.theme.obtainStyledAttributes(attribute)
-        val color = array.getColor(0, defaultColor.toColorInt())
+        val color = array.getColor(0, Color.parseColor(defaultColor))
         array.recycle()
         return color
     }

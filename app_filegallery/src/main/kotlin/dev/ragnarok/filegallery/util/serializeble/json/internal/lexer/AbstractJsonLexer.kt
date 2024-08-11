@@ -582,7 +582,7 @@ internal abstract class AbstractJsonLexer {
                 TC_EOF -> fail("Unexpected end of input due to malformed JSON during ignoring unknown keys")
             }
             consumeNextToken()
-            if (tokenStack.size == 0) return
+            if (tokenStack.isEmpty()) return
         }
     }
 

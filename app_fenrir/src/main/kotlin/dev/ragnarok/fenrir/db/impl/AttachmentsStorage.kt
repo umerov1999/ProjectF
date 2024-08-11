@@ -202,21 +202,21 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
         }
 
         internal fun attachToIdColumnFor(@AttachToType type: Int): String {
-            when (type) {
-                AttachToType.COMMENT -> return CommentsAttachmentsColumns.C_ID
-                AttachToType.MESSAGE -> return MessagesAttachmentsColumns.M_ID
-                AttachToType.POST -> return WallsAttachmentsColumns.P_ID
+            return when (type) {
+                AttachToType.COMMENT -> CommentsAttachmentsColumns.C_ID
+                AttachToType.MESSAGE -> MessagesAttachmentsColumns.M_ID
+                AttachToType.POST -> WallsAttachmentsColumns.P_ID
+                else -> throw IllegalArgumentException()
             }
-            throw IllegalArgumentException()
         }
 
         internal fun dataColumnFor(@AttachToType type: Int): String {
-            when (type) {
-                AttachToType.COMMENT -> return CommentsAttachmentsColumns.DATA
-                AttachToType.MESSAGE -> return MessagesAttachmentsColumns.DATA
-                AttachToType.POST -> return WallsAttachmentsColumns.DATA
+            return when (type) {
+                AttachToType.COMMENT -> CommentsAttachmentsColumns.DATA
+                AttachToType.MESSAGE -> MessagesAttachmentsColumns.DATA
+                AttachToType.POST -> WallsAttachmentsColumns.DATA
+                else -> throw IllegalArgumentException()
             }
-            throw IllegalArgumentException()
         }
 
         private fun serializeDbo(dboEntity: DboEntity): ByteArray {

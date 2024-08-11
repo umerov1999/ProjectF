@@ -74,16 +74,17 @@ class DialogsAdapter(private val mContext: Context, private var mDialogs: List<D
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        when (viewType) {
-            DATA_TYPE_HIDDEN -> return HiddenViewHolder(
+        return when (viewType) {
+            DATA_TYPE_HIDDEN -> HiddenViewHolder(
                 LayoutInflater.from(mContext).inflate(R.layout.line_hidden, parent, false)
             )
 
-            DATA_TYPE_NORMAL -> return DialogViewHolder(
+            DATA_TYPE_NORMAL -> DialogViewHolder(
                 LayoutInflater.from(mContext).inflate(R.layout.item_dialog, parent, false)
             )
+
+            else -> throw UnsupportedOperationException()
         }
-        throw UnsupportedOperationException()
     }
 
     private fun getDataTypeByAdapterPosition(adapterPosition: Int): Int {

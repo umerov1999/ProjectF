@@ -126,16 +126,16 @@ class DocLink(val attachment: AbsModel) {
     }
 
     fun getExt(context: Context): String? {
-        when (type) {
-            AttachmentsTypes.DOC -> return (attachment as Document).ext
-            AttachmentsTypes.POST, AttachmentsTypes.WALL_REPLY -> return null
-            AttachmentsTypes.LINK -> return URL
-            AttachmentsTypes.WIKI_PAGE -> return W
-            AttachmentsTypes.STORY -> return context.getString(R.string.story)
-            AttachmentsTypes.NARRATIVE -> return context.getString(R.string.narratives)
-            AttachmentsTypes.AUDIO_PLAYLIST -> return context.getString(R.string.playlist)
+        return when (type) {
+            AttachmentsTypes.DOC -> (attachment as Document).ext
+            AttachmentsTypes.POST, AttachmentsTypes.WALL_REPLY -> null
+            AttachmentsTypes.LINK -> URL
+            AttachmentsTypes.WIKI_PAGE -> W
+            AttachmentsTypes.STORY -> context.getString(R.string.story)
+            AttachmentsTypes.NARRATIVE -> context.getString(R.string.narratives)
+            AttachmentsTypes.AUDIO_PLAYLIST -> context.getString(R.string.playlist)
+            else -> null
         }
-        return null
     }
 
     fun getSecondaryText(context: Context): String? {

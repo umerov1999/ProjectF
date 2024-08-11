@@ -117,8 +117,8 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
     fun setAnchorView(view: ViewGroup?, matchParent: Boolean) {
         mAnchor = view
         val frameParams = LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            if (matchParent) ViewGroup.LayoutParams.MATCH_PARENT else ViewGroup.LayoutParams.WRAP_CONTENT
+            LayoutParams.MATCH_PARENT,
+            if (matchParent) LayoutParams.MATCH_PARENT else LayoutParams.WRAP_CONTENT
         )
         removeAllViews()
         constructControllerView()
@@ -233,8 +233,8 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
             mPauseButton?.requestFocus()
             disableUnsupportedButtons()
             val tlp = LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT,
                 Gravity.BOTTOM
             )
             mAnchor?.addView(this, tlp)

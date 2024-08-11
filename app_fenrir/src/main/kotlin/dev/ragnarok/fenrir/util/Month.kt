@@ -8,20 +8,20 @@ object Month {
 
     @StringRes
     fun getMonthTitle(num: Int): Int {
-        when (num) {
-            Calendar.JANUARY -> return R.string.january
-            Calendar.FEBRUARY -> return R.string.february
-            Calendar.MARCH -> return R.string.march
-            Calendar.APRIL -> return R.string.april
-            Calendar.MAY -> return R.string.may
-            Calendar.JUNE -> return R.string.june
-            Calendar.JULY -> return R.string.july
-            Calendar.AUGUST -> return R.string.august
-            Calendar.SEPTEMBER -> return R.string.september
-            Calendar.OCTOBER -> return R.string.october
-            Calendar.NOVEMBER -> return R.string.november
-            Calendar.DECEMBER -> return R.string.december
+        return when (num) {
+            Calendar.JANUARY -> R.string.january
+            Calendar.FEBRUARY -> R.string.february
+            Calendar.MARCH -> R.string.march
+            Calendar.APRIL -> R.string.april
+            Calendar.MAY -> R.string.may
+            Calendar.JUNE -> R.string.june
+            Calendar.JULY -> R.string.july
+            Calendar.AUGUST -> R.string.august
+            Calendar.SEPTEMBER -> R.string.september
+            Calendar.OCTOBER -> R.string.october
+            Calendar.NOVEMBER -> R.string.november
+            Calendar.DECEMBER -> R.string.december
+            else -> throw IllegalArgumentException()
         }
-        throw IllegalArgumentException()
     }
 }

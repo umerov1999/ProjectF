@@ -807,7 +807,7 @@ class Picasso internal constructor(
     }
 
     /** Describes where the image was loaded from.  */
-    enum class LoadedFrom(@get:JvmName("-debugColor") internal val debugColor: Int) {
+    enum class LoadedFrom(@get:JvmName("-debugColor") val debugColor: Int) {
         MEMORY(Color.GREEN),
         DISK(Color.BLUE),
         NETWORK(Color.RED);

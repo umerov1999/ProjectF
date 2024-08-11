@@ -31,7 +31,6 @@ class DocumentUploadable(
     private val networker: INetworker,
     private val storage: IDocsStorage
 ) : IUploadable<Document> {
-    @Suppress("BlockingMethodInNonBlockingContext")
     override fun doUpload(
         upload: Upload,
         initialServer: UploadServer?,

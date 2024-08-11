@@ -113,7 +113,7 @@ class AdditionalNavigationView : AbsNavigationView, MenuListAdapter.ActionListen
         if (!Settings.get()
                 .ui().isShow_profile_in_additional_page
         ) root.findViewById<View>(R.id.profile_view).visibility =
-            View.GONE else root.findViewById<View>(R.id.profile_view).visibility = View.VISIBLE
+            GONE else root.findViewById<View>(R.id.profile_view).visibility = VISIBLE
         ivHeaderAvatar = root.findViewById(R.id.header_navi_menu_avatar)
         tvUserName = root.findViewById(R.id.header_navi_menu_username)
         tvDomain = root.findViewById(R.id.header_navi_menu_usernick)
@@ -318,11 +318,11 @@ class AdditionalNavigationView : AbsNavigationView, MenuListAdapter.ActionListen
     }
 
     override fun unblockSheet() {
-        visibility = View.VISIBLE
+        visibility = VISIBLE
     }
 
     override fun blockSheet() {
-        visibility = View.GONE
+        visibility = GONE
     }
 
     override fun setUp(drawerLayout: DrawerLayout) {}

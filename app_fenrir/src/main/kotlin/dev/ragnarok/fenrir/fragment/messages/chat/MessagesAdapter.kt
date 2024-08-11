@@ -348,12 +348,11 @@ class MessagesAdapter(
             holder.Restore.visibility = View.GONE
         }
         holder.body.visibility = if (message.text.isNullOrEmpty()) View.GONE else View.VISIBLE
-        var displayedText: String? = null
-        when (message.cryptStatus) {
-            CryptStatus.NO_ENCRYPTION, CryptStatus.ENCRYPTED, CryptStatus.DECRYPT_FAILED -> displayedText =
-                message.text
+        val displayedText: String? = when (message.cryptStatus) {
+            CryptStatus.NO_ENCRYPTION, CryptStatus.ENCRYPTED, CryptStatus.DECRYPT_FAILED -> message.text
 
-            CryptStatus.DECRYPTED -> displayedText = message.decryptedText
+            CryptStatus.DECRYPTED -> message.decryptedText
+            else -> null
         }
         if (!message.isGraffiti) {
             when (message.cryptStatus) {
@@ -518,31 +517,31 @@ class MessagesAdapter(
     }
 
     override fun viewHolder(view: View, type: Int): RecyclerView.ViewHolder {
-        when (type) {
-            TYPE_GRAFFITI_FRIEND, TYPE_GRAFFITI_MY, TYPE_MY_MESSAGE, TYPE_FRIEND_MESSAGE -> return MessageHolder(
+        return when (type) {
+            TYPE_GRAFFITI_FRIEND, TYPE_GRAFFITI_MY, TYPE_MY_MESSAGE, TYPE_FRIEND_MESSAGE -> MessageHolder(
                 view
             )
 
-            TYPE_SERVICE -> return ServiceMessageHolder(view)
-            TYPE_STICKER_FRIEND, TYPE_STICKER_MY -> return StickerMessageHolder(view)
-            TYPE_GIFT_FRIEND, TYPE_GIFT_MY -> return GiftMessageHolder(view)
+            TYPE_SERVICE -> ServiceMessageHolder(view)
+            TYPE_STICKER_FRIEND, TYPE_STICKER_MY -> StickerMessageHolder(view)
+            TYPE_GIFT_FRIEND, TYPE_GIFT_MY -> GiftMessageHolder(view)
+            else -> throw UnsupportedOperationException()
         }
-        throw UnsupportedOperationException()
     }
 
     override fun layoutId(type: Int): Int {
-        when (type) {
-            TYPE_MY_MESSAGE -> return R.layout.item_message_my
-            TYPE_FRIEND_MESSAGE -> return R.layout.item_message_friend
-            TYPE_GRAFFITI_MY -> return R.layout.item_message_graffiti_my
-            TYPE_GRAFFITI_FRIEND -> return R.layout.item_message_graffiti_friend
-            TYPE_SERVICE -> return R.layout.item_service_message
-            TYPE_STICKER_FRIEND -> return R.layout.item_message_friend_sticker
-            TYPE_STICKER_MY -> return R.layout.item_message_my_sticker
-            TYPE_GIFT_FRIEND -> return R.layout.item_message_friend_gift
-            TYPE_GIFT_MY -> return R.layout.item_message_my_gift
+        return when (type) {
+            TYPE_MY_MESSAGE -> R.layout.item_message_my
+            TYPE_FRIEND_MESSAGE -> R.layout.item_message_friend
+            TYPE_GRAFFITI_MY -> R.layout.item_message_graffiti_my
+            TYPE_GRAFFITI_FRIEND -> R.layout.item_message_graffiti_friend
+            TYPE_SERVICE -> R.layout.item_service_message
+            TYPE_STICKER_FRIEND -> R.layout.item_message_friend_sticker
+            TYPE_STICKER_MY -> R.layout.item_message_my_sticker
+            TYPE_GIFT_FRIEND -> R.layout.item_message_friend_gift
+            TYPE_GIFT_MY -> R.layout.item_message_my_gift
+            else -> throw IllegalArgumentException()
         }
-        throw IllegalArgumentException()
     }
 
     override fun getItemType(position: Int): Int {

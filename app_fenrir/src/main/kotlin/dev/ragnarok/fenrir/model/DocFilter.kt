@@ -7,7 +7,6 @@ import dev.ragnarok.fenrir.fragment.base.horizontal.Entry
 class DocFilter(val type: Int, @field:StringRes @param:StringRes val title: Int) : Entry {
 
     override var isActive = false
-        private set
 
     override fun getTitle(context: Context): String {
         return context.getString(title)

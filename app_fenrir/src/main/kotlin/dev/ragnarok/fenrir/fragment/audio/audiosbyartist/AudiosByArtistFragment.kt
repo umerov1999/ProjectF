@@ -180,7 +180,7 @@ class AudiosByArtistFragment : BaseMvpFragment<AudiosByArtistPresenter, IAudiosB
         mAudioRecyclerAdapter = AudioRecyclerAdapter(
             requireActivity(),
             mutableListOf(),
-            presenter?.isMyAudio ?: false,
+            presenter?.isMyAudio == true,
             false,
             null
         )

@@ -217,7 +217,7 @@ abstract class RecyclerBindableAdapter<T, VH : RecyclerView.ViewHolder>(private 
     }
 
     private fun isFooter(position: Int): Boolean {
-        return footers.size > 0 && position >= headersCount + realItemCount
+        return footers.isNotEmpty() && position >= headersCount + realItemCount
     }
 
     private fun onCreateItemViewHolder(parent: ViewGroup?, type: Int): VH {

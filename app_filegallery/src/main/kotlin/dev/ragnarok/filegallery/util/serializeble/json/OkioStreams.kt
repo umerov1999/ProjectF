@@ -11,7 +11,6 @@ import dev.ragnarok.filegallery.util.serializeble.json.internal.decodeToSequence
 import dev.ragnarok.filegallery.util.serializeble.json.internal.encodeByWriter
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.serializer
 import okio.BufferedSink
@@ -21,7 +20,6 @@ import okio.BufferedSource
  * Serializes the [value] with [serializer] into a [sink] using JSON format and UTF-8 encoding.
  *
  * @throws [SerializationException] if the given value cannot be serialized to JSON.
- * @throws [okio.IOException] If an I/O error occurs and sink can't be written to.
  */
 @ExperimentalSerializationApi
 fun <T> Json.encodeToBufferedSink(
@@ -41,7 +39,6 @@ fun <T> Json.encodeToBufferedSink(
  * Serializes given [value] to a [sink] using UTF-8 encoding and serializer retrieved from the reified type parameter.
  *
  * @throws [SerializationException] if the given value cannot be serialized to JSON.
- * @throws [okio.IOException] If an I/O error occurs and sink can't be written to.
  */
 @ExperimentalSerializationApi
 inline fun <reified T> Json.encodeToBufferedSink(
@@ -57,7 +54,6 @@ inline fun <reified T> Json.encodeToBufferedSink(
  * and throws an exception if there are any dangling bytes after an object.
  *
  * @throws [SerializationException] if the given JSON input cannot be deserialized to the value of type [T].
- * @throws [okio.IOException] If an I/O error occurs and source can't be read from.
  */
 @ExperimentalSerializationApi
 fun <T> Json.decodeFromBufferedSource(
@@ -75,7 +71,6 @@ fun <T> Json.decodeFromBufferedSource(
  * and throws an exception if there are any dangling bytes after an object.
  *
  * @throws [SerializationException] if the given JSON input cannot be deserialized to the value of type [T].
- * @throws [okio.IOException] If an I/O error occurs and source can't be read from.
  */
 @ExperimentalSerializationApi
 inline fun <reified T> Json.decodeFromBufferedSource(source: BufferedSource): T =
@@ -95,7 +90,6 @@ inline fun <reified T> Json.decodeFromBufferedSource(source: BufferedSource): T 
  * closing it before returned sequence is evaluated completely will result in [Exception] from decoder.
  *
  * @throws [SerializationException] if the given JSON input cannot be deserialized to the value of type [T].
- * @throws [okio.IOException] If an I/O error occurs and source can't be read from.
  */
 @ExperimentalSerializationApi
 fun <T> Json.decodeBufferedSourceToSequence(
@@ -119,7 +113,6 @@ fun <T> Json.decodeBufferedSourceToSequence(
  * closing it before returned sequence is evaluated fully would result in [Exception] from decoder.
  *
  * @throws [SerializationException] if the given JSON input cannot be deserialized to the value of type [T].
- * @throws [okio.IOException] If an I/O error occurs and source can't be read from.
  */
 @ExperimentalSerializationApi
 inline fun <reified T> Json.decodeBufferedSourceToSequence(

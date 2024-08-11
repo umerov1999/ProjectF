@@ -94,7 +94,7 @@ class CreatePinFragment : BaseMvpFragment<CreatePinPresenter, ICreatePinView>(),
     }
 
     override fun onBackPressed(): Boolean {
-        return presenter?.fireBackButtonClick() ?: false
+        return presenter?.fireBackButtonClick() == true
     }
 
     companion object {

@@ -59,12 +59,12 @@ class Call : AbsModel {
         if (state == null) {
             return null
         }
-        when (state) {
-            "canceled_by_receiver" -> return context.getString(R.string.canceled_by_receiver)
-            "canceled_by_initiator" -> return context.getString(R.string.canceled_by_initiator)
-            "reached" -> return context.getString(R.string.call_reached)
+        return when (state) {
+            "canceled_by_receiver" -> context.getString(R.string.canceled_by_receiver)
+            "canceled_by_initiator" -> context.getString(R.string.canceled_by_initiator)
+            "reached" -> context.getString(R.string.call_reached)
+            else -> state
         }
-        return state
     }
 
     override fun describeContents(): Int {

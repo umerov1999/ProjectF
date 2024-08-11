@@ -6,7 +6,6 @@
 package dev.ragnarok.filegallery.util.serializeble.json.internal
 
 import dev.ragnarok.filegallery.util.serializeble.json.Json
-import dev.ragnarok.filegallery.util.serializeble.json.JsonConfiguration
 import dev.ragnarok.filegallery.util.serializeble.json.JsonNames
 import dev.ragnarok.filegallery.util.serializeble.json.JsonNamingStrategy
 import dev.ragnarok.filegallery.util.serializeble.json.schemaCache

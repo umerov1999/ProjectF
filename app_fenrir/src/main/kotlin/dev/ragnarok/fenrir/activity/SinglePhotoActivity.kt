@@ -169,7 +169,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
         }
         if (Intent.ACTION_VIEW == intent.action) {
             val data = intent.data
-            url = "full_" + data.toString()
+            url = "full_$data"
             prefix = "tmp"
             photo_prefix = "tmp"
         } else {

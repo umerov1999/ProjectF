@@ -158,7 +158,7 @@ internal open class StreamingJsonDecoder(
     }
 
     override fun decodeNotNullMark(): Boolean {
-        return !(elementMarker?.isUnmarkedNull ?: false) && !lexer.tryConsumeNull()
+        return elementMarker?.isUnmarkedNull != true && !lexer.tryConsumeNull()
     }
 
     override fun decodeNull(): Nothing? {

@@ -289,8 +289,8 @@ class IMGView @JvmOverloads constructor(
         val textView = IMGStickerTextView(context)
         textView.text = text
         val layoutParams = LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
+            LayoutParams.WRAP_CONTENT,
+            LayoutParams.WRAP_CONTENT
         )
 
         // Center of the drawing window.
@@ -353,16 +353,17 @@ class IMGView @JvmOverloads constructor(
     }
 
     private fun onTouchPath(event: MotionEvent): Boolean {
-        when (event.actionMasked) {
-            MotionEvent.ACTION_DOWN -> return onPathBegin(event)
-            MotionEvent.ACTION_MOVE -> return onPathMove(event)
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> return mPen.isIdentity(
+        return when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> onPathBegin(event)
+            MotionEvent.ACTION_MOVE -> onPathMove(event)
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> mPen.isIdentity(
                 event.getPointerId(
                     0
                 )
             ) && onPathDone()
+
+            else -> false
         }
-        return false
     }
 
     private fun onPathBegin(event: MotionEvent): Boolean {

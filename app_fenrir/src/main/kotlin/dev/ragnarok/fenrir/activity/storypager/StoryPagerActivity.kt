@@ -105,7 +105,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mFullscreen = savedInstanceState?.getBoolean("mFullscreen") ?: false
+        mFullscreen = savedInstanceState?.getBoolean("mFullscreen") == true
         transformation = CurrentTheme.createTransformationForAvatar()
         val mContentRoot = findViewById<RelativeLayout>(R.id.story_pager_root)
         mToolbar = findViewById(R.id.toolbar)
@@ -121,7 +121,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         mDuration = findViewById(R.id.item_story_duration)
         mPlaySpeed = findViewById(R.id.toolbar_play_speed)
         mPlaySpeed?.setOnClickListener {
-            val stateSpeed = presenter?.togglePlaybackSpeed() ?: false
+            val stateSpeed = presenter?.togglePlaybackSpeed() == true
             Utils.setTint(
                 mPlaySpeed,
                 if (stateSpeed) CurrentTheme.getColorPrimary(this) else "#ffffff".toColor()

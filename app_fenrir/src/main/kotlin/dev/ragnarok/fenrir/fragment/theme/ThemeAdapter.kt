@@ -25,17 +25,18 @@ class ThemeAdapter(private var data: List<ThemeValue>, context: Context) :
     private var clickListener: ClickListener? = null
     private var currentId: String
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        when (viewType) {
-            TYPE_THEME -> return ThemeHolder(
+        return when (viewType) {
+            TYPE_THEME -> ThemeHolder(
                 LayoutInflater.from(parent.context).inflate(R.layout.item_theme, parent, false)
             )
 
-            TYPE_SPECIAL -> return SpecialThemeHolder(
+            TYPE_SPECIAL -> SpecialThemeHolder(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_special_theme, parent, false)
             )
+
+            else -> throw RuntimeException("ThemeAdapter.onCreateViewHolder")
         }
-        throw RuntimeException("ThemeAdapter.onCreateViewHolder")
     }
 
     override fun getItemViewType(position: Int): Int {

@@ -43,14 +43,14 @@ fun <T> writeJson(json: Json, value: T, serializer: SerializationStrategy<T>): J
 @ExperimentalSerializationApi
 private sealed class AbstractJsonTreeEncoder(
     final override val json: Json,
-    protected val nodeConsumer: (JsonElement) -> Unit
+    val nodeConsumer: (JsonElement) -> Unit
 ) : NamedValueEncoder(), JsonEncoder {
 
     final override val serializersModule: SerializersModule
         get() = json.serializersModule
 
     @JvmField
-    protected val configuration = json.configuration
+    val configuration = json.configuration
 
     private var polymorphicDiscriminator: String? = null
     private var polymorphicSerialName: String? = null
@@ -252,7 +252,7 @@ private open class JsonTreeEncoder(
     json: Json, nodeConsumer: (JsonElement) -> Unit
 ) : AbstractJsonTreeEncoder(json, nodeConsumer) {
 
-    protected val content: MutableMap<String, JsonElement> = linkedMapOf()
+    val content: MutableMap<String, JsonElement> = linkedMapOf()
 
     override fun putElement(key: String, element: JsonElement) {
         content[key] = element

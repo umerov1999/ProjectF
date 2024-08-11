@@ -287,18 +287,19 @@ internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
             where += (" AND " + BaseColumns._ID + " <= " + it.last +
                     " AND " + BaseColumns._ID + " >= " + it.first)
         }
-        when (criteria.mode) {
+        where += when (criteria.mode) {
             WallCriteria.MODE_ALL ->                 // Загружаем все посты, кроме отложенных и предлагаемых
-                where += (" AND " + PostsColumns.POST_TYPE + " NOT IN (" + VKApiPost.Type.POSTPONE + ", " + VKApiPost.Type.SUGGEST + ") ")
+                (" AND " + PostsColumns.POST_TYPE + " NOT IN (" + VKApiPost.Type.POSTPONE + ", " + VKApiPost.Type.SUGGEST + ") ")
 
-            WallCriteria.MODE_OWNER -> where += (" AND " + PostsColumns.FROM_ID + " = " + criteria.ownerId +
+            WallCriteria.MODE_OWNER -> (" AND " + PostsColumns.FROM_ID + " = " + criteria.ownerId +
                     " AND " + PostsColumns.POST_TYPE + " NOT IN (" + VKApiPost.Type.POSTPONE + ", " + VKApiPost.Type.SUGGEST + ") ")
 
-            WallCriteria.MODE_SCHEDULED -> where += (" AND " + PostsColumns.POST_TYPE + " = " + VKApiPost.Type.POSTPONE)
+            WallCriteria.MODE_SCHEDULED -> (" AND " + PostsColumns.POST_TYPE + " = " + VKApiPost.Type.POSTPONE)
 
-            WallCriteria.MODE_SUGGEST -> where += (" AND " + PostsColumns.POST_TYPE + " = " + VKApiPost.Type.SUGGEST)
+            WallCriteria.MODE_SUGGEST -> (" AND " + PostsColumns.POST_TYPE + " = " + VKApiPost.Type.SUGGEST)
 
-            WallCriteria.MODE_DONUT -> where += (" AND " + PostsColumns.POST_TYPE + " = " + VKApiPost.Type.DONUT)
+            WallCriteria.MODE_DONUT -> (" AND " + PostsColumns.POST_TYPE + " = " + VKApiPost.Type.DONUT)
+            else -> ""
         }
         return contentResolver.query(
             getPostsContentUriFor(criteria.accountId), null, where, null,

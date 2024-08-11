@@ -20,18 +20,19 @@ class SelectedProfilesAdapter(private val mContext: Context, private val mData: 
     private val mTransformation: Transformation = CurrentTheme.createTransformationForAvatar()
     private var mActionListener: ActionListener? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        when (viewType) {
-            VIEW_TYPE_CHECK -> return CheckViewHolder(
+        return when (viewType) {
+            VIEW_TYPE_CHECK -> CheckViewHolder(
                 LayoutInflater.from(mContext)
                     .inflate(R.layout.item_selection_check, parent, false)
             )
 
-            VIEW_TYPE_USER -> return ProfileViewHolder(
+            VIEW_TYPE_USER -> ProfileViewHolder(
                 LayoutInflater.from(mContext)
                     .inflate(R.layout.item_selected_user, parent, false)
             )
+
+            else -> throw UnsupportedOperationException()
         }
-        throw UnsupportedOperationException()
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

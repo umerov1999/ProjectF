@@ -190,7 +190,7 @@ class WallMultiAttachmentsPresenter(
         for (post in mPostsWithComments) {
             posts.add(post.vkid)
         }
-        if (posts.size > 0) {
+        if (posts.isNotEmpty()) {
             view?.openAllComments(
                 accountId,
                 owner_id,

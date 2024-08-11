@@ -976,7 +976,7 @@ open class TouchImageView @JvmOverloads constructor(
         }
 
         override fun onDoubleTapEvent(e: MotionEvent): Boolean {
-            return doubleTapListener?.onDoubleTapEvent(e) ?: false
+            return doubleTapListener?.onDoubleTapEvent(e) == true
         }
     }
 

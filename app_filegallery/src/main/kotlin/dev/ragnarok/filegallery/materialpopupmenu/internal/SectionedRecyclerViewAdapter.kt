@@ -121,7 +121,7 @@ internal abstract class SectionedRecyclerViewAdapter<H : RecyclerView.ViewHolder
         if (isHeader == null) {
             setupIndices()
         }
-        return isHeader?.get(position) ?: false
+        return isHeader?.get(position) == true
     }
 
     private fun isSectionHeaderViewType(viewType: Int) = viewType == TYPE_SECTION_HEADER

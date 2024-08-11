@@ -7,7 +7,6 @@ package dev.ragnarok.fenrir.util.serializeble.json
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InheritableSerialInfo
 import kotlinx.serialization.SerialInfo
-import kotlinx.serialization.SerialName
 
 /**
  * Indicates that the field can be represented in JSON

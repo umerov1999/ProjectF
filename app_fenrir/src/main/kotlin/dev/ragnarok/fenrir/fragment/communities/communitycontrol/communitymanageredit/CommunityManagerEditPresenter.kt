@@ -294,12 +294,12 @@ class CommunityManagerEditPresenter : AccountDependencyPresenter<ICommunityManag
         }
 
         internal fun convertAdminLevelToRole(adminLevel: Int): String {
-            when (adminLevel) {
-                VKApiCommunity.AdminLevel.MODERATOR -> return "moderator"
-                VKApiCommunity.AdminLevel.EDITOR -> return "editor"
-                VKApiCommunity.AdminLevel.ADMIN -> return "administrator"
+            return when (adminLevel) {
+                VKApiCommunity.AdminLevel.MODERATOR -> "moderator"
+                VKApiCommunity.AdminLevel.EDITOR -> "editor"
+                VKApiCommunity.AdminLevel.ADMIN -> "administrator"
+                else -> throw IllegalArgumentException("Invalid adminLevel")
             }
-            throw IllegalArgumentException("Invalid adminLevel")
         }
     }
 }

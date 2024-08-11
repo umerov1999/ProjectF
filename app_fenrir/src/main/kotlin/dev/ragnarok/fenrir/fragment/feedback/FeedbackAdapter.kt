@@ -212,11 +212,11 @@ class FeedbackAdapter(
     }
 
     private fun getItemViewType(notification: Feedback): Int {
-        when (notification.type) {
-            FeedbackType.WALL, FeedbackType.WALL_PUBLISH, FeedbackType.MENTION, FeedbackType.COMMENT_POST, FeedbackType.MENTION_COMMENT_POST, FeedbackType.COMMENT_PHOTO, FeedbackType.MENTION_COMMENT_VIDEO, FeedbackType.MENTION_COMMENT_PHOTO, FeedbackType.COMMENT_VIDEO, FeedbackType.REPLY_COMMENT, FeedbackType.REPLY_COMMENT_PHOTO, FeedbackType.REPLY_COMMENT_VIDEO, FeedbackType.REPLY_TOPIC -> return TYPE_COMMENTS
-            FeedbackType.FOLLOW, FeedbackType.FRIEND_ACCEPTED, FeedbackType.COPY_POST, FeedbackType.COPY_PHOTO, FeedbackType.COPY_VIDEO, FeedbackType.LIKE_POST, FeedbackType.LIKE_PHOTO, FeedbackType.LIKE_VIDEO, FeedbackType.LIKE_COMMENT_POST, FeedbackType.LIKE_COMMENT_PHOTO, FeedbackType.LIKE_COMMENT_VIDEO, FeedbackType.LIKE_COMMENT_TOPIC -> return TYPE_USERS
+        return when (notification.type) {
+            FeedbackType.WALL, FeedbackType.WALL_PUBLISH, FeedbackType.MENTION, FeedbackType.COMMENT_POST, FeedbackType.MENTION_COMMENT_POST, FeedbackType.COMMENT_PHOTO, FeedbackType.MENTION_COMMENT_VIDEO, FeedbackType.MENTION_COMMENT_PHOTO, FeedbackType.COMMENT_VIDEO, FeedbackType.REPLY_COMMENT, FeedbackType.REPLY_COMMENT_PHOTO, FeedbackType.REPLY_COMMENT_VIDEO, FeedbackType.REPLY_TOPIC -> TYPE_COMMENTS
+            FeedbackType.FOLLOW, FeedbackType.FRIEND_ACCEPTED, FeedbackType.COPY_POST, FeedbackType.COPY_PHOTO, FeedbackType.COPY_VIDEO, FeedbackType.LIKE_POST, FeedbackType.LIKE_PHOTO, FeedbackType.LIKE_VIDEO, FeedbackType.LIKE_COMMENT_POST, FeedbackType.LIKE_COMMENT_PHOTO, FeedbackType.LIKE_COMMENT_VIDEO, FeedbackType.LIKE_COMMENT_TOPIC -> TYPE_USERS
+            else -> throw IllegalArgumentException("Invalid feedback type: " + notification.type)
         }
-        throw IllegalArgumentException("Invalid feedback type: " + notification.type)
     }
 
     override fun getItemType(position: Int): Int {
@@ -225,19 +225,19 @@ class FeedbackAdapter(
     }
 
     override fun viewHolder(view: View, type: Int): FeedbackHolder {
-        when (type) {
-            TYPE_COMMENTS -> return CommentHolder(view)
-            TYPE_USERS -> return UsersHolder(view)
+        return when (type) {
+            TYPE_COMMENTS -> CommentHolder(view)
+            TYPE_USERS -> UsersHolder(view)
+            else -> throw UnsupportedOperationException()
         }
-        throw UnsupportedOperationException()
     }
 
     override fun layoutId(type: Int): Int {
-        when (type) {
-            TYPE_COMMENTS -> return R.layout.item_feedback_comment
-            TYPE_USERS -> return R.layout.item_feedback_user
+        return when (type) {
+            TYPE_COMMENTS -> R.layout.item_feedback_comment
+            TYPE_USERS -> R.layout.item_feedback_user
+            else -> throw UnsupportedOperationException()
         }
-        throw UnsupportedOperationException()
     }
 
     private fun getHeaderStatus(previous: Feedback?, date: Long): Int {

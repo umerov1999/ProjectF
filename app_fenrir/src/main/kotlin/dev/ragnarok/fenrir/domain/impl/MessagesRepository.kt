@@ -615,7 +615,6 @@ class MessagesRepository(
             .flatMapConcat(decryptor.withMessagesDecryption(accountId))
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
     override fun getMessagesFromLocalJSon(
         accountId: Long,
         context: Context
@@ -1747,7 +1746,6 @@ class MessagesRepository(
             }
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
     private fun checkVoiceMessage(
         accountId: Long,
         dbo: MessageDboEntity

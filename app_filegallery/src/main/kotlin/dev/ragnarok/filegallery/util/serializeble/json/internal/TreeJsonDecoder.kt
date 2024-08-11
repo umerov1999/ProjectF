@@ -61,16 +61,16 @@ internal fun <T> Json.readPolymorphicJson(
 private sealed class AbstractJsonTreeDecoder(
     override val json: Json,
     open val value: JsonElement,
-    protected val polymorphicDiscriminator: String? = null
+    val polymorphicDiscriminator: String? = null
 ) : NamedValueDecoder(), JsonDecoder {
 
     override val serializersModule: SerializersModule
         get() = json.serializersModule
 
     @JvmField
-    protected val configuration = json.configuration
+    val configuration = json.configuration
 
-    protected fun currentObject() = currentTagOrNull?.let { currentElement(it) } ?: value
+    fun currentObject() = currentTagOrNull?.let { currentElement(it) } ?: value
 
     fun renderTagStack(currentTag: String) = renderTagStack() + ".$currentTag"
 
@@ -116,7 +116,7 @@ private sealed class AbstractJsonTreeDecoder(
     override fun decodeNotNullMark(): Boolean = currentObject() !is JsonNull
 
     @Suppress("NOTHING_TO_INLINE")
-    protected inline fun getPrimitiveValue(
+    inline fun getPrimitiveValue(
         tag: String,
         descriptor: SerialDescriptor
     ): JsonPrimitive =
@@ -145,7 +145,7 @@ private sealed class AbstractJsonTreeDecoder(
         )
     }
 
-    protected abstract fun currentElement(tag: String): JsonElement
+    abstract fun currentElement(tag: String): JsonElement
 
     override fun decodeTaggedEnum(tag: String, enumDescriptor: SerialDescriptor): Int =
         enumDescriptor.getJsonNameIndexOrThrow(json, getPrimitiveValue(tag, enumDescriptor).content)

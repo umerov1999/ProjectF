@@ -164,12 +164,18 @@ class WallAdapter(
         val formattedDate = AppTextUtils.getDateFromUnixTime(mContext, post.date)
         var postSubtitle = formattedDate
         post.source.requireNonNull {
-            when (it.getData()) {
-                VKApiPostSource.Data.PROFILE_ACTIVITY -> postSubtitle =
-                    mContext.getString(R.string.updated_status_at, formattedDate)
+            postSubtitle = when (it.getData()) {
+                VKApiPostSource.Data.PROFILE_ACTIVITY -> mContext.getString(
+                    R.string.updated_status_at,
+                    formattedDate
+                )
 
-                VKApiPostSource.Data.PROFILE_PHOTO -> postSubtitle =
-                    mContext.getString(R.string.updated_profile_photo_at, formattedDate)
+                VKApiPostSource.Data.PROFILE_PHOTO -> mContext.getString(
+                    R.string.updated_profile_photo_at,
+                    formattedDate
+                )
+
+                else -> formattedDate
             }
         }
         holder.tvTime.text = postSubtitle
@@ -195,21 +201,21 @@ class WallAdapter(
     }
 
     override fun viewHolder(view: View, type: Int): RecyclerView.ViewHolder {
-        when (type) {
-            TYPE_NORMAL -> return NormalHolder(view)
-            TYPE_DELETED -> return DeletedHolder(view)
-            TYPE_SCHEDULED -> return ScheduledHolder(view)
+        return when (type) {
+            TYPE_NORMAL -> NormalHolder(view)
+            TYPE_DELETED -> DeletedHolder(view)
+            TYPE_SCHEDULED -> ScheduledHolder(view)
+            else -> throw IllegalArgumentException()
         }
-        throw IllegalArgumentException()
     }
 
     override fun layoutId(type: Int): Int {
-        when (type) {
-            TYPE_DELETED -> return R.layout.item_post_deleted
-            TYPE_NORMAL -> return R.layout.item_post_normal
-            TYPE_SCHEDULED -> return R.layout.item_post_scheduled
+        return when (type) {
+            TYPE_DELETED -> R.layout.item_post_deleted
+            TYPE_NORMAL -> R.layout.item_post_normal
+            TYPE_SCHEDULED -> R.layout.item_post_scheduled
+            else -> throw IllegalArgumentException()
         }
-        throw IllegalArgumentException()
     }
 
     fun setOnHashTagClickListener(onHashTagClickListener: EmojiconTextView.OnHashTagClickListener?) {

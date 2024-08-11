@@ -6,7 +6,6 @@
 
 package dev.ragnarok.fenrir.util.serializeble.json.internal
 
-import dev.ragnarok.fenrir.util.serializeble.json.Json
 import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.AbstractJsonLexer
 import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.allowStructuredMapKeysHint
 import dev.ragnarok.fenrir.util.serializeble.json.internal.lexer.ignoreUnknownKeysHint

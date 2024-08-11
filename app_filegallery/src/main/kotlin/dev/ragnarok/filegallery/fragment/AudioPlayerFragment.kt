@@ -511,7 +511,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                 intent,
                 PackageManager.ResolveInfoFlags.of(0)
             ) else manager.queryIntentActivities(intent, 0)
-            return info.size > 0
+            return info.isNotEmpty()
         }
 
     /**

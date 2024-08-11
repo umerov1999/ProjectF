@@ -32,7 +32,6 @@ class VideoToMessageUploadable(
     private val attachmentsRepository: IAttachmentsRepository,
     private val messagesStorage: IMessagesStorage
 ) : IUploadable<Video> {
-    @Suppress("BlockingMethodInNonBlockingContext")
     override fun doUpload(
         upload: Upload,
         initialServer: UploadServer?,

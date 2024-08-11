@@ -32,16 +32,17 @@ class OwnersAdapter(private val mContext: Context, private var mData: List<Owner
     private var mClickListener: ClickListener? = null
     private var longClickListener: LongClickListener? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        when (viewType) {
-            TYPE_USER -> return PeopleHolder(
+        return when (viewType) {
+            TYPE_USER -> PeopleHolder(
                 LayoutInflater.from(mContext).inflate(R.layout.item_people, parent, false)
             )
 
-            TYPE_COMMUNITY -> return CommunityHolder(
+            TYPE_COMMUNITY -> CommunityHolder(
                 LayoutInflater.from(mContext).inflate(R.layout.item_group, parent, false)
             )
+
+            else -> throw RuntimeException("OwnersAdapter.onCreateViewHolder")
         }
-        throw RuntimeException("OwnersAdapter.onCreateViewHolder")
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

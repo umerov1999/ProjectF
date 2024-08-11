@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.text.InputType
 import android.view.View
 import androidx.annotation.StringRes
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -23,9 +22,6 @@ class EditTextPreference(key: String, fragmentManager: FragmentManager) :
     var currentInput: CharSequence? = null
         private set
 
-    /**
-     * The [InputType] applied to the contained [EditText][AppCompatEditText]
-     */
     var textInputType: Int = InputType.TYPE_NULL
 
     @StringRes

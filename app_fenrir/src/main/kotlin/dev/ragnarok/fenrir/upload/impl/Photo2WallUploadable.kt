@@ -123,13 +123,14 @@ class Photo2WallUploadable(
     ): Flow<Boolean> {
         val accountId = upload.accountId
         val dest = upload.destination
-        when (dest.method) {
-            Method.TO_COMMENT -> return repository
+        return when (dest.method) {
+            Method.TO_COMMENT -> repository
                 .attach(accountId, AttachToType.COMMENT, dest.id, listOf(photo))
 
-            Method.TO_WALL -> return repository
+            Method.TO_WALL -> repository
                 .attach(accountId, AttachToType.POST, dest.id, listOf(photo))
+
+            else -> toFlowThrowable(UnsupportedOperationException())
         }
-        return toFlowThrowable(UnsupportedOperationException())
     }
 }

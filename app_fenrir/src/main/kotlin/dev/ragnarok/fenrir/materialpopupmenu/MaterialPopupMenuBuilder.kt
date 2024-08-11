@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable
 import android.view.Gravity
 import android.view.View
 import android.widget.CompoundButton
-import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.GravityInt
@@ -54,11 +53,9 @@ class MaterialPopupMenuBuilder internal constructor(
     /**
      * Style of the popup menu.
      *
-     * You should use [R.style.Widget_MPM_Menu_Material3] Material 3, respectively.
      *
      * Setting this to `0` will make the popup use the default style resolved based on context
      * passed to [MaterialPopupMenu.show] function. You can customize that default style by defining
-     * [R.attr.materialPopupMenuStyle] in your theme style.
      *
      * are also declared in your style.
      */
@@ -271,7 +268,7 @@ class MaterialPopupMenuBuilder internal constructor(
      */
     sealed class NormalItem : AbstractItem() {
 
-        sealed class Data private constructor(
+        sealed class Data(
             val label: CharSequence?,
             val labelRes: Int
         ) : AbstractItem.Data() {

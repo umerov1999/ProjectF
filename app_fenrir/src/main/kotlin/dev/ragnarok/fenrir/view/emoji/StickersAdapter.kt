@@ -40,20 +40,21 @@ class StickersAdapter(private val context: Context, private val stickers: Sticke
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        when (viewType) {
-            TYPE_IMAGE -> return StickerHolder(
+        return when (viewType) {
+            TYPE_IMAGE -> StickerHolder(
                 LayoutInflater.from(
                     context
                 ).inflate(R.layout.sticker_grid_item, parent, false)
             )
 
-            TYPE_ANIMATED -> return StickerAnimatedHolder(
+            TYPE_ANIMATED -> StickerAnimatedHolder(
                 LayoutInflater.from(
                     context
                 ).inflate(R.layout.sticker_grid_item_animated, parent, false)
             )
+
+            else -> throw UnsupportedOperationException()
         }
-        throw UnsupportedOperationException()
     }
 
     override fun getItemViewType(position: Int): Int {

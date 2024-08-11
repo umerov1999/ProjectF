@@ -8,13 +8,18 @@ import dev.ragnarok.fenrir.util.FindAttachmentType
 object WallAttachmentsFragmentFactory {
     fun newInstance(accountId: Long, ownerId: Long, type: String?): Fragment? {
         requireNotNull(type) { "Type cant bee null" }
-        var fragment: Fragment? = null
-        when (type) {
-            FindAttachmentType.TYPE_MULTI -> fragment =
-                WallMultiAttachmentsFragment.newInstance(accountId, ownerId)
+        val fragment: Fragment? = when (type) {
+            FindAttachmentType.TYPE_MULTI -> WallMultiAttachmentsFragment.newInstance(
+                accountId,
+                ownerId
+            )
 
-            FindAttachmentType.TYPE_POST_WITH_QUERY -> fragment =
-                WallPostQueryAttachmentsFragment.newInstance(accountId, ownerId)
+            FindAttachmentType.TYPE_POST_WITH_QUERY -> WallPostQueryAttachmentsFragment.newInstance(
+                accountId,
+                ownerId
+            )
+
+            else -> null
         }
         return fragment
     }

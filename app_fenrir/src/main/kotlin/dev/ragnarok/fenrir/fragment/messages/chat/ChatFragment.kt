@@ -1016,7 +1016,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                         }
                     })
                 buttonUnpin?.visibility = if (canChange) View.VISIBLE else View.GONE
-                pinnedView?.setOnClickListener { presenter?.fireMessagesLookup(pinned); }
+                pinnedView?.setOnClickListener { presenter?.fireMessagesLookup(pinned) }
             }
         }
     }

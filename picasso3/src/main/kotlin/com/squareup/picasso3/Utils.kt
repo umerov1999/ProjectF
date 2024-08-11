@@ -15,6 +15,7 @@
  */
 package com.squareup.picasso3
 
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
@@ -163,6 +164,7 @@ internal object Utils {
                 source.rangeEquals(8, WEBP_FILE_HEADER_WEBP)
     }
 
+    @SuppressLint("DiscouragedApi")
     fun getResourceId(resources: Resources, data: Request): Int {
         if (data.resourceId != 0 || data.uri == null) {
             return data.resourceId

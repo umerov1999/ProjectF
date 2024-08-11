@@ -4,7 +4,6 @@
 
 package dev.ragnarok.fenrir.util.serializeble.prefs
 
-import android.content.SharedPreferences
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.nullable
 import kotlinx.serialization.serializer
@@ -52,7 +51,7 @@ class PropertyTest {
 -->
 */
 /**
- * Encodes changes to the delegated property into the [SharedPreferences] and decodes the current value from them.
+ * Encodes changes to the delegated property into the SharedPreferences and decodes the current value from them.
  * ```kotlin
  * var setting by preferences.asProperty(Boolean.serializer())
  * ```
@@ -67,7 +66,7 @@ fun <T> Preferences.asProperty(
 ): ReadWriteProperty<Any?, T> = PreferenceProperty(this, serializer, tag)
 
 /**
- * Encodes changes to the delegated property into the [SharedPreferences] and decodes the current value from them.
+ * Encodes changes to the delegated property into the SharedPreferences and decodes the current value from them.
  * ```kotlin
  * var setting by preferences.asProperty(Boolean.serializer(), tag = "aSetting", default = false)
  * ```
@@ -88,7 +87,7 @@ fun <T : Any> Preferences.asProperty(
 }
 
 /**
- * Encodes changes to the delegated property into the [SharedPreferences] and decodes the current value from them.
+ * Encodes changes to the delegated property into the SharedPreferences and decodes the current value from them.
  * ```kotlin
  * var setting: Boolean by preferences.asProperty()
  * ```
@@ -100,7 +99,7 @@ inline fun <reified T> Preferences.asProperty(tag: String? = null) =
     asProperty<T>(serializersModule.serializer(), tag)
 
 /**
- * Encodes changes to the delegated property into the [SharedPreferences] and decodes the current value from them.
+ * Encodes changes to the delegated property into the SharedPreferences and decodes the current value from them.
  * ```kotlin
  * var setting: Boolean by preferences.asProperty(tag = "aSetting", default = false)
  * ```

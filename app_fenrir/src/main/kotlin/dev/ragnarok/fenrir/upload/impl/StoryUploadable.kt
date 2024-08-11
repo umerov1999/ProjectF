@@ -31,7 +31,6 @@ import kotlin.coroutines.cancellation.CancellationException
 
 class StoryUploadable(private val context: Context, private val networker: INetworker) :
     IUploadable<Story> {
-    @Suppress("BlockingMethodInNonBlockingContext")
     override fun doUpload(
         upload: Upload,
         initialServer: UploadServer?,

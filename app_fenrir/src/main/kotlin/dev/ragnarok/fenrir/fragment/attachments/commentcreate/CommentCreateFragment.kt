@@ -64,7 +64,7 @@ class CommentCreateFragment :
     }
 
     override fun onBackPressed(): Boolean {
-        return presenter?.onBackPressed() ?: false
+        return presenter?.onBackPressed() == true
     }
 
     override fun returnDataToParent(textBody: String?) {

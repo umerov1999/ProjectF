@@ -36,13 +36,17 @@ class FavePostAdapter(
     private val mContext: Context,
     items: MutableList<Post>,
     attachmentsActionCallback: OnAttachmentsActionCallback,
-    adapterListener: ClickListener
+    adapterListener: ClickListener?
 ) : RecyclerBindableAdapter<Post, RecyclerView.ViewHolder>(items) {
     private val attachmentsViewBinder: AttachmentsViewBinder =
         AttachmentsViewBinder(mContext, attachmentsActionCallback)
     private val transformation: Transformation = CurrentTheme.createTransformationForAvatar()
-    private val clickListener: ClickListener?
-    private val mLinkActionAdapter: LinkActionAdapter
+    private val clickListener = adapterListener
+    private val mLinkActionAdapter: LinkActionAdapter = object : LinkActionAdapter() {
+        override fun onOwnerClick(ownerId: Long) {
+            clickListener?.onAvatarClick(ownerId)
+        }
+    }
     private var recyclerView: RecyclerView? = null
     private var mOnHashTagClickListener: EmojiconTextView.OnHashTagClickListener? = null
     override fun onBindItemViewHolder(
@@ -136,12 +140,18 @@ class FavePostAdapter(
         val formattedDate = AppTextUtils.getDateFromUnixTime(mContext, post.date)
         var postSubtitle = formattedDate
         post.source.requireNonNull {
-            when (it.getData()) {
-                VKApiPostSource.Data.PROFILE_ACTIVITY -> postSubtitle =
-                    mContext.getString(R.string.updated_status_at, formattedDate)
+            postSubtitle = when (it.getData()) {
+                VKApiPostSource.Data.PROFILE_ACTIVITY -> mContext.getString(
+                    R.string.updated_status_at,
+                    formattedDate
+                )
 
-                VKApiPostSource.Data.PROFILE_PHOTO -> postSubtitle =
-                    mContext.getString(R.string.updated_profile_photo_at, formattedDate)
+                VKApiPostSource.Data.PROFILE_PHOTO -> mContext.getString(
+                    R.string.updated_profile_photo_at,
+                    formattedDate
+                )
+
+                else -> formattedDate
             }
         }
         holder.tvTime.text = postSubtitle
@@ -273,14 +283,5 @@ class FavePostAdapter(
 
     companion object {
         private const val TYPE_NORMAL = 0
-    }
-
-    init {
-        clickListener = adapterListener
-        mLinkActionAdapter = object : LinkActionAdapter() {
-            override fun onOwnerClick(ownerId: Long) {
-                clickListener.onAvatarClick(ownerId)
-            }
-        }
     }
 }

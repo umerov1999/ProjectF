@@ -36,16 +36,17 @@ class StoriesViewAdapter(
     private var mClickListener: ClickListener? = null
     private var longClickListener: LongClickListener? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        when (viewType) {
-            TYPE_USER -> return PeopleHolder(
+        return when (viewType) {
+            TYPE_USER -> PeopleHolder(
                 LayoutInflater.from(mContext).inflate(R.layout.item_people_with_like, parent, false)
             )
 
-            TYPE_COMMUNITY -> return CommunityHolder(
+            TYPE_COMMUNITY -> CommunityHolder(
                 LayoutInflater.from(mContext).inflate(R.layout.item_group_with_like, parent, false)
             )
+
+            else -> throw RuntimeException("StoriesViewAdapter.onCreateViewHolder")
         }
-        throw RuntimeException("StoriesViewAdapter.onCreateViewHolder")
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

@@ -77,19 +77,20 @@ open class UpEditFab : FloatingActionButton {
                 show()
             }
 
-            var isLastElementVisible = false
-            when (manager) {
+            val isLastElementVisible = when (manager) {
                 is StaggeredGridLayoutManager -> {
-                    isLastElementVisible = isAtLastElementOfStaggedGridLayoutManager(manager)
+                    isAtLastElementOfStaggedGridLayoutManager(manager)
                 }
 
                 is LinearLayoutManager -> {
-                    isLastElementVisible = isAtLastElementOfLinearLayoutManager(manager)
+                    isAtLastElementOfLinearLayoutManager(manager)
                 }
 
                 is GridLayoutManager -> {
-                    isLastElementVisible = isAtLastElementOfGridLayoutManager(manager)
+                    isAtLastElementOfGridLayoutManager(manager)
                 }
+
+                else -> false
             }
             mLastInterceptTime = System.currentTimeMillis()
             onScrollElement(!isLastElementVisible)

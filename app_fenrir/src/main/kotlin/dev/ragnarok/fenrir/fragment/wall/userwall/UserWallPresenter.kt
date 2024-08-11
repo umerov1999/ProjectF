@@ -324,11 +324,12 @@ class UserWallPresenter(
         if (accountId == ownerId) {
             title = R.string.edit_status
         } else {
-            when (user.friendStatus) {
-                VKApiUser.FRIEND_STATUS_IS_NOT_FRIEDND -> title = R.string.add_to_friends
-                VKApiUser.FRIEND_STATUS_REQUEST_SENT -> title = R.string.cancel_request
-                VKApiUser.FRIEND_STATUS_HAS_INPUT_REQUEST -> title = R.string.accept_request
-                VKApiUser.FRIEND_STATUS_IS_FRIEDND -> title = R.string.delete_from_friends
+            title = when (user.friendStatus) {
+                VKApiUser.FRIEND_STATUS_IS_NOT_FRIEDND -> R.string.add_to_friends
+                VKApiUser.FRIEND_STATUS_REQUEST_SENT -> R.string.cancel_request
+                VKApiUser.FRIEND_STATUS_HAS_INPUT_REQUEST -> R.string.accept_request
+                VKApiUser.FRIEND_STATUS_IS_FRIEDND -> R.string.delete_from_friends
+                else -> null
             }
             if (user.blacklisted_by_me) {
                 title = R.string.is_to_blacklist

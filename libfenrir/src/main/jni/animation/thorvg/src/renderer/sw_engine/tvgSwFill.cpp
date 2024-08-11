@@ -58,7 +58,7 @@ static void _calculateCoefficients(const SwFill* fill, uint32_t x, uint32_t y, f
     auto deltaDeltaRr = 2.0f * (radial->a11 * radial->a11 + radial->a21 * radial->a21) * radial->invA;
 
     det = b * b + (rr - radial->fr * radial->fr) * radial->invA;
-    deltaDet = 2.0f * b * deltaB + deltaB * deltaB + deltaRr + deltaDeltaRr;
+    deltaDet = 2.0f * b * deltaB + deltaB * deltaB + deltaRr + deltaDeltaRr * 0.5f;
     deltaDeltaDet = 2.0f * deltaB * deltaB + deltaDeltaRr;
 }
 
@@ -125,6 +125,8 @@ static void _applyAA(const SwFill* fill, uint32_t begin, uint32_t end)
 
 static bool _updateColorTable(SwFill* fill, const Fill* fdata, const SwSurface* surface, uint8_t opacity)
 {
+    if (fill->solid) return true;
+
     if (!fill->ctable) {
         fill->ctable = static_cast<uint32_t*>(malloc(GRADIENT_STOP_SIZE * sizeof(uint32_t)));
         if (!fill->ctable) return false;
@@ -205,7 +207,7 @@ static bool _updateColorTable(SwFill* fill, const Fill* fdata, const SwSurface* 
 }
 
 
-bool _prepareLinear(SwFill* fill, const LinearGradient* linear, const Matrix* transform)
+bool _prepareLinear(SwFill* fill, const LinearGradient* linear, const Matrix& transform)
 {
     float x1, x2, y1, y2;
     if (linear->linear(&x1, &y1, &x2, &y2) != Result::Success) return false;
@@ -214,7 +216,12 @@ bool _prepareLinear(SwFill* fill, const LinearGradient* linear, const Matrix* tr
     fill->linear.dy = y2 - y1;
     auto len = fill->linear.dx * fill->linear.dx + fill->linear.dy * fill->linear.dy;
 
-    if (len < FLOAT_EPSILON) return true;
+    if (len < FLOAT_EPSILON) {
+        if (tvg::zero(fill->linear.dx) && tvg::zero(fill->linear.dy)) {
+            fill->solid = true;
+        }
+        return true;
+    }
 
     fill->linear.dx /= len;
     fill->linear.dy /= len;
@@ -224,9 +231,9 @@ bool _prepareLinear(SwFill* fill, const LinearGradient* linear, const Matrix* tr
     bool isTransformation = !tvg::identity((const Matrix*)(&gradTransform));
 
     if (isTransformation) {
-        if (transform) gradTransform = *transform * gradTransform;
-    } else if (transform) {
-        gradTransform = *transform;
+        gradTransform = transform * gradTransform;
+    } else {
+        gradTransform = transform;
         isTransformation = true;
     }
 
@@ -245,7 +252,7 @@ bool _prepareLinear(SwFill* fill, const LinearGradient* linear, const Matrix* tr
 }
 
 
-bool _prepareRadial(SwFill* fill, const RadialGradient* radial, const Matrix* transform)
+bool _prepareRadial(SwFill* fill, const RadialGradient* radial, const Matrix& transform)
 {
     auto cx = P(radial)->cx;
     auto cy = P(radial)->cy;
@@ -254,7 +261,10 @@ bool _prepareRadial(SwFill* fill, const RadialGradient* radial, const Matrix* tr
     auto fy = P(radial)->fy;
     auto fr = P(radial)->fr;
 
-    if (r < FLOAT_EPSILON) return true;
+    if (tvg::zero(r)) {
+        fill->solid = true;
+        return true;
+    }
 
     fill->radial.dr = r - fr;
     fill->radial.dx = cx - fx;
@@ -287,12 +297,10 @@ bool _prepareRadial(SwFill* fill, const RadialGradient* radial, const Matrix* tr
     auto gradTransform = radial->transform();
     bool isTransformation = !tvg::identity((const Matrix*)(&gradTransform));
 
-    if (transform) {
-        if (isTransformation) gradTransform = *transform * gradTransform;
-        else {
-            gradTransform = *transform;
-            isTransformation = true;
-        }
+    if (isTransformation) gradTransform = transform * gradTransform;
+    else {
+        gradTransform = transform;
+        isTransformation = true;
     }
 
     if (isTransformation) {
@@ -814,25 +822,32 @@ void fillLinear(const SwFill* fill, uint32_t* dst, uint32_t y, uint32_t x, uint3
 }
 
 
-bool fillGenColorTable(SwFill* fill, const Fill* fdata, const Matrix* transform, SwSurface* surface, uint8_t opacity, bool ctable)
+bool fillGenColorTable(SwFill* fill, const Fill* fdata, const Matrix& transform, SwSurface* surface, uint8_t opacity, bool ctable)
 {
     if (!fill) return false;
 
     fill->spread = fdata->spread();
 
-    if (ctable) {
-        if (!_updateColorTable(fill, fdata, surface, opacity)) return false;
-    }
-
     if (fdata->type() == Type::LinearGradient) {
-        return _prepareLinear(fill, static_cast<const LinearGradient*>(fdata), transform);
+        if (!_prepareLinear(fill, static_cast<const LinearGradient*>(fdata), transform)) return false;
     } else if (fdata->type() == Type::RadialGradient) {
-        return _prepareRadial(fill, static_cast<const RadialGradient*>(fdata), transform);
+        if (!_prepareRadial(fill, static_cast<const RadialGradient*>(fdata), transform)) return false;
     }
 
-    //LOG: What type of gradient?!
+    if (ctable) return _updateColorTable(fill, fdata, surface, opacity);
+    return true;
+}
 
-    return false;
+
+const Fill::ColorStop* fillFetchSolid(const SwFill* fill, const Fill* fdata)
+{
+    if (!fill->solid) return nullptr;
+
+    const Fill::ColorStop* colors;
+    auto cnt = fdata->colorStops(&colors);
+    if (cnt == 0 || !colors) return nullptr;
+
+    return colors + cnt - 1;
 }
 
 
@@ -843,6 +858,7 @@ void fillReset(SwFill* fill)
         fill->ctable = nullptr;
     }
     fill->translucent = false;
+    fill->solid = false;
 }
 
 

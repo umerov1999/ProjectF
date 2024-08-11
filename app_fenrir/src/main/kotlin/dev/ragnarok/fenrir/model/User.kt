@@ -55,7 +55,6 @@ class User : Owner {
     var sex = 0
         private set
     override var domain: String? = null
-        private set
     var maiden_name: String? = null
         private set
     var isFriend = false

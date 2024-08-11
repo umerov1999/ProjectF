@@ -123,28 +123,22 @@ abstract class AbsCustomSlider : View {
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
-        var width = 0
-        when (widthMode) {
-            MeasureSpec.UNSPECIFIED -> width =
-                widthMeasureSpec
+        val width = when (widthMode) {
+            MeasureSpec.UNSPECIFIED -> widthMeasureSpec
 
-            MeasureSpec.AT_MOST -> width =
-                MeasureSpec.getSize(widthMeasureSpec)
+            MeasureSpec.AT_MOST -> MeasureSpec.getSize(widthMeasureSpec)
 
-            MeasureSpec.EXACTLY -> width =
-                MeasureSpec.getSize(widthMeasureSpec)
+            MeasureSpec.EXACTLY -> MeasureSpec.getSize(widthMeasureSpec)
+            else -> 0
         }
         val heightMode = MeasureSpec.getMode(heightMeasureSpec)
-        var height = 0
-        when (heightMode) {
-            MeasureSpec.UNSPECIFIED -> height =
-                heightMeasureSpec
+        val height = when (heightMode) {
+            MeasureSpec.UNSPECIFIED -> heightMeasureSpec
 
-            MeasureSpec.AT_MOST -> height =
-                MeasureSpec.getSize(heightMeasureSpec)
+            MeasureSpec.AT_MOST -> MeasureSpec.getSize(heightMeasureSpec)
 
-            MeasureSpec.EXACTLY -> height =
-                MeasureSpec.getSize(heightMeasureSpec)
+            MeasureSpec.EXACTLY -> MeasureSpec.getSize(heightMeasureSpec)
+            else -> 0
         }
         setMeasuredDimension(width, height)
     }

@@ -23,6 +23,7 @@
 #ifndef _TVG_RENDER_H_
 #define _TVG_RENDER_H_
 
+#include <math.h>
 #include "tvgCommon.h"
 #include "tvgArray.h"
 #include "tvgLock.h"
@@ -108,23 +109,6 @@ struct RenderRegion
     }
 };
 
-struct RenderTransform
-{
-    Matrix m;
-    float degree = 0.0f;  //rotation degree
-    float scale = 1.0f;   //scale factor
-    bool overriding = false;  //user transform?
-
-    void update();
-    void override(const Matrix& m);
-
-    RenderTransform()
-    {
-        m.e13 = m.e23 = 0.0f;
-    }
-
-    RenderTransform(const RenderTransform* lhs, const RenderTransform* rhs);
-};
 
 struct RenderStroke
 {
@@ -168,6 +152,32 @@ struct RenderStroke
         join = rhs.join;
         strokeFirst = rhs.strokeFirst;
         trim = rhs.trim;
+    }
+
+    bool strokeTrim(float& begin, float& end) const
+    {
+        begin = trim.begin;
+        end = trim.end;
+
+        if (fabsf(end - begin) >= 1.0f) {
+            begin = 0.0f;
+            end = 1.0f;
+            return false;
+        }
+
+        auto loop = true;
+
+        if (begin > 1.0f && end > 1.0f) loop = false;
+        if (begin < 0.0f && end < 0.0f) loop = false;
+        if (begin >= 0.0f && begin <= 1.0f && end >= 0.0f  && end <= 1.0f) loop = false;
+
+        if (begin > 1.0f) begin -= 1.0f;
+        if (begin < 0.0f) begin += 1.0f;
+        if (end > 1.0f) end -= 1.0f;
+        if (end < 0.0f) end += 1.0f;
+
+        if ((loop && begin < end) || (!loop && begin > end)) std::swap(begin, end);
+        return true;
     }
 
     ~RenderStroke()
@@ -214,7 +224,7 @@ struct RenderShape
     {
         if (!stroke) return false;
         if (stroke->trim.begin == 0.0f && stroke->trim.end == 1.0f) return false;
-        if (stroke->trim.begin == 1.0f && stroke->trim.end == 0.0f) return false;
+        if (fabsf(stroke->trim.end - stroke->trim.begin) >= 1.0f) return false;
         return true;
     }
 
@@ -275,9 +285,9 @@ public:
     uint32_t unref();
 
     virtual ~RenderMethod() {}
-    virtual RenderData prepare(const RenderShape& rshape, RenderData data, const RenderTransform* transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flags, bool clipper) = 0;
-    virtual RenderData prepare(const Array<RenderData>& scene, RenderData data, const RenderTransform* transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flags) = 0;
-    virtual RenderData prepare(Surface* surface, const RenderMesh* mesh, RenderData data, const RenderTransform* transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flags) = 0;
+    virtual RenderData prepare(const RenderShape& rshape, RenderData data, const Matrix& transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flags, bool clipper) = 0;
+    virtual RenderData prepare(const Array<RenderData>& scene, RenderData data, const Matrix& transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flags) = 0;
+    virtual RenderData prepare(Surface* surface, const RenderMesh* mesh, RenderData data, const Matrix& transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flags) = 0;
     virtual bool preRender() = 0;
     virtual bool renderShape(RenderData data) = 0;
     virtual bool renderImage(RenderData data) = 0;

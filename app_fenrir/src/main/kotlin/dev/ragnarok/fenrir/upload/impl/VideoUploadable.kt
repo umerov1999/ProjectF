@@ -23,7 +23,6 @@ import kotlin.coroutines.cancellation.CancellationException
 
 class VideoUploadable(private val context: Context, private val networker: INetworker) :
     IUploadable<Video> {
-    @Suppress("BlockingMethodInNonBlockingContext")
     override fun doUpload(
         upload: Upload,
         initialServer: UploadServer?,

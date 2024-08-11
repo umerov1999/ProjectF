@@ -30,9 +30,9 @@ import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
  * make sure to call [clearContext] after you have completed with all [addPreferenceItem] operations,
  * to not leak the context supplied in [screen].
  */
-class CollapsePreference(screen: PreferenceScreen.Builder, key: String) : Preference(key),
+class CollapsePreference(internal var screen: PreferenceScreen.Builder?, key: String) :
+    Preference(key),
     PreferenceScreen.Appendable {
-    internal var screen: PreferenceScreen.Builder? = screen
     private val preferences = ArrayList<Preference>()
 
     init {

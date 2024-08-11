@@ -157,19 +157,20 @@ object FileUtils {
                 val docId = DocumentsContract.getDocumentId(uri)
                 val split = docId.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                 val type = split[0]
-                var contentUri: Uri? = null
-                when (type) {
+                val contentUri: Uri? = when (type) {
                     "image" -> {
-                        contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                     }
 
                     "video" -> {
-                        contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI
                     }
 
                     "audio" -> {
-                        contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
                     }
+
+                    else -> null
                 }
                 val selection = "_id=?"
                 val selectionArgs = arrayOf(

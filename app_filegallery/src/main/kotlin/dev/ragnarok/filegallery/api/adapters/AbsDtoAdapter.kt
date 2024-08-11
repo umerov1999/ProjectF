@@ -144,7 +144,7 @@ abstract class AbsDtoAdapter<T>(name: String) : KSerializer<T> {
                     return false
                 }
                 val prim = element.jsonPrimitive
-                prim.booleanOrNull ?: prim.intOrNull?.equals(1) ?: false
+                (prim.booleanOrNull ?: prim.intOrNull?.equals(1)) == true
             } catch (e: Exception) {
                 if (Constants.IS_DEBUG) {
                     e.printStackTrace()
@@ -515,7 +515,7 @@ abstract class AbsDtoAdapter<T>(name: String) : KSerializer<T> {
             get() = if (checkArray(this)) this else null
 
         fun JsonObject?.has(name: String): Boolean {
-            return this?.containsKey(name) ?: false
+            return this?.containsKey(name) == true
         }
     }
 }

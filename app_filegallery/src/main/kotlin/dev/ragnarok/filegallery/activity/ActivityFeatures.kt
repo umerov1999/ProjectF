@@ -63,6 +63,6 @@ class ActivityFeatures(builder: Builder) {
         statusBarColorOption =
             builder.statusbarColorFeature?.statusBarColorOption ?: STATUSBAR_COLOR_COLORED
         statusBarInvertIconsOption =
-            builder.statusbarColorFeature?.statusBarIconInvertedOption ?: false
+            builder.statusbarColorFeature?.statusBarIconInvertedOption == true
     }
 }

@@ -15,7 +15,6 @@ import kotlinx.serialization.Serializable
 class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
     private var id = 0
     override var ownerId = 0L
-        private set
     var albumId = 0
         private set
     var width = 0

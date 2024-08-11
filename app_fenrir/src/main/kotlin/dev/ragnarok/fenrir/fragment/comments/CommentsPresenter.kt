@@ -934,10 +934,11 @@ class CommentsPresenter(
         val hasGotoSource = commented.sourceType != CommentedType.TOPIC
         @StringRes var gotoSourceText: Int? = null
         if (hasGotoSource) {
-            when (commented.sourceType) {
-                CommentedType.PHOTO -> gotoSourceText = R.string.go_to_photo
-                CommentedType.VIDEO -> gotoSourceText = R.string.go_to_video
-                CommentedType.POST -> gotoSourceText = R.string.go_to_post
+            gotoSourceText = when (commented.sourceType) {
+                CommentedType.PHOTO -> R.string.go_to_photo
+                CommentedType.VIDEO -> R.string.go_to_video
+                CommentedType.POST -> R.string.go_to_post
+                else -> null
             }
         }
         val finalGotoSourceText = gotoSourceText

@@ -14,7 +14,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.core.graphics.toColorInt
 import com.google.android.material.textfield.TextInputEditText
 import de.maxr1998.modernpreferences.R
 import de.maxr1998.modernpreferences.preferences.colorpicker.builder.ColorWheelRendererBuilder
@@ -52,7 +51,7 @@ class ColorPickerView : View {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             try {
-                val color = s.toString().toColorInt()
+                val color = Color.parseColor(s.toString())
 
                 // set the color without changing the edit text preventing stack overflow
                 setColor(color, false)
@@ -171,28 +170,22 @@ class ColorPickerView : View {
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
-        var width = 0
-        when (widthMode) {
-            MeasureSpec.UNSPECIFIED -> width =
-                widthMeasureSpec
+        val width = when (widthMode) {
+            MeasureSpec.UNSPECIFIED -> widthMeasureSpec
 
-            MeasureSpec.AT_MOST -> width =
-                MeasureSpec.getSize(widthMeasureSpec)
+            MeasureSpec.AT_MOST -> MeasureSpec.getSize(widthMeasureSpec)
 
-            MeasureSpec.EXACTLY -> width =
-                MeasureSpec.getSize(widthMeasureSpec)
+            MeasureSpec.EXACTLY -> MeasureSpec.getSize(widthMeasureSpec)
+            else -> 0
         }
         val heightMode = MeasureSpec.getMode(heightMeasureSpec)
-        var height = 0
-        when (heightMode) {
-            MeasureSpec.UNSPECIFIED -> height =
-                heightMeasureSpec
+        val height = when (heightMode) {
+            MeasureSpec.UNSPECIFIED -> heightMeasureSpec
 
-            MeasureSpec.AT_MOST -> height =
-                MeasureSpec.getSize(heightMeasureSpec)
+            MeasureSpec.AT_MOST -> MeasureSpec.getSize(heightMeasureSpec)
 
-            MeasureSpec.EXACTLY -> height =
-                MeasureSpec.getSize(heightMeasureSpec)
+            MeasureSpec.EXACTLY -> MeasureSpec.getSize(heightMeasureSpec)
+            else -> 0
         }
         val squareDimen = height.coerceAtMost(width)
         setMeasuredDimension(squareDimen, squareDimen)
@@ -522,11 +515,11 @@ class ColorPickerView : View {
             }
 
             fun indexOf(index: Int): WHEEL_TYPE {
-                when (index) {
-                    0 -> return FLOWER
-                    1 -> return CIRCLE
+                return when (index) {
+                    0 -> FLOWER
+                    1 -> CIRCLE
+                    else -> FLOWER
                 }
-                return FLOWER
             }
         }
     }

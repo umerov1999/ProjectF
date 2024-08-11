@@ -1,7 +1,6 @@
 package dev.ragnarok.filegallery.activity
 
 import android.Manifest
-import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.ComponentName
@@ -228,7 +227,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
     private val requestQRScan = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == RESULT_OK) {
             val scanner = result.data?.extras?.getString(Extra.URL)
             if (scanner.nonNullNoEmpty()) {
                 MaterialAlertDialogBuilder(this)

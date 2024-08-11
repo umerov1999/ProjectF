@@ -75,7 +75,7 @@ class PostEditFragment : AbsPostEditFragment<PostEditPresenter, IPostEditView>()
     }
 
     override fun onBackPressed(): Boolean {
-        return presenter?.onBackPressed() ?: false
+        return presenter?.onBackPressed() == true
     }
 
     companion object {

@@ -4,8 +4,6 @@
 
 package dev.ragnarok.fenrir.util.serializeble.json
 
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.encoding.Decoder
 

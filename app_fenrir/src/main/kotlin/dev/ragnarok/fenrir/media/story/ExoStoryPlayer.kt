@@ -25,7 +25,6 @@ class ExoStoryPlayer(
         ArrayList(1)
     private val statusChangeListeners: MutableList<IStatusChangeListener> = ArrayList(1)
     override var videoSize: VideoSize? = null
-        private set
     private var playbackSpeed = false
     private val videoListener: Player.Listener = object : Player.Listener {
         override fun onVideoSizeChanged(videoSize: androidx.media3.common.VideoSize) {

@@ -14,12 +14,12 @@ class ImageSizeAlertDialog internal constructor(builder: Builder) {
         MaterialAlertDialogBuilder(mActivity)
             .setTitle(mActivity.getString(R.string.select_image_size_title))
             .setItems(R.array.array_image_sizes_names) { _, j ->
-                var selectedSize = Upload.IMAGE_SIZE_FULL
-                when (j) {
-                    0 -> selectedSize = Upload.IMAGE_SIZE_800
-                    1 -> selectedSize = Upload.IMAGE_SIZE_1200
-                    2 -> selectedSize = Upload.IMAGE_SIZE_FULL
-                    3 -> selectedSize = Upload.IMAGE_SIZE_CROPPING
+                val selectedSize = when (j) {
+                    0 -> Upload.IMAGE_SIZE_800
+                    1 -> Upload.IMAGE_SIZE_1200
+                    2 -> Upload.IMAGE_SIZE_FULL
+                    3 -> Upload.IMAGE_SIZE_CROPPING
+                    else -> Upload.IMAGE_SIZE_FULL
                 }
                 mOnSelectedCallback?.onSizeSelected(selectedSize)
             }
@@ -72,12 +72,12 @@ class ImageSizeAlertDialog internal constructor(builder: Builder) {
                 val dialog = MaterialAlertDialogBuilder(activity)
                     .setTitle(activity.getString(R.string.select_image_size_title))
                     .setItems(R.array.array_image_sizes_names) { _, j ->
-                        var selectedSize = Upload.IMAGE_SIZE_FULL
-                        when (j) {
-                            0 -> selectedSize = Upload.IMAGE_SIZE_800
-                            1 -> selectedSize = Upload.IMAGE_SIZE_1200
-                            2 -> selectedSize = Upload.IMAGE_SIZE_FULL
-                            3 -> selectedSize = Upload.IMAGE_SIZE_CROPPING
+                        val selectedSize = when (j) {
+                            0 -> Upload.IMAGE_SIZE_800
+                            1 -> Upload.IMAGE_SIZE_1200
+                            2 -> Upload.IMAGE_SIZE_FULL
+                            3 -> Upload.IMAGE_SIZE_CROPPING
+                            else -> Upload.IMAGE_SIZE_FULL
                         }
                         callback.onSizeSelected(selectedSize)
                     }.setCancelable(true).create()

@@ -88,18 +88,18 @@ class CommunitiesAdapter(
 
 
         fun getCommunityType(context: Context, community: Community): String {
-            when (community.communityType) {
-                VKApiCommunity.Type.EVENT -> return context.getString(
+            return when (community.communityType) {
+                VKApiCommunity.Type.EVENT -> context.getString(
                     if (community.closed == VKApiCommunity.Status.OPEN) R.string.type_opened else R.string.type_closed,
                     context.getString(R.string.type_event)
                 )
 
-                VKApiCommunity.Type.PAGE -> return context.getString(R.string.type_page)
+                VKApiCommunity.Type.PAGE -> context.getString(R.string.type_page)
+                else -> context.getString(
+                    if (community.closed == VKApiCommunity.Status.OPEN) R.string.type_opened else R.string.type_closed,
+                    context.getString(R.string.type_community)
+                )
             }
-            return context.getString(
-                if (community.closed == VKApiCommunity.Status.OPEN) R.string.type_opened else R.string.type_closed,
-                context.getString(R.string.type_community)
-            )
         }
     }
 

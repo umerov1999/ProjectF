@@ -58,10 +58,10 @@ class FavePage(private val id: Long) : IdentificableOwner {
             if (type == null) {
                 return null
             }
-            when (type) {
-                FavePageType.USER -> return user
-                FavePageType.COMMUNITY -> return group
+            return when (type) {
+                FavePageType.USER -> user
+                FavePageType.COMMUNITY -> group
+                else -> null
             }
-            return null
         }
 }

@@ -18,7 +18,7 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
 
     private var pinHash: String?
         get() = mPinHash
-        private set(pinHash) {
+        set(pinHash) {
             mPinHash = pinHash
             if (pinHash == null) {
                 mPrefs.edit().remove(KEY_PIN_HASH).apply()

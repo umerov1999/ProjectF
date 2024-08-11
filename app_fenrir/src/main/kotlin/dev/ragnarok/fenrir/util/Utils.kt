@@ -1616,18 +1616,18 @@ object Utils {
     }
 
     fun createPageTransform(@Transformers_Types type: Int): ViewPager2.PageTransformer? {
-        when (type) {
-            Transformers_Types.SLIDER_TRANSFORMER -> return SliderTransformer(ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT)
-            Transformers_Types.CLOCK_SPIN_TRANSFORMER -> return ClockSpinTransformer()
-            Transformers_Types.BACKGROUND_TO_FOREGROUND_TRANSFORMER -> return BackgroundToForegroundTransformer()
-            Transformers_Types.CUBE_IN_DEPTH_TRANSFORMER -> return CubeInDepthTransformer()
-            Transformers_Types.DEPTH_TRANSFORMER -> return DepthTransformer()
-            Transformers_Types.FAN_TRANSFORMER -> return FanTransformer()
-            Transformers_Types.GATE_TRANSFORMER -> return GateTransformer()
-            Transformers_Types.OFF -> return null
-            Transformers_Types.ZOOM_OUT_TRANSFORMER -> return ZoomOutTransformer()
+        return when (type) {
+            Transformers_Types.SLIDER_TRANSFORMER -> SliderTransformer(ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT)
+            Transformers_Types.CLOCK_SPIN_TRANSFORMER -> ClockSpinTransformer()
+            Transformers_Types.BACKGROUND_TO_FOREGROUND_TRANSFORMER -> BackgroundToForegroundTransformer()
+            Transformers_Types.CUBE_IN_DEPTH_TRANSFORMER -> CubeInDepthTransformer()
+            Transformers_Types.DEPTH_TRANSFORMER -> DepthTransformer()
+            Transformers_Types.FAN_TRANSFORMER -> FanTransformer()
+            Transformers_Types.GATE_TRANSFORMER -> GateTransformer()
+            Transformers_Types.OFF -> null
+            Transformers_Types.ZOOM_OUT_TRANSFORMER -> ZoomOutTransformer()
+            else -> null
         }
-        return null
     }
 
 

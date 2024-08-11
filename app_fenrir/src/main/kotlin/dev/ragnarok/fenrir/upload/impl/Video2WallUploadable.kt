@@ -31,7 +31,6 @@ class Video2WallUploadable(
     private val networker: INetworker,
     private val attachmentsRepository: IAttachmentsRepository
 ) : IUploadable<Video> {
-    @Suppress("BlockingMethodInNonBlockingContext")
     override fun doUpload(
         upload: Upload,
         initialServer: UploadServer?,
@@ -103,13 +102,14 @@ class Video2WallUploadable(
     ): Flow<Boolean> {
         val accountId = upload.accountId
         val dest = upload.destination
-        when (dest.method) {
-            Method.TO_COMMENT -> return repository
+        return when (dest.method) {
+            Method.TO_COMMENT -> repository
                 .attach(accountId, AttachToType.COMMENT, dest.id, listOf(video))
 
-            Method.TO_WALL -> return repository
+            Method.TO_WALL -> repository
                 .attach(accountId, AttachToType.POST, dest.id, listOf(video))
+
+            else -> toFlowThrowable(UnsupportedOperationException())
         }
-        return toFlowThrowable(UnsupportedOperationException())
     }
 }

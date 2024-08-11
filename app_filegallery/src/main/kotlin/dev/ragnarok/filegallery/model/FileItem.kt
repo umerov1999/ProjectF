@@ -55,7 +55,7 @@ class FileItem : Parcelable {
     }
 
     fun checkTag(): FileItem {
-        isHasTag = file_path?.let { MusicPlaybackController.tracksExist.isExistTag(it) } ?: false
+        isHasTag = file_path?.let { MusicPlaybackController.tracksExist.isExistTag(it) } == true
         return this
     }
 

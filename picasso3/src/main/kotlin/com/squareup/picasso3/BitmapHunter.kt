@@ -63,7 +63,7 @@ internal open class BitmapHunter(
         private set
 
     val isCancelled: Boolean
-        get() = future?.isCancelled ?: job?.isCancelled ?: false
+        get() = (future?.isCancelled ?: job?.isCancelled) == true
 
     override fun run() {
         val originalName = Thread.currentThread().name
@@ -211,7 +211,7 @@ internal open class BitmapHunter(
                 true
             }
 
-            else -> actions?.remove(action) ?: false
+            else -> actions?.remove(action) == true
         }
 
         // The action being detached had the highest priority. Update this
@@ -231,7 +231,8 @@ internal open class BitmapHunter(
     }
 
     fun cancel(): Boolean =
-        action == null && actions.isNullOrEmpty() && future?.cancel(false) ?: job?.let { it.cancel(); true } ?: false
+        action == null && actions.isNullOrEmpty() && (future?.cancel(false)
+            ?: job?.let { it.cancel(); true }) == true
 
     fun shouldRetry(networkAvailable: Boolean): Boolean {
         val hasRetries = retryCount > 0
@@ -246,7 +247,7 @@ internal open class BitmapHunter(
     fun supportsReplay(): Boolean = requestHandler.supportsReplay()
 
     private fun computeNewPriority(): Picasso.Priority {
-        val hasMultiple = actions?.isNotEmpty() ?: false
+        val hasMultiple = actions?.isNotEmpty() == true
         val hasAny = action != null || hasMultiple
 
         // Hunter has no requests, low priority.

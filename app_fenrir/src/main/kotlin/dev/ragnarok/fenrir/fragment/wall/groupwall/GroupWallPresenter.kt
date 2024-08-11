@@ -326,20 +326,24 @@ class GroupWallPresenter(
         @StringRes var primaryText: Int? = null
         @StringRes var secondaryText: Int? = null
         when (community.memberStatus) {
-            VKApiCommunity.MemberStatus.IS_NOT_MEMBER -> when (community.communityType) {
-                VKApiCommunity.Type.GROUP -> when (community.closed) {
-                    VKApiCommunity.Status.CLOSED -> primaryText = R.string.community_send_request
-                    VKApiCommunity.Status.OPEN -> primaryText = R.string.community_join
+            VKApiCommunity.MemberStatus.IS_NOT_MEMBER -> primaryText =
+                when (community.communityType) {
+                    VKApiCommunity.Type.GROUP -> when (community.closed) {
+                        VKApiCommunity.Status.CLOSED -> R.string.community_send_request
+                        VKApiCommunity.Status.OPEN -> R.string.community_join
+                        else -> null
+                    }
+
+                    VKApiCommunity.Type.PAGE -> R.string.community_follow
+                    VKApiCommunity.Type.EVENT -> R.string.community_to_go
+                    else -> null
                 }
 
-                VKApiCommunity.Type.PAGE -> primaryText = R.string.community_follow
-                VKApiCommunity.Type.EVENT -> primaryText = R.string.community_to_go
-            }
-
-            VKApiCommunity.MemberStatus.IS_MEMBER -> when (community.communityType) {
-                VKApiCommunity.Type.GROUP -> primaryText = R.string.community_leave
-                VKApiCommunity.Type.PAGE -> primaryText = R.string.community_unsubscribe_from_news
-                VKApiCommunity.Type.EVENT -> primaryText = R.string.community_not_to_go
+            VKApiCommunity.MemberStatus.IS_MEMBER -> primaryText = when (community.communityType) {
+                VKApiCommunity.Type.GROUP -> R.string.community_leave
+                VKApiCommunity.Type.PAGE -> R.string.community_unsubscribe_from_news
+                VKApiCommunity.Type.EVENT -> R.string.community_not_to_go
+                else -> null
             }
 
             VKApiCommunity.MemberStatus.NOT_SURE -> primaryText = R.string.community_leave
@@ -366,12 +370,11 @@ class GroupWallPresenter(
             VKApiCommunity.MemberStatus.IS_MEMBER -> {
                 community.setMemberStatus(VKApiCommunity.MemberStatus.IS_NOT_MEMBER)
                 community.setMember(false)
-                when (community.communityType) {
-                    VKApiCommunity.Type.GROUP, VKApiCommunity.Type.EVENT -> resultMessage =
-                        R.string.community_leave_success
+                resultMessage = when (community.communityType) {
+                    VKApiCommunity.Type.GROUP, VKApiCommunity.Type.EVENT -> R.string.community_leave_success
 
-                    VKApiCommunity.Type.PAGE -> resultMessage =
-                        R.string.community_unsubscribe_from_news_success
+                    VKApiCommunity.Type.PAGE -> R.string.community_unsubscribe_from_news_success
+                    else -> null
                 }
             }
 

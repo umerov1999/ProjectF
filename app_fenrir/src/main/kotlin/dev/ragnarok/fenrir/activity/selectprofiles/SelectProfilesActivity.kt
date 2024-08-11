@@ -25,7 +25,6 @@ import dev.ragnarok.fenrir.util.Utils
 class SelectProfilesActivity : MainActivity(), SelectedProfilesAdapter.ActionListener,
     ProfileSelectable {
     override var acceptableCriteria: SelectProfileCriteria? = null
-        private set
     private var mSelectedOwners: ArrayList<Owner>? = null
     private var mRecyclerView: RecyclerView? = null
     private var mProfilesAdapter: SelectedProfilesAdapter? = null

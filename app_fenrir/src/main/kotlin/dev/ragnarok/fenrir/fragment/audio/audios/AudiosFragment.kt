@@ -72,7 +72,7 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
             return presenter?.fireItemMoved(
                 mAudioRecyclerAdapter?.getItemRawPosition(viewHolder.bindingAdapterPosition) ?: 0,
                 mAudioRecyclerAdapter?.getItemRawPosition(target.bindingAdapterPosition) ?: 0
-            ) ?: false
+            ) == true
         }
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
@@ -90,7 +90,7 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
 
         override fun isLongPressDragEnabled(): Boolean {
             return !Settings.get()
-                .main().isUse_long_click_download && presenter?.isMyAudio ?: false && presenter?.isNotSearch ?: false
+                .main().isUse_long_click_download && presenter?.isMyAudio == true && presenter?.isNotSearch == true
         }
     }
     private var isSelectMode = false
@@ -241,7 +241,7 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
         mAudioRecyclerAdapter = AudioRecyclerAdapter(
             requireActivity(),
             mutableListOf(),
-            presenter?.isMyAudio ?: false,
+            presenter?.isMyAudio == true,
             isSelectMode,
             presenter?.playlistId
         )

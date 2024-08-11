@@ -169,7 +169,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
             wall[index] = post
             view?.notifyWallItemChanged(index)
         } else {
-            val targetIndex: Int = if (!post.isPinned && wall.size > 0 && wall[0].isPinned) {
+            val targetIndex: Int = if (!post.isPinned && wall.isNotEmpty() && wall[0].isPinned) {
                 1
             } else {
                 0

@@ -41,9 +41,10 @@ class IMGEditActivity : IMGEditBaseActivity() {
             var decoder: IMGDecoder? = null
             val path = uri.path
             if (!path.isNullOrEmpty() && uri.scheme != null) {
-                when (uri.scheme) {
-                    "asset" -> decoder = IMGAssetFileDecoder(this, uri)
-                    "content", "file" -> decoder = IMGFileDecoder(this, uri)
+                decoder = when (uri.scheme) {
+                    "asset" -> IMGAssetFileDecoder(this, uri)
+                    "content", "file" -> IMGFileDecoder(this, uri)
+                    else -> null
                 }
             }
             if (decoder == null) {

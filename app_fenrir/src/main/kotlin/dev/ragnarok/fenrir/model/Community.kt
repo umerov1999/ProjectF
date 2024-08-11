@@ -19,7 +19,6 @@ import kotlin.math.abs
 class Community : Owner {
     val id: Long
     override var fullName: String? = null
-        private set
     override val domain: String?
         get() = screenName
     private var screenName: String? = null

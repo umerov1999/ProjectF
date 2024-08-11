@@ -87,7 +87,7 @@ class M3U8 {
                         urls.sortWith { (key), (key1) ->
                             -key.compareTo(key1)
                         }
-                        if (urls.size > 0) {
+                        if (urls.isNotEmpty()) {
                             m3u8Url = urls[0].value
                         }
                     }
@@ -191,7 +191,7 @@ class M3U8 {
                     urls.sortWith { (key), (key1) ->
                         -key.compareTo(key1)
                     }
-                    if (urls.size > 0) {
+                    if (urls.isNotEmpty()) {
                         m3u8Url = urls[0].value
                     }
                 }
@@ -307,7 +307,7 @@ class M3U8 {
 
         companion object {
             private const val TS_PACKET_SIZE = 188
-            internal fun closeQuietly(closeable: Closeable?) {
+            fun closeQuietly(closeable: Closeable?) {
                 try {
                     closeable?.close()
                 } catch (e: IOException) {
@@ -321,7 +321,7 @@ class M3U8 {
                 InvalidAlgorithmParameterException::class,
                 InvalidKeyException::class
             )
-            internal fun getAesCp(key: ByteArray, iv: ByteArray): Cipher {
+            fun getAesCp(key: ByteArray, iv: ByteArray): Cipher {
                 val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
                 val skey: Key = SecretKeySpec(key, "AES")
                 val param = IvParameterSpec(iv)

@@ -19,18 +19,22 @@ class AttachmentsActivity : NoMainActivity(), PlaceProvider {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
-            var fragment: Fragment? = null
             val type = (intent.extras ?: return).getInt(Extra.TYPE)
             val accountId = (intent.extras ?: return).getLong(Extra.ACCOUNT_ID)
-            when (type) {
-                AttachmentsTypes.DOC -> fragment =
-                    DocsFragment.newInstance(accountId, accountId, DocsListPresenter.ACTION_SELECT)
+            val fragment: Fragment? = when (type) {
+                AttachmentsTypes.DOC -> DocsFragment.newInstance(
+                    accountId,
+                    accountId,
+                    DocsListPresenter.ACTION_SELECT
+                )
 
-                AttachmentsTypes.VIDEO -> fragment = VideosTabsFragment.newInstance(
+                AttachmentsTypes.VIDEO -> VideosTabsFragment.newInstance(
                     accountId,
                     accountId,
                     IVideosListView.ACTION_SELECT
                 )
+
+                else -> null
             }
             supportFragmentManager
                 .beginTransaction()

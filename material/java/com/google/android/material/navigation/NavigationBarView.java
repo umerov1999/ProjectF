@@ -36,6 +36,7 @@ import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.view.menu.MenuView;
 import androidx.appcompat.widget.TintTypedArray;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -93,6 +94,12 @@ public abstract class NavigationBarView extends FrameLayout {
   /** Label is not shown on any navigation items. */
   public static final int LABEL_VISIBILITY_UNLABELED = 2;
 
+  /** The active indicator width fills up the width of its parent. */
+  public static final int ACTIVE_INDICATOR_WIDTH_MATCH_PARENT = -1;
+
+  /** The active indicator width wraps the content. */
+  public static final int ACTIVE_INDICATOR_WIDTH_WRAP_CONTENT = -2;
+
   /**
    * Menu Label visibility mode enum for component provide an implementation of navigation bar view.
    *
@@ -124,6 +131,26 @@ public abstract class NavigationBarView extends FrameLayout {
 
   /** Icon is placed at the top of the item */
   public static final int ITEM_ICON_GRAVITY_START = 1;
+
+  /**
+   * Navigation Bar Item gravity enum to control where the item is in its container.
+   *
+   * @hide
+   */
+  @RestrictTo(LIBRARY_GROUP)
+  @IntDef(value = {ITEM_GRAVITY_TOP_CENTER, ITEM_GRAVITY_CENTER, ITEM_GRAVITY_START_CENTER})
+  @Retention(RetentionPolicy.SOURCE)
+  public @interface ItemGravity {}
+
+  /** Item is placed at the top center of its container */
+  public static final int ITEM_GRAVITY_TOP_CENTER = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+
+  /** Item is placed at the center of its container */
+  public static final int ITEM_GRAVITY_CENTER = Gravity.CENTER;
+
+  /** Item is placed at the start center of its container */
+  public static final int ITEM_GRAVITY_START_CENTER = Gravity.START | Gravity.CENTER_VERTICAL;
+
 
   /**
    * Navigation Bar Item icon gravity enum to control which item configuration to display.
@@ -268,6 +295,9 @@ public abstract class NavigationBarView extends FrameLayout {
         attributes.getInteger(
             R.styleable.NavigationBarView_itemIconGravity,
             NavigationBarView.ITEM_ICON_GRAVITY_TOP));
+    setItemGravity(
+        attributes.getInteger(
+            R.styleable.NavigationBarView_itemGravity, NavigationBarView.ITEM_GRAVITY_TOP_CENTER));
 
     int itemBackground = attributes.getResourceId(R.styleable.NavigationBarView_itemBackground, 0);
     if (itemBackground != 0) {
@@ -306,6 +336,36 @@ public abstract class NavigationBarView extends FrameLayout {
           activeIndicatorAttributes.getDimensionPixelOffset(
               R.styleable.NavigationBarActiveIndicator_marginHorizontal, 0);
       setItemActiveIndicatorMarginHorizontal(itemActiveIndicatorMarginHorizontal);
+
+      int itemActiveIndicatorExpandedWidth = ACTIVE_INDICATOR_WIDTH_WRAP_CONTENT;
+      String expandedWidthString =
+          activeIndicatorAttributes.getString(
+              R.styleable.NavigationBarActiveIndicator_expandedWidth);
+      if (expandedWidthString != null) {
+        if (String.valueOf(ACTIVE_INDICATOR_WIDTH_MATCH_PARENT).equals(expandedWidthString)) {
+          itemActiveIndicatorExpandedWidth = ACTIVE_INDICATOR_WIDTH_MATCH_PARENT;
+        } else if (String.valueOf(ACTIVE_INDICATOR_WIDTH_WRAP_CONTENT).equals(expandedWidthString)) {
+          itemActiveIndicatorExpandedWidth = ACTIVE_INDICATOR_WIDTH_WRAP_CONTENT;
+        } else {
+          itemActiveIndicatorExpandedWidth = activeIndicatorAttributes.getDimensionPixelSize(
+              R.styleable.NavigationBarActiveIndicator_expandedWidth,
+              ACTIVE_INDICATOR_WIDTH_WRAP_CONTENT);
+        }
+      }
+
+      setItemActiveIndicatorExpandedWidth(itemActiveIndicatorExpandedWidth);
+
+      int itemActiveIndicatorExpandedHeight =
+          activeIndicatorAttributes.getDimensionPixelSize(
+              R.styleable.NavigationBarActiveIndicator_expandedHeight,
+              itemActiveIndicatorWidth);
+      setItemActiveIndicatorExpandedHeight(itemActiveIndicatorExpandedHeight);
+
+      int itemActiveIndicatorExpandedMarginHorizontal =
+          activeIndicatorAttributes.getDimensionPixelOffset(
+              R.styleable.NavigationBarActiveIndicator_expandedMarginHorizontal,
+              itemActiveIndicatorMarginHorizontal);
+      setItemActiveIndicatorExpandedMarginHorizontal(itemActiveIndicatorExpandedMarginHorizontal);
 
       ColorStateList itemActiveIndicatorColor =
           MaterialResources.getColorStateList(
@@ -702,6 +762,95 @@ public abstract class NavigationBarView extends FrameLayout {
    */
   public void setItemActiveIndicatorMarginHorizontal(@Px int horizontalMargin) {
     menuView.setItemActiveIndicatorMarginHorizontal(horizontalMargin);
+  }
+
+  /**
+   * Sets the navigation items' layout gravity.
+   *
+   * @param itemGravity the layout {@link android.view.Gravity} of the item
+   * @see #getItemGravity()
+   */
+  public void setItemGravity(@ItemGravity int itemGravity) {
+    if (menuView.getItemIconGravity() != itemGravity) {
+      menuView.setItemGravity(itemGravity);
+      presenter.updateMenuView(false);
+    }
+  }
+
+  /**
+   * Returns the navigation items' layout gravity.
+   *
+   * @see #setItemGravity(int)
+   */
+  @ItemGravity
+  public int getItemGravity() {
+    return menuView.getItemGravity();
+  }
+
+  /**
+   * Get the width of an item's active indicator when it is expanded to wrap the item content, ie.
+   * when it is in the {@link ItemIconGravity#ITEM_ICON_GRAVITY_START} configuration.
+   *
+   * @return The width, in pixels, of a menu item's active indicator.
+   */
+  @Px
+  public int getItemActiveIndicatorExpandedWidth() {
+    return menuView.getItemActiveIndicatorExpandedWidth();
+  }
+
+  /**
+   * Set the width of an item's active indicator when it is expanded to wrap the item content, ie.
+   * when it is in the {@link ItemIconGravity#ITEM_ICON_GRAVITY_START} configuration.
+   *
+   * @param width The width, in pixels, of the menu item's expanded active indicator. The width may
+   *     also be set as {@link #ACTIVE_INDICATOR_WIDTH_WRAP_CONTENT} or {@link
+   *     #ACTIVE_INDICATOR_WIDTH_MATCH_PARENT}.
+   */
+  public void setItemActiveIndicatorExpandedWidth(@Px int width) {
+    menuView.setItemActiveIndicatorExpandedWidth(width);
+  }
+
+  /**
+   * Get the height of an item's active indicator when it is expanded to wrap the item content, ie.
+   * when it is in the {@link ItemIconGravity#ITEM_ICON_GRAVITY_START} configuration.
+   *
+   * @return The height, in pixels, of a menu item's expanded active indicator.
+   */
+  @Px
+  public int getItemActiveIndicatorExpandedHeight() {
+    return menuView.getItemActiveIndicatorExpandedHeight();
+  }
+
+  /**
+   * Set the height of an item's active indicator when it is expanded to wrap the item content, ie.
+   * when it is in the {@link ItemIconGravity#ITEM_ICON_GRAVITY_START} configuration.
+   *
+   * @param height The height, in pixels, of the menu item's active indicator.
+   */
+  public void setItemActiveIndicatorExpandedHeight(@Px int height) {
+    menuView.setItemActiveIndicatorExpandedHeight(height);
+  }
+
+  /**
+   * Get the margin that will be maintained at the start and end of the expanded active indicator
+   * away from the edges of its parent container.
+   *
+   * @return The horizontal margin, in pixels.
+   */
+  @Px
+  public int getItemActiveIndicatorExpandedMarginHorizontal() {
+    return menuView.getItemActiveIndicatorExpandedMarginHorizontal();
+  }
+
+  /**
+   * Set the horizontal margin that will be maintained at the start and end of the expanded active
+   * indicator, making sure the indicator maintains the given distance from the edge of its parent
+   * container.
+   *
+   * @param horizontalMargin The horizontal margin, in pixels.
+   */
+  public void setItemActiveIndicatorExpandedMarginHorizontal(@Px int horizontalMargin) {
+    menuView.setItemActiveIndicatorExpandedMarginHorizontal(horizontalMargin);
   }
 
   /**

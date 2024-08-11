@@ -6,7 +6,7 @@ import dev.ragnarok.fenrir.Includes
 class StepArrayList<T>(list: List<T>, private val key: String? = null) : ArrayList<T>(list) {
     private var currentItem = 0
     fun getNext(): T? {
-        if (size <= 0) {
+        if (isEmpty()) {
             return null
         }
         currentItem++

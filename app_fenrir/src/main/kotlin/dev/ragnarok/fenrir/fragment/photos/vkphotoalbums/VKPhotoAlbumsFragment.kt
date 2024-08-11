@@ -290,7 +290,7 @@ class VKPhotoAlbumsFragment : BaseMvpFragment<PhotoAlbumsPresenter, IPhotoAlbums
     }
 
     override fun onVkPhotoAlbumLongClick(album: PhotoAlbum): Boolean {
-        return presenter?.fireAlbumLongClick(album) ?: false
+        return presenter?.fireAlbumLongClick(album) == true
     }
 
     companion object {

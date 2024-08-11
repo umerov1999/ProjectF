@@ -349,7 +349,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
     override val duration: Long
         get() = mPlayer?.duration ?: 0
     override val isPlaying: Boolean
-        get() = mPlayer?.isPlaying ?: false
+        get() = mPlayer?.isPlaying == true
 
     override fun pause() {
         mPlayer?.pause()

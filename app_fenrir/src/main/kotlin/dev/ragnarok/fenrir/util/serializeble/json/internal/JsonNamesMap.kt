@@ -6,7 +6,6 @@
 package dev.ragnarok.fenrir.util.serializeble.json.internal
 
 import dev.ragnarok.fenrir.util.serializeble.json.Json
-import dev.ragnarok.fenrir.util.serializeble.json.JsonConfiguration
 import dev.ragnarok.fenrir.util.serializeble.json.JsonNames
 import dev.ragnarok.fenrir.util.serializeble.json.JsonNamingStrategy
 import dev.ragnarok.fenrir.util.serializeble.json.schemaCache

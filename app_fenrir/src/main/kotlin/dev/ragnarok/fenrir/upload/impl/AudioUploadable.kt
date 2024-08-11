@@ -25,7 +25,6 @@ import kotlin.coroutines.cancellation.CancellationException
 
 class AudioUploadable(private val context: Context, private val networker: INetworker) :
     IUploadable<Audio> {
-    @Suppress("BlockingMethodInNonBlockingContext")
     override fun doUpload(
         upload: Upload,
         initialServer: UploadServer?,

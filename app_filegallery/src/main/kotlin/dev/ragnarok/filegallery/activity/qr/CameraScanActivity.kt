@@ -2,7 +2,6 @@ package dev.ragnarok.filegallery.activity.qr
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -241,7 +240,7 @@ class CameraScanActivity : NoMainActivity() {
             if (data.nonNullNoEmpty()) {
                 val retIntent = Intent()
                 retIntent.putExtra(Extra.URL, data)
-                setResult(Activity.RESULT_OK, retIntent)
+                setResult(RESULT_OK, retIntent)
                 imageProxy.close()
                 finish()
                 return@setAnalyzer

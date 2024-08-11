@@ -6,7 +6,6 @@
 
 package dev.ragnarok.filegallery.util.serializeble.json.internal
 
-import dev.ragnarok.filegallery.util.serializeble.json.Json
 import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.AbstractJsonLexer
 import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.allowStructuredMapKeysHint
 import dev.ragnarok.filegallery.util.serializeble.json.internal.lexer.ignoreUnknownKeysHint

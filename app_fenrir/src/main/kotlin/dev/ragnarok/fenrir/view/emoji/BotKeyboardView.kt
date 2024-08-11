@@ -6,7 +6,6 @@ import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -128,7 +127,7 @@ class BotKeyboardView : ScrollView {
                 container?.addView(
                     layout,
                     createLinear(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        LayoutParams.MATCH_PARENT,
                         buttonHeight,
                         15f,
                         if (a == 0) 15f else 10.toFloat(),
@@ -161,7 +160,7 @@ class BotKeyboardView : ScrollView {
                         holder.itemView,
                         createLinear(
                             0,
-                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            LayoutParams.MATCH_PARENT,
                             weight,
                             0,
                             0,

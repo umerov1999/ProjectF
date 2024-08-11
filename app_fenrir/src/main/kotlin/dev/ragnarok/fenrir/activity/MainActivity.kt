@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.activity
 
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
-import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.ComponentName
@@ -240,7 +239,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     private val requestQRScan = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == RESULT_OK) {
             val scanner = result.data?.extras?.getString(Extra.URL)
             if (scanner.nonNullNoEmpty()) {
                 val PATTERN: Pattern =
@@ -298,7 +297,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     private val requestCreatePin = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == RESULT_OK) {
             val values = CreatePinFragment.extractValueFromIntent(result.data)
             Settings.get()
                 .security()
@@ -1040,7 +1039,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             return
         }
         val item = mTargetPage?.first ?: return
-        val clearBackStack = mTargetPage?.second ?: false
+        val clearBackStack = mTargetPage?.second == true
         if (item == mCurrentFrontSection) {
             return
         }

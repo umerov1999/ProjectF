@@ -715,7 +715,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
     }
 
     override fun onPrepareMenu(menu: Menu) {
-        menu.findItem(R.id.export_accounts).isVisible = presenter?.isNotEmptyAccounts() ?: false
+        menu.findItem(R.id.export_accounts).isVisible = presenter?.isNotEmptyAccounts() == true
         menu.findItem(R.id.import_by_exchange_token).isVisible = Utils.isOfficialDefault
     }
 

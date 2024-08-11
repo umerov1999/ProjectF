@@ -103,16 +103,17 @@ class VP2NestedRecyclerView @JvmOverloads constructor(
     private fun canScroll(orientation: Int?, delta: Float): Boolean {
         orientation ?: return false
         val direction = if (delta > 0) -1 else 1
-        when (orientation) {
+        return when (orientation) {
             0 -> {
-                return canScrollHorizontally(direction)
+                canScrollHorizontally(direction)
             }
 
             1 -> {
-                return canScrollVertically(direction)
+                canScrollVertically(direction)
             }
+
+            else -> false
         }
-        return false
     }
 
     private fun findViewPager2() {

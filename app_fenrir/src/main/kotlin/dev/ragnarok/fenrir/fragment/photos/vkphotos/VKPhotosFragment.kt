@@ -373,7 +373,7 @@ class VKPhotosFragment : BaseMvpFragment<VKPhotosPresenter, IVKPhotosView>(),
             ) R.string.sort_new_to_old else R.string.sort_old_to_new
         )
         menu.findItem(R.id.action_show_date).isVisible =
-            !(presenter?.isShowBDate ?: false)
+            presenter?.isShowBDate != true
     }
 
     override fun onToggleShowDate(isShow: Boolean) {

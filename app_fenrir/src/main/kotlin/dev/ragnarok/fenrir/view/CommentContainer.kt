@@ -87,7 +87,7 @@ class CommentContainer : LinearLayout {
             if (childCount > 0) {
                 removeAllViews()
             }
-            visibility = View.GONE
+            visibility = GONE
             return
         }
         val comments: MutableList<Comment> = ArrayList()
@@ -102,10 +102,10 @@ class CommentContainer : LinearLayout {
             if (childCount > 0) {
                 removeAllViews()
             }
-            visibility = View.GONE
+            visibility = GONE
             return
         }
-        visibility = View.VISIBLE
+        visibility = VISIBLE
         val i = comments.size - childCount
         for (j in 0 until i) {
             val itemView =

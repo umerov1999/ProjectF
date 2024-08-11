@@ -169,19 +169,19 @@ class SearchOptionsAdapter(items: MutableList<BaseOption>) :
     }
 
     override fun viewHolder(view: View, type: Int): RecyclerView.ViewHolder {
-        when (type) {
-            TYPE_NORMAL -> return NormalHolder(view)
-            TYPE_BOOLEAN -> return SimpleBooleanHolder(view)
+        return when (type) {
+            TYPE_NORMAL -> NormalHolder(view)
+            TYPE_BOOLEAN -> SimpleBooleanHolder(view)
+            else -> throw UnsupportedOperationException()
         }
-        throw UnsupportedOperationException()
     }
 
     override fun layoutId(type: Int): Int {
-        when (type) {
-            TYPE_NORMAL -> return R.layout.item_search_option_text
-            TYPE_BOOLEAN -> return R.layout.item_search_option_checkbox
+        return when (type) {
+            TYPE_NORMAL -> R.layout.item_search_option_text
+            TYPE_BOOLEAN -> R.layout.item_search_option_checkbox
+            else -> 0
         }
-        return 0
     }
 
     override fun getItemType(position: Int): Int {

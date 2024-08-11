@@ -185,7 +185,7 @@ class CommunitiesFragment : BaseMvpFragment<CommunitiesPresenter, ICommunitiesVi
     }
 
     override fun onCommunityLongClick(community: Community): Boolean {
-        return presenter?.fireCommunityLongClick(community) ?: false
+        return presenter?.fireCommunityLongClick(community) == true
     }
 
     override fun onBackPressed(): Boolean {

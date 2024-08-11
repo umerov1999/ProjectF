@@ -44,5 +44,5 @@ dependencies {
     implementation("androidx.activity:activity-ktx:$activityVersion")
     implementation("androidx.fragment:fragment-ktx:$fragmentVersion")
     implementation("androidx.collection:collection-ktx:$collectionVersion")
-    implementation("androidx.tracing:tracing:$tracingVersion")
+    implementation("androidx.tracing:tracing-ktx:$tracingVersion")
 }

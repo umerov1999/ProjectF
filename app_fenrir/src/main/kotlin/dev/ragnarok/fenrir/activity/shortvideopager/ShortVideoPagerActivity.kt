@@ -93,7 +93,7 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mFullscreen = savedInstanceState?.getBoolean("mFullscreen") ?: false
+        mFullscreen = savedInstanceState?.getBoolean("mFullscreen") == true
         transformation = CurrentTheme.createTransformationForAvatar()
         mContentRoot = findViewById<RelativeLayout>(R.id.shortvideo_pager_root)
         mToolbar = findViewById(R.id.toolbar)
@@ -105,7 +105,7 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
         shortVideoDuration = findViewById(R.id.item_short_video_duration)
         mPlaySpeed = findViewById(R.id.toolbar_play_speed)
         mPlaySpeed?.setOnClickListener {
-            val stateSpeed = presenter?.togglePlaybackSpeed() ?: false
+            val stateSpeed = presenter?.togglePlaybackSpeed() == true
             Utils.setTint(
                 mPlaySpeed,
                 if (stateSpeed) CurrentTheme.getColorPrimary(this) else "#ffffff".toColor()

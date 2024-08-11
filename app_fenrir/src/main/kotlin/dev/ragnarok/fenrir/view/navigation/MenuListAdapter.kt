@@ -124,26 +124,26 @@ class MenuListAdapter(
     }
 
     override fun viewHolder(view: View, type: Int): RecyclerView.ViewHolder {
-        when (type) {
-            AbsMenuItem.TYPE_DIVIDER -> return DividerHolder(view)
-            AbsMenuItem.TYPE_RECENT_CHAT -> return RecentChatHolder(view)
-            AbsMenuItem.TYPE_ICON -> return if (paging || !noStroke) NormalHolder(view) else NormalNoStrokeHolder(
+        return when (type) {
+            AbsMenuItem.TYPE_DIVIDER -> DividerHolder(view)
+            AbsMenuItem.TYPE_RECENT_CHAT -> RecentChatHolder(view)
+            AbsMenuItem.TYPE_ICON -> if (paging || !noStroke) NormalHolder(view) else NormalNoStrokeHolder(
                 view
             )
 
-            AbsMenuItem.TYPE_WITHOUT_ICON -> return NoIconHolder(view)
+            AbsMenuItem.TYPE_WITHOUT_ICON -> NoIconHolder(view)
+            else -> throw IllegalStateException()
         }
-        throw IllegalStateException()
     }
 
     override fun layoutId(type: Int): Int {
-        when (type) {
-            AbsMenuItem.TYPE_DIVIDER -> return if (noStroke) R.layout.drawer_list_item_divider_no_stroke else R.layout.drawer_list_item_divider
-            AbsMenuItem.TYPE_RECENT_CHAT -> return R.layout.item_navigation_recents
-            AbsMenuItem.TYPE_ICON -> return if (paging) R.layout.item_navigation else if (noStroke) R.layout.drawer_list_item_no_stroke else R.layout.drawer_list_item
-            AbsMenuItem.TYPE_WITHOUT_ICON -> return R.layout.drawer_list_item_without_icon
+        return when (type) {
+            AbsMenuItem.TYPE_DIVIDER -> if (noStroke) R.layout.drawer_list_item_divider_no_stroke else R.layout.drawer_list_item_divider
+            AbsMenuItem.TYPE_RECENT_CHAT -> R.layout.item_navigation_recents
+            AbsMenuItem.TYPE_ICON -> if (paging) R.layout.item_navigation else if (noStroke) R.layout.drawer_list_item_no_stroke else R.layout.drawer_list_item
+            AbsMenuItem.TYPE_WITHOUT_ICON -> R.layout.drawer_list_item_without_icon
+            else -> throw IllegalStateException()
         }
-        throw IllegalStateException()
     }
 
     override fun getItemType(position: Int): Int {

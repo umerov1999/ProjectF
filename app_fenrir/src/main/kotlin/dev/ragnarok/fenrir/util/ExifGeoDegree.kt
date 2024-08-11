@@ -24,7 +24,7 @@ class ExifGeoDegree(exif: ExifInterface) {
     }
 
     override fun toString(): String {
-        return latitude.toString() + ", " + longitude
+        return "$latitude, $longitude"
     }
 
     init {

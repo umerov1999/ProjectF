@@ -32,24 +32,28 @@ class MessagesLookPresenter(
     private val loadingState: LOADING_STATE
     private var mFocusMessageId = 0
 
-    private fun fetchConversationThenActual() {
+    private fun fetchConversationThenActual(needFetchChat: Boolean) {
         appendJob(
             messagesInteractor.getConversationSingle(
                 accountId,
                 peer.id,
                 Mode.ANY
             )
-                .fromIOToMain({ onConversationFetched(it) }, { onConversationFetchFail(it) })
+                .fromIOToMain(
+                    { onConversationFetched(needFetchChat, it) },
+                    { onConversationFetchFail(needFetchChat, it) })
         )
     }
 
-    private fun onConversationFetchFail(throwable: Throwable) {
+    private fun onConversationFetchFail(needFetchChat: Boolean, throwable: Throwable) {
         showError(view, throwable)
         view?.displayToolbarAvatar(accountId, peer)
-        initRequest()
+        if (needFetchChat) {
+            initRequest()
+        }
     }
 
-    private fun onConversationFetched(data: Conversation) {
+    private fun onConversationFetched(needFetchChat: Boolean, data: Conversation) {
         if (peer.getTitle().isNullOrEmpty()) {
             peer.setTitle(data.getDisplayTitle())
         }
@@ -59,7 +63,9 @@ class MessagesLookPresenter(
         view?.displayToolbarAvatar(accountId, peer)
         lastReadId.incoming = data.inRead
         lastReadId.outgoing = data.outRead
-        initRequest()
+        if (needFetchChat) {
+            initRequest()
+        }
     }
 
     override fun onGuiCreated(viewHost: IMessagesLookView) {
@@ -412,9 +418,10 @@ class MessagesLookPresenter(
                 data.add(message)
                 view?.notifyDataChanged()
                 view?.focusTo(0)
+                fetchConversationThenActual(false)
             } else {
                 mFocusMessageId = focusTo
-                fetchConversationThenActual()
+                fetchConversationThenActual(true)
             }
         }
     }

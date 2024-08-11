@@ -125,7 +125,7 @@ class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
         recyclerView.layoutManager = LinearLayoutManager(context)
         val vHeader = inflater.inflate(R.layout.side_header_navi_menu, recyclerView, false)
         if (!Settings.get().ui().isShow_profile_in_additional_page) vHeader.visibility =
-            View.GONE else vHeader.visibility = View.VISIBLE
+            GONE else vHeader.visibility = VISIBLE
         backgroundImage = vHeader.findViewById(R.id.header_navi_menu_background)
         ivHeaderAvatar = vHeader.findViewById(R.id.header_navi_menu_avatar)
         ivHeaderAvatar?.setBackgroundResource(
@@ -344,7 +344,7 @@ class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
         tvDomain?.setTextColor(getVerifiedColor(context, user.isVerified))
         val donate_anim = Settings.get().main().donate_anim_set
         if (donate_anim > 0 && user.isDonated) {
-            bDonate?.visibility = View.VISIBLE
+            bDonate?.visibility = VISIBLE
             bDonate?.setAutoRepeat(true)
             if (donate_anim == 2) {
                 val cur = Settings.get().ui().mainThemeKey
@@ -386,9 +386,9 @@ class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
             bDonate?.playAnimation()
         } else {
             bDonate?.setImageDrawable(null)
-            bDonate?.visibility = View.GONE
+            bDonate?.visibility = GONE
         }
-        ivVerified?.visibility = if (user.isVerified) View.VISIBLE else View.GONE
+        ivVerified?.visibility = if (user.isVerified) VISIBLE else GONE
     }
 
     override fun checkCloseByClick(ev: MotionEvent): Boolean {

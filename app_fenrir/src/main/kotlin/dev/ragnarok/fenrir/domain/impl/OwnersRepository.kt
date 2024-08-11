@@ -170,9 +170,9 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         userId: Long,
         mode: Int
     ): Flow<Pair<User?, UserDetails?>> {
-        when (mode) {
-            IOwnersRepository.MODE_CACHE -> return getCachedFullData(accountId, userId)
-            IOwnersRepository.MODE_NET -> return networker.vkDefault(accountId)
+        return when (mode) {
+            IOwnersRepository.MODE_CACHE -> getCachedFullData(accountId, userId)
+            IOwnersRepository.MODE_NET -> networker.vkDefault(accountId)
                 .users()
                 .getUserWallInfo(userId, Fields.FIELDS_FULL_USER, null)
                 .flatMapConcat { user ->
@@ -182,8 +182,9 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
                         .andThen(cache.storeUserDetails(accountId, userId, detailsEntity))
                         .andThen(getCachedFullData(accountId, userId))
                 }
+
+            else -> throw UnsupportedOperationException("Unsupported mode: $mode")
         }
-        throw UnsupportedOperationException("Unsupported mode: $mode")
     }
 
     override fun getMarketAlbums(
@@ -253,9 +254,9 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
         communityId: Long,
         mode: Int
     ): Flow<Pair<Community?, CommunityDetails?>> {
-        when (mode) {
-            IOwnersRepository.MODE_CACHE -> return getCachedGroupsFullData(accountId, communityId)
-            IOwnersRepository.MODE_NET -> return networker.vkDefault(accountId)
+        return when (mode) {
+            IOwnersRepository.MODE_CACHE -> getCachedGroupsFullData(accountId, communityId)
+            IOwnersRepository.MODE_NET -> networker.vkDefault(accountId)
                 .groups()
                 .getWallInfo(communityId.toString(), Fields.FIELDS_FULL_GROUP)
                 .flatMapConcat { dto ->
@@ -265,8 +266,9 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
                         .andThen(cache.storeGroupsDetails(accountId, communityId, details))
                         .andThen(getCachedGroupsFullData(accountId, communityId))
                 }
+
+            else -> toFlowThrowable(Exception("Not yet implemented"))
         }
-        return toFlowThrowable(Exception("Not yet implemented"))
     }
 
     override fun findFriendBirtday(accountId: Long): Flow<List<User>> {
@@ -463,9 +465,10 @@ class OwnersRepository(private val networker: INetworker, private val cache: IOw
             if (fromListOption?.value == null) null else fromListOption.value?.id
         var targetFromList: String? = null
         if (fromList != null) {
-            when (fromList) {
-                PeopleSearchCriteria.FromList.FRIENDS -> targetFromList = "friends"
-                PeopleSearchCriteria.FromList.SUBSCRIPTIONS -> targetFromList = "subscriptions"
+            targetFromList = when (fromList) {
+                PeopleSearchCriteria.FromList.FRIENDS -> "friends"
+                PeopleSearchCriteria.FromList.SUBSCRIPTIONS -> "subscriptions"
+                else -> null
             }
         }
         return networker

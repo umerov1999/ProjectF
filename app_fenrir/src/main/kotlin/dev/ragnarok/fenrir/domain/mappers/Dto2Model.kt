@@ -278,10 +278,10 @@ object Dto2Model {
     }
 
     fun transformFaveUser(favePage: FavePageResponse): FavePage {
-        var id = 0L
-        when (favePage.type) {
-            FavePageType.USER -> id = favePage.user?.id ?: 0L
-            FavePageType.COMMUNITY -> id = favePage.group?.id ?: 0L
+        val id = when (favePage.type) {
+            FavePageType.USER -> favePage.user?.id ?: 0L
+            FavePageType.COMMUNITY -> favePage.group?.id ?: 0L
+            else -> 0L
         }
         val page = FavePage(id)
             .setDescription(favePage.description)

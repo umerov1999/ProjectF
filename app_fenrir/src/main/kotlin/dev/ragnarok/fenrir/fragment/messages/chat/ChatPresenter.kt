@@ -886,7 +886,7 @@ class ChatPresenter(
     }
 
     private fun requestMore() {
-        val lastId = if (data.size > 0) data[data.size - 1].getObjectId() else null
+        val lastId = if (data.isNotEmpty()) data[data.size - 1].getObjectId() else null
         requestFromNet(lastId)
     }
 
@@ -2325,7 +2325,6 @@ class ChatPresenter(
         }
     }
 
-    @Suppress("BlockingMethodInNonBlockingContext")
     private fun checkGraffitiMessage(filePath: Sticker.LocalSticker): Flow<Optional<IAttachmentToken>> {
         if (filePath.path.nonNullNoEmpty()) {
             val docsApi = Includes.networkInterfaces.vkDefault(accountId).docs()

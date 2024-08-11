@@ -128,7 +128,7 @@ class CreatePhotoAlbumFragment : BaseMvpFragment<EditPhotoAlbumPresenter, IEditP
     }
 
     override fun onBackPressed(): Boolean {
-        return presenter?.fireBackButtonClick() ?: false
+        return presenter?.fireBackButtonClick() == true
     }
 
     override fun onResume() {

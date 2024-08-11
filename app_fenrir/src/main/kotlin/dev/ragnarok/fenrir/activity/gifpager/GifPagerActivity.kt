@@ -59,7 +59,7 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mFullscreen = savedInstanceState?.getBoolean("mFullscreen") ?: false
+        mFullscreen = savedInstanceState?.getBoolean("mFullscreen") == true
         mToolbar = findViewById(R.id.toolbar)
         val mContentRoot = findViewById<RelativeLayout>(R.id.gif_pager_root)
         setSupportActionBar(mToolbar)

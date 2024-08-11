@@ -5,7 +5,6 @@ import android.os.Build
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.Gravity
-import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
 import com.google.android.material.appbar.MaterialToolbar
@@ -78,7 +77,7 @@ class CenteredToolbar : MaterialToolbar {
         linear.addView(tvSubtitle)
         tvSubtitle?.visibility = GONE
         val lp =
-            LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
         lp.gravity = Gravity.CENTER
         linear.layoutParams = lp
         addView(linear)

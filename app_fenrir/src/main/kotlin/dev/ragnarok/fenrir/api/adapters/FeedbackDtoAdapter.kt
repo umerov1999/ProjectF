@@ -53,7 +53,7 @@ class FeedbackDtoAdapter : AbsDtoAdapter<VKApiBaseFeedback>("VKApiBaseFeedback")
     }
 
     private abstract class Parser<T : VKApiBaseFeedback?> {
-        protected abstract fun createDto(): T
+        abstract fun createDto(): T
         open fun parse(root: JsonObject): T {
             val dto = createDto()
             dto?.type = optString(root, "type")

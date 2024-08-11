@@ -12,7 +12,6 @@ import dev.ragnarok.fenrir.writeTypedObjectCompat
 class PhotoAlbum : AbsModel, ISomeones {
     private val id: Int
     override var ownerId = 0L
-        private set
     var size = 0
         private set
     var title: String? = null
