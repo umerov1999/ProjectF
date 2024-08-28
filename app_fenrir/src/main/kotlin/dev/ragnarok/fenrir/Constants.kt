@@ -18,8 +18,8 @@ object Constants {
     const val FILE_PROVIDER_AUTHORITY: String = "${BuildConfig.APPLICATION_ID}.file_provider"
     const val VK_ANDROID_APP_VERSION_NAME = "8.15"
     const val VK_ANDROID_APP_VERSION_CODE = "15271"
-    const val KATE_APP_VERSION_NAME = "114 lite"
-    const val KATE_APP_VERSION_CODE = "560"
+    const val KATE_APP_VERSION_NAME = "118 lite"
+    const val KATE_APP_VERSION_CODE = "566"
 
     const val IOS_APP_VERSION_CODE = "3893"
 
@@ -51,4 +51,6 @@ object Constants {
     const val LONGPOLL_TIMEOUT = 45L
     const val LONGPOLL_WAIT = 25L
     const val PICASSO_TIMEOUT = 15L
+
+    val CATALOG_V2_IGNORE_SECTIONS = arrayOf("podcasts", "radiostations")
 }

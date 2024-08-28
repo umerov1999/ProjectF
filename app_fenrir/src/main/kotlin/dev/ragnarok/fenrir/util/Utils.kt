@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.util
 
 import android.animation.Animator
 import android.animation.ObjectAnimator
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
@@ -40,6 +39,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import de.maxr1998.modernpreferences.PreferenceScreen
 import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.BuildConfig
 import dev.ragnarok.fenrir.Constants
@@ -119,6 +119,7 @@ object Utils {
     var follower_kick_mode = false
     private val displaySize = Point()
     private var device_id: String? = null
+    private var hiddenDevice_id: String? = null
     var density = 1f
         private set
     var scaledDensity = 1f
@@ -978,8 +979,11 @@ object Utils {
         get() = isHiddenAccount(Settings.get().accounts().current)
 
     fun isHiddenAccount(account_id: Long): Boolean {
-        val accType = Settings.get().accounts().getType(account_id)
-        return accType == AccountType.VK_ANDROID_HIDDEN || accType == AccountType.KATE_HIDDEN || accType == AccountType.IOS_HIDDEN
+        return isHiddenType(Settings.get().accounts().getType(account_id))
+    }
+
+    fun isHiddenType(@AccountType accountType: Int): Boolean {
+        return accountType == AccountType.VK_ANDROID_HIDDEN || accountType == AccountType.KATE_HIDDEN || accountType == AccountType.IOS_HIDDEN
     }
 
     val isOfficialVKCurrent: Boolean
@@ -990,16 +994,36 @@ object Utils {
         return accType == AccountType.VK_ANDROID || accType == AccountType.VK_ANDROID_HIDDEN || accType == AccountType.IOS_HIDDEN
     }
 
-    @SuppressLint("HardwareIds")
-    fun getDeviceId(context: Context): String {
-        if (device_id.isNullOrEmpty()) {
-            device_id = android.provider.Settings.Secure.getString(
-                context.contentResolver,
-                android.provider.Settings.Secure.ANDROID_ID
-            )
-            if (device_id.isNullOrEmpty()) device_id = "0123456789A"
+    fun getDeviceId(@AccountType type: Int, context: Context): String {
+        if (isHiddenType(type)) {
+            if (hiddenDevice_id.isNullOrEmpty()) {
+                hiddenDevice_id =
+                    PreferenceScreen.getPreferences(context).getString("hidden_device_id", null)
+                if (hiddenDevice_id.isNullOrEmpty()) {
+                    val allowedChars = ('a'..'f') + ('0'..'9')
+                    hiddenDevice_id = (1..16).map { allowedChars.random() }
+                        .joinToString("") + ":" + (1..32).map { allowedChars.random() }
+                        .joinToString("")
+                    PreferenceScreen.getPreferences(context).edit()
+                        .putString("hidden_device_id", hiddenDevice_id).apply()
+                }
+            }
+            return hiddenDevice_id!!
+        } else {
+            if (device_id.isNullOrEmpty()) {
+                device_id =
+                    PreferenceScreen.getPreferences(context).getString("installation_id", null)
+                if (device_id.isNullOrEmpty()) {
+                    val allowedChars = ('a'..'f') + ('0'..'9')
+                    device_id = (1..16).map { allowedChars.random() }
+                        .joinToString("") + ":" + (1..32).map { allowedChars.random() }
+                        .joinToString("")
+                    PreferenceScreen.getPreferences(context).edit()
+                        .putString("installation_id", device_id).apply()
+                }
+            }
+            return device_id!!
         }
-        return device_id!!
     }
 
     /**

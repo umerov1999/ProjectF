@@ -621,7 +621,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             return
         }
         mCompositeJob.add(
-            pushRegistrationResolver.resolvePushRegistration()
+            pushRegistrationResolver.resolvePushRegistration(mAccountId, this)
                 .hiddenIO()
         )
 

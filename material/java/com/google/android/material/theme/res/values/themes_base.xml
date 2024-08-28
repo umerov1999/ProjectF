@@ -146,12 +146,16 @@
     <item name="floatingActionButtonLargeTertiaryStyle">@style/Widget.Material3.FloatingActionButton.Large.Tertiary</item>
     <item name="floatingActionButtonLargeSurfaceStyle">@style/Widget.Material3.FloatingActionButton.Large.Surface</item>
     <item name="linearProgressIndicatorStyle">@style/Widget.Material3.LinearProgressIndicator</item>
+    <item name="loadingIndicatorStyle">@style/Widget.Material3.LoadingIndicator</item>
     <item name="materialIconButtonStyle">@style/Widget.Material3.Button.IconButton</item>
     <item name="materialIconButtonFilledStyle">@style/Widget.Material3.Button.IconButton.Filled</item>
     <item name="materialIconButtonFilledTonalStyle">@style/Widget.Material3.Button.IconButton.Filled.Tonal</item>
     <item name="materialIconButtonOutlinedStyle">@style/Widget.Material3.Button.IconButton.Outlined</item>
-    <item name="materialButtonOutlinedStyle">@style/Widget.Material3.Button.OutlinedButton</item>
     <item name="materialButtonStyle">@style/Widget.Material3.Button</item>
+    <item name="materialButtonTonalStyle">@style/Widget.Material3.Button.TonalButton</item>
+    <item name="materialButtonOutlinedStyle">@style/Widget.Material3.Button.OutlinedButton</item>
+    <item name="materialButtonElevatedStyle">@style/Widget.Material3.Button.ElevatedButton</item>
+    <item name="materialButtonGroupStyle">@style/Widget.Material3.MaterialButtonGroup</item>
     <item name="materialButtonToggleGroupStyle">@style/Widget.Material3.MaterialButtonToggleGroup</item>
     <item name="materialCardViewStyle">?attr/materialCardViewOutlinedStyle</item>
     <item name="materialCardViewOutlinedStyle">@style/Widget.Material3.CardView.Outlined</item>
@@ -219,6 +223,22 @@
     <item name="textAppearanceLabelLarge">@style/TextAppearance.Material3.LabelLarge</item>
     <item name="textAppearanceLabelMedium">@style/TextAppearance.Material3.LabelMedium</item>
     <item name="textAppearanceLabelSmall">@style/TextAppearance.Material3.LabelSmall</item>
+
+    <item name="textAppearanceDisplayLargeEmphasized">@style/TextAppearance.Material3.DisplayLarge.Emphasized</item>
+    <item name="textAppearanceDisplayMediumEmphasized">@style/TextAppearance.Material3.DisplayMedium.Emphasized</item>
+    <item name="textAppearanceDisplaySmallEmphasized">@style/TextAppearance.Material3.DisplaySmall.Emphasized</item>
+    <item name="textAppearanceHeadlineLargeEmphasized">@style/TextAppearance.Material3.HeadlineLarge.Emphasized</item>
+    <item name="textAppearanceHeadlineMediumEmphasized">@style/TextAppearance.Material3.HeadlineMedium.Emphasized</item>
+    <item name="textAppearanceHeadlineSmallEmphasized">@style/TextAppearance.Material3.HeadlineSmall.Emphasized</item>
+    <item name="textAppearanceTitleLargeEmphasized">@style/TextAppearance.Material3.TitleLarge.Emphasized</item>
+    <item name="textAppearanceTitleMediumEmphasized">@style/TextAppearance.Material3.TitleMedium.Emphasized</item>
+    <item name="textAppearanceTitleSmallEmphasized">@style/TextAppearance.Material3.TitleSmall.Emphasized</item>
+    <item name="textAppearanceBodyLargeEmphasized">@style/TextAppearance.Material3.BodyLarge.Emphasized</item>
+    <item name="textAppearanceBodyMediumEmphasized">@style/TextAppearance.Material3.BodyMedium.Emphasized</item>
+    <item name="textAppearanceBodySmallEmphasized">@style/TextAppearance.Material3.BodySmall.Emphasized</item>
+    <item name="textAppearanceLabelLargeEmphasized">@style/TextAppearance.Material3.LabelLarge.Emphasized</item>
+    <item name="textAppearanceLabelMediumEmphasized">@style/TextAppearance.Material3.LabelMedium.Emphasized</item>
+    <item name="textAppearanceLabelSmallEmphasized">@style/TextAppearance.Material3.LabelSmall.Emphasized</item>
 
     <!-- Default Framework Text styles. -->
     <item name="android:textAppearanceListItem">?attr/textAppearanceTitleMedium</item>
@@ -411,12 +431,16 @@
     <item name="floatingActionButtonLargeTertiaryStyle">@style/Widget.Material3.FloatingActionButton.Large.Tertiary</item>
     <item name="floatingActionButtonLargeSurfaceStyle">@style/Widget.Material3.FloatingActionButton.Large.Surface</item>
     <item name="linearProgressIndicatorStyle">@style/Widget.Material3.LinearProgressIndicator</item>
+    <item name="loadingIndicatorStyle">@style/Widget.Material3.LoadingIndicator</item>
     <item name="materialIconButtonStyle">@style/Widget.Material3.Button.IconButton</item>
     <item name="materialIconButtonFilledStyle">@style/Widget.Material3.Button.IconButton.Filled</item>
     <item name="materialIconButtonFilledTonalStyle">@style/Widget.Material3.Button.IconButton.Filled.Tonal</item>
     <item name="materialIconButtonOutlinedStyle">@style/Widget.Material3.Button.IconButton.Outlined</item>
-    <item name="materialButtonOutlinedStyle">@style/Widget.Material3.Button.OutlinedButton</item>
     <item name="materialButtonStyle">@style/Widget.Material3.Button</item>
+    <item name="materialButtonTonalStyle">@style/Widget.Material3.Button.TonalButton</item>
+    <item name="materialButtonOutlinedStyle">@style/Widget.Material3.Button.OutlinedButton</item>
+    <item name="materialButtonElevatedStyle">@style/Widget.Material3.Button.ElevatedButton</item>
+    <item name="materialButtonGroupStyle">@style/Widget.Material3.MaterialButtonGroup</item>
     <item name="materialButtonToggleGroupStyle">@style/Widget.Material3.MaterialButtonToggleGroup</item>
     <item name="materialCardViewStyle">?attr/materialCardViewOutlinedStyle</item>
     <item name="materialCardViewOutlinedStyle">@style/Widget.Material3.CardView.Outlined</item>
@@ -484,6 +508,22 @@
     <item name="textAppearanceLabelLarge">@style/TextAppearance.Material3.LabelLarge</item>
     <item name="textAppearanceLabelMedium">@style/TextAppearance.Material3.LabelMedium</item>
     <item name="textAppearanceLabelSmall">@style/TextAppearance.Material3.LabelSmall</item>
+
+    <item name="textAppearanceDisplayLargeEmphasized">@style/TextAppearance.Material3.DisplayLarge.Emphasized</item>
+    <item name="textAppearanceDisplayMediumEmphasized">@style/TextAppearance.Material3.DisplayMedium.Emphasized</item>
+    <item name="textAppearanceDisplaySmallEmphasized">@style/TextAppearance.Material3.DisplaySmall.Emphasized</item>
+    <item name="textAppearanceHeadlineLargeEmphasized">@style/TextAppearance.Material3.HeadlineLarge.Emphasized</item>
+    <item name="textAppearanceHeadlineMediumEmphasized">@style/TextAppearance.Material3.HeadlineMedium.Emphasized</item>
+    <item name="textAppearanceHeadlineSmallEmphasized">@style/TextAppearance.Material3.HeadlineSmall.Emphasized</item>
+    <item name="textAppearanceTitleLargeEmphasized">@style/TextAppearance.Material3.TitleLarge.Emphasized</item>
+    <item name="textAppearanceTitleMediumEmphasized">@style/TextAppearance.Material3.TitleMedium.Emphasized</item>
+    <item name="textAppearanceTitleSmallEmphasized">@style/TextAppearance.Material3.TitleSmall.Emphasized</item>
+    <item name="textAppearanceBodyLargeEmphasized">@style/TextAppearance.Material3.BodyLarge.Emphasized</item>
+    <item name="textAppearanceBodyMediumEmphasized">@style/TextAppearance.Material3.BodyMedium.Emphasized</item>
+    <item name="textAppearanceBodySmallEmphasized">@style/TextAppearance.Material3.BodySmall.Emphasized</item>
+    <item name="textAppearanceLabelLargeEmphasized">@style/TextAppearance.Material3.LabelLarge.Emphasized</item>
+    <item name="textAppearanceLabelMediumEmphasized">@style/TextAppearance.Material3.LabelMedium.Emphasized</item>
+    <item name="textAppearanceLabelSmallEmphasized">@style/TextAppearance.Material3.LabelSmall.Emphasized</item>
 
     <!-- Default Framework Text styles. -->
     <item name="android:textAppearanceListItem">?attr/textAppearanceTitleMedium</item>

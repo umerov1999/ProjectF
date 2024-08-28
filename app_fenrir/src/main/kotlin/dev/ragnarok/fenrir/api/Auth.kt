@@ -29,6 +29,7 @@ object Auth {
             Constants.DEVICE_COUNTRY_CODE, "utf-8"
         ) + "&device_id=" + URLEncoder.encode(
             Utils.getDeviceId(
+                Constants.DEFAULT_ACCOUNT_TYPE,
                 provideApplicationContext()
             ), "utf-8"
         ))

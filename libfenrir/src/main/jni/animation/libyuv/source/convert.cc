@@ -202,8 +202,10 @@ static int Planar16bitTo8bit(const uint16_t* src_y,
   }
 
   // Convert Y plane.
-  Convert16To8Plane(src_y, src_stride_y, dst_y, dst_stride_y, scale, width,
-                    height);
+  if (dst_y) {
+    Convert16To8Plane(src_y, src_stride_y, dst_y, dst_stride_y, scale, width,
+                      height);
+  }
   // Convert UV planes.
   Convert16To8Plane(src_u, src_stride_u, dst_u, dst_stride_u, scale, uv_width,
                     uv_height);
@@ -641,6 +643,155 @@ int I010ToP010(const uint16_t* src_y,
   return IxxxToPxxx(src_y, src_stride_y, src_u, src_stride_u, src_v,
                     src_stride_v, dst_y, dst_stride_y, dst_uv, dst_stride_uv,
                     width, height, 1, 1, 10);
+}
+
+LIBYUV_API
+int I010ToNV12(const uint16_t* src_y,
+               int src_stride_y,
+               const uint16_t* src_u,
+               int src_stride_u,
+               const uint16_t* src_v,
+               int src_stride_v,
+               uint8_t* dst_y,
+               int dst_stride_y,
+               uint8_t* dst_uv,
+               int dst_stride_uv,
+               int width,
+               int height) {
+  int y;
+  int halfwidth = (width + 1) >> 1;
+  int halfheight = (height + 1) >> 1;
+  const int scale = 16385;  // 16384 for 10 bits
+  void (*Convert16To8Row)(const uint16_t* src_y, uint8_t* dst_y, int scale,
+                          int width) = Convert16To8Row_C;
+  void (*MergeUVRow)(const uint8_t* src_u, const uint8_t* src_v,
+                      uint8_t* dst_uv, int width) = MergeUVRow_C;
+  if ((!src_y && dst_y) || !src_u || !src_v || !dst_uv || width <= 0 ||
+      height == 0) {
+    return -1;
+  }
+  // Negative height means invert the image.
+  if (height < 0) {
+    height = -height;
+    halfheight = (height + 1) >> 1;
+    src_y = src_y + (height - 1) * src_stride_y;
+    src_u = src_u + (halfheight - 1) * src_stride_u;
+    src_v = src_v + (halfheight - 1) * src_stride_v;
+    src_stride_y = -src_stride_y;
+    src_stride_u = -src_stride_u;
+    src_stride_v = -src_stride_v;
+  }
+#if defined(HAS_CONVERT16TO8ROW_NEON)
+  if (TestCpuFlag(kCpuHasNEON)) {
+    Convert16To8Row = Convert16To8Row_Any_NEON;
+    if (IS_ALIGNED(width, 16)) {
+      Convert16To8Row = Convert16To8Row_NEON;
+    }
+  }
+#endif
+#if defined(HAS_CONVERT16TO8ROW_SSSE3)
+  if (TestCpuFlag(kCpuHasSSSE3)) {
+    Convert16To8Row = Convert16To8Row_Any_SSSE3;
+    if (IS_ALIGNED(width, 16)) {
+      Convert16To8Row = Convert16To8Row_SSSE3;
+    }
+  }
+#endif
+#if defined(HAS_CONVERT16TO8ROW_AVX2)
+  if (TestCpuFlag(kCpuHasAVX2)) {
+    Convert16To8Row = Convert16To8Row_Any_AVX2;
+    if (IS_ALIGNED(width, 32)) {
+      Convert16To8Row = Convert16To8Row_AVX2;
+    }
+  }
+#endif
+#if defined(HAS_CONVERT16TO8ROW_AVX512BW)
+  if (TestCpuFlag(kCpuHasAVX512BW)) {
+    Convert16To8Row = Convert16To8Row_Any_AVX512BW;
+    if (IS_ALIGNED(width, 64)) {
+      Convert16To8Row = Convert16To8Row_AVX512BW;
+    }
+  }
+#endif
+
+#if defined(HAS_MERGEUVROW_SSE2)
+  if (TestCpuFlag(kCpuHasSSE2)) {
+    MergeUVRow = MergeUVRow_Any_SSE2;
+    if (IS_ALIGNED(halfwidth, 16)) {
+      MergeUVRow = MergeUVRow_SSE2;
+    }
+  }
+#endif
+#if defined(HAS_MERGEUVROW_AVX2)
+  if (TestCpuFlag(kCpuHasAVX2)) {
+    MergeUVRow = MergeUVRow_Any_AVX2;
+    if (IS_ALIGNED(halfwidth, 16)) {
+      MergeUVRow = MergeUVRow_AVX2;
+    }
+  }
+#endif
+#if defined(HAS_MERGEUVROW_AVX512BW)
+  if (TestCpuFlag(kCpuHasAVX512BW)) {
+    MergeUVRow = MergeUVRow_Any_AVX512BW;
+    if (IS_ALIGNED(halfwidth, 32)) {
+      MergeUVRow = MergeUVRow_AVX512BW;
+    }
+  }
+#endif
+#if defined(HAS_MERGEUVROW_NEON)
+  if (TestCpuFlag(kCpuHasNEON)) {
+    MergeUVRow = MergeUVRow_Any_NEON;
+    if (IS_ALIGNED(halfwidth, 16)) {
+      MergeUVRow = MergeUVRow_NEON;
+    }
+  }
+#endif
+#if defined(HAS_MERGEUVROW_MSA)
+  if (TestCpuFlag(kCpuHasMSA)) {
+    MergeUVRow = MergeUVRow_Any_MSA;
+    if (IS_ALIGNED(halfwidth, 16)) {
+      MergeUVRow = MergeUVRow_MSA;
+    }
+  }
+#endif
+#if defined(HAS_MERGEUVROW_LSX)
+  if (TestCpuFlag(kCpuHasLSX)) {
+    MergeUVRow = MergeUVRow_Any_LSX;
+    if (IS_ALIGNED(halfwidth, 16)) {
+      MergeUVRow = MergeUVRow_LSX;
+    }
+  }
+#endif
+#if defined(HAS_MERGEUVROW_RVV)
+  if (TestCpuFlag(kCpuHasRVV)) {
+    MergeUVRow = MergeUVRow_RVV;
+  }
+#endif
+
+  // Convert Y plane.
+  if (dst_y) {
+    Convert16To8Plane(src_y, src_stride_y, dst_y, dst_stride_y, scale, width,
+                      height);
+  }
+
+  {
+    // Allocate a row of uv.
+    align_buffer_64(row_u, ((halfwidth + 31) & ~31) * 2);
+    uint8_t* row_v = row_u + ((halfwidth + 31) & ~31);
+    if (!row_u)
+      return 1;
+
+    for (y = 0; y < halfheight; ++y) {
+      Convert16To8Row(src_u, row_u, scale, halfwidth);
+      Convert16To8Row(src_v, row_v, scale, halfwidth);
+      MergeUVRow(row_u, row_v, dst_uv, halfwidth);
+      src_u += src_stride_u;
+      src_v += src_stride_v;
+      dst_uv += dst_stride_uv;
+    }
+    free_aligned_buffer_64(row_u);
+  }
+  return 0;
 }
 
 LIBYUV_API
@@ -4145,6 +4296,66 @@ int Android420ToI420(const uint8_t* src_y,
                                 src_stride_v, src_pixel_stride_uv, dst_y,
                                 dst_stride_y, dst_u, dst_stride_u, dst_v,
                                 dst_stride_v, width, height, kRotate0);
+}
+
+// depth is source bits measured from lsb; For msb use 16
+static int Biplanar16bitTo8bit(const uint16_t* src_y,
+                               int src_stride_y,
+                               const uint16_t* src_uv,
+                               int src_stride_uv,
+                               uint8_t* dst_y,
+                               int dst_stride_y,
+                               uint8_t* dst_uv,
+                               int dst_stride_uv,
+                               int width,
+                               int height,
+                               int subsample_x,
+                               int subsample_y,
+                               int depth) {
+  int uv_width = SUBSAMPLE(width, subsample_x, subsample_x);
+  int uv_height = SUBSAMPLE(height, subsample_y, subsample_y);
+  int scale = 1 << (24 - depth);
+  if ((!src_y && dst_y) || !src_uv || !dst_uv || width <= 0 || height == 0) {
+    return -1;
+  }
+  // Negative height means invert the image.
+  if (height < 0) {
+    height = -height;
+    uv_height = -uv_height;
+    src_y = src_y + (height - 1) * src_stride_y;
+    src_uv = src_uv + (uv_height - 1) * src_stride_uv;
+    src_stride_y = -src_stride_y;
+    src_stride_uv = -src_stride_uv;
+  }
+
+  // Convert Y plane.
+  if (dst_y) {
+    Convert16To8Plane(src_y, src_stride_y, dst_y, dst_stride_y, scale, width,
+                      height);
+  }
+  // Convert UV planes.
+  Convert16To8Plane(src_uv, src_stride_uv, dst_uv, dst_stride_uv, scale,
+                    uv_width * 2, uv_height);
+  return 0;
+}
+
+// Convert 10 bit P010 to 8 bit NV12.
+// Depth set to 16 because P010 uses 10 msb and this function keeps the upper 8
+// bits of the specified number of bits.
+LIBYUV_API
+int P010ToNV12(const uint16_t* src_y,
+               int src_stride_y,
+               const uint16_t* src_uv,
+               int src_stride_uv,
+               uint8_t* dst_y,
+               int dst_stride_y,
+               uint8_t* dst_uv,
+               int dst_stride_uv,
+               int width,
+               int height) {
+  return Biplanar16bitTo8bit(src_y, src_stride_y, src_uv, src_stride_uv, dst_y,
+                             dst_stride_y, dst_uv, dst_stride_uv, width, height,
+                             1, 1, 16);
 }
 
 #ifdef __cplusplus

@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.model.catalog_v2_audio
 
 import android.os.Parcel
 import android.os.Parcelable
+import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.api.model.catalog_v2_audio.VKApiCatalogV2ListResponse
 import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory.Companion.TYPE_CATALOG
 import dev.ragnarok.fenrir.orZero
@@ -21,11 +22,16 @@ class CatalogV2List : Parcelable {
         default_section = object_api.catalog?.default_section
         sections = ArrayList(object_api.catalog?.sections?.size.orZero())
         for (i in object_api.catalog?.sections.orEmpty()) {
-            if (i.url?.contains("?section=podcasts") == true
-            ) {
-                continue
+            var need = true
+            for (s in Constants.CATALOG_V2_IGNORE_SECTIONS) {
+                if (i.url?.contains("?section=$s") == true) {
+                    need = false
+                    break
+                }
             }
-            sections?.add(CatalogV2ListItem(i))
+            if (need) {
+                sections?.add(CatalogV2ListItem(i))
+            }
         }
     }
 

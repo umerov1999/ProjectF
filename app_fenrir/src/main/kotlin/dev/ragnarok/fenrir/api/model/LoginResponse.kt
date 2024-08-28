@@ -36,4 +36,7 @@ class LoginResponse {
 
     @SerialName("validation_sid")
     var validation_sid: String? = null
+
+    @SerialName("expired_at")
+    var expired_at: Long = 0
 }

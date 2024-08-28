@@ -90,6 +90,7 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
             } else {
                 val type = t.validationType
                 val sid = t.sid
+                val phone = t.phone
                 when {
                     "2fa_sms".equals(type, ignoreCase = true) || "2fa_libverify".equals(
                         type,
@@ -114,11 +115,13 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
                 if (!sid.isNullOrEmpty() && requireSmsCode) {
                     appendJob(networker.vkAuth()
                         .validatePhone(
+                            phone,
                             Constants.API_ID,
                             Constants.API_ID,
                             Constants.SECRET,
                             sid,
                             Constants.AUTH_API_VERSION,
+                            true,
                             true
                         )
                         .delayedFlow(1000)

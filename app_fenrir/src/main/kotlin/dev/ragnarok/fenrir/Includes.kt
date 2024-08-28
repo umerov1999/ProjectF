@@ -20,7 +20,6 @@ import dev.ragnarok.fenrir.media.story.AppStoryPlayerFactory
 import dev.ragnarok.fenrir.media.story.IStoryPlayerFactory
 import dev.ragnarok.fenrir.media.voice.IVoicePlayerFactory
 import dev.ragnarok.fenrir.media.voice.VoicePlayerFactory
-import dev.ragnarok.fenrir.push.IDeviceIdProvider
 import dev.ragnarok.fenrir.push.IPushRegistrationResolver
 import dev.ragnarok.fenrir.push.PushRegistrationResolver
 import dev.ragnarok.fenrir.settings.IProxySettings
@@ -29,7 +28,6 @@ import dev.ragnarok.fenrir.settings.ProxySettingsImpl
 import dev.ragnarok.fenrir.settings.SettingsImpl
 import dev.ragnarok.fenrir.upload.IUploadManager
 import dev.ragnarok.fenrir.upload.UploadManagerImpl
-import dev.ragnarok.fenrir.util.Utils
 
 object Includes {
     val proxySettings: IProxySettings by lazy {
@@ -50,10 +48,6 @@ object Includes {
 
     val pushRegistrationResolver: IPushRegistrationResolver by lazy {
         PushRegistrationResolver(
-            object : IDeviceIdProvider {
-                override val deviceId: String
-                    get() = Utils.getDeviceId(provideApplicationContext())
-            },
             settings,
             networkInterfaces
         )

@@ -34,7 +34,7 @@ class FcmListenerService : FirebaseMessagingService() {
     override fun onNewToken(s: String) {
         super.onNewToken(s)
         pushRegistrationResolver
-            .resolvePushRegistration()
+            .resolvePushRegistration(Settings.get().accounts().current, applicationContext)
             .hiddenIO()
     }
 
@@ -52,7 +52,7 @@ class FcmListenerService : FirebaseMessagingService() {
             return
         }
         val registrationResolver = pushRegistrationResolver
-        if (!registrationResolver.canReceivePushNotification()) {
+        if (!registrationResolver.canReceivePushNotification(accountId)) {
             Logger.d(TAG, "Invalid push registration on VK")
             return
         }
@@ -115,20 +115,11 @@ class FcmListenerService : FirebaseMessagingService() {
                 PushType.BIRTHDAY -> BirthdayFCMMessage.fromRemoteMessage(message)
                     ?.notify(context, accountId)
 
-                PushType.VALIDATE_DEVICE -> NotificationHelper.showSimpleNotification(
+                PushType.SHOW_MESSAGE, PushType.VALIDATE_DEVICE -> NotificationHelper.showSimpleNotification(
                     context,
                     message.data["body"],
                     message.data["title"],
-                    null,
                     message.data["url"]
-                )
-
-                PushType.SHOW_MESSAGE -> NotificationHelper.showSimpleNotification(
-                    context,
-                    message.data["body"],
-                    message.data["title"],
-                    null,
-                    null
                 )
 
                 PushType.MENTION -> MentionMessage.fromRemoteMessage(message)

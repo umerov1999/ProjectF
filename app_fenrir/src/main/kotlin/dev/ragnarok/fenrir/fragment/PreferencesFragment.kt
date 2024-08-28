@@ -2111,7 +2111,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
         view.findViewById<TextInputEditText>(R.id.item_user_agent)
             .setText(UserAgentTool.USER_AGENT_CURRENT_ACCOUNT)
         view.findViewById<TextInputEditText>(R.id.item_device_id)
-            .setText(Utils.getDeviceId(requireActivity()))
+            .setText(Utils.getDeviceId(Settings.get().accounts().currentType, requireActivity()))
         view.findViewById<TextInputEditText>(R.id.item_fcm_token).setText(pushToken())
         view.findViewById<TextInputEditText>(R.id.item_access_token)
             .setText(Settings.get().accounts().currentAccessToken)

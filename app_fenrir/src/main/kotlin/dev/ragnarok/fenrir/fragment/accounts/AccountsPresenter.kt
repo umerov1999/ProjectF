@@ -350,14 +350,15 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
         try {
             val root = JsonObjectBuilder()
             val owner = Users?.getById(user_id)
+            val type = Settings.get().accounts().getType(user_id)
             root.put("api_ver", Constants.API_VERSION)
             root.put("user_name", owner?.fullName)
             root.put("user_id", user_id)
-            root.put("type", Settings.get().accounts().getType(user_id))
+            root.put("type", type)
             root.put("domain", owner?.domain)
             root.put("exchange_token", token)
             root.put("avatar", owner?.maxSquareAvatar)
-            root.put("device_id", Utils.getDeviceId(context))
+            root.put("device_id", Utils.getDeviceId(type, context))
             root.put("sak_version", "1.102")
             root.put("last_access_token", Settings.get().accounts().getAccessToken(user_id))
             val login = Settings.get().accounts().getLogin(user_id)
@@ -672,7 +673,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                 .add("lang", Constants.DEVICE_COUNTRY_CODE)
                 .add("https", "1")
                 .add(
-                    "device_id", Utils.getDeviceId(Includes.provideApplicationContext())
+                    "device_id", Utils.getDeviceId(type, Includes.provideApplicationContext())
                 )
             return Includes.networkInterfaces.getVkRestProvider().provideRawHttpClient(type, null)
                 .flatMapConcat { client ->

@@ -194,10 +194,21 @@ static inline uint8_t _opMaskDifference(uint8_t s, uint8_t d, uint8_t a)
 }
 
 
+static inline uint8_t _opMaskLighten(uint8_t s, uint8_t d, uint8_t a)
+{
+    return (s > d) ? s : d;
+}
+
+
+static inline uint8_t _opMaskDarken(uint8_t s, uint8_t d, uint8_t a)
+{
+    return (s < d) ? s : d;
+}
+
+
 static inline bool _direct(CompositeMethod method)
 {
-    //subtract & Intersect allows the direct composition
-    if (method == CompositeMethod::SubtractMask || method == CompositeMethod::IntersectMask) return true;
+    if (method == CompositeMethod::SubtractMask || method == CompositeMethod::IntersectMask || method == CompositeMethod::DarkenMask) return true;
     return false;
 }
 
@@ -209,6 +220,8 @@ static inline SwMask _getMaskOp(CompositeMethod method)
         case CompositeMethod::SubtractMask: return _opMaskSubtract;
         case CompositeMethod::DifferenceMask: return _opMaskDifference;
         case CompositeMethod::IntersectMask: return _opMaskIntersect;
+        case CompositeMethod::LightenMask: return _opMaskLighten;
+        case CompositeMethod::DarkenMask: return _opMaskDarken;
         default: return nullptr;
     }
 }
@@ -1974,13 +1987,12 @@ bool rasterStroke(SwSurface* surface, SwShape* shape, uint8_t r, uint8_t g, uint
 }
 
 
-bool rasterImage(SwSurface* surface, SwImage* image, const RenderMesh* mesh, const Matrix& transform, const SwBBox& bbox, uint8_t opacity)
+bool rasterImage(SwSurface* surface, SwImage* image, const Matrix& transform, const SwBBox& bbox, uint8_t opacity)
 {
     //Outside of the viewport, skip the rendering
     if (bbox.max.x < 0 || bbox.max.y < 0 || bbox.min.x >= static_cast<SwCoord>(surface->w) || bbox.min.y >= static_cast<SwCoord>(surface->h)) return true;
 
-    if (mesh && mesh->triangleCnt > 0) return _rasterTexmapPolygonMesh(surface, image, mesh, transform, &bbox, opacity);
-    else return _rasterImage(surface, image, transform, bbox, opacity);
+    return _rasterImage(surface, image, transform, bbox, opacity);
 }
 
 

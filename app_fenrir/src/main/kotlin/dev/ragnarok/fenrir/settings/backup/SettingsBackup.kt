@@ -22,6 +22,7 @@ class SettingsBackup {
     @Suppress("unused")
     class AppPreferencesList {
         //Main
+        var hidden_device_id: String? = null
         var send_by_enter: Boolean? = null
         var theme_overlay: String? = null
         var audio_round_icon: Boolean? = null

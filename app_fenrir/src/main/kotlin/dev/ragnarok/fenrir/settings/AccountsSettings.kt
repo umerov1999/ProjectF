@@ -41,7 +41,7 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
     @SuppressLint("CheckResult")
     private fun fireAccountChange() {
         currentPublisher.myEmit(current)
-        pushRegistrationResolver.resolvePushRegistration().hiddenIO()
+        pushRegistrationResolver.resolvePushRegistration(current, app).hiddenIO()
     }
 
     override var current: Long

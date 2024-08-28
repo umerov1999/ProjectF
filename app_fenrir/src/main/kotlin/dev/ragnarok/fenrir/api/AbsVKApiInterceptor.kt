@@ -77,7 +77,7 @@ abstract class AbsVKApiInterceptor(private val version: String) :
         if (!hasDeviceId) {
             formBuilder.add(
                 "device_id",
-                Utils.getDeviceId(provideApplicationContext())
+                Utils.getDeviceId(type, provideApplicationContext())
             )
         }
         return chain.proceed(

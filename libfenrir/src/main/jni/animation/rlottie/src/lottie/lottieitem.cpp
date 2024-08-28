@@ -73,6 +73,17 @@ static bool strokeProp(rlottie::Property prop)
     }
 }
 
+static bool trimProp(rlottie::Property prop)
+{
+    switch (prop) {
+    case rlottie::Property::TrimStart:
+    case rlottie::Property::TrimEnd:
+        return true;
+    default:
+        return false;
+    }
+}
+
 static renderer::Layer *createLayerItem(model::Layer *layerData,
                                         VArenaAlloc * allocator)
 {
@@ -1385,6 +1396,21 @@ bool renderer::GradientStroke::updateContent(int frameNo, const VMatrix &matrix,
     return !vIsZero(combinedAlpha);
 }
 
+bool renderer::Trim::resolveKeyPath(LOTKeyPath &keyPath, uint32_t depth,
+                                      LOTVariant &value)
+{
+    if (!keyPath.matches(mModel.name(), depth)) {
+        return false;
+    }
+
+    if (keyPath.fullyResolvesTo(mModel.name(), depth) &&
+        trimProp(value.property())) {
+        mModel.filter()->addValue(value);
+        return true;
+    }
+    return false;
+}
+
 void renderer::Trim::update(int frameNo, const VMatrix & /*parentMatrix*/,
                             float /*parentAlpha*/, const DirtyFlag & /*flag*/)
 {
@@ -1392,7 +1418,7 @@ void renderer::Trim::update(int frameNo, const VMatrix & /*parentMatrix*/,
 
     if (mCache.mFrameNo == frameNo) return;
 
-    model::Trim::Segment segment = mData->segment(frameNo);
+    model::Trim::Segment segment = mModel.segment(frameNo);
 
     if (!(vCompare(mCache.mSegment.start, segment.start) &&
           vCompare(mCache.mSegment.end, segment.end))) {

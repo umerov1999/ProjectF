@@ -292,8 +292,9 @@ RenderData Paint::Impl::update(RenderMethod* renderer, const Matrix& pm, Array<R
     opacity = MULTIPLY(opacity, this->opacity);
 
     RenderData rd = nullptr;
-    auto m = pm * tr.m;
-    PAINT_METHOD(rd, update(renderer, m, clips, opacity, newFlag, clipper));
+
+    tr.cm = pm * tr.m;
+    PAINT_METHOD(rd, update(renderer, tr.cm, clips, opacity, newFlag, clipper));
 
     /* 3. Composition Post Processing */
     if (compFastTrack == Result::Success) renderer->viewport(viewport);
@@ -303,13 +304,13 @@ RenderData Paint::Impl::update(RenderMethod* renderer, const Matrix& pm, Array<R
 }
 
 
-bool Paint::Impl::bounds(float* x, float* y, float* w, float* h, bool transformed, bool stroking)
+bool Paint::Impl::bounds(float* x, float* y, float* w, float* h, bool transformed, bool stroking, bool origin)
 {
     bool ret;
-    const auto& m = this->transform();
+    const auto& m = this->transform(origin);
 
     //Case: No transformed, quick return!
-    if (!transformed || tvg::identity(&m)) {
+    if (!transformed || identity(&m)) {
         PAINT_METHOD(ret, bounds(x, y, w, h, stroking));
         return ret;
     }
@@ -347,6 +348,26 @@ bool Paint::Impl::bounds(float* x, float* y, float* w, float* h, bool transforme
     if (h) *h = y2 - y1;
 
     return ret;
+}
+
+
+void Paint::Impl::reset()
+{
+    if (compData) {
+        if (P(compData->target)->unref() == 0) delete(compData->target);
+        free(compData);
+        compData = nullptr;
+    }
+    tvg::identity(&tr.m);
+    tr.degree = 0.0f;
+    tr.scale = 1.0f;
+    tr.overriding = false;
+
+    blendMethod = BlendMethod::Normal;
+    renderFlag = RenderUpdateFlag::None;
+    ctxFlag = ContextFlag::Invalid;
+    opacity = 255;
+    paint->id = 0;
 }
 
 
@@ -401,7 +422,7 @@ Matrix Paint::transform() noexcept
 
 Result Paint::bounds(float* x, float* y, float* w, float* h, bool transformed) const noexcept
 {
-    if (pImpl->bounds(x, y, w, h, transformed, true)) return Result::Success;
+    if (pImpl->bounds(x, y, w, h, transformed, true, transformed)) return Result::Success;
     return Result::InsufficientCondition;
 }
 
@@ -414,6 +435,11 @@ Paint* Paint::duplicate() const noexcept
 
 Result Paint::composite(std::unique_ptr<Paint> target, CompositeMethod method) noexcept
 {
+    if (method == CompositeMethod::ClipPath && target && target->type() != Type::Shape) {
+        TVGERR("RENDERER", "ClipPath only allows the Shape!");
+        return Result::NonSupport;
+    }
+
     auto p = target.release();
     if (pImpl->composite(this, p, method)) return Result::Success;
     delete(p);
@@ -456,7 +482,7 @@ TVG_DEPRECATED uint32_t Paint::identifier() const noexcept
 }
 
 
-Result Paint::blend(BlendMethod method) const noexcept
+Result Paint::blend(BlendMethod method) noexcept
 {
     if (pImpl->blendMethod != method) {
         pImpl->blendMethod = method;

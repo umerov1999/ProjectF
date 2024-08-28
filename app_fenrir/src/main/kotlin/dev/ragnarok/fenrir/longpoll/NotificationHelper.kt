@@ -512,7 +512,6 @@ object NotificationHelper {
         context: Context,
         body: String?,
         pTitle: String?,
-        type: String?,
         url: String?
     ) {
         var title = pTitle
@@ -525,9 +524,6 @@ object NotificationHelper {
         if (hasOreo()) {
             nManager.createNotificationChannel(getChatMessageChannel(context))
             nManager.createNotificationChannel(getGroupChatMessageChannel(context))
-        }
-        if (!type.isNullOrEmpty()) {
-            title += ", Type: $type"
         }
         val builder = NotificationCompat.Builder(context, chatMessageChannelId)
             .setSmallIcon(R.drawable.client_round)

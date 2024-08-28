@@ -79,7 +79,7 @@ float _bezAt(const Bezier& bz, float at, float length, LengthFunc lineLengthFunc
         Bezier left;
         right.split(t, left);
         length = _bezLength(left, lineLengthFunc);
-        if (fabsf(length - at) < BEZIER_EPSILON || fabsf(smallest - biggest) < BEZIER_EPSILON) {
+        if (fabsf(length - at) < BEZIER_EPSILON || fabsf(smallest - biggest) < 1e-3f) {
             break;
         }
         if (length < at) {
@@ -212,6 +212,17 @@ Point operator*(const Point& pt, const Matrix& m)
 }
 
 
+Point normal(const Point& p1, const Point& p2)
+{
+    auto dir = p2 - p1;
+    auto len = length(dir);
+    if (tvg::zero(len)) return {};
+
+    auto unitDir = dir / len;
+    return {-unitDir.y, unitDir.x};
+}
+
+
 float Line::length() const
 {
     return _lineLength(pt1, pt2);
@@ -273,27 +284,27 @@ float Bezier::lengthApprox() const
 }
 
 
-void Bezier::split(float at, Bezier& left)
+void Bezier::split(float t, Bezier& left)
 {
     left.start = start;
 
-    left.ctrl1.x = start.x + at * (ctrl1.x - start.x);
-    left.ctrl1.y = start.y + at * (ctrl1.y - start.y);
+    left.ctrl1.x = start.x + t * (ctrl1.x - start.x);
+    left.ctrl1.y = start.y + t * (ctrl1.y - start.y);
 
-    left.ctrl2.x = ctrl1.x + at * (ctrl2.x - ctrl1.x); //temporary holding spot
-    left.ctrl2.y = ctrl1.y + at * (ctrl2.y - ctrl1.y); //temporary holding spot
+    left.ctrl2.x = ctrl1.x + t * (ctrl2.x - ctrl1.x); //temporary holding spot
+    left.ctrl2.y = ctrl1.y + t * (ctrl2.y - ctrl1.y); //temporary holding spot
 
-    ctrl2.x = ctrl2.x + at * (end.x - ctrl2.x);
-    ctrl2.y = ctrl2.y + at * (end.y - ctrl2.y);
+    ctrl2.x = ctrl2.x + t * (end.x - ctrl2.x);
+    ctrl2.y = ctrl2.y + t * (end.y - ctrl2.y);
 
-    ctrl1.x = left.ctrl2.x + at * (ctrl2.x - left.ctrl2.x);
-    ctrl1.y = left.ctrl2.y + at * (ctrl2.y - left.ctrl2.y);
+    ctrl1.x = left.ctrl2.x + t * (ctrl2.x - left.ctrl2.x);
+    ctrl1.y = left.ctrl2.y + t * (ctrl2.y - left.ctrl2.y);
 
-    left.ctrl2.x = left.ctrl1.x + at * (left.ctrl2.x - left.ctrl1.x);
-    left.ctrl2.y = left.ctrl1.y + at * (left.ctrl2.y - left.ctrl1.y);
+    left.ctrl2.x = left.ctrl1.x + t * (left.ctrl2.x - left.ctrl1.x);
+    left.ctrl2.y = left.ctrl1.y + t * (left.ctrl2.y - left.ctrl1.y);
 
-    left.end.x = start.x = left.ctrl2.x + at * (ctrl1.x - left.ctrl2.x);
-    left.end.y = start.y = left.ctrl2.y + at * (ctrl1.y - left.ctrl2.y);
+    left.end.x = start.x = left.ctrl2.x + t * (ctrl1.x - left.ctrl2.x);
+    left.end.y = start.y = left.ctrl2.y + t * (ctrl1.y - left.ctrl2.y);
 }
 
 

@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.push
 
+import android.content.Context
 import android.os.Build
 import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.Constants
@@ -8,8 +9,10 @@ import dev.ragnarok.fenrir.api.ApiException
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.service.ApiErrorCodes
 import dev.ragnarok.fenrir.settings.ISettings
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.VKPushRegistration
 import dev.ragnarok.fenrir.util.Logger.d
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.deviceName
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.andThen
@@ -22,12 +25,10 @@ import kotlinx.coroutines.flow.map
 import java.util.Locale
 
 class PushRegistrationResolver(
-    private val deviceIdProvider: IDeviceIdProvider,
     private val settings: ISettings,
     private val networker: INetworker
 ) : IPushRegistrationResolver {
-    override fun canReceivePushNotification(): Boolean {
-        val accountId = settings.accounts().current
+    override fun canReceivePushNotification(accountId: Long): Boolean {
         if (accountId == ISettings.IAccountsSettings.INVALID_ID) {
             return false
         }
@@ -40,21 +41,22 @@ class PushRegistrationResolver(
         return can
     }
 
-    override fun resolvePushRegistration(): Flow<Boolean> {
-        return info
-            .flatMapConcat { data ->
+    override fun resolvePushRegistration(accountId: Long, context: Context): Flow<Boolean> {
+        return FCMToken.fcmToken
+            .flatMapConcat { fcmToken ->
                 val available = settings.pushSettings().registrations
-                val accountId = settings.accounts().current
                 if (accountId == ISettings.IAccountsSettings.INVALID_ID && available.isEmpty() || accountId <= 0 || settings.accounts()
                         .getType(accountId) != Constants.DEFAULT_ACCOUNT_TYPE
                 ) {
                     emptyTaskFlow()
                 } else {
+                    val deviceId =
+                        Utils.getDeviceId(Settings.get().accounts().getType(accountId), context)
                     val needUnregister: MutableSet<VKPushRegistration> = HashSet(0)
                     var hasOk = false
                     var hasRemove = false
                     for (registered in available) {
-                        val reason = analyzeRegistration(registered, data, accountId)
+                        val reason = analyzeRegistration(registered, deviceId, fcmToken, accountId)
                         d(TAG, "Reason: $reason")
                         when (reason) {
                             Reason.UNREGISTER_AND_REMOVE -> needUnregister.add(registered)
@@ -77,9 +79,9 @@ class PushRegistrationResolver(
                                 val current =
                                     VKPushRegistration().set(
                                         accountId,
-                                        data.deviceId,
+                                        deviceId,
                                         vkToken,
-                                        data.fcmToken
+                                        fcmToken
                                     )
                                 target.add(current)
                                 completable = completable.andThen(register(current))
@@ -183,15 +185,16 @@ class PushRegistrationResolver(
 
     private fun analyzeRegistration(
         available: VKPushRegistration,
-        data: Data,
+        deviceId: String,
+        fcmToken: String,
         accountId: Long
     ): Reason {
         when {
-            data.deviceId != available.deviceId -> {
+            deviceId != available.deviceId -> {
                 return Reason.REMOVE
             }
 
-            data.fcmToken != available.fcmToken -> {
+            fcmToken != available.fcmToken -> {
                 return Reason.REMOVE
             }
 
@@ -207,16 +210,10 @@ class PushRegistrationResolver(
         }
     }
 
-    private val info: Flow<Data>
-        get() = FCMToken.fcmToken.map {
-            Data(it, deviceIdProvider.deviceId)
-        }
-
     private enum class Reason {
         OK, REMOVE, UNREGISTER_AND_REMOVE
     }
 
-    private class Data(val fcmToken: String, val deviceId: String)
     companion object {
         private val TAG = PushRegistrationResolver::class.simpleName.orEmpty()
     }

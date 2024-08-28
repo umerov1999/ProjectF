@@ -1,8 +1,9 @@
 package dev.ragnarok.fenrir.push
 
+import android.content.Context
 import kotlinx.coroutines.flow.Flow
 
 interface IPushRegistrationResolver {
-    fun canReceivePushNotification(): Boolean
-    fun resolvePushRegistration(): Flow<Boolean>
+    fun canReceivePushNotification(accountId: Long): Boolean
+    fun resolvePushRegistration(accountId: Long, context: Context): Flow<Boolean>
 }

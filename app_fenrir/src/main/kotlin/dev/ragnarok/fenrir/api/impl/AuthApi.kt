@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.api.impl
 
+import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Constants.DEVICE_COUNTRY_CODE
 import dev.ragnarok.fenrir.Includes.provideApplicationContext
 import dev.ragnarok.fenrir.api.ApiException
@@ -8,6 +9,7 @@ import dev.ragnarok.fenrir.api.CaptchaNeedException
 import dev.ragnarok.fenrir.api.IDirectLoginServiceProvider
 import dev.ragnarok.fenrir.api.NeedValidationException
 import dev.ragnarok.fenrir.api.interfaces.IAuthApi
+import dev.ragnarok.fenrir.api.model.AnonymToken
 import dev.ragnarok.fenrir.api.model.LoginResponse
 import dev.ragnarok.fenrir.api.model.VKApiValidationResponse
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
@@ -50,6 +52,7 @@ class AuthApi(private val service: IDirectLoginServiceProvider) : IAuthApi {
                     captchaKey,
                     if (forceSms) 1 else null,
                     getDeviceId(
+                        Constants.DEFAULT_ACCOUNT_TYPE,
                         provideApplicationContext()
                     ),
                     if (libverify_support) 1 else null,
@@ -66,6 +69,7 @@ class AuthApi(private val service: IDirectLoginServiceProvider) : IAuthApi {
 
                             "need_validation".equals(response.error, ignoreCase = true) -> {
                                 throw NeedValidationException(
+                                    username,
                                     response.validationType,
                                     response.redirect_uri,
                                     response.validation_sid,
@@ -87,19 +91,31 @@ class AuthApi(private val service: IDirectLoginServiceProvider) : IAuthApi {
     }
 
     override fun validatePhone(
+        phone: String?,
         apiId: Int,
         clientId: Int,
         clientSecret: String?,
         sid: String?,
         v: String?,
-        libverify_support: Boolean
+        libverify_support: Boolean,
+        allow_callreset: Boolean
     ): Flow<VKApiValidationResponse> {
         return service.provideAuthService()
             .flatMapConcat {
                 it.validatePhone(
-                    apiId, clientId, clientSecret, sid, v, getDeviceId(
+                    phone,
+                    apiId,
+                    clientId,
+                    clientSecret,
+                    sid,
+                    v,
+                    getDeviceId(
+                        Constants.DEFAULT_ACCOUNT_TYPE,
                         provideApplicationContext()
-                    ), if (libverify_support) 1 else null, DEVICE_COUNTRY_CODE
+                    ),
+                    if (libverify_support) 1 else null,
+                    if (allow_callreset) 1 else null,
+                    DEVICE_COUNTRY_CODE
                 )
                     .map(extractResponseWithErrorHandling())
             }
@@ -128,6 +144,33 @@ class AuthApi(private val service: IDirectLoginServiceProvider) : IAuthApi {
                     sakVersion,
                     gaid,
                     v,
+                    DEVICE_COUNTRY_CODE
+                )
+                    .map { s ->
+                        if (s.error != null) {
+                            throw AuthException(s.error.orEmpty(), s.errorDescription)
+                        } else {
+                            s
+                        }
+                    }
+            }
+    }
+
+    override fun get_anonym_token(
+        apiId: Int,
+        clientId: Int,
+        clientSecret: String?,
+        v: String?,
+        device_id: String?
+    ): Flow<AnonymToken> {
+        return service.provideAuthService()
+            .flatMapConcat {
+                it.get_anonym_token(
+                    apiId,
+                    clientId,
+                    clientSecret,
+                    v,
+                    device_id,
                     DEVICE_COUNTRY_CODE
                 )
                     .map { s ->

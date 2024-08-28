@@ -1328,6 +1328,9 @@ object Dto2Model {
     fun transformPosts(dtos: Collection<VKApiPost>, bundle: IOwnersBundle): List<Post> {
         val posts: MutableList<Post> = ArrayList(safeCountOf(dtos))
         for (dto in dtos) {
+            if (dto.owner_id == 0L) {
+                continue
+            }
             posts.add(transform(dto, bundle))
         }
         return posts

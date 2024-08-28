@@ -4,8 +4,8 @@ plugins {
     id("kotlinx-serialization")
 }
 
-//recyclerview 1.4.0-alpha01
-//viewpager 1.1.0-beta02
+//recyclerview 1.4.0-beta01
+//viewpager 1.1.0
 
 android {
     namespace "androidx.recyclerview"

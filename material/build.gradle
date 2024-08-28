@@ -32,6 +32,7 @@ def srcDirs = [
         'com/google/android/material/floatingactionbutton',
         'com/google/android/material/imageview',
         'com/google/android/material/internal',
+        'com/google/android/material/loadingindicator',
         'com/google/android/material/materialswitch',
         'com/google/android/material/math',
         'com/google/android/material/menu',
@@ -108,6 +109,7 @@ dependencies {
     implementation("androidx.core:core-ktx:$coreVersion")
     implementation("androidx.activity:activity-ktx:$activityVersion")
     implementation("androidx.fragment:fragment-ktx:$fragmentVersion")
+    implementation("androidx.graphics:graphics-shapes:$graphicsVersion")
     implementation("androidx.cardview:cardview:$cardviewVersion")
     implementation("androidx.dynamicanimation:dynamicanimation:$dynamicanimationVersion")
     implementation("androidx.constraintlayout:constraintlayout:$constraintlayoutVersion")

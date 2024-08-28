@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.api.services
 
+import dev.ragnarok.fenrir.api.model.AnonymToken
 import dev.ragnarok.fenrir.api.model.LoginResponse
 import dev.ragnarok.fenrir.api.model.VKApiValidationResponse
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
@@ -82,6 +83,7 @@ class IAuthService : IServiceRest() {
     }
 
     fun validatePhone(
+        phone: String?,
         apiId: Int,
         clientId: Int,
         clientSecret: String?,
@@ -89,12 +91,15 @@ class IAuthService : IServiceRest() {
         v: String?,
         device_id: String?,
         libverify_support: Int?,
+        allow_callreset: Int?,
         lang: String?
     ): Flow<BaseResponse<VKApiValidationResponse>> {
         return rest.request(
             "auth.validatePhone",
             form(
                 "libverify_support" to libverify_support,
+                "allow_callreset" to allow_callreset,
+                "phone" to phone,
                 "api_id" to apiId,
                 "client_id" to clientId,
                 "client_secret" to clientSecret,
@@ -105,6 +110,28 @@ class IAuthService : IServiceRest() {
                 "https" to 1
             ),
             base(VKApiValidationResponse.serializer())
+        )
+    }
+
+    fun get_anonym_token(
+        apiId: Int,
+        clientId: Int,
+        clientSecret: String?,
+        v: String?,
+        device_id: String?,
+        lang: String?
+    ): Flow<AnonymToken> {
+        return rest.request(
+            "get_anonym_token",
+            form(
+                "api_id" to apiId,
+                "client_id" to clientId,
+                "client_secret" to clientSecret,
+                "v" to v,
+                "device_id" to device_id,
+                "lang" to lang,
+                "https" to 1
+            ), AnonymToken.serializer()
         )
     }
 

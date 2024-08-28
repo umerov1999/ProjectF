@@ -177,7 +177,11 @@ class WallsRepository(
                 val owners = transformOwners(response.profiles, response.groups)
                 val dtos = listEmptyIfNull(response.posts)
                 val ids = VKOwnIds()
+
                 for (dto in dtos) {
+                    if (dto.owner_id == 0L) {
+                        continue
+                    }
                     ids.append(dto)
                 }
                 ownersRepository
