@@ -120,9 +120,8 @@ bool inverse(const Matrix* m, Matrix* out)
                m->e12 * (m->e21 * m->e33 - m->e23 * m->e31) +
                m->e13 * (m->e21 * m->e32 - m->e22 * m->e31);
 
-    if (tvg::zero(det)) return false;
-
-    auto invDet = 1 / det;
+    auto invDet = 1.0f / det;
+    if (std::isinf(invDet)) return false;
 
     out->e11 = (m->e22 * m->e33 - m->e32 * m->e23) * invDet;
     out->e12 = (m->e13 * m->e32 - m->e12 * m->e33) * invDet;
@@ -363,4 +362,13 @@ float Bezier::angle(float t) const
     return rad2deg(tvg::atan2(pt.y, pt.x));
 }
 
+
+uint8_t lerp(const uint8_t &start, const uint8_t &end, float t)
+{
+    auto result = static_cast<int>(start + (end - start) * t);
+    tvg::clamp(result, 0, 255);
+    return static_cast<uint8_t>(result);
 }
+
+}
+

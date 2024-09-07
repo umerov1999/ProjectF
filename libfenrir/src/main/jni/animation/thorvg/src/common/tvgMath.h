@@ -26,7 +26,7 @@
  #define _USE_MATH_DEFINES
 
 #include <float.h>
-#include <math.h>
+#include <cmath>
 #include "tvgCommon.h"
 
 namespace tvg
@@ -67,6 +67,13 @@ static inline bool equal(float a, float b)
     return tvg::zero(a - b);
 }
 
+
+template <typename T>
+static inline void clamp(T& v, const T& min, const T& max)
+{
+    if (v < min) v = min;
+    else if (v > max) v = max;
+}
 
 /************************************************************************/
 /* Matrix functions                                                     */
@@ -285,6 +292,8 @@ static inline T lerp(const T &start, const T &end, float t)
 {
     return static_cast<T>(start + (end - start) * t);
 }
+
+uint8_t lerp(const uint8_t &start, const uint8_t &end, float t);
 
 }
 

@@ -122,6 +122,7 @@ public class NavigationRailView extends NavigationBarView {
   private int collapsedItemMinHeight = NO_ITEM_MINIMUM_HEIGHT;
   @ItemIconGravity private int collapsedIconGravity = ITEM_ICON_GRAVITY_TOP;
   @ItemGravity private int collapsedItemGravity = ITEM_GRAVITY_TOP_CENTER;
+
   private int expandedItemMinHeight;
   @ItemIconGravity private int expandedIconGravity;
   @ItemGravity private int expandedItemGravity;
@@ -222,7 +223,6 @@ public class NavigationRailView extends NavigationBarView {
     setItemPaddingBottom(Math.round(bottomPadding));
     setCollapsedItemSpacing(
         attributes.getDimensionPixelSize(R.styleable.NavigationRailView_itemSpacing, 0));
-
     setExpanded(attributes.getBoolean(R.styleable.NavigationRailView_expanded, false));
 
     attributes.recycle();
@@ -273,6 +273,7 @@ public class NavigationRailView extends NavigationBarView {
     super.setItemIconGravity(iconGravity);
     getNavigationRailMenuView().setItemSpacing(itemSpacing);
     getNavigationRailMenuView().setItemMinimumHeight(itemMinHeight);
+    getNavigationRailMenuView().setExpanded(expanded);
   }
 
   private void applyWindowInsets() {
@@ -456,7 +457,7 @@ public class NavigationRailView extends NavigationBarView {
     menuView.setItemMinimumHeight(minHeight);
   }
 
-  // TODO: b/356407064 - Make public once expanded state is public
+  // TODO: b/361189184 - Make public once expanded state is public
   private void setCollapsedItemMinimumHeight(@Px int minHeight) {
     collapsedItemMinHeight = minHeight;
     if (!expanded) {
@@ -473,7 +474,7 @@ public class NavigationRailView extends NavigationBarView {
     getNavigationRailMenuView().setItemSpacing(itemSpacing);
   }
 
-  // TODO: b/356407064 - Make public once expanded state is public
+  // TODO: b/361189184 - Make public once expanded state is public
   private void setCollapsedItemSpacing(@Px int itemSpacing) {
     this.collapsedItemSpacing = itemSpacing;
     if (!expanded) {

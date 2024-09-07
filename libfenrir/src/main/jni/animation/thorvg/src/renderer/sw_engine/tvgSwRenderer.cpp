@@ -100,7 +100,6 @@ struct SwShapeTask : SwTask
         return (width * sqrt(transform.e11 * transform.e11 + transform.e12 * transform.e12));
     }
 
-
     bool clip(SwRle* target) override
     {
         if (shape.fastTrack) rleClipRect(target, &bbox);
@@ -602,7 +601,7 @@ Compositor* SwRenderer::target(const RenderRegion& region, ColorSpace cs)
     cmp->w = cmp->compositor->image.w;
     cmp->h = cmp->compositor->image.h;
 
-    rasterClear(cmp, x, y, w, h);
+    rasterClear(cmp, x, y, w, h, (surface->blendMethod == BlendMethod::Normal) ? 0x00000000 : 0x00ffffff);
 
     //Switch render target
     surface = cmp;

@@ -32,12 +32,10 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import androidx.appcompat.view.menu.MenuItemImpl;
-import androidx.appcompat.view.menu.MenuView;
 import androidx.appcompat.widget.TooltipCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -86,8 +84,10 @@ import com.google.android.material.ripple.RippleUtils;
  * @hide
  */
 @RestrictTo(LIBRARY_GROUP)
-public abstract class NavigationBarItemView extends FrameLayout implements MenuView.ItemView {
+public abstract class NavigationBarItemView extends FrameLayout
+    implements NavigationBarMenuItemView {
   private static final int INVALID_ITEM_POSITION = -1;
+  private static final int UNSET_VALUE = -1;
   private static final int[] CHECKED_STATE_SET = {android.R.attr.state_checked};
 
   private boolean initialized = false;
@@ -113,7 +113,14 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
   private final TextView smallLabel;
   private final TextView largeLabel;
   private int itemPosition = INVALID_ITEM_POSITION;
-  @StyleRes private int activeTextAppearance = 0;
+  @StyleRes private int textAppearanceActive = 0;
+  @StyleRes private int textAppearanceInactive = 0;
+  @StyleRes private int horizontalTextAppearanceActive = 0;
+  @StyleRes private int horizontalTextAppearanceInactive = 0;
+  @StyleRes private int currentTextAppearanceActive = UNSET_VALUE;
+  @StyleRes private int currentTextAppearanceInactive = UNSET_VALUE;
+  @Nullable private ColorStateList textColor;
+  private boolean boldText = false;
 
   @Nullable private MenuItemImpl itemData;
 
@@ -149,6 +156,8 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
   @ItemIconGravity private int itemIconGravity;
   private int badgeFixedEdge = BadgeDrawable.BADGE_FIXED_EDGE_START;
   @ItemGravity private int itemGravity = NavigationBarView.ITEM_GRAVITY_TOP_CENTER;
+  private boolean expanded = false;
+  private boolean onlyShowWhenExpanded = false;
 
   public NavigationBarItemView(@NonNull Context context) {
     super(context);
@@ -177,7 +186,7 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
     setFocusable(true);
     calculateTextScaleFactors(smallLabel.getTextSize(), largeLabel.getTextSize());
     activeIndicatorExpandedDesiredHeight = getResources().getDimensionPixelSize(
-        R.dimen.m3_expressive_item_expanded_active_indicator_height_default);
+        R.dimen.m3_navigation_item_expanded_active_indicator_height_default);
 
     // TODO(b/138148581): Support displaying a badge on label-only bottom navigation views.
     innerContentContainer.addOnLayoutChangeListener(
@@ -248,11 +257,18 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
             : itemData.getTitle();
 
     // Avoid calling tooltip for L and M devices because long pressing twice may freeze devices.
-    if (VERSION.SDK_INT < VERSION_CODES.LOLLIPOP || VERSION.SDK_INT > VERSION_CODES.M) {
+    if (VERSION.SDK_INT > VERSION_CODES.M) {
       TooltipCompat.setTooltipText(this, tooltipText);
     }
-    setVisibility(itemData.isVisible() ? View.VISIBLE : View.GONE);
+    updateVisibility();
     this.initialized = true;
+  }
+
+  private void updateVisibility() {
+    if (itemData != null) {
+      setVisibility(
+          itemData.isVisible() && (expanded || !onlyShowWhenExpanded) ? View.VISIBLE : View.GONE);
+    }
   }
 
   /**
@@ -303,7 +319,7 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
     if (itemIconGravity == ITEM_ICON_GRAVITY_START) {
       sideMargin =
           getResources()
-              .getDimensionPixelSize(R.dimen.m3_expressive_navigation_item_leading_trailing_space);
+              .getDimensionPixelSize(R.dimen.m3_navigation_item_leading_trailing_space);
       labelGroupTopMargin = 0;
       labelGroupSideMargin = activeIndicatorLabelPadding;
       badgeFixedEdge = BadgeDrawable.BADGE_FIXED_EDGE_END;
@@ -316,6 +332,8 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
       innerContentContainer.removeView(labelGroup);
       contentContainer.addView(labelGroup);
     }
+    updateActiveLabelTextAppearance();
+    updateInactiveLabelTextAppearance();
     FrameLayout.LayoutParams contentContainerLp = (LayoutParams) contentContainer.getLayoutParams();
     contentContainerLp.gravity = itemGravity;
     FrameLayout.LayoutParams innerContentLp =
@@ -342,6 +360,28 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
   }
 
   @Override
+  public void setExpanded(boolean expanded) {
+    this.expanded = expanded;
+    updateVisibility();
+  }
+
+  @Override
+  public boolean isExpanded() {
+    return this.expanded;
+  }
+
+  @Override
+  public void setOnlyShowWhenExpanded(boolean onlyShowWhenExpanded) {
+    this.onlyShowWhenExpanded = onlyShowWhenExpanded;
+    updateVisibility();
+  }
+
+  @Override
+  public boolean isOnlyVisibleWhenExpanded() {
+    return this.onlyShowWhenExpanded;
+  }
+
+  @Override
   @Nullable
   public MenuItemImpl getItemData() {
     return itemData;
@@ -360,7 +400,7 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
             ? title
             : itemData.getTooltipText();
     // Avoid calling tooltip for L and M devices because long pressing twice may freeze devices.
-    if (VERSION.SDK_INT < VERSION_CODES.LOLLIPOP || VERSION.SDK_INT > VERSION_CODES.M) {
+    if (VERSION.SDK_INT > VERSION_CODES.M) {
       TooltipCompat.setTooltipText(this, tooltipText);
     }
   }
@@ -694,26 +734,85 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
     requestLayout();
   }
 
-  public void setTextAppearanceInactive(@StyleRes int inactiveTextAppearance) {
-    setTextAppearanceWithoutFontScaling(smallLabel, inactiveTextAppearance);
+  private boolean usingHorizontalTextAppearance(@StyleRes int horizontalTextAppearance) {
+    return itemIconGravity == ITEM_ICON_GRAVITY_START && horizontalTextAppearance != 0;
+  }
+
+  private void updateInactiveLabelTextAppearance() {
+    final int newInactiveTextAppearance =
+        usingHorizontalTextAppearance(horizontalTextAppearanceInactive)
+            ? horizontalTextAppearanceInactive
+            : textAppearanceInactive;
+    // If it's the same as the current text appearance, no need to update text appearance.
+    if (currentTextAppearanceInactive == newInactiveTextAppearance) {
+      return;
+    }
+    setTextAppearanceWithoutFontScaling(smallLabel, newInactiveTextAppearance);
     calculateTextScaleFactors(smallLabel.getTextSize(), largeLabel.getTextSize());
     smallLabel.setMinimumHeight(
         MaterialResources.getUnscaledLineHeight(
-            smallLabel.getContext(), inactiveTextAppearance, 0));
+            smallLabel.getContext(), newInactiveTextAppearance, 0));
+    // Set the text color if the user has set it, since it takes precedence
+    // over a color set in the text appearance.
+    if (textColor != null) {
+      smallLabel.setTextColor(textColor);
+    }
+    currentTextAppearanceInactive = newInactiveTextAppearance;
+  }
+
+  private void updateActiveLabelTextAppearance() {
+    final int newActiveTextAppearance =
+        usingHorizontalTextAppearance(horizontalTextAppearanceActive)
+            ? horizontalTextAppearanceActive
+            : textAppearanceActive;
+    // If it's the same as the current text appearance, no need to update text appearance.
+    if (currentTextAppearanceActive == newActiveTextAppearance) {
+      return;
+    }
+    setTextAppearanceWithoutFontScaling(largeLabel, newActiveTextAppearance);
+    calculateTextScaleFactors(smallLabel.getTextSize(), largeLabel.getTextSize());
+    largeLabel.setMinimumHeight(
+        MaterialResources.getUnscaledLineHeight(
+            largeLabel.getContext(), newActiveTextAppearance, 0));
+    // Set the text color if the user has set it, since it takes precedence
+    // over a color set in the text appearance.
+    if (textColor != null) {
+      largeLabel.setTextColor(textColor);
+    }
+    updateActiveLabelBoldness();
+    currentTextAppearanceActive = newActiveTextAppearance;
+  }
+
+  public void setTextAppearanceInactive(@StyleRes int inactiveTextAppearance) {
+    this.textAppearanceInactive = inactiveTextAppearance;
+    updateInactiveLabelTextAppearance();
   }
 
   public void setTextAppearanceActive(@StyleRes int activeTextAppearance) {
-    this.activeTextAppearance = activeTextAppearance;
-    setTextAppearanceWithoutFontScaling(largeLabel, activeTextAppearance);
-    calculateTextScaleFactors(smallLabel.getTextSize(), largeLabel.getTextSize());
-    largeLabel.setMinimumHeight(
-        MaterialResources.getUnscaledLineHeight(largeLabel.getContext(), activeTextAppearance, 0));
+    this.textAppearanceActive = activeTextAppearance;
+    updateActiveLabelTextAppearance();
+  }
+
+  public void setHorizontalTextAppearanceInactive(@StyleRes int inactiveTextAppearance) {
+    horizontalTextAppearanceInactive = inactiveTextAppearance;
+    updateInactiveLabelTextAppearance();
+  }
+
+  public void setHorizontalTextAppearanceActive(@StyleRes int activeTextAppearance) {
+    horizontalTextAppearanceActive = activeTextAppearance;
+    updateActiveLabelTextAppearance();
   }
 
   public void setTextAppearanceActiveBoldEnabled(boolean isBold) {
-    setTextAppearanceActive(activeTextAppearance);
+    boldText = isBold;
+    setTextAppearanceActive(textAppearanceActive);
+    setHorizontalTextAppearanceActive(horizontalTextAppearanceActive);
+    updateActiveLabelBoldness();
+  }
+
+  private void updateActiveLabelBoldness() {
     // TODO(b/246765947): Use component tokens to control font weight
-    largeLabel.setTypeface(largeLabel.getTypeface(), isBold ? Typeface.BOLD : Typeface.NORMAL);
+    largeLabel.setTypeface(largeLabel.getTypeface(), boldText ? Typeface.BOLD : Typeface.NORMAL);
   }
 
   /**
@@ -734,6 +833,7 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
   }
 
   public void setTextColor(@Nullable ColorStateList color) {
+    textColor = color;
     if (color != null) {
       smallLabel.setTextColor(color);
       largeLabel.setTextColor(color);
@@ -779,11 +879,7 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
 
     if (itemRippleColor != null) {
       Drawable maskDrawable = getActiveIndicatorDrawable();
-      if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP
-          && activeIndicatorEnabled
-          && getActiveIndicatorDrawable() != null
-          && maskDrawable != null) {
-
+      if (activeIndicatorEnabled && getActiveIndicatorDrawable() != null && maskDrawable != null) {
         // Remove the default focus highlight that highlights the entire view and rely on the
         // active indicator ripple to communicate state.
         defaultHighlightEnabled = false;
@@ -815,20 +911,7 @@ public abstract class NavigationBarItemView extends FrameLayout implements MenuV
    */
   private static Drawable createItemBackgroundCompat(@NonNull ColorStateList rippleColor) {
     ColorStateList rippleDrawableColor = RippleUtils.convertToRippleDrawableColor(rippleColor);
-    Drawable backgroundDrawable;
-    if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-      backgroundDrawable = new RippleDrawable(rippleDrawableColor, null, null);
-    } else {
-      GradientDrawable rippleDrawable = new GradientDrawable();
-      // TODO: Find a workaround for this. Currently on certain devices/versions, LayerDrawable
-      // will draw a black background underneath any layer with a non-opaque color,
-      // (e.g. ripple) unless we set the shape to be something that's not a perfect rectangle.
-      rippleDrawable.setCornerRadius(0.00001F);
-      Drawable rippleDrawableCompat = DrawableCompat.wrap(rippleDrawable);
-      DrawableCompat.setTintList(rippleDrawableCompat, rippleDrawableColor);
-      backgroundDrawable = rippleDrawableCompat;
-    }
-    return backgroundDrawable;
+    return new RippleDrawable(rippleDrawableColor, null, null);
   }
 
   /**
