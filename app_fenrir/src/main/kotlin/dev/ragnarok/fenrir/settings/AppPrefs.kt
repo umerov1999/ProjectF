@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.settings
 
 import android.content.Context
 import android.content.pm.PackageManager
-import dev.ragnarok.fenrir.util.Utils
+import android.os.Build
 
 object AppPrefs {
     var revanced: Pair<String, String>? = null
@@ -39,16 +39,16 @@ object AppPrefs {
     private fun isPackageInstalled(context: Context, name: String): Boolean {
         val pm = context.packageManager
         return try {
-            if (Utils.hasTiramisu()) pm.getPackageInfo(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) pm.getPackageInfo(
                 name, PackageManager.PackageInfoFlags.of(
                     PackageManager.GET_ACTIVITIES.toLong()
                 )
             ) else pm.getPackageInfo(name, PackageManager.GET_ACTIVITIES)
-            if (Utils.hasTiramisu()) pm.getApplicationInfo(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) pm.getApplicationInfo(
                 name,
                 PackageManager.ApplicationInfoFlags.of(0)
             ).enabled else pm.getApplicationInfo(name, 0).enabled
-        } catch (ignored: PackageManager.NameNotFoundException) {
+        } catch (_: PackageManager.NameNotFoundException) {
             false
         }
     }

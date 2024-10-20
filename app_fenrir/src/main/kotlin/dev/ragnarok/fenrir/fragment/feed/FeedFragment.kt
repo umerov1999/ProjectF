@@ -492,7 +492,7 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
         if (rawScrollState.nonNullNoEmpty() && mFeedLayoutManager != null) {
             try {
                 restoreRecycleViewManagerState(rawScrollState)
-            } catch (ignored: Exception) {
+            } catch (_: Exception) {
             }
         }
         resolveEmptyTextVisibility()

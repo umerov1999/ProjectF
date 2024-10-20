@@ -89,7 +89,6 @@ open class UploadDestination : Parcelable {
                 }
             }
 
-
         fun forProfilePhoto(ownerId: Long): UploadDestination {
             return UploadDestination(
                 NO_ID,
@@ -99,7 +98,6 @@ open class UploadDestination : Parcelable {
                 null
             )
         }
-
 
         fun forChatPhoto(chat_id: Long): UploadDestination {
             return UploadDestination(
@@ -111,7 +109,6 @@ open class UploadDestination : Parcelable {
             )
         }
 
-
         fun forDocuments(ownerId: Long): UploadDestination {
             return UploadDestination(
                 NO_ID,
@@ -121,7 +118,6 @@ open class UploadDestination : Parcelable {
                 null
             )
         }
-
 
         fun forAudio(ownerId: Long): UploadDestination {
             return UploadDestination(
@@ -133,7 +129,6 @@ open class UploadDestination : Parcelable {
             )
         }
 
-
         fun forRemotePlay(): UploadDestination {
             return UploadDestination(
                 NO_ID,
@@ -144,11 +139,9 @@ open class UploadDestination : Parcelable {
             )
         }
 
-
         fun forStory(@MessageMethod msg_method: Int, ref: String?): UploadDestination {
             return UploadDestination(NO_ID, NO_ID_L, Method.STORY, msg_method, ref)
         }
-
 
         fun forVideo(is_public: Int, ownerId: Long): UploadDestination {
             return UploadDestination(
@@ -160,7 +153,6 @@ open class UploadDestination : Parcelable {
             )
         }
 
-
         fun forMessage(mdbid: Int): UploadDestination {
             return UploadDestination(
                 mdbid, WITHOUT_OWNER,
@@ -169,7 +161,6 @@ open class UploadDestination : Parcelable {
             )
         }
 
-
         fun forMessage(mdbid: Int, @MessageMethod msg_method: Int): UploadDestination {
             return UploadDestination(
                 mdbid, WITHOUT_OWNER,
@@ -177,7 +168,6 @@ open class UploadDestination : Parcelable {
                 null
             )
         }
-
 
         fun forPhotoAlbum(albumId: Int, ownerId: Long): UploadDestination {
             return UploadDestination(
@@ -189,11 +179,9 @@ open class UploadDestination : Parcelable {
             )
         }
 
-
         fun forPost(dbid: Int, ownerId: Long, @MessageMethod msg_method: Int): UploadDestination {
             return UploadDestination(dbid, ownerId, Method.TO_WALL, msg_method, null)
         }
-
 
         fun forPost(dbid: Int, ownerId: Long): UploadDestination {
             return UploadDestination(
@@ -204,7 +192,6 @@ open class UploadDestination : Parcelable {
                 null
             )
         }
-
 
         fun forComment(dbid: Int, sourceOwnerId: Long): UploadDestination {
             return UploadDestination(

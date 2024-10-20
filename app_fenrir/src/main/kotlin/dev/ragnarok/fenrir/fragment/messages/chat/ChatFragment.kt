@@ -879,7 +879,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                     emptyAvatar?.visibility = View.VISIBLE
                     var name: String = itv.getTitle().orEmpty()
                     if (name.length > 2) name = name.substring(0, 2)
-                    name = name.trim { it <= ' ' }
+                    name = name.trim()
                     emptyAvatar?.text = name
                 } else {
                     emptyAvatar?.visibility = View.GONE
@@ -921,7 +921,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         try {
             ViewUtils.keyboardHide(requireActivity())
             requireActivity().finish()
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
 
         }
     }
@@ -1590,7 +1590,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
 
         try {
             prepareOptionsMenu(toolbar?.menu ?: return)
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
 
         }
 
@@ -1678,7 +1678,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                     }
                 }
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
     }
 
@@ -1858,8 +1858,8 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         }
     }
 
-    override fun setupRecordPauseButton(available: Boolean, isPlaying: Boolean) {
-        inputViewController?.setupRecordPauseButton(available, isPlaying)
+    override fun setupRecordPauseButton(isRecording: Boolean) {
+        inputViewController?.setupRecordPauseButton(isRecording)
     }
 
     override fun displayInitiateKeyExchangeQuestion(@KeyLocationPolicy keyStoragePolicy: Int) {
@@ -1956,7 +1956,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
 
             try {
                 encryptionStatusItem.setIcon(drawableRes)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 //java.lang.NullPointerException: Attempt to invoke virtual method
                 // 'android.content.res.Resources$Theme android.app.Activity.getTheme()' on a null object reference
             }

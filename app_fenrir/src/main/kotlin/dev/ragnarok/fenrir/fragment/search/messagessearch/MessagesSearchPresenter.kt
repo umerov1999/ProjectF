@@ -153,7 +153,7 @@ class MessagesSearchPresenter(
                     isSpeed
                 )
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         syncVoiceLookupState()
     }

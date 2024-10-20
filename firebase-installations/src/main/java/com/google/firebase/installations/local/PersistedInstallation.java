@@ -45,7 +45,7 @@ public class PersistedInstallation {
     private static final String FIS_ERROR_KEY = "FisError";
     @NonNull
     private final FirebaseApp firebaseApp;
-    private File dataFile;
+    private volatile File dataFile;
 
     public PersistedInstallation(@NonNull FirebaseApp firebaseApp) {
         this.firebaseApp = firebaseApp;

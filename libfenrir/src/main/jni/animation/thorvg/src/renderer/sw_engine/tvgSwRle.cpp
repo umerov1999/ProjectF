@@ -558,7 +558,12 @@ static void _lineTo(RleWorker& rw, const SwPoint& to)
         /* The fundamental value `prod' determines which side and the  */
         /* exact coordinate where the line exits current cell.  It is  */
         /* also easily updated when moving from one cell to the next.  */
+        size_t idx = 0;
         do {
+            if (++idx > 1000000000) {
+                TVGERR("SW_ENGINE", "Iteration limit reached during RLE generation. The resulting render may be incorrect.");
+                break;
+            }
             auto px = diff.x * ONE_PIXEL;
             auto py = diff.y * ONE_PIXEL;
 
@@ -690,31 +695,27 @@ static void _decomposeOutline(RleWorker& rw)
         auto start = UPSCALE(outline->pts[first]);
         auto pt = outline->pts.data + first;
         auto types = outline->types.data + first;
+        ++types;
 
         _moveTo(rw, UPSCALE(outline->pts[first]));
 
         while (pt < limit) {
-            ++pt;
-            ++types;
-
             //emit a single line_to
             if (types[0] == SW_CURVE_TYPE_POINT) {
+                ++pt;
+                ++types;
                 _lineTo(rw, UPSCALE(*pt));
             //types cubic
             } else {
-                pt += 2;
-                types += 2;
-
-                if (pt <= limit) {
-                    _cubicTo(rw, UPSCALE(pt[-2]), UPSCALE(pt[-1]), UPSCALE(pt[0]));
-                    continue;
-                }
-                _cubicTo(rw, UPSCALE(pt[-2]), UPSCALE(pt[-1]), start);
-                goto close;
+                pt += 3;
+                types += 3;
+                if (pt <= limit) _cubicTo(rw, UPSCALE(pt[-2]), UPSCALE(pt[-1]), UPSCALE(pt[0]));
+                else if (pt - 1 == limit) _cubicTo(rw, UPSCALE(pt[-2]), UPSCALE(pt[-1]), start);
+                else goto close;
             }
         }
-        _lineTo(rw, start);
     close:
+        _lineTo(rw, start);
        first = last + 1;
     }
 }
@@ -990,7 +991,7 @@ void rleFree(SwRle* rle)
 }
 
 
-void rleClipPath(SwRle *rle, const SwRle *clip)
+void rleClip(SwRle *rle, const SwRle *clip)
 {
     if (rle->size == 0 || clip->size == 0) return;
     auto spanCnt = rle->size > clip->size ? rle->size : clip->size;
@@ -999,11 +1000,11 @@ void rleClipPath(SwRle *rle, const SwRle *clip)
 
     _replaceClipSpan(rle, spans, spansEnd - spans);
 
-    TVGLOG("SW_ENGINE", "Using ClipPath!");
+    TVGLOG("SW_ENGINE", "Using Path Clipping!");
 }
 
 
-void rleClipRect(SwRle *rle, const SwBBox* clip)
+void rleClip(SwRle *rle, const SwBBox* clip)
 {
     if (rle->size == 0) return;
     auto spans = static_cast<SwSpan*>(malloc(sizeof(SwSpan) * (rle->size)));
@@ -1011,5 +1012,5 @@ void rleClipRect(SwRle *rle, const SwBBox* clip)
 
     _replaceClipSpan(rle, spans, spansEnd - spans);
 
-    TVGLOG("SW_ENGINE", "Using ClipRect!");
+    TVGLOG("SW_ENGINE", "Using Box Clipping!");
 }

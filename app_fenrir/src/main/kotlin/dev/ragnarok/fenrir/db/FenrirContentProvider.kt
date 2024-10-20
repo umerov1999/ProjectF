@@ -333,51 +333,41 @@ class FenrirContentProvider : ContentProvider() {
             return appendAccountId(KEYS_CONTENT_URI, aid)
         }
 
-
         fun getGroupsDetContentUriFor(aid: Long): Uri {
             return appendAccountId(GROUPS_DET_CONTENT_URI, aid)
         }
-
 
         fun getFavePostsContentUriFor(aid: Long): Uri {
             return appendAccountId(FAVE_POSTS_CONTENT_URI, aid)
         }
 
-
         fun getFaveLinksContentUriFor(aid: Long): Uri {
             return appendAccountId(FAVE_LINKS_CONTENT_URI, aid)
         }
-
 
         fun getFavePhotosContentUriFor(aid: Long): Uri {
             return appendAccountId(FAVE_PHOTOS_CONTENT_URI, aid)
         }
 
-
         fun getFaveUsersContentUriFor(aid: Long): Uri {
             return appendAccountId(FAVE_PAGES_CONTENT_URI, aid)
         }
-
 
         fun getFaveGroupsContentUriFor(aid: Long): Uri {
             return appendAccountId(FAVE_GROUPS_CONTENT_URI, aid)
         }
 
-
         fun getFaveVideosContentUriFor(aid: Long): Uri {
             return appendAccountId(FAVE_VIDEOS_CONTENT_URI, aid)
         }
-
 
         fun getFaveArticlesContentUriFor(aid: Long): Uri {
             return appendAccountId(FAVE_ARTICLES_CONTENT_URI, aid)
         }
 
-
         fun getFaveProductsContentUriFor(aid: Long): Uri {
             return appendAccountId(FAVE_PRODUCTS_CONTENT_URI, aid)
         }
-
 
         fun getTopicsContentUriFor(aid: Long): Uri {
             return appendAccountId(TOPICS_CONTENT_URI, aid)
@@ -391,31 +381,25 @@ class FenrirContentProvider : ContentProvider() {
             return appendAccountId(MESSAGES_ATTACHMENTS_CONTENT_URI, aid)
         }
 
-
         fun getPostsAttachmentsContentUriFor(aid: Long): Uri {
             return appendAccountId(POSTS_ATTACHMENTS_CONTENT_URI, aid)
         }
-
 
         fun getPostsContentUriFor(aid: Long): Uri {
             return appendAccountId(POSTS_CONTENT_URI, aid)
         }
 
-
         fun getVideosContentUriFor(aid: Long): Uri {
             return appendAccountId(VIDEOS_CONTENT_URI, aid)
         }
-
 
         fun getVideoAlbumsContentUriFor(aid: Long): Uri {
             return appendAccountId(VIDEO_ALBUMS_CONTENT_URI, aid)
         }
 
-
         fun getDocsContentUriFor(aid: Long): Uri {
             return appendAccountId(DOCS_CONTENT_URI, aid)
         }
-
 
         fun getPhotosContentUriFor(aid: Long): Uri {
             return appendAccountId(PHOTOS_CONTENT_URI, aid)
@@ -425,76 +409,61 @@ class FenrirContentProvider : ContentProvider() {
             return appendAccountId(PHOTOS_EXTENDED_CONTENT_URI, aid)
         }
 
-
         fun getCommentsContentUriFor(aid: Long): Uri {
             return appendAccountId(COMMENTS_CONTENT_URI, aid)
         }
-
 
         fun getCommentsAttachmentsContentUriFor(aid: Long): Uri {
             return appendAccountId(COMMENTS_ATTACHMENTS_CONTENT_URI, aid)
         }
 
-
         fun getDialogsContentUriFor(aid: Long): Uri {
             return appendAccountId(DIALOGS_CONTENT_URI, aid)
         }
-
 
         fun getPeersContentUriFor(aid: Long): Uri {
             return appendAccountId(PEERS_CONTENT_URI, aid)
         }
 
-
         fun getRelativeshipContentUriFor(aid: Long): Uri {
             return appendAccountId(RELATIVESHIP_CONTENT_URI, aid)
         }
-
 
         fun getUserContentUriFor(aid: Long): Uri {
             return appendAccountId(USER_CONTENT_URI, aid)
         }
 
-
         fun getUserDetContentUriFor(aid: Long): Uri {
             return appendAccountId(USER_DET_CONTENT_URI, aid)
         }
-
 
         fun getGroupsContentUriFor(aid: Long): Uri {
             return appendAccountId(GROUPS_CONTENT_URI, aid)
         }
 
-
         fun getNewsContentUriFor(aid: Long): Uri {
             return appendAccountId(NEWS_CONTENT_URI, aid)
         }
-
 
         fun getMessageContentUriFor(aid: Long): Uri {
             return appendAccountId(MESSAGE_CONTENT_URI, aid)
         }
 
-
         fun getCountriesContentUriFor(aid: Long): Uri {
             return appendAccountId(COUNTRIES_CONTENT_URI, aid)
         }
-
 
         fun getNotificationsContentUriFor(aid: Long): Uri {
             return appendAccountId(NOTIFICATIONS_CONTENT_URI, aid)
         }
 
-
         fun getFeedListsContentUriFor(aid: Long): Uri {
             return appendAccountId(FEED_LISTS_CONTENT_URI, aid)
         }
 
-
         fun getPhotoAlbumsContentUriFor(aid: Long): Uri {
             return appendAccountId(PHOTO_ALBUMS_CONTENT_URI, aid)
         }
-
 
         fun getFriendListsContentUriFor(aid: Long): Uri {
             return appendAccountId(FRIEND_LISTS_CONTENT_URI, aid)

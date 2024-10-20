@@ -2,14 +2,12 @@ package dev.ragnarok.filegallery.util
 
 import android.annotation.SuppressLint
 import android.app.DownloadManager
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.webkit.MimeTypeMap
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -69,13 +67,11 @@ object DownloadWorkUtils {
 
     internal fun createNotificationManager(context: Context): NotificationManagerCompat {
         val mNotifyManager = NotificationManagerCompat.from(context)
-        if (Utils.hasOreo()) {
-            mNotifyManager.createNotificationChannel(
-                AppNotificationChannels.getDownloadChannel(
-                    context
-                )
+        mNotifyManager.createNotificationChannel(
+            AppNotificationChannels.getDownloadChannel(
+                context
             )
-        }
+        )
         return mNotifyManager
     }
 
@@ -102,7 +98,7 @@ object DownloadWorkUtils {
     )
 
     private fun makeLegalFilenameFull(filename: String): String {
-        var filename_temp = filename.trim { it <= ' ' }
+        var filename_temp = filename.trim()
 
         var s = '\u0000'
         while (s < ' ') {
@@ -117,7 +113,7 @@ object DownloadWorkUtils {
 
     fun makeLegalFilename(filename: String, extension: String?): String {
         var result = makeLegalFilenameFull(filename)
-        if (result.length > 90) result = result.substring(0, 90).trim { it <= ' ' }
+        if (result.length > 90) result = result.substring(0, 90).trim()
         if (extension == null)
             return result
         return "$result.$extension"
@@ -126,7 +122,7 @@ object DownloadWorkUtils {
     fun makeLegalFilenameFromArg(filename: String?, extension: String?): String? {
         filename ?: return null
         var result = makeLegalFilenameFull(filename)
-        if (result.length > 90) result = result.substring(0, 90).trim { it <= ' ' }
+        if (result.length > 90) result = result.substring(0, 90).trim()
         if (extension == null)
             return result
         return "$result.$extension"
@@ -315,9 +311,6 @@ object DownloadWorkUtils {
 
         @SuppressLint("MissingPermission")
         private fun createGroupNotification() {
-            if (!Utils.hasNougat()) {
-                return
-            }
             val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
                     ?: return
@@ -491,19 +484,13 @@ object DownloadWorkUtils {
 
         @Suppress("DEPRECATION")
         private fun createForeground() {
-            val builder: NotificationCompat.Builder =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    val channel = NotificationChannel(
-                        "worker_channel",
-                        applicationContext.getString(R.string.channel_keep_work_manager),
-                        NotificationManager.IMPORTANCE_NONE
-                    )
-                    mNotifyManager.createNotificationChannel(channel)
-                    NotificationCompat.Builder(applicationContext, channel.id)
-                } else {
-                    NotificationCompat.Builder(applicationContext, "worker_channel")
-                        .setPriority(Notification.PRIORITY_MIN)
-                }
+            val channel = NotificationChannel(
+                "worker_channel",
+                applicationContext.getString(R.string.channel_keep_work_manager),
+                NotificationManager.IMPORTANCE_NONE
+            )
+            mNotifyManager.createNotificationChannel(channel)
+            val builder = NotificationCompat.Builder(applicationContext, channel.id)
             builder.setContentTitle(applicationContext.getString(R.string.work_manager))
                 .setContentText(applicationContext.getString(R.string.foreground_downloader))
                 .setSmallIcon(R.drawable.web)

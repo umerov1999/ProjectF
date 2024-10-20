@@ -83,7 +83,7 @@ class LocalAudioAlbumsAdapter(
 
         val isSelected = currentId == album.id
         holder.selected.visibility = if (isSelected) View.VISIBLE else View.GONE
-        if (Utils.hasMarshmallow() && FenrirNative.isNativeLoaded) {
+        if (FenrirNative.isNativeLoaded) {
             if (isSelected) {
                 holder.selected.fromRes(
                     dev.ragnarok.fenrir_common.R.raw.theme_selected,

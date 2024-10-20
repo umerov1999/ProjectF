@@ -27,7 +27,7 @@ class MessageThreadUtil<T> implements ThreadUtil<T> {
 
     @Override
     public MainThreadCallback<T> getMainThreadProxy(final MainThreadCallback<T> callback) {
-        return new MainThreadCallback<T>() {
+        return new MainThreadCallback<>() {
             final MessageQueue mQueue = new MessageQueue();
             final private Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
 
@@ -82,7 +82,7 @@ class MessageThreadUtil<T> implements ThreadUtil<T> {
     @SuppressWarnings("deprecation") /* AsyncTask */
     @Override
     public BackgroundCallback<T> getBackgroundProxy(final BackgroundCallback<T> callback) {
-        return new BackgroundCallback<T>() {
+        return new BackgroundCallback<>() {
             final MessageQueue mQueue = new MessageQueue();
             private final Executor mExecutor = android.os.AsyncTask.THREAD_POOL_EXECUTOR;
             AtomicBoolean mBackgroundRunning = new AtomicBoolean(false);

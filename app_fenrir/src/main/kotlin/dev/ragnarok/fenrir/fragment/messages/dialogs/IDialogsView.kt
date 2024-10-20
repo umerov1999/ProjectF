@@ -27,7 +27,6 @@ interface IDialogsView : IMvpView, IErrorView, IToastView {
     fun askToReload()
     fun askToScrollToEnd()
     fun showEnterNewGroupChatTitle(users: List<User>)
-    fun showNotificationSettings(accountId: Long, peerId: Long)
     fun goToOwnerWall(accountId: Long, ownerId: Long, owner: Owner?)
     fun setCreateGroupChatButtonVisible(visible: Boolean)
     fun notifyHasAttachments(has: Boolean)

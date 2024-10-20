@@ -120,7 +120,7 @@ object UploadUtils {
                 matrix.preRotate(originalExif.rotationDegrees.toFloat())
                 bApply = true
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         if (bApply) {
             bitmap = transformBitmap(bitmap, matrix)
@@ -151,7 +151,6 @@ object UploadUtils {
             closeStreamQuietly(originalStream)
         }
     }
-
 
     fun createIntents(
         accountId: Long, destination: UploadDestination, photos: List<LocalPhoto>, size: Int,
@@ -212,7 +211,7 @@ object UploadUtils {
                 }
                 cursor?.close()
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         return fileName
     }

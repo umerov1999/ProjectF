@@ -544,7 +544,7 @@ class DialogsPresenter(
     private val lastDialogMessageId: Int?
         get() = try {
             dialogs[dialogs.size - 1].lastMessageId
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
 
@@ -621,14 +621,6 @@ class DialogsPresenter(
         view?.showSnackbar(
             R.string.success,
             true
-        )
-    }
-
-    fun fireNotificationsSettingsClick(dialog: Dialog) {
-        assertPositive(dialogsOwnerId)
-        view?.showNotificationSettings(
-            dialogsOwnerId,
-            dialog.peerId
         )
     }
 

@@ -279,7 +279,7 @@ class OkHttp3LoggingInterceptor @JvmOverloads constructor(
                     ) {
                         logger.log(buffer.clone().readUtf8())
                     }
-                } catch (ignored: Exception) {
+                } catch (_: Exception) {
                 }
                 if (gzippedLength != null) {
                     logger.log("<-- END HTTP (${totalMs}ms, ${buffer.size}-byte, $gzippedLength-gzipped-byte body)")

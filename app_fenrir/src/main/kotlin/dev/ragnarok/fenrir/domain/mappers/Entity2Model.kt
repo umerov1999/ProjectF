@@ -154,7 +154,6 @@ object Entity2Model {
         return topic
     }
 
-
     fun buildCommunitiesFromDbos(dbos: List<CommunityEntity>): List<Community> {
         val communities: MutableList<Community> = ArrayList(dbos.size)
         for (dbo in dbos) {
@@ -162,7 +161,6 @@ object Entity2Model {
         }
         return communities
     }
-
 
     fun buildCommunityFromDbo(dbo: CommunityEntity): Community {
         return Community(dbo.id)
@@ -182,7 +180,6 @@ object Entity2Model {
             .setMembersCount(dbo.membersCount)
             .setHasUnseenStories(dbo.hasUnseenStories)
     }
-
 
     fun buildCommunityDetailsFromDbo(dbo: CommunityDetailsEntity): CommunityDetails {
         val details = CommunityDetails()
@@ -250,7 +247,6 @@ object Entity2Model {
         return data
     }
 
-
     fun buildUsersFromDbo(dbos: List<UserEntity>): List<User> {
         val users: MutableList<User> = ArrayList(dbos.size)
         for (dbo in dbos) {
@@ -274,7 +270,6 @@ object Entity2Model {
         }
         return users
     }
-
 
     fun buildUserDetailsFromDbo(dbo: UserDetailsEntity, owners: IOwnersBundle): UserDetails {
         val details = UserDetails()
@@ -428,7 +423,6 @@ object Entity2Model {
             .setRegion(entity.region)
     }
 
-
     fun map(entity: UserEntity?): User? {
         return if (entity == null) {
             null
@@ -468,7 +462,6 @@ object Entity2Model {
             .setGroup(map(entity.group))
     }
 
-
     fun map(entity: CommunityEntity?): Community? {
         return if (entity == null) {
             null
@@ -490,7 +483,6 @@ object Entity2Model {
             .setHasUnseenStories(entity.hasUnseenStories)
     }
 
-
     fun mapPhotoAlbum(entity: PhotoAlbumDboEntity): PhotoAlbum {
         return PhotoAlbum(entity.id, entity.ownerId)
             .setSize(entity.size)
@@ -505,7 +497,6 @@ object Entity2Model {
             .setUploadByAdminsOnly(entity.isUploadByAdminsOnly)
             .setCommentsDisabled(entity.isCommentsDisabled)
     }
-
 
     fun buildCommentFromDbo(dbo: CommentEntity?, owners: IOwnersBundle): Comment? {
         dbo ?: return null
@@ -556,7 +547,6 @@ object Entity2Model {
         return o
     }
 
-
     fun buildDialogFromDbo(
         accountId: Long,
         entity: DialogDboEntity,
@@ -589,7 +579,6 @@ object Entity2Model {
         }
         return dialog
     }
-
 
     fun buildKeyboardFromDbo(keyboard: KeyboardEntity?): Keyboard? {
         if (keyboard == null || keyboard.buttons.isNullOrEmpty()) {
@@ -685,7 +674,6 @@ object Entity2Model {
         }
         return attachments
     }
-
 
     fun buildAttachmentFromDbo(dboEntity: DboEntity, owners: IOwnersBundle): AbsModel {
         when (dboEntity) {
@@ -847,7 +835,6 @@ object Entity2Model {
             .setThumb256(entity.thumb256)
     }
 
-
     fun buildStickerFromDbo(entity: StickerDboEntity): Sticker {
         return Sticker(entity.id)
             .setImages(mapAll(entity.images, Entity2Model::map))
@@ -863,7 +850,6 @@ object Entity2Model {
     private fun mapStickerAnimation(entity: AnimationEntity): Sticker.Animation {
         return Sticker.Animation(entity.url, entity.type)
     }
-
 
     fun map(entity: StickerSetEntity): StickerSet {
         return StickerSet(
@@ -914,7 +900,6 @@ object Entity2Model {
             .setTranscript(entity.transcript)
             .setWasListened(entity.was_listened)
     }
-
 
     fun buildDocumentFromDbo(dbo: DocumentDboEntity): Document {
         val document = Document(dbo.id, dbo.ownerId)
@@ -1000,7 +985,6 @@ object Entity2Model {
             .setPhoto(dbo.photo?.let { map(it) })
     }
 
-
     fun buildArticleFromDbo(dbo: ArticleDboEntity): Article {
         return Article(dbo.id, dbo.ownerId)
             .setAccessKey(dbo.accessKey)
@@ -1051,7 +1035,6 @@ object Entity2Model {
         return Event(dbo.id).setButton_text(dbo.button_text).setText(dbo.text)
             .setSubject(owners.getById(if (dbo.id >= 0) -dbo.id else dbo.id))
     }
-
 
     fun buildMarketFromDbo(dbo: MarketDboEntity): Market {
         return Market(dbo.id, dbo.owner_id)
@@ -1122,7 +1105,6 @@ object Entity2Model {
             .setUrl(dto.url)
     }
 
-
     fun buildNewsFromDbo(dbo: NewsDboEntity, owners: IOwnersBundle): News {
         val news = News()
             .setType(dbo.type)
@@ -1175,7 +1157,6 @@ object Entity2Model {
         }
         return news
     }
-
 
     fun buildPostFromDbo(dbo: PostDboEntity, owners: IOwnersBundle): Post {
         val post = Post()
@@ -1300,7 +1281,6 @@ object Entity2Model {
             .setTimelineThumbs(entity.timelineThumbs?.let { buildVideoTimelineFromDbo(it) })
     }
 
-
     fun map(dbo: PhotoDboEntity): Photo {
         return Photo()
             .setId(dbo.id)
@@ -1344,7 +1324,6 @@ object Entity2Model {
             .setL(entity2modelNullable(dbo.l))
     }
 
-
     fun fillOwnerIds(ids: VKOwnIds, dbos: List<DboEntity?>?) {
         if (dbos != null) {
             for (entity in dbos) {
@@ -1352,7 +1331,6 @@ object Entity2Model {
             }
         }
     }
-
 
     fun fillPostOwnerIds(ids: VKOwnIds, dbo: PostDboEntity?) {
         if (dbo != null) {
@@ -1370,11 +1348,9 @@ object Entity2Model {
         }
     }
 
-
     fun fillOwnerIds(ids: VKOwnIds, entity: CommentEntity?) {
         fillCommentOwnerIds(ids, entity)
     }
-
 
     fun fillOwnerIds(ids: VKOwnIds, dboEntity: DboEntity?) {
         when (dboEntity) {
@@ -1417,7 +1393,6 @@ object Entity2Model {
         }
     }
 
-
     fun fillCommentOwnerIds(ids: VKOwnIds, dbo: CommentEntity?) {
         if (dbo != null) {
             if (dbo.fromId != 0L) {
@@ -1436,7 +1411,6 @@ object Entity2Model {
             }
         }
     }
-
 
     fun fillOwnerIds(ids: VKOwnIds, dbo: NewsDboEntity?) {
         if (dbo != null) {

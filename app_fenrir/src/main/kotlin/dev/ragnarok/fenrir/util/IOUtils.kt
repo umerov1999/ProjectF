@@ -12,30 +12,27 @@ object IOUtils {
         bitmap?.recycle()
     }
 
-
     fun closeStreamQuietly(streamToClose: InputStream?) {
         if (streamToClose == null) return
         try {
             streamToClose.close()
-        } catch (ignored: IOException) {
+        } catch (_: IOException) {
         }
     }
-
 
     fun closeStreamQuietly(streamToClose: OutputStream?) {
         if (streamToClose == null) return
         try {
             streamToClose.close()
-        } catch (ignored: IOException) {
+        } catch (_: IOException) {
         }
     }
-
 
     fun closeCursorQuietly(cursor: Cursor?) {
         if (cursor == null) return
         try {
             cursor.close()
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
     }
 }

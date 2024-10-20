@@ -25,6 +25,8 @@ class SettingsBackup {
         var hidden_device_id: String? = null
         var send_by_enter: Boolean? = null
         var theme_overlay: String? = null
+        var single_line_videos: Boolean? = null
+        var single_line_photos: Boolean? = null
         var audio_round_icon: Boolean? = null
         var use_long_click_download: Boolean? = null
         var revert_play_audio: Boolean? = null
@@ -165,7 +167,7 @@ class SettingsBackup {
         var service_playlists: String? = null
         var rendering_bitmap_mode: String? = null
         var hidden_peers: Set<String>? = null
-        var notif_peer_uids: Set<String>? = null
+        var silent_peer_uids: Set<String>? = null
         var user_name_changes_uids: Set<String>? = null
         var owner_changes_monitor_uids: Set<String>? = null
         var current_parser: String? = null
@@ -186,17 +188,17 @@ class SettingsBackup {
                 preferences.decode(AppPreferencesList.serializer(), "")
             )
         )
-        val notificatios_pointers = HashMap<String, Int>()
-        for ((key) in Settings.get().notifications().chatsNotif) {
+        val silentsPeerPointers = HashMap<String, Boolean>()
+        for ((key) in Settings.get().notifications().silentPeersMap) {
             if (pref.contains(key)) {
-                notificatios_pointers[key] = pref.getInt(key, -1)
+                silentsPeerPointers[key] = pref.getBoolean(key, false)
             }
         }
         ret.put(
-            "notifications_values",
+            "silent_peers_values",
             kJson.encodeToJsonElement(
-                MapSerializer(String.serializer(), Int.serializer()),
-                notificatios_pointers
+                MapSerializer(String.serializer(), Boolean.serializer()),
+                silentsPeerPointers
             )
         )
         val user_names_pointers = HashMap<String, String>()
@@ -228,13 +230,8 @@ class SettingsBackup {
             PreferenceScreen.getPreferences(Includes.provideApplicationContext())
         val preferences = Preferences(pref)
 
-        for (i in Settings.get().notifications().chatsNotifKeys) {
-            pref.edit().remove(i).apply()
-        }
-
-        for (i in Settings.get().main().userNameChangesKeys) {
-            pref.edit().remove(i).apply()
-        }
+        Settings.get().notifications().resetAll()
+        Settings.get().main().resetAllUserNameChanges()
 
         ret["app"]?.let {
             preferences.encode(
@@ -245,19 +242,19 @@ class SettingsBackup {
         }
 
         Settings.get().security().reloadHiddenDialogSettings()
-        Settings.get().notifications().reloadNotifSettings(true)
+        Settings.get().notifications().reloadSilentSettings(true)
         Settings.get().main().reloadOwnerChangesMonitor()
 
-        ret["notifications_values"]?.let {
-            val notificatios_pointers: Map<String, Int> = kJson.decodeFromJsonElement(
-                MapSerializer(String.serializer(), Int.serializer()),
+        ret["silent_peers_values"]?.let {
+            val silentsPeerPointers: Map<String, Boolean> = kJson.decodeFromJsonElement(
+                MapSerializer(String.serializer(), Boolean.serializer()),
                 it
             )
-            for ((key, value) in notificatios_pointers) {
-                pref.edit().putInt(key, value).apply()
+            for ((key, value) in silentsPeerPointers) {
+                pref.edit().putBoolean(key, value).apply()
             }
         }
-        Settings.get().notifications().reloadNotifSettings(false)
+        Settings.get().notifications().reloadSilentSettings(false)
         Settings.get().main().reloadUserNameChangesSettings(true)
 
         ret["user_names_values"]?.let {

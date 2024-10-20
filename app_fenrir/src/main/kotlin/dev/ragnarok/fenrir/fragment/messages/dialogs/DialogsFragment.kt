@@ -31,7 +31,6 @@ import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
 import dev.ragnarok.fenrir.activity.EnterPinActivity
 import dev.ragnarok.fenrir.activity.MainActivity
 import dev.ragnarok.fenrir.activity.selectprofiles.SelectProfilesActivity.Companion.startFriendsSelection
-import dev.ragnarok.fenrir.dialog.DialogNotifOptionsDialog
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.fragment.messages.dialogs.IDialogsView.IContextView
 import dev.ragnarok.fenrir.fragment.search.SearchContentType
@@ -54,7 +53,6 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getImportantMessages
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getSingleTabSearchPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.securitySettingsPlace
-import dev.ragnarok.fenrir.settings.ISettings.INotificationSettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
@@ -63,11 +61,6 @@ import dev.ragnarok.fenrir.util.HelperSimple.NOTIFICATION_PERMISSION
 import dev.ragnarok.fenrir.util.HelperSimple.needHelp
 import dev.ragnarok.fenrir.util.InputTextDialog
 import dev.ragnarok.fenrir.util.MessagesReplyItemCallback
-import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.Utils.addFlagIf
-import dev.ragnarok.fenrir.util.Utils.hasFlag
-import dev.ragnarok.fenrir.util.Utils.hasOreo
-import dev.ragnarok.fenrir.util.Utils.removeFlag
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
@@ -131,7 +124,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
-        if (Utils.hasTiramisu() && needHelp(
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && needHelp(
                 NOTIFICATION_PERMISSION,
                 1
             ) && !AppPerms.hasNotificationPermissionSimple(requireActivity())
@@ -261,7 +254,6 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
         val menus = ModalBottomSheetDialogFragment.Builder()
         val delete = getString(R.string.delete)
         val addToHomeScreen = getString(R.string.add_to_home_screen)
-        val notificationSettings = getString(R.string.peer_notification_settings)
         val notificationEnable = getString(R.string.enable_notifications)
         val notificationDisable = getString(R.string.disable_notifications)
         val addToShortcuts = getString(R.string.add_to_launcher_shortcuts)
@@ -285,27 +277,23 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
             menus.add(OptionRequest(3, addToHomeScreen, R.drawable.ic_home_outline, false))
         }
         if (contextView.pCanConfigNotifications) {
-            if (hasOreo()) {
-                val mask = Settings.get()
-                    .notifications()
-                    .getNotifPref(Settings.get().accounts().current, dialog.peerId)
-                if (hasFlag(mask, INotificationSettings.FLAG_SHOW_NOTIF)) {
-                    menus.add(
-                        OptionRequest(
-                            4,
-                            notificationDisable,
-                            R.drawable.notification_disable,
-                            false
-                        )
+            val silent = Settings.get()
+                .notifications()
+                .isSilentPeer(Settings.get().accounts().current, dialog.peerId)
+            if (!silent) {
+                menus.add(
+                    OptionRequest(
+                        4,
+                        notificationDisable,
+                        R.drawable.notification_disable,
+                        false
                     )
-                } else {
-                    menus.add(OptionRequest(4, notificationEnable, R.drawable.feed, false))
-                }
+                )
             } else {
-                menus.add(OptionRequest(4, notificationSettings, R.drawable.feed, false))
+                menus.add(OptionRequest(4, notificationEnable, R.drawable.feed, false))
             }
         }
-        if (contextView.pCanAddToShortcuts && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+        if (contextView.pCanAddToShortcuts && Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             menus.add(OptionRequest(5, addToShortcuts, R.drawable.about_writed, false))
         }
         if (!contextView.pIsHidden) {
@@ -356,24 +344,16 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
                     dialog
                 )
 
-                4 -> if (hasOreo()) {
+                4 -> {
                     val accountId = Settings.get().accounts().current
-                    var mask = Settings.get()
-                        .notifications()
-                        .getNotifPref(accountId, dialog.peerId)
-                    mask = if (hasFlag(mask, INotificationSettings.FLAG_SHOW_NOTIF)) {
-                        removeFlag(mask, INotificationSettings.FLAG_SHOW_NOTIF)
-                    } else {
-                        addFlagIf(mask, INotificationSettings.FLAG_SHOW_NOTIF, true)
-                    }
                     Settings.get()
                         .notifications()
-                        .setNotifPref(accountId, dialog.peerId, mask)
+                        .setSilentPeer(
+                            accountId, dialog.peerId, !Settings.get()
+                                .notifications()
+                                .isSilentPeer(accountId, dialog.peerId)
+                        )
                     mAdapter?.notifyDataSetChanged()
-                } else {
-                    presenter?.fireNotificationsSettingsClick(
-                        dialog
-                    )
                 }
 
                 5 -> presenter?.fireAddToLauncherShortcuts(
@@ -547,20 +527,6 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
                 }
             })
             .show()
-    }
-
-    override fun showNotificationSettings(accountId: Long, peerId: Long) {
-        if (hasOreo()) {
-            return
-        }
-        DialogNotifOptionsDialog.newInstance(
-            accountId,
-            peerId,
-            object : DialogNotifOptionsDialog.Listener {
-                override fun onSelected() {
-                    mAdapter?.notifyDataSetChanged()
-                }
-            }).show(parentFragmentManager, "dialog-notif-options")
     }
 
     override fun goToOwnerWall(accountId: Long, ownerId: Long, owner: Owner?) {

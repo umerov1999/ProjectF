@@ -10,7 +10,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
-import android.view.WindowManager
 import android.widget.RelativeLayout
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
@@ -40,7 +39,7 @@ import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCream
+import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
@@ -99,18 +98,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                         var tmp = 1f - percent
                         tmp *= 4
                         tmp = Utils.clamp(1f - tmp, 0f, 1f)
-                        if (Utils.hasOreo()) {
-                            mContentRoot?.setBackgroundColor(Color.argb(tmp, 0f, 0f, 0f))
-                        } else {
-                            mContentRoot?.setBackgroundColor(
-                                Color.argb(
-                                    (tmp * 255).toInt(),
-                                    0,
-                                    0,
-                                    0
-                                )
-                            )
-                        }
+                        mContentRoot?.setBackgroundColor(Color.argb(tmp, 0f, 0f, 0f))
                         mDownload?.alpha = tmp
                         ret.photo.alpha = Utils.clamp(percent, 0f, 1f)
                     }
@@ -369,7 +357,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val w = window
-        if (!hasVanillaIceCream()) {
+        if (!hasVanillaIceCreamTarget()) {
             w.statusBarColor =
                 if (colored) getStatusBarColor(this) else getStatusBarNonColored(
                     this
@@ -380,11 +368,6 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons
-
-        if (!Utils.hasMarshmallow()) {
-            w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        }
     }
 
     override fun onResume() {

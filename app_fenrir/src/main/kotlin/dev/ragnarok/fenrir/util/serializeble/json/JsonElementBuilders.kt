@@ -32,7 +32,6 @@ inline fun buildJsonObject(builderAction: JsonObjectBuilder.() -> Unit): JsonObj
     return builder.build()
 }
 
-
 /**
  * Builds [JsonArray] with the given [builderAction] builder.
  * Example of usage:

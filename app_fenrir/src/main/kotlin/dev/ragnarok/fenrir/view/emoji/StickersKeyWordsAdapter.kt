@@ -82,7 +82,7 @@ class StickersKeyWordsAdapter(private val context: Context, private var stickers
                         .load(link)
                         .into(view)
                 }
-            } catch (ignored: Exception) {
+            } catch (_: Exception) {
             }
         }
 

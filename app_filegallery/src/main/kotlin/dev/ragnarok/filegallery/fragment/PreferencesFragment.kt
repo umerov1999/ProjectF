@@ -6,6 +6,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.text.InputType
@@ -102,8 +103,6 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             preferencesAdapter?.applyToPreference("music_dir") { ss -> (ss as CustomTextPreference).reload() }
         }
     }
-
-
     private val photoDir = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -651,8 +650,8 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 onTextBeforeChanged { its ->
                     var sz = -1
                     try {
-                        sz = its.toString().trim { it <= ' ' }.toInt()
-                    } catch (ignored: NumberFormatException) {
+                        sz = its.toString().trim().toInt()
+                    } catch (_: NumberFormatException) {
                     }
                     if (isOverflowCanvas(sz) || sz in 0..99) {
                         return@onTextBeforeChanged false
@@ -673,8 +672,8 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 onTextBeforeChanged { its ->
                     var sz = -1
                     try {
-                        sz = its.toString().trim { it <= ' ' }.toInt()
-                    } catch (ignored: NumberFormatException) {
+                        sz = its.toString().trim().toInt()
+                    } catch (_: NumberFormatException) {
                     }
                     if (isOverflowCanvas(sz) || sz in 0..99) {
                         return@onTextBeforeChanged false
@@ -716,12 +715,12 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 initialSelection = "0"
                 titleRes = R.string.rendering_mode
                 dependency = "developer_mode"
-                visible = Utils.hasPie()
+                visible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
                 onSelectionChange { it ->
                     var sz = 0
                     try {
-                        sz = it.trim { it <= ' ' }.toInt()
-                    } catch (ignored: NumberFormatException) {
+                        sz = it.trim().toInt()
+                    } catch (_: NumberFormatException) {
                     }
                     setHardwareRendering(sz)
                     requireActivity().recreate()

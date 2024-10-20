@@ -28,7 +28,7 @@ class TagDirPresenter(private val owner_id: Long) :
     }
 
     fun doSearch(str: String?) {
-        val query = str?.trim { it <= ' ' }
+        val query = str?.trim()
         if (Objects.safeEquals(query, this.q)) {
             return
         }

@@ -105,7 +105,7 @@ object MusicPlaybackController {
     operator fun next() {
         try {
             mService?.next()
-        } catch (ignored: RemoteException) {
+        } catch (_: RemoteException) {
         }
     }
 
@@ -113,7 +113,7 @@ object MusicPlaybackController {
         get() {
             try {
                 return mService?.isInitialized == true
-            } catch (ignored: RemoteException) {
+            } catch (_: RemoteException) {
 
             }
             return false
@@ -123,7 +123,7 @@ object MusicPlaybackController {
         get() {
             try {
                 return mService?.isPreparing == true
-            } catch (ignored: RemoteException) {
+            } catch (_: RemoteException) {
             }
             return false
         }
@@ -147,21 +147,21 @@ object MusicPlaybackController {
             } else {
                 mService?.play()
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
     }
 
     fun stop() {
         try {
             mService?.stop()
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
     }
 
     fun closeMiniPlayer() {
         try {
             mService?.closeMiniPlayer()
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
     }
 
@@ -170,7 +170,7 @@ object MusicPlaybackController {
             if (!Settings.get().main().isShow_mini_player) return false
             try {
                 return mService?.miniplayerVisibility == true
-            } catch (ignored: Exception) {
+            } catch (_: Exception) {
             }
             return false
         }
@@ -195,7 +195,7 @@ object MusicPlaybackController {
                     else -> it.repeatMode = MusicPlaybackService.REPEAT_NONE
                 }
             }
-        } catch (ignored: RemoteException) {
+        } catch (_: RemoteException) {
         }
     }
 
@@ -219,14 +219,14 @@ object MusicPlaybackController {
                     else -> {}
                 }
             }
-        } catch (ignored: RemoteException) {
+        } catch (_: RemoteException) {
         }
     }
 
     fun canPlayAfterCurrent(audio: Audio): Boolean {
         try {
             return mService?.canPlayAfterCurrent(audio) == true
-        } catch (ignored: RemoteException) {
+        } catch (_: RemoteException) {
         }
         return false
     }
@@ -234,7 +234,7 @@ object MusicPlaybackController {
     fun playAfterCurrent(audio: Audio) {
         try {
             mService?.playAfterCurrent(audio)
-        } catch (ignored: RemoteException) {
+        } catch (_: RemoteException) {
         }
     }
 
@@ -245,7 +245,7 @@ object MusicPlaybackController {
         get() {
             try {
                 return mService?.isPlaying == true
-            } catch (ignored: RemoteException) {
+            } catch (_: RemoteException) {
             }
             return false
         }
@@ -257,7 +257,7 @@ object MusicPlaybackController {
         get() {
             try {
                 return mService?.shuffleMode ?: MusicPlaybackService.SHUFFLE_NONE
-            } catch (ignored: RemoteException) {
+            } catch (_: RemoteException) {
             }
             return 0
         }
@@ -269,7 +269,7 @@ object MusicPlaybackController {
         get() {
             try {
                 return mService?.repeatMode ?: MusicPlaybackService.REPEAT_NONE
-            } catch (ignored: RemoteException) {
+            } catch (_: RemoteException) {
             }
             return 0
         }
@@ -278,7 +278,7 @@ object MusicPlaybackController {
         get() {
             try {
                 return mService?.currentAudio
-            } catch (ignored: RemoteException) {
+            } catch (_: RemoteException) {
             }
             return null
         }
@@ -293,7 +293,7 @@ object MusicPlaybackController {
                         ret
                     }
                 }
-            } catch (ignored: RemoteException) {
+            } catch (_: RemoteException) {
             }
             return null
         }
@@ -305,7 +305,7 @@ object MusicPlaybackController {
         get() {
             try {
                 return mService?.trackName
-            } catch (ignored: RemoteException) {
+            } catch (_: RemoteException) {
             }
             return null
         }
@@ -317,7 +317,7 @@ object MusicPlaybackController {
         get() {
             try {
                 return mService?.albumName
-            } catch (ignored: RemoteException) {
+            } catch (_: RemoteException) {
             }
             return null
         }
@@ -329,7 +329,7 @@ object MusicPlaybackController {
         get() {
             try {
                 return mService?.artistName
-            } catch (ignored: RemoteException) {
+            } catch (_: RemoteException) {
             }
             return null
         }
@@ -337,7 +337,7 @@ object MusicPlaybackController {
         get() {
             try {
                 return mService?.albumCover
-            } catch (ignored: RemoteException) {
+            } catch (_: RemoteException) {
             }
             return null
         }
@@ -349,7 +349,7 @@ object MusicPlaybackController {
         get() {
             try {
                 return mService?.audioSessionId ?: -1
-            } catch (ignored: RemoteException) {
+            } catch (_: RemoteException) {
             }
             return -1
         }
@@ -361,7 +361,7 @@ object MusicPlaybackController {
         get() {
             try {
                 return mService?.queue ?: emptyList()
-            } catch (ignored: RemoteException) {
+            } catch (_: RemoteException) {
             }
             return emptyList()
         }
@@ -372,7 +372,7 @@ object MusicPlaybackController {
     fun refresh() {
         try {
             mService?.refresh()
-        } catch (ignored: RemoteException) {
+        } catch (_: RemoteException) {
         }
     }
 
@@ -384,21 +384,21 @@ object MusicPlaybackController {
     fun seek(position: Long) {
         try {
             mService?.seek(position)
-        } catch (ignored: RemoteException) {
+        } catch (_: RemoteException) {
         }
     }
 
     fun skip(position: Int) {
         try {
             mService?.skip(position)
-        } catch (ignored: RemoteException) {
+        } catch (_: RemoteException) {
         }
     }
 
     fun doNotDestroyWhenActivityRecreated() {
         try {
             mService?.doNotDestroyWhenActivityRecreated()
-        } catch (ignored: RemoteException) {
+        } catch (_: RemoteException) {
         }
     }
 
@@ -408,7 +408,7 @@ object MusicPlaybackController {
     fun position(): Long {
         try {
             return mService?.position() ?: -1
-        } catch (ignored: RemoteException) {
+        } catch (_: RemoteException) {
         }
         return -1
     }
@@ -419,7 +419,7 @@ object MusicPlaybackController {
     fun duration(): Long {
         try {
             return mService?.duration() ?: -1
-        } catch (ignored: RemoteException) {
+        } catch (_: RemoteException) {
         }
         return 0
     }
@@ -427,7 +427,7 @@ object MusicPlaybackController {
     fun bufferPercent(): Int {
         try {
             return mService?.bufferPercent ?: 0
-        } catch (ignored: RemoteException) {
+        } catch (_: RemoteException) {
         }
         return 0
     }
@@ -435,7 +435,7 @@ object MusicPlaybackController {
     fun bufferPosition(): Long {
         try {
             return mService?.bufferPosition ?: 0
-        } catch (ignored: RemoteException) {
+        } catch (_: RemoteException) {
         }
         return 0
     }

@@ -160,7 +160,6 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
             }
         }
 
-
         fun appendAttachOperationWithBackReference(
             operations: MutableList<ContentProviderOperation>, accountId: Long,
             @AttachToType attachToType: Int, attachToBackReferenceIndex: Int, dboEntity: DboEntity
@@ -177,7 +176,6 @@ internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttach
                     .build()
             )
         }
-
 
         fun appendAttachOperationWithStableAttachToId(
             operations: MutableList<ContentProviderOperation>,

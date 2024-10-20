@@ -45,6 +45,7 @@ import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CompositeJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayedFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.dummy
@@ -72,7 +73,7 @@ class CommentsPresenter(
         InteractorFactory.createStickersInteractor()
     private val data: MutableList<Comment>
     private val CommentThread: Int?
-    private val stickersWordsDisplayDisposable = CompositeJob()
+    private val stickersWordsDisplayDisposable = CancelableJob()
     private val actualLoadingDisposable = CompositeJob()
     private val deepLookingHolder = CompositeJob()
     private val cacheLoadingDisposable = CompositeJob()
@@ -165,16 +166,17 @@ class CommentsPresenter(
         if (!Settings.get().main().isHint_stickers) {
             return
         }
-        stickersWordsDisplayDisposable.clear()
+        stickersWordsDisplayDisposable.cancel()
         if (s.isNullOrEmpty()) {
             view?.updateStickers(
                 emptyList()
             )
             return
         }
-        stickersWordsDisplayDisposable.add(stickersInteractor.getKeywordsStickers(
+        stickersWordsDisplayDisposable.set(stickersInteractor.getKeywordsStickers(
             authorId,
-            s.trim { it <= ' ' })
+            s.trim()
+        )
             .delayedFlow(500)
             .fromIOToMain({
                 view?.updateStickers(

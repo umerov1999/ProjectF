@@ -54,7 +54,7 @@ class FavePagesPresenter(
     }
 
     fun fireSearchRequestChanged(q: String?) {
-        sleep_search(q?.trim { it <= ' ' })
+        sleep_search(q?.trim())
     }
 
     override fun onGuiCreated(viewHost: IFavePagesView) {

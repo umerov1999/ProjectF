@@ -101,7 +101,6 @@ object ActivityUtils {
         ) == true
     }
 
-
     fun supportToolbarFor(fragment: Fragment): ActionBar? {
         return if (fragment.activity == null) {
             null

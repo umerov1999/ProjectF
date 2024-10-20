@@ -191,7 +191,7 @@ class AudiosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun fireSearchRequestChanged(q: String?) {
-        val query = q?.trim { it <= ' ' }
+        val query = q?.trim()
         if (!search_at.do_compare(query)) {
             actualDataLoading = false
             if (query.isNullOrEmpty()) {

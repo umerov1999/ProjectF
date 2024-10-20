@@ -63,7 +63,7 @@ public class LinearSnapHelper extends SnapHelper {
     @Override
     public int findTargetSnapPosition(RecyclerView.LayoutManager layoutManager, int velocityX,
             int velocityY) {
-        if (!(layoutManager instanceof RecyclerView.SmoothScroller.ScrollVectorProvider)) {
+        if (!(layoutManager instanceof RecyclerView.SmoothScroller.ScrollVectorProvider vectorProvider)) {
             return RecyclerView.NO_POSITION;
         }
 
@@ -82,8 +82,6 @@ public class LinearSnapHelper extends SnapHelper {
             return RecyclerView.NO_POSITION;
         }
 
-        RecyclerView.SmoothScroller.ScrollVectorProvider vectorProvider =
-                (RecyclerView.SmoothScroller.ScrollVectorProvider) layoutManager;
         // deltaJumps sign comes from the velocity which may not match the order of children in
         // the LayoutManager. To overcome this, we ask for a vector from the LayoutManager to
         // get the direction.

@@ -81,7 +81,7 @@ class LoginActivity : AppCompatActivity() {
                     try {
                         val tokens = tryExtractAccessTokens(url)
                         intent.putParcelableArrayListExtra("group_tokens", tokens)
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         val accessToken = tryExtractAccessToken(url)
                         val userId = tryExtractUserId(url)
                         intent.putExtra(Extra.TOKEN, accessToken)
@@ -136,7 +136,6 @@ class LoginActivity : AppCompatActivity() {
                 .putExtra(EXTRA_PASSWORD, Password).putExtra(EXTRA_TWO_FA, TwoFa)
                 .putExtra(EXTRA_SAVE, isSave)
         }
-
 
         fun createIntent(
             context: Context?,

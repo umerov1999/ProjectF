@@ -82,7 +82,7 @@ class FavePagesAdapter(private var data: List<FavePage>, private val context: Co
                 holder.blacklisted.visibility = View.VISIBLE
                 holder.blacklisted.setImageResource(R.drawable.audio_died)
                 Utils.setColorFilter(holder.blacklisted, "#ff0000".toColor())
-            } else if (user?.isFriend == true && Utils.hasMarshmallow() && FenrirNative.isNativeLoaded) {
+            } else if (user?.isFriend == true && FenrirNative.isNativeLoaded) {
                 holder.blacklisted.visibility = View.VISIBLE
                 holder.blacklisted.setImageResource(R.drawable.is_friend)
                 holder.blacklisted.clearColorFilter()

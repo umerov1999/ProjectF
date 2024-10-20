@@ -179,7 +179,7 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
                         } else {
                             SystemClock.sleep(1000)
                         }
-                    } catch (e: OutOfDateException) {
+                    } catch (_: OutOfDateException) {
                         break
                     }
                 }
@@ -203,7 +203,7 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
                         } else {
                             SystemClock.sleep(1000)
                         }
-                    } catch (e: OutOfDateException) {
+                    } catch (_: OutOfDateException) {
                         break
                     }
                 }

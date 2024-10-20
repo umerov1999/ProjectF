@@ -1,9 +1,7 @@
 package dev.ragnarok.fenrir.media.record
 
 import android.content.Context
-import android.os.Build
 import android.os.Environment
-import androidx.annotation.RequiresApi
 import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import java.io.File
@@ -27,18 +25,13 @@ class AudioRecordWrapper internal constructor(builder: Builder) {
             mRecorder = Recorder(file.absolutePath, mContext)
             try {
                 mRecorder?.prepare()
-            } catch (e: IOException) {
+            } catch (_: IOException) {
                 mRecorder = null
                 throw AudioRecordException(AudioRecordException.Codes.UNABLE_TO_PREPARE_RECORDER)
             }
         }
         if (mRecorder?.status == Recorder.Status.RECORDING_NOW) {
-            if (Recorder.isPauseSupported) {
-                mRecorder?.pause()
-            } else {
-                mRecorder?.stopAndRelease()
-                mRecorder = null
-            }
+            mRecorder?.pause()
         } else {
             try {
                 mRecorder?.start()
@@ -48,14 +41,11 @@ class AudioRecordWrapper internal constructor(builder: Builder) {
         }
     }
 
-    val isPauseSupported: Boolean
-        get() = Recorder.isPauseSupported
     val currentRecordDuration: Long
         get() = if (mRecorder == null) 0 else mRecorder?.currentRecordDuration ?: 0
     val currentMaxAmplitude: Int
         get() = if (mRecorder == null) 0 else mRecorder?.maxAmplitude ?: 0
 
-    @RequiresApi(Build.VERSION_CODES.N)
     fun pause() {
         if (mRecorder == null) {
             Logger.wtf(TAG, "Recorder in NULL")

@@ -53,7 +53,7 @@ class AddProxyPresenter(savedInstanceState: Bundle?) :
                 if (portInt <= 0) {
                     throw Exception("Invalid port")
                 }
-            } catch (e: NumberFormatException) {
+            } catch (_: NumberFormatException) {
                 throw Exception("Invalid port")
             }
             if (!isValidIpAddress(address) && !isValidURL(address)) {
@@ -76,8 +76,8 @@ class AddProxyPresenter(savedInstanceState: Bundle?) :
         if (!validateData()) {
             return
         }
-        val finalAddress = address?.trim { it <= ' ' }
-        val finalPort = port?.trim { it <= ' ' }?.toInt() ?: 0
+        val finalAddress = address?.trim()
+        val finalPort = port?.trim()?.toInt() ?: 0
         if (authEnabled) {
             if (finalAddress != null) {
                 userName?.let {

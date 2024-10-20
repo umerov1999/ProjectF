@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.activity
 import android.content.Context
 import android.os.Bundle
 import android.view.MotionEvent
-import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
@@ -16,7 +15,7 @@ import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.theme.ThemesController.currentStyle
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCream
+import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.getInstance
 
 abstract class NoMainActivity : AppCompatActivity() {
@@ -38,13 +37,8 @@ abstract class NoMainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         isZoomPhoto = Settings.get().main().isDo_zoom_photo
         setContentView(getNoMainContentView())
-        if (!hasVanillaIceCream()) {
+        if (!hasVanillaIceCreamTarget()) {
             val w = window
-            if (!Utils.hasMarshmallow()) {
-                w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            }
-
             w.statusBarColor = CurrentTheme.getStatusBarColor(this)
             w.navigationBarColor = CurrentTheme.getNavigationBarColor(this)
         }

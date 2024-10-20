@@ -52,8 +52,6 @@ object Includes {
             networkInterfaces
         )
     }
-
-
     val uploadManager: IUploadManager by lazy {
         UploadManagerImpl(
             instance, networkInterfaces,
@@ -68,8 +66,6 @@ object Includes {
     val validationProvider: IValidateProvider by lazy {
         ValidateProvider(provideApplicationContext())
     }
-
-
     val attachmentsRepository: IAttachmentsRepository by lazy {
         AttachmentsRepository(stores.attachments(), owners)
     }

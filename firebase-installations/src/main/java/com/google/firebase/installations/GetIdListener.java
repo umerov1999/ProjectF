@@ -21,12 +21,7 @@ import com.google.firebase.installations.local.PersistedInstallationEntry;
  * This class manages {@link PersistedInstallationEntry} state transitions valid for getId() and
  * updates the caller once the id is generated.
  */
-class GetIdListener implements StateListener {
-    final TaskCompletionSource<String> taskCompletionSource;
-
-    public GetIdListener(TaskCompletionSource<String> taskCompletionSource) {
-        this.taskCompletionSource = taskCompletionSource;
-    }
+record GetIdListener(TaskCompletionSource<String> taskCompletionSource) implements StateListener {
 
     @Override
     public boolean onStateReached(PersistedInstallationEntry persistedInstallationEntry) {

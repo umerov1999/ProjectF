@@ -27,11 +27,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * Class used to detect if there are gaps between pages and if any of the pages contain a running
  * change-transition in case we detected an illegal state in the {@link ScrollEventAdapter}.
- *
+ * <p>
  * This is an approximation of the detection and could potentially lead to misleading advice. If we
  * hit problems with it, remove the detection and replace with a suggestive error message instead,
  * like "Negative page offset encountered. Did you setAnimateParentHierarchy(false) to all your
@@ -89,7 +90,7 @@ final class AnimateLayoutChangeDetector {
         }
 
         // Sort them
-        Arrays.sort(bounds, (lhs, rhs) -> lhs[0] - rhs[0]);
+        Arrays.sort(bounds, Comparator.comparingInt(lhs -> lhs[0]));
 
         // Check for inconsistencies
         for (int i = 1; i < childCount; i++) {
@@ -117,8 +118,7 @@ final class AnimateLayoutChangeDetector {
     }
 
     private static boolean hasRunningChangingLayoutTransition(View view) {
-        if (view instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) view;
+        if (view instanceof ViewGroup viewGroup) {
             LayoutTransition layoutTransition = viewGroup.getLayoutTransition();
             if (layoutTransition != null && layoutTransition.isChangingLayout()) {
                 return true;

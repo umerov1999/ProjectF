@@ -254,7 +254,7 @@ abstract class AbsMessageListPresenter<V : IBasicMessageListView> internal const
                     isSpeed
                 )
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         syncVoiceLookupState()
     }

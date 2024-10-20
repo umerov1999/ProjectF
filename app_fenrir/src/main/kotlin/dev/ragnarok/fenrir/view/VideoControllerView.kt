@@ -197,7 +197,7 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
             if (mPlayer?.canSeekForward() != true) {
                 mFfwdButton?.isEnabled = false
             }
-        } catch (ex: IncompatibleClassChangeError) {
+        } catch (_: IncompatibleClassChangeError) {
             // We were given an old version of the interface, that doesn't have
             // the canPause/canSeekXYZ methods. This is OK, it just means we
             // assume the media can be paused and seeked, and so we don't disable
@@ -253,7 +253,7 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
             mHideDisposable.cancel()
             mRefreshDisposable.cancel()
             mAnchor?.removeView(this)
-        } catch (ex: Exception) {
+        } catch (_: Exception) {
             Log.w("MediaController", "already removed")
         }
         isShowing = false
@@ -351,7 +351,7 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
 
             KeyEvent.KEYCODE_MEDIA_STOP,
             KeyEvent.KEYCODE_MEDIA_PAUSE
-            -> {
+                -> {
                 if (uniqueDown && mPlayer?.isPlaying == true) {
                     mPlayer?.pause()
                     updatePausePlay()

@@ -3,7 +3,7 @@ plugins {
     id("kotlin-android")
 }
 
-//1.13.0-alpha05
+//1.13.0-alpha07
 
 def srcDirs = [
         'com/google/android/material/animation',
@@ -86,13 +86,13 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
         encoding = "utf-8"
         aaptOptions.additionalParameters "--no-version-vectors"
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "21"
     }
     lint {
         checkOnly 'NewApi'
@@ -109,7 +109,7 @@ dependencies {
     implementation("androidx.core:core-ktx:$coreVersion")
     implementation("androidx.activity:activity-ktx:$activityVersion")
     implementation("androidx.fragment:fragment-ktx:$fragmentVersion")
-    implementation("androidx.graphics:graphics-shapes:$graphicsVersion")
+    implementation("androidx.graphics:graphics-shapes-android:$graphicsShapesVersion")
     implementation("androidx.cardview:cardview:$cardviewVersion")
     implementation("androidx.dynamicanimation:dynamicanimation:$dynamicanimationVersion")
     implementation("androidx.constraintlayout:constraintlayout:$constraintlayoutVersion")

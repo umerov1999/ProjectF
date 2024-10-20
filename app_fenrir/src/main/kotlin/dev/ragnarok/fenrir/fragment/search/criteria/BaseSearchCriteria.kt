@@ -62,7 +62,7 @@ open class BaseSearchCriteria : Parcelable, Cloneable {
     fun safellyClone(): BaseSearchCriteria {
         return try {
             clone()
-        } catch (e: CloneNotSupportedException) {
+        } catch (_: CloneNotSupportedException) {
             throw UnsupportedOperationException("Unable to clone criteria")
         }
     }

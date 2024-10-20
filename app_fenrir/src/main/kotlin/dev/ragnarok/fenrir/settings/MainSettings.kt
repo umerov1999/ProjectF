@@ -34,9 +34,10 @@ import java.util.Collections
 
 internal class MainSettings(context: Context) : IMainSettings {
     private val app: Context = context.applicationContext
-    private var prefferedPhotoPreviewSize: Optional<Int>
-    private val userNameChanges: MutableSet<String> = Collections.synchronizedSet(HashSet(1))
-    private val types: MutableMap<String, String> = Collections.synchronizedMap(HashMap(1))
+    private var preferPhotoPreviewSize: Optional<Int>
+    private val userNameChangesKeys: MutableSet<String> = Collections.synchronizedSet(HashSet(1))
+    private val userNameChangesTypes: MutableMap<String, String> =
+        Collections.synchronizedMap(HashMap(1))
     private val ownerChangesMonitor: MutableSet<Long> = Collections.synchronizedSet(HashSet(1))
 
     override val isSendByEnter: Boolean
@@ -45,9 +46,9 @@ internal class MainSettings(context: Context) : IMainSettings {
     @get:ThemeOverlay
     override val themeOverlay: Int
         get() = try {
-            getPreferences(app).getString("theme_overlay", "0")?.trim { it <= ' ' }?.toInt()
+            getPreferences(app).getString("theme_overlay", "0")?.trim()?.toInt()
                 ?: ThemeOverlay.OFF
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             ThemeOverlay.OFF
         }
     override val isAudio_round_icon: Boolean
@@ -87,14 +88,14 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override val uploadImageSizePref: Int
         get() = try {
-            getPreferences(app).getString(KEY_IMAGE_SIZE, "0")?.trim { it <= ' ' }?.toInt() ?: 2
-        } catch (e: Exception) {
+            getPreferences(app).getString(KEY_IMAGE_SIZE, "0")?.trim()?.toInt() ?: 2
+        } catch (_: Exception) {
             0
         }
     override val start_newsMode: Int
         get() = try {
-            getPreferences(app).getString("start_news", "2")?.trim { it <= ' ' }?.toInt() ?: 2
-        } catch (e: Exception) {
+            getPreferences(app).getString("start_news", "2")?.trim()?.toInt() ?: 2
+        } catch (_: Exception) {
             2
         }
 
@@ -102,16 +103,16 @@ internal class MainSettings(context: Context) : IMainSettings {
     @get:SuppressLint("WrongConstant")
     override val prefPreviewImageSize: Int
         get() {
-            if (prefferedPhotoPreviewSize.isEmpty) {
-                prefferedPhotoPreviewSize = wrap(restorePhotoPreviewSize())
+            if (preferPhotoPreviewSize.isEmpty) {
+                preferPhotoPreviewSize = wrap(restorePhotoPreviewSize())
             }
-            return prefferedPhotoPreviewSize.get()!!
+            return preferPhotoPreviewSize.get()!!
         }
 
     override val cryptVersion: Int
         get() = try {
-            getPreferences(app).getString("crypt_version", "1")?.trim { it <= ' ' }?.toInt() ?: 1
-        } catch (e: Exception) {
+            getPreferences(app).getString("crypt_version", "1")?.trim()?.toInt() ?: 1
+        } catch (_: Exception) {
             1
         }
 
@@ -119,9 +120,9 @@ internal class MainSettings(context: Context) : IMainSettings {
     private fun restorePhotoPreviewSize(): Int {
         return try {
             getPreferences(app).getString("photo_preview_size", PhotoSize.Y.toString())!!
-                .trim { it <= ' ' }
+                .trim()
                 .toInt()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             PhotoSize.Y
         }
     }
@@ -133,8 +134,8 @@ internal class MainSettings(context: Context) : IMainSettings {
                 "viewpager_page_transform",
                 Transformers_Types.OFF.toString()
             )!!
-                .trim { it <= ' ' }.toInt()
-        } catch (e: Exception) {
+                .trim().toInt()
+        } catch (_: Exception) {
             Transformers_Types.OFF
         }
 
@@ -145,13 +146,13 @@ internal class MainSettings(context: Context) : IMainSettings {
                 "player_cover_transform",
                 Transformers_Types.DEPTH_TRANSFORMER.toString()
             )!!
-                .trim { it <= ' ' }.toInt()
-        } catch (e: Exception) {
+                .trim().toInt()
+        } catch (_: Exception) {
             Transformers_Types.DEPTH_TRANSFORMER
         }
 
     override fun notifyPrefPreviewSizeChanged() {
-        prefferedPhotoPreviewSize = empty()
+        preferPhotoPreviewSize = empty()
     }
 
     @PhotoSize
@@ -161,9 +162,9 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override val photoRoundMode: Int
         get() = try {
-            getPreferences(app).getString("photo_rounded_view", "0")?.trim { it <= ' ' }?.toInt()
+            getPreferences(app).getString("photo_rounded_view", "0")?.trim()?.toInt()
                 ?: 0
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             0
         }
     override val fontSize: Int
@@ -181,15 +182,19 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override val isOpenUrlInternal: Int
         get() = try {
-            getPreferences(app).getString("is_open_url_internal", "1")?.trim { it <= ' ' }?.toInt()
+            getPreferences(app).getString("is_open_url_internal", "1")?.trim()?.toInt()
                 ?: 1
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             1
         }
     override val isWebview_night_mode: Boolean
         get() = getPreferences(app).getBoolean("webview_night_mode", true)
     override val isLoad_history_notif: Boolean
         get() = getPreferences(app).getBoolean("load_history_notif", false)
+    override val single_line_videos: Boolean
+        get() = getPreferences(app).getBoolean("single_line_videos", false)
+    override val single_line_photos: Boolean
+        get() = getPreferences(app).getBoolean("single_line_photos", false)
     override val isSnow_mode: Boolean
         get() = getPreferences(app).getBoolean("snow_mode", false)
     override val isDont_write: Boolean
@@ -198,7 +203,7 @@ internal class MainSettings(context: Context) : IMainSettings {
         get() = getPreferences(app).getBoolean("over_ten_attach", false)
 
     override val userNameChangesMap: Map<String, String>
-        get() = HashMap(types)
+        get() = HashMap(userNameChangesTypes)
 
     override fun isOwnerInChangesMonitor(ownerId: Long): Boolean {
         return ownerChangesMonitor.contains(ownerId)
@@ -212,21 +217,20 @@ internal class MainSettings(context: Context) : IMainSettings {
         }
     }
 
-    override val userNameChangesKeys: Set<String>
-        get() = HashSet(userNameChanges)
-
     override fun reloadUserNameChangesSettings(onlyRoot: Boolean) {
         val preferences = getPreferences(app)
-        userNameChanges.clear()
-        userNameChanges.addAll(preferences.getStringSet(KEY_USERNAME_UIDS, HashSet(1)) ?: return)
+        userNameChangesKeys.clear()
+        userNameChangesKeys.addAll(
+            preferences.getStringSet(KEY_USERNAME_UIDS, HashSet(1)) ?: return
+        )
         if (onlyRoot) {
             return
         }
-        types.clear()
-        for (i in userNameChanges) {
+        userNameChangesTypes.clear()
+        for (i in userNameChangesKeys) {
             val rs = preferences.getString(i, null)
             if (rs.nonNullNoEmpty()) {
-                types[i] = rs
+                userNameChangesTypes[i] = rs
             }
         }
     }
@@ -255,28 +259,48 @@ internal class MainSettings(context: Context) : IMainSettings {
             .apply()
     }
 
+    override fun resetAllChangesMonitor() {
+        val preferences = getPreferences(app)
+        ownerChangesMonitor.clear()
+        preferences.edit()
+            .putStringSet("owner_changes_monitor_uids", HashSet<String>())
+            .apply()
+    }
+
+    override fun resetAllUserNameChanges() {
+        val preferences = getPreferences(app)
+        for (i in userNameChangesKeys) {
+            preferences.edit().remove(i).apply()
+        }
+        userNameChangesKeys.clear()
+        userNameChangesTypes.clear()
+        preferences.edit()
+            .putStringSet(KEY_USERNAME_UIDS, userNameChangesKeys)
+            .apply()
+    }
+
     override fun setUserNameChanges(userId: Long, name: String?) {
         val preferences = getPreferences(app)
         if (name.isNullOrEmpty()) {
-            userNameChanges.remove(keyForUserNameChanges(userId))
-            types.remove(keyForUserNameChanges(userId))
+            userNameChangesKeys.remove(keyForUserNameChanges(userId))
+            userNameChangesTypes.remove(keyForUserNameChanges(userId))
             preferences.edit()
                 .remove(keyForUserNameChanges(userId))
-                .putStringSet(KEY_USERNAME_UIDS, userNameChanges)
+                .putStringSet(KEY_USERNAME_UIDS, userNameChangesKeys)
                 .apply()
         } else {
-            userNameChanges.add(keyForUserNameChanges(userId))
-            types[keyForUserNameChanges(userId)] = name
+            userNameChangesKeys.add(keyForUserNameChanges(userId))
+            userNameChangesTypes[keyForUserNameChanges(userId)] = name
             preferences.edit()
                 .putString(keyForUserNameChanges(userId), name)
-                .putStringSet(KEY_USERNAME_UIDS, userNameChanges)
+                .putStringSet(KEY_USERNAME_UIDS, userNameChangesKeys)
                 .apply()
         }
     }
 
     override fun getUserNameChanges(userId: Long): String? {
-        if (types.containsKey(keyForUserNameChanges(userId))) {
-            val v = types[keyForUserNameChanges(userId)]
+        if (userNameChangesTypes.containsKey(keyForUserNameChanges(userId))) {
+            val v = userNameChangesTypes[keyForUserNameChanges(userId)]
             if (v.nonNullNoEmpty()) {
                 return v
             }
@@ -355,14 +379,14 @@ internal class MainSettings(context: Context) : IMainSettings {
     override val maxBitmapResolution: Int
         get() = try {
             getPreferences(app).getString("max_bitmap_resolution", "4000")!!
-                .trim { it <= ' ' }.toInt()
-        } catch (e: Exception) {
+                .trim().toInt()
+        } catch (_: Exception) {
             4000
         }
     override val servicePlaylist: List<Int>
         get() = try {
             val rs = getPreferences(app).getString("service_playlists", "-21 -22 -25 -26 -27 -28")!!
-                .trim { it <= ' ' }
+                .trim()
             if (rs.isEmpty()) {
                 emptyList()
             } else {
@@ -372,27 +396,27 @@ internal class MainSettings(context: Context) : IMainSettings {
                 } else {
                     val integers: MutableList<Int> = ArrayList(integerStrings.size)
                     for (i in integerStrings.indices) {
-                        integers.add(i, integerStrings[i].trim { it <= ' ' }.toInt())
+                        integers.add(i, integerStrings[i].trim().toInt())
                     }
                     integers
                 }
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             listOf(-21, -22, -25, -26, -27, -28)
         }
     override val fFmpegPlugin: Int
         get() = try {
             getPreferences(app).getString("ffmpeg_audio_codecs", "1")!!
-                .trim { it <= ' ' }.toInt()
-        } catch (e: Exception) {
+                .trim().toInt()
+        } catch (_: Exception) {
             1
         }
 
     override val isLimitImage_cache: Int
         get() = try {
             getPreferences(app).getString("limit_cache_images", "2")!!
-                .trim { it <= ' ' }.toInt()
-        } catch (e: Exception) {
+                .trim().toInt()
+        } catch (_: Exception) {
             2
         }
 
@@ -401,13 +425,13 @@ internal class MainSettings(context: Context) : IMainSettings {
             var v = getPreferences(app).getString(
                 "lifecycle_music_service", Constants.AUDIO_PLAYER_SERVICE_IDLE.toString()
             )!!
-                .trim { it <= ' ' }.toInt()
+                .trim().toInt()
             if (v < 60000) {
                 getPreferences(app).edit().putString("lifecycle_music_service", "60000").apply()
                 v = 60000
             }
             v
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Constants.AUDIO_PLAYER_SERVICE_IDLE
         }
     override val isAutoplay_gif: Boolean
@@ -425,11 +449,11 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override val apiDomain: String
         get() = getPreferences(app)
-            .getString("vk_api_domain", "api.vk.com")!!.trim { it <= ' ' }
+            .getString("vk_api_domain", "api.vk.com")!!.trim()
 
     override val authDomain: String
         get() = getPreferences(app)
-            .getString("vk_auth_domain", "oauth.vk.com")!!.trim { it <= ' ' }
+            .getString("vk_auth_domain", "oauth.vk.com")!!.trim()
 
     override val isDeveloper_mode: Boolean
         get() = getPreferences(app).getBoolean("developer_mode", Constants.forceDeveloperMode)
@@ -472,8 +496,8 @@ internal class MainSettings(context: Context) : IMainSettings {
     override val donate_anim_set: Int
         get() = try {
             getPreferences(app).getString("donate_anim_set", "2")!!
-                .trim { it <= ' ' }.toInt()
-        } catch (e: Exception) {
+                .trim().toInt()
+        } catch (_: Exception) {
             2
         }
     override val isUse_stop_audio: Boolean
@@ -633,8 +657,8 @@ internal class MainSettings(context: Context) : IMainSettings {
     override val currentParser: Int
         get() = try {
             getPreferences(app).getString("current_parser", "0")!!
-                .trim { it <= ' ' }.toInt()
-        } catch (e: Exception) {
+                .trim().toInt()
+        } catch (_: Exception) {
             ParserType.JSON
         }
     override val isPhoto_to_user_dir: Boolean
@@ -806,22 +830,22 @@ internal class MainSettings(context: Context) : IMainSettings {
     override val language: Int
         get() = try {
             getPreferences(app).getString("language_ui", "0")!!
-                .trim { it <= ' ' }.toInt()
-        } catch (e: Exception) {
+                .trim().toInt()
+        } catch (_: Exception) {
             Lang.DEFAULT
         }
     override val rendering_mode: Int
         get() = try {
             getPreferences(app).getString("rendering_bitmap_mode", "0")!!
-                .trim { it <= ' ' }.toInt()
-        } catch (e: Exception) {
+                .trim().toInt()
+        } catch (_: Exception) {
             0
         }
     override val endListAnimation: Int
         get() = try {
             getPreferences(app).getString("end_list_anim", "0")!!
-                .trim { it <= ' ' }.toInt()
-        } catch (e: Exception) {
+                .trim().toInt()
+        } catch (_: Exception) {
             0
         }
 
@@ -837,8 +861,8 @@ internal class MainSettings(context: Context) : IMainSettings {
     override val paganSymbol: Int
         get() = try {
             getPreferences(app).getString("pagan_symbol", "1")!!
-                .trim { it <= ' ' }.toInt()
-        } catch (e: Exception) {
+                .trim().toInt()
+        } catch (_: Exception) {
             1
         }
     override val customChannelNotif: Int
@@ -865,7 +889,7 @@ internal class MainSettings(context: Context) : IMainSettings {
         get() = try {
             getPreferences(app).getString("max_thumb_resolution", "384")!!.trim()
                 .toInt()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             384
         }
 
@@ -881,8 +905,8 @@ internal class MainSettings(context: Context) : IMainSettings {
                 ).apply()
             }
             getPreferences(app).getString("picasso_dispatcher", "0")!!
-                .trim { it <= ' ' }.toInt()
-        } catch (e: Exception) {
+                .trim().toInt()
+        } catch (_: Exception) {
             0
         }
 
@@ -896,7 +920,7 @@ internal class MainSettings(context: Context) : IMainSettings {
     }
 
     init {
-        prefferedPhotoPreviewSize = empty()
+        preferPhotoPreviewSize = empty()
         reloadUserNameChangesSettings(false)
         reloadOwnerChangesMonitor()
     }

@@ -18,6 +18,7 @@ import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
+import kotlin.String
 
 class MenuListAdapter(
     context: Context,
@@ -72,7 +73,7 @@ class MenuListAdapter(
         holder.txtTitle.setText(item.title)
         holder.txtTitle.setTextColor(if (item.isSelected) colorOnPrimary else colorOnSurface)
         holder.tvCount.visibility = if (item.count > 0) View.VISIBLE else View.GONE
-        holder.tvCount.text = item.count.toString()
+        holder.tvCount.text = String.format(Utils.appLocale, "%d", item.count)
         holder.tvCount.setTextColor(if (item.isSelected) colorOnPrimary else colorPrimary)
         holder.imgIcon.setImageResource(item.icon)
         holder.imgIcon.setColorFilter(if (item.isSelected) colorOnPrimary else colorOnSurface)
@@ -88,7 +89,7 @@ class MenuListAdapter(
         holder.txtTitle.setText(item.title)
         holder.txtTitle.setTextColor(if (item.isSelected) colorOnPrimary else colorOnSurface)
         holder.tvCount.visibility = if (item.count > 0) View.VISIBLE else View.GONE
-        holder.tvCount.text = item.count.toString()
+        holder.tvCount.text = String.format(Utils.appLocale, "%d", item.count)
         holder.tvCount.setTextColor(if (item.isSelected) colorOnPrimary else colorPrimary)
         holder.imgIcon.setImageResource(item.icon)
         holder.imgIcon.setColorFilter(if (item.isSelected) colorOnPrimary else colorOnSurface)

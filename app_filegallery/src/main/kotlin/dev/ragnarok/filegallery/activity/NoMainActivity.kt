@@ -2,7 +2,6 @@ package dev.ragnarok.filegallery.activity
 
 import android.content.Context
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
@@ -15,7 +14,7 @@ import dev.ragnarok.filegallery.settings.CurrentTheme.getNavigationBarColor
 import dev.ragnarok.filegallery.settings.CurrentTheme.getStatusBarColor
 import dev.ragnarok.filegallery.settings.theme.ThemesController.currentStyle
 import dev.ragnarok.filegallery.util.Utils
-import dev.ragnarok.filegallery.util.Utils.hasVanillaIceCream
+import dev.ragnarok.filegallery.util.Utils.hasVanillaIceCreamTarget
 
 abstract class NoMainActivity : AppCompatActivity() {
     private var mToolbar: Toolbar? = null
@@ -28,13 +27,8 @@ abstract class NoMainActivity : AppCompatActivity() {
         Utils.prepareDensity(this)
         super.onCreate(savedInstanceState)
         setContentView(noMainContentView)
-        if (!hasVanillaIceCream()) {
+        if (!hasVanillaIceCreamTarget()) {
             val w = window
-            if (!Utils.hasMarshmallow()) {
-                w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            }
-
             w.statusBarColor = getStatusBarColor(this)
             w.navigationBarColor = getNavigationBarColor(this)
         }

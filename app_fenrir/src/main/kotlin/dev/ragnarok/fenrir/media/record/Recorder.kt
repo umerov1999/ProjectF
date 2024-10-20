@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.media.record
 import android.content.Context
 import android.media.MediaRecorder
 import android.os.Build
-import androidx.annotation.RequiresApi
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.Settings
 
@@ -42,11 +41,7 @@ class Recorder(val filePath: String, val context: Context) {
     fun start() {
         assertRecorderNotNull()
         if (status == Status.PAUSED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                mRecorder?.resume()
-            } else {
-                throw IllegalStateException("Pause does not supported")
-            }
+            mRecorder?.resume()
         } else {
             mRecorder?.start()
         }
@@ -66,16 +61,11 @@ class Recorder(val filePath: String, val context: Context) {
             mPreviousSectionsDuration
         })
 
-    @RequiresApi(Build.VERSION_CODES.N)
     fun pause() {
         assertRecorderNotNull()
-        if (isPauseSupported) {
-            resetCurrentRecordTime()
-            mRecorder?.pause()
-            changeStatusTo(Status.PAUSED)
-        } else {
-            throw UnsupportedOperationException()
-        }
+        resetCurrentRecordTime()
+        mRecorder?.pause()
+        changeStatusTo(Status.PAUSED)
     }
 
     private fun resetCurrentRecordTime() {
@@ -89,7 +79,7 @@ class Recorder(val filePath: String, val context: Context) {
         assertRecorderNotNull()
         resetCurrentRecordTime()
         try {
-            if (isPauseSupported && status == Status.PAUSED) {
+            if (status == Status.PAUSED) {
                 mRecorder?.resume()
             }
             mRecorder?.stop()
@@ -118,8 +108,6 @@ class Recorder(val filePath: String, val context: Context) {
     }
 
     companion object {
-        val isPauseSupported: Boolean
-            get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
         val isOpusSupported: Boolean
             get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && Settings.get()
                 .main().isRecording_to_opus

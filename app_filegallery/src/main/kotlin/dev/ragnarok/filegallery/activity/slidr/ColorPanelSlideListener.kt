@@ -3,7 +3,6 @@ package dev.ragnarok.filegallery.activity.slidr
 import android.animation.ArgbEvaluator
 import android.app.Activity
 import android.graphics.Color
-import android.view.WindowManager
 import androidx.annotation.ColorInt
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.WindowInsetsControllerCompat
@@ -22,18 +21,18 @@ internal open class ColorPanelSlideListener(
 
     @ColorInt
     private val statusBarNonColored: Int =
-        if (Utils.hasVanillaIceCream()) Color.BLACK else getStatusBarNonColored(activity)
+        if (Utils.hasVanillaIceCreamTarget()) Color.BLACK else getStatusBarNonColored(activity)
 
     @ColorInt
     private val statusBarColored: Int =
-        if (Utils.hasVanillaIceCream()) Color.WHITE else getStatusBarColor(activity)
+        if (Utils.hasVanillaIceCreamTarget()) Color.WHITE else getStatusBarColor(activity)
 
     @ColorInt
     private val navigationBarNonColored: Int = Color.BLACK
 
     @ColorInt
     private val navigationBarColored: Int =
-        if (Utils.hasVanillaIceCream()) Color.WHITE else getNavigationBarColor(activity)
+        if (Utils.hasVanillaIceCreamTarget()) Color.WHITE else getNavigationBarColor(activity)
 
     override fun onStateChanged(state: Int) {
         // Unused.
@@ -58,7 +57,7 @@ internal open class ColorPanelSlideListener(
                 val w = activity.window
                 if (w != null) {
                     val invertIcons: Boolean
-                    if (Utils.hasVanillaIceCream()) {
+                    if (Utils.hasVanillaIceCreamTarget()) {
                         val statusColor =
                             evaluator.evaluate(percent, Color.WHITE, Color.BLACK) as Int
                         invertIcons = !isDark(statusColor)
@@ -80,17 +79,12 @@ internal open class ColorPanelSlideListener(
                     val ins = WindowInsetsControllerCompat(w, w.decorView)
                     ins.isAppearanceLightStatusBars = invertIcons
                     ins.isAppearanceLightNavigationBars = invertIcons
-
-                    if (!Utils.hasMarshmallow()) {
-                        w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-                        w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                    }
                 }
             }
             if (isUseAlpha) {
                 activity.window.decorView.rootView.alpha = Utils.clamp(percent, 0f, 1f)
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
     }
 

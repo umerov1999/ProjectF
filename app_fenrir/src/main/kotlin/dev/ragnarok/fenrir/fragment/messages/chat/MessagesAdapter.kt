@@ -53,7 +53,6 @@ import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 import java.text.SimpleDateFormat
 import java.util.Date
 
-
 class MessagesAdapter(
     accountId: Long,
     private val context: Context,

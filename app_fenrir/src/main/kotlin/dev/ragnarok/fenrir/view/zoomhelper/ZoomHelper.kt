@@ -513,7 +513,6 @@ class ZoomHelper {
         onZoomLayoutCreatorListener.remove(listener)
     }
 
-
     interface OnZoomStateChangedListener {
         fun onZoomStateChanged(zoomHelper: ZoomHelper, zoomableView: View, isZooming: Boolean)
     }

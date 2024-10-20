@@ -14,11 +14,8 @@ import dev.ragnarok.fenrir.longpoll.AppNotificationChannels.getMentionChannel
 import dev.ragnarok.fenrir.longpoll.AppNotificationChannels.mentionChannelId
 import dev.ragnarok.fenrir.longpoll.NotificationHelper
 import dev.ragnarok.fenrir.place.PlaceFactory.getMessagesLookupPlace
-import dev.ragnarok.fenrir.push.NotificationUtils.configOtherPushNotification
-import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.settings.theme.ThemesController.toastColor
 import dev.ragnarok.fenrir.util.AppPerms
-import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -29,17 +26,9 @@ class MentionMessage {
     private var body: String? = null
     private var title: String? = null
     fun notify(context: Context, account_id: Long) {
-        if (!get()
-                .notifications()
-                .isMentionNotifyEnabled
-        ) {
-            return
-        }
         val nManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
-        if (hasOreo()) {
-            nManager?.createNotificationChannel(getMentionChannel(context))
-        }
+        nManager?.createNotificationChannel(getMentionChannel(context))
         val builder = NotificationCompat.Builder(context, mentionChannelId)
             .setSmallIcon(R.drawable.ic_mention)
             .setContentTitle(title)
@@ -60,7 +49,6 @@ class MentionMessage {
         )
         builder.setContentIntent(contentIntent)
         val notification = builder.build()
-        configOtherPushNotification(notification)
         if (AppPerms.hasNotificationPermissionSimple(context)) {
             nManager?.notify(
                 message_id.toString(),

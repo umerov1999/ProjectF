@@ -53,7 +53,7 @@ open class GetterSetterFixAction : AnAction() {
 
             // De-select the text range that was just replaced
             primaryCaret.removeSelection()
-        } catch (ignored: Throwable) {
+        } catch (_: Throwable) {
 
         }
     }

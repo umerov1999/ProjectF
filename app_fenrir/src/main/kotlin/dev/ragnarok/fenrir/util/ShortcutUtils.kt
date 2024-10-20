@@ -1,14 +1,12 @@
 package dev.ragnarok.fenrir.util
 
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.graphics.Bitmap
 import android.graphics.drawable.Icon
-import android.os.Build
 import androidx.core.content.ContextCompat
 import com.squareup.picasso3.Transformation
 import dev.ragnarok.fenrir.Extra
@@ -96,7 +94,6 @@ object ShortcutUtils {
         sendShortcutBroadcast(context, id, intent, title, avatar)
     }
 
-
     fun createWallShortcutRx(
         context: Context,
         accountId: Long,
@@ -136,25 +133,16 @@ object ShortcutUtils {
         title: String,
         bitmap: Bitmap?
     ) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val icon = Icon.createWithBitmap(bitmap)
-            val shortcutInfo = ShortcutInfo.Builder(context, shortcutId)
-                .setIcon(icon)
-                .setShortLabel(title)
-                .setIntent(shortcutIntent)
-                .build()
-            val manager = context.getSystemService(
-                ShortcutManager::class.java
-            )
-            manager?.requestPinShortcut(shortcutInfo, null)
-        } else {
-            val intent = Intent()
-            intent.action = SHURTCUT_ACTION
-            intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent)
-            intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, title)
-            intent.putExtra(Intent.EXTRA_SHORTCUT_ICON, bitmap)
-            context.sendBroadcast(intent)
-        }
+        val icon = Icon.createWithBitmap(bitmap)
+        val shortcutInfo = ShortcutInfo.Builder(context, shortcutId)
+            .setIcon(icon)
+            .setShortLabel(title)
+            .setIntent(shortcutIntent)
+            .build()
+        val manager = context.getSystemService(
+            ShortcutManager::class.java
+        )
+        manager?.requestPinShortcut(shortcutInfo, null)
     }
 
     fun chatOpenIntent(
@@ -186,7 +174,6 @@ object ShortcutUtils {
         val intent = chatOpenIntent(context, url, accountId, peerId, title)
         sendShortcutBroadcast(context, id, intent, title, bm)
     }
-
 
     fun createChatShortcutRx(
         context: Context,
@@ -220,9 +207,7 @@ object ShortcutUtils {
         }
     }
 
-
     @SuppressLint("ReportShortcutUsage")
-    @TargetApi(Build.VERSION_CODES.N_MR1)
     fun addDynamicShortcut(context: Context, accountId: Long, peer: Peer): Flow<Boolean> {
         val app = context.applicationContext
         return loadRoundAvatar(peer.avaUrl ?: VKApiUser.CAMERA_50)

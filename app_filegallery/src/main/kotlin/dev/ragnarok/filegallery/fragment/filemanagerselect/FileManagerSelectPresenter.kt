@@ -57,7 +57,7 @@ class FileManagerSelectPresenter(
         if (isLoading) {
             return
         }
-        val query = str?.trim { it <= ' ' }
+        val query = str?.trim()
         if (safeEquals(query, this.q)) {
             return
         }

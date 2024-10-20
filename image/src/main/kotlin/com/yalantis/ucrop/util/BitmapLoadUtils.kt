@@ -137,7 +137,7 @@ object BitmapLoadUtils {
         if (c is Closeable) { // java.lang.IncompatibleClassChangeError: interface not implemented
             try {
                 c.close()
-            } catch (e: IOException) {
+            } catch (_: IOException) {
                 // silence
             }
         }

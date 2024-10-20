@@ -8,7 +8,6 @@ object HelperSimple {
     const val PLAYLIST_HELPER = "playlist_helper"
     const val STORY_HELPER = "story_helper"
     const val SHORT_VIDEO_HELPER = "short_video_helper"
-    const val LOLLIPOP_21 = "lollipop21"
     const val AUDIO_DEAD = "audio_dead"
     const val HIDDEN_DIALOGS = "hidden_dialogs"
     const val MONITOR_CHANGES = "monitor_changes"

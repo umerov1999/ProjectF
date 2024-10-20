@@ -83,7 +83,6 @@ internal object ByteArrayPool8k : ByteArrayPoolBase() {
     fun release(array: ByteArray) = releaseImpl(array)
 }
 
-
 internal object ByteArrayPool : ByteArrayPoolBase() {
     fun take(): ByteArray = super.take(512)
 

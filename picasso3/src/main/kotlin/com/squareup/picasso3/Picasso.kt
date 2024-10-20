@@ -381,7 +381,7 @@ class Picasso internal constructor(
         dispatcher.shutdown()
         try {
             closeableCache?.close()
-        } catch (ignored: IOException) {
+        } catch (_: IOException) {
         }
         for (deferredRequestCreator in targetToDeferredRequestCreator.values) {
             deferredRequestCreator.cancel()
@@ -678,7 +678,6 @@ class Picasso internal constructor(
             val dispatcher = if (backgroundContext != null) {
                 InternalCoroutineDispatcher(
                     context,
-                    HANDLER,
                     cache!!,
                     mainContext!!,
                     backgroundContext!!

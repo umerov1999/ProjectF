@@ -32,7 +32,7 @@ class LogsAdapter(data: MutableList<LogEventWrapper>, private val actionListener
     }
 
     private fun canReduce(body: String?): Boolean {
-        return Utils.safeLenghtOf(body) > MAX_BODY_LENGTH
+        return Utils.safeLengthOf(body) > MAX_BODY_LENGTH
     }
 
     private fun setupBodyRoot(holder: Holder, wrapper: LogEventWrapper) {

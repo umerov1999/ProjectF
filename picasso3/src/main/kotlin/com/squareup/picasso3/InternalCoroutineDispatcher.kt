@@ -16,7 +16,6 @@
 package com.squareup.picasso3
 
 import android.content.Context
-import android.os.Handler
 import com.squareup.picasso3.Dispatcher.Companion.RETRY_DELAY
 import com.squareup.picasso3.Utils.OWNER_DISPATCHER
 import com.squareup.picasso3.Utils.VERB_CANCELED
@@ -35,11 +34,10 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 internal class InternalCoroutineDispatcher internal constructor(
     context: Context,
-    mainThreadHandler: Handler,
     cache: PlatformLruCache,
     val mainContext: CoroutineContext,
     val backgroundContext: CoroutineContext
-) : BaseDispatcher(context, mainThreadHandler, cache) {
+) : BaseDispatcher(context, cache) {
 
     private val scope = CoroutineScope(SupervisorJob() + backgroundContext)
     private val channel = Channel<() -> Unit>(capacity = Channel.UNLIMITED)

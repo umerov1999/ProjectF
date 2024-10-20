@@ -251,7 +251,7 @@ class RequestsPresenter(accountId: Long, private val userId: Long, savedInstance
         }
         val sizeBefore = searchData.size
         var count = 0
-        val preparedQ = query?.lowercase(Locale.getDefault())?.trim { it <= ' ' } ?: ""
+        val preparedQ = query?.lowercase(Locale.getDefault())?.trim() ?: ""
         for (i in users) {
             if (allow(i, preparedQ)) {
                 searchData.add(i)
@@ -270,7 +270,7 @@ class RequestsPresenter(accountId: Long, private val userId: Long, savedInstance
     private fun reFillCache() {
         data[SEARCH_CACHE].users.clear()
         val db: List<User> = data[ALL].users
-        val preparedQ = q?.lowercase(Locale.getDefault())?.trim { it <= ' ' } ?: ""
+        val preparedQ = q?.lowercase(Locale.getDefault())?.trim() ?: ""
         var count = 0
         for (user in db) {
             if (allow(user, preparedQ)) {
@@ -289,7 +289,7 @@ class RequestsPresenter(accountId: Long, private val userId: Long, savedInstance
     }
 
     fun fireSearchRequestChanged(q: String?) {
-        val query = q?.trim { it <= ' ' }
+        val query = q?.trim()
         if (safeEquals(query, this.q)) {
             return
         }

@@ -15,11 +15,8 @@ import dev.ragnarok.fenrir.longpoll.AppNotificationChannels.getBirthdaysChannel
 import dev.ragnarok.fenrir.longpoll.NotificationHelper
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
-import dev.ragnarok.fenrir.push.NotificationUtils.configOtherPushNotification
-import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.settings.theme.ThemesController.toastColor
 import dev.ragnarok.fenrir.util.AppPerms
-import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -29,17 +26,9 @@ class BirthdayFCMMessage {
     private var body: String? = null
     private var title: String? = null
     fun notify(context: Context, account_id: Long) {
-        if (!get()
-                .notifications()
-                .isBirthdayNotifyEnabled
-        ) {
-            return
-        }
         val nManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
-        if (hasOreo()) {
-            nManager?.createNotificationChannel(getBirthdaysChannel(context))
-        }
+        nManager?.createNotificationChannel(getBirthdaysChannel(context))
         val builder = NotificationCompat.Builder(context, birthdaysChannelId)
             .setSmallIcon(R.drawable.cake)
             .setContentTitle(title)
@@ -60,7 +49,6 @@ class BirthdayFCMMessage {
         )
         builder.setContentIntent(contentIntent)
         val notification = builder.build()
-        configOtherPushNotification(notification)
         if (AppPerms.hasNotificationPermissionSimple(context)) {
             nManager?.notify(
                 user_id.toString(),

@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+#include "tvgPaint.h"
 #include "tvgPicture.h"
 
 /************************************************************************/
@@ -73,11 +74,11 @@ bool Picture::Impl::needComposition(uint8_t opacity)
 bool Picture::Impl::render(RenderMethod* renderer)
 {
     bool ret = false;
-    renderer->blend(picture->blend());
+    renderer->blend(PP(picture)->blendMethod);
 
     if (surface) return renderer->renderImage(rd);
     else if (paint) {
-        Compositor* cmp = nullptr;
+        RenderCompositor* cmp = nullptr;
         if (needComp) {
             cmp = renderer->target(bounds(renderer), renderer->colorSpace());
             renderer->beginComposite(cmp, CompositeMethod::None, 255);
@@ -169,19 +170,25 @@ Result Picture::load(const std::string& path) noexcept
 }
 
 
-Result Picture::load(const char* data, uint32_t size, const string& mimeType, const string& rpath, bool copy) noexcept
+Result Picture::load(const char* data, uint32_t size, const string& mimeType, bool copy) noexcept
 {
     if (!data || size <= 0) return Result::InvalidArguments;
 
-    return pImpl->load(data, size, mimeType, rpath, copy);
+    return pImpl->load(data, size, mimeType, copy);
 }
 
 
-Result Picture::load(uint32_t* data, uint32_t w, uint32_t h, bool premultiplied, bool copy) noexcept
+TVG_DEPRECATED Result Picture::load(const char* data, uint32_t size, bool copy) noexcept
+{
+    return load(data, size, "", copy);
+}
+
+
+Result Picture::load(uint32_t* data, uint32_t w, uint32_t h, bool copy) noexcept
 {
     if (!data || w <= 0 || h <= 0) return Result::InvalidArguments;
 
-    return pImpl->load(data, w, h, premultiplied, copy);
+    return pImpl->load(data, w, h, copy);
 }
 
 

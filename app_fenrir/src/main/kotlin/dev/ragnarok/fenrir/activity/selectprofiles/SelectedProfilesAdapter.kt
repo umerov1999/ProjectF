@@ -14,6 +14,8 @@ import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.util.Utils
+import kotlin.String
 
 class SelectedProfilesAdapter(private val mContext: Context, private val mData: List<Owner>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -51,7 +53,7 @@ class SelectedProfilesAdapter(private val mContext: Context, private val mData: 
         if (mData.isEmpty()) {
             holder.counter.setText(R.string.press_plus_for_add)
         } else {
-            holder.counter.text = mData.size.toString()
+            holder.counter.text = String.format(Utils.appLocale, "%d", mData.size)
         }
         holder.root.setOnClickListener {
             mActionListener?.onCheckClick()

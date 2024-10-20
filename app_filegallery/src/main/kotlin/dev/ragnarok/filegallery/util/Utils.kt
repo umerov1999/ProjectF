@@ -20,7 +20,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dev.ragnarok.fenrir.module.rlottie.RLottieDrawable
 import dev.ragnarok.filegallery.BuildConfig
 import dev.ragnarok.filegallery.Constants
-import dev.ragnarok.filegallery.Includes
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.media.exo.OkHttpDataSource
 import dev.ragnarok.filegallery.model.Lang
@@ -82,50 +81,18 @@ object Utils {
         return context.resources.getBoolean(R.bool.is_tablet)
     }
 
-    fun hasMarshmallow(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-    }
-
     fun hasScopedStorage(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && BuildConfig.MANAGE_SCOPED_STORAGE
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && BuildConfig.TARGET_SDK >= Build.VERSION_CODES.R
     }
 
-    fun hasNougat(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-    }
-
-    fun hasOreo(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-    }
-
-    fun hasPie(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
-    }
-
-    fun hasQ(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-    }
-
-    fun hasR(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-    }
-
-    fun hasTiramisu(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-    }
-
-    fun hasUpsideDownCake(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-    }
-
-    fun hasVanillaIceCream(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && Includes.provideApplicationContext().applicationInfo.targetSdkVersion >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+    fun hasVanillaIceCreamTarget(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && BuildConfig.TARGET_SDK >= Build.VERSION_CODES.VANILLA_ICE_CREAM
     }
 
     @Suppress("deprecation")
     fun finishActivityImmediate(activity: Activity) {
         activity.finish()
-        if (!hasUpsideDownCake()) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             activity.overridePendingTransition(0, 0)
         } else {
             activity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_CLOSE, 0, 0)
@@ -143,12 +110,13 @@ object Utils {
 
     fun getAppVersionName(context: Context): String? {
         return try {
-            val packageInfo = if (hasTiramisu()) context.packageManager.getPackageInfo(
-                context.packageName,
-                PackageManager.PackageInfoFlags.of(0)
-            ) else context.packageManager.getPackageInfo(context.packageName, 0)
+            val packageInfo =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) context.packageManager.getPackageInfo(
+                    context.packageName,
+                    PackageManager.PackageInfoFlags.of(0)
+                ) else context.packageManager.getPackageInfo(context.packageName, 0)
             packageInfo.versionName
-        } catch (ignored: PackageManager.NameNotFoundException) {
+        } catch (_: PackageManager.NameNotFoundException) {
             null
         }
     }
@@ -167,7 +135,7 @@ object Utils {
         if (closeable != null) {
             try {
                 closeable.close()
-            } catch (ignored: IOException) {
+            } catch (_: IOException) {
             }
         }
     }
@@ -347,7 +315,7 @@ object Utils {
     }
 
     fun makeMutablePendingIntent(flags: Int): Int {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && BuildConfig.TARGET_SDK >= Build.VERSION_CODES.S) {
             if (flags == 0) {
                 PendingIntent.FLAG_MUTABLE
             } else {
@@ -363,30 +331,30 @@ object Utils {
         val kb: Long = 1024
         return when {
             Bytes >= tb -> String.format(
-                Locale.getDefault(),
+                appLocale,
                 "%.2f TB",
                 Bytes.toDouble() / tb
             )
 
             Bytes >= gb -> String.format(
-                Locale.getDefault(),
+                appLocale,
                 "%.2f GB",
                 Bytes.toDouble() / gb
             )
 
             Bytes >= mb -> String.format(
-                Locale.getDefault(),
+                appLocale,
                 "%.2f MB",
                 Bytes.toDouble() / mb
             )
 
             Bytes >= kb -> String.format(
-                Locale.getDefault(),
+                appLocale,
                 "%.2f KB",
                 Bytes.toDouble() / kb
             )
 
-            else -> String.format(Locale.getDefault(), "%d Bytes", Bytes)
+            else -> String.format(appLocale, "%d Bytes", Bytes)
         }
     }
 
@@ -407,11 +375,7 @@ object Utils {
 
     @Suppress("DEPRECATION")
     private fun setSystemLocaleLegacy(config: Configuration, locale: Locale) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            config.setLocale(locale)
-        } else {
-            config.locale = locale
-        }
+        config.setLocale(locale)
     }
 
     val appLocale: Locale

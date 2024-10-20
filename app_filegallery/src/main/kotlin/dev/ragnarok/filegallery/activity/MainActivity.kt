@@ -13,7 +13,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.IBinder
 import android.view.MenuItem
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -76,7 +75,7 @@ import dev.ragnarok.filegallery.util.HelperSimple.NOTIFICATION_PERMISSION
 import dev.ragnarok.filegallery.util.HelperSimple.needHelp
 import dev.ragnarok.filegallery.util.Logger
 import dev.ragnarok.filegallery.util.Utils
-import dev.ragnarok.filegallery.util.Utils.hasVanillaIceCream
+import dev.ragnarok.filegallery.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.filegallery.util.ViewUtils.keyboardHide
 import dev.ragnarok.filegallery.util.coroutines.CompositeJob
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils
@@ -362,7 +361,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val w = window
-        if (!hasVanillaIceCream()) {
+        if (!hasVanillaIceCreamTarget()) {
             w.statusBarColor =
                 if (colored) getStatusBarColor(this) else getStatusBarNonColored(
                     this
@@ -373,11 +372,6 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons
-
-        if (!Utils.hasMarshmallow()) {
-            w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        }
     }
 
     @get:IdRes
@@ -386,7 +380,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
 
     private fun handleIntent(action: String?, main: Boolean) {
         if (main) {
-            if (Utils.hasTiramisu() && needHelp(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && needHelp(
                     NOTIFICATION_PERMISSION,
                     1
                 ) && !AppPerms.hasNotificationPermissionSimple(this)

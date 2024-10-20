@@ -410,27 +410,27 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
                     accountId,
                     checkEditInfo(
                         root.findViewById<TextInputEditText>(R.id.edit_first_name).editableText.toString()
-                            .trim { it <= ' ' }, p.first_name
+                            .trim(), p.first_name
                     ),
                     checkEditInfo(
                         root.findViewById<TextInputEditText>(R.id.edit_last_name).editableText.toString()
-                            .trim { it <= ' ' }, p.last_name
+                            .trim(), p.last_name
                     ),
                     checkEditInfo(
                         root.findViewById<TextInputEditText>(R.id.edit_maiden_name).editableText.toString()
-                            .trim { it <= ' ' }, p.maiden_name
+                            .trim(), p.maiden_name
                     ),
                     checkEditInfo(
                         root.findViewById<TextInputEditText>(R.id.edit_screen_name).editableText.toString()
-                            .trim { it <= ' ' }, p.screen_name
+                            .trim(), p.screen_name
                     ),
                     checkEditInfo(
                         root.findViewById<TextInputEditText>(R.id.edit_bdate).editableText.toString()
-                            .trim { it <= ' ' }, p.bdate
+                            .trim(), p.bdate
                     ),
                     checkEditInfo(
                         root.findViewById<TextInputEditText>(R.id.edit_home_town).editableText.toString()
-                            .trim { it <= ' ' }, p.home_town
+                            .trim(), p.home_town
                     ),
                     checkEditInfo(
                         selectedItem + 1,

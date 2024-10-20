@@ -34,7 +34,6 @@ import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.Logger.d
 import dev.ragnarok.fenrir.util.Logger.wtf
 import dev.ragnarok.fenrir.util.Unixtime.now
-import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CompositeJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
@@ -304,13 +303,11 @@ class KeyExchangeService : Service() {
         message: ExchangeMessage,
         ownerInfo: OwnerInfo
     ) {
-        if (hasOreo()) {
-            mNotificationManager?.createNotificationChannel(
-                AppNotificationChannels.getKeyExchangeChannel(
-                    this
-                )
+        mNotificationManager?.createNotificationChannel(
+            AppNotificationChannels.getKeyExchangeChannel(
+                this
             )
-        }
+        )
         val targetContentText =
             getString(R.string.key_exchange_request_content_text, ownerInfo.user.fullName)
         val builder =
@@ -681,13 +678,11 @@ class KeyExchangeService : Service() {
 
     @SuppressLint("MissingPermission")
     private fun refreshSessionNotification(session: KeyExchangeSession) {
-        if (hasOreo()) {
-            mNotificationManager?.createNotificationChannel(
-                AppNotificationChannels.getKeyExchangeChannel(
-                    this
-                )
+        mNotificationManager?.createNotificationChannel(
+            AppNotificationChannels.getKeyExchangeChannel(
+                this
             )
-        }
+        )
         val builder = findBuilder(session.id)
         val localState = session.localSessionState
         val opponentState = session.oppenentSessionState

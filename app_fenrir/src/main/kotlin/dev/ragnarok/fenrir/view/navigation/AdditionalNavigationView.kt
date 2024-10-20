@@ -192,7 +192,7 @@ class AdditionalNavigationView : AbsNavigationView, MenuListAdapter.ActionListen
         }
         mCallbacks = try {
             context as NavigationDrawerCallbacks
-        } catch (ignored: ClassCastException) {
+        } catch (_: ClassCastException) {
             throw ClassCastException("Activity must implement NavigationDrawerCallbacks.")
         }
     }

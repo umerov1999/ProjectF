@@ -15,7 +15,6 @@ import de.maxr1998.modernpreferences.PreferencesExtra
 import de.maxr1998.modernpreferences.R
 import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
 
-
 class EditTextPreference(key: String, fragmentManager: FragmentManager) :
     DialogPreference(key, fragmentManager) {
 

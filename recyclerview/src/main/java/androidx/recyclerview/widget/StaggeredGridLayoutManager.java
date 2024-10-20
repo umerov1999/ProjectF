@@ -1297,11 +1297,10 @@ public class StaggeredGridLayoutManager extends RecyclerView.LayoutManager imple
             @NonNull RecyclerView.State state, @NonNull View host,
             @NonNull AccessibilityNodeInfoCompat info) {
         ViewGroup.LayoutParams lp = host.getLayoutParams();
-        if (!(lp instanceof LayoutParams)) {
+        if (!(lp instanceof LayoutParams sglp)) {
             super.onInitializeAccessibilityNodeInfoForItem(host, info);
             return;
         }
-        LayoutParams sglp = (LayoutParams) lp;
         if (mOrientation == HORIZONTAL) {
             info.setCollectionItemInfo(AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(
                     sglp.getSpanIndex(), sglp.mFullSpan ? mSpanCount : 1,

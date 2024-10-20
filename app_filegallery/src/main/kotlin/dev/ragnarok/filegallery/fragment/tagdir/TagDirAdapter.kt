@@ -28,7 +28,6 @@ import dev.ragnarok.filegallery.util.coroutines.CancelableJob
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
 
-
 class TagDirAdapter(context: Context, private var data: List<TagDir>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val colorPrimary = CurrentTheme.getColorPrimary(context)

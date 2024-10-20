@@ -255,7 +255,7 @@ final class GapWorker implements Runnable {
         }
 
         // ... and priority sort
-        Collections.sort(mTasks, sTaskComparator);
+        mTasks.sort(sTaskComparator);
     }
 
     static boolean isPrefetchPositionAttached(RecyclerView view, int position) {

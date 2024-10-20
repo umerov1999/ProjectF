@@ -54,7 +54,6 @@ object PlaceUtil {
         }
     }
 
-
     @JvmOverloads
     fun goToPostCreation(
         activity: Activity,

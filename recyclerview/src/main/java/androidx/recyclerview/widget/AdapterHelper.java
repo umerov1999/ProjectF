@@ -248,32 +248,22 @@ final class AdapterHelper implements OpReorderer.Callback {
         }
         int tmpCnt = 1;
         int offsetPositionForPartial = op.positionStart;
-        final int positionMultiplier;
-        switch (op.cmd) {
-            case UpdateOp.UPDATE:
-                positionMultiplier = 1;
-                break;
-            case UpdateOp.REMOVE:
-                positionMultiplier = 0;
-                break;
-            default:
-                throw new IllegalArgumentException("op should be remove or update." + op);
-        }
+        final int positionMultiplier = switch (op.cmd) {
+            case UpdateOp.UPDATE -> 1;
+            case UpdateOp.REMOVE -> 0;
+            default -> throw new IllegalArgumentException("op should be remove or update." + op);
+        };
         for (int p = 1; p < op.itemCount; p++) {
             final int pos = op.positionStart + (positionMultiplier * p);
             int updatedPos = updatePositionWithPostponed(pos, op.cmd);
             if (DEBUG) {
                 Log.d(TAG, "pos:" + pos + ",updatedPos:" + updatedPos);
             }
-            boolean continuous = false;
-            switch (op.cmd) {
-                case UpdateOp.UPDATE:
-                    continuous = updatedPos == tmpStart + 1;
-                    break;
-                case UpdateOp.REMOVE:
-                    continuous = updatedPos == tmpStart;
-                    break;
-            }
+            boolean continuous = switch (op.cmd) {
+                case UpdateOp.UPDATE -> updatedPos == tmpStart + 1;
+                case UpdateOp.REMOVE -> updatedPos == tmpStart;
+                default -> false;
+            };
             if (continuous) {
                 tmpCnt++;
             } else {
@@ -656,17 +646,13 @@ final class AdapterHelper implements OpReorderer.Callback {
         }
 
         String cmdToString() {
-            switch (cmd) {
-                case ADD:
-                    return "add";
-                case REMOVE:
-                    return "rm";
-                case UPDATE:
-                    return "up";
-                case MOVE:
-                    return "mv";
-            }
-            return "??";
+            return switch (cmd) {
+                case ADD -> "add";
+                case REMOVE -> "rm";
+                case UPDATE -> "up";
+                case MOVE -> "mv";
+                default -> "??";
+            };
         }
 
         @Override
@@ -681,11 +667,9 @@ final class AdapterHelper implements OpReorderer.Callback {
             if (this == o) {
                 return true;
             }
-            if (!(o instanceof UpdateOp)) {
+            if (!(o instanceof UpdateOp op)) {
                 return false;
             }
-
-            UpdateOp op = (UpdateOp) o;
 
             if (cmd != op.cmd) {
                 return false;

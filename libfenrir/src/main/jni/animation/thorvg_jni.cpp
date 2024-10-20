@@ -67,9 +67,9 @@ Java_dev_ragnarok_fenrir_module_thorvg_ThorVGRender_createBitmapNative(JNIEnv *e
     auto picture = tvg::Picture::gen();
     bool orig;
     std::string jsonString = doDecompressResource(u->size(), u->data(), orig);
-    tvg::Result result = orig ? picture->load((const char *) u->data(), u->size(), "svg", "", false)
+    tvg::Result result = orig ? picture->load((const char *) u->data(), u->size(), "svg")
                               : picture->load((const char *) jsonString.data(), jsonString.size(),
-                                              "svg", "", false);
+                                              "svg");
     if (result != tvg::Result::Success) {
         return;
     }
@@ -86,7 +86,7 @@ Java_dev_ragnarok_fenrir_module_thorvg_ThorVGRender_createBitmapNative(JNIEnv *e
         canvas->push(std::move(picture));
         canvas->draw();
         canvas->sync();
-        canvas->clear(true, false);
+        canvas->clear(true);
         AndroidBitmap_unlockPixels(env, bitmap);
     }
 }

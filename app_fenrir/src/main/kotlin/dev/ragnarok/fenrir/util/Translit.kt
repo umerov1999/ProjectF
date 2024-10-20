@@ -117,7 +117,6 @@ object Translit {
         }
     }
 
-
     fun cyr2lat(s: String?): String? {
         if (s.isNullOrEmpty()) {
             return s

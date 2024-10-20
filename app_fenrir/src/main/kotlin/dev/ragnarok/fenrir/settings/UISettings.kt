@@ -67,9 +67,9 @@ internal class UISettings(context: Context) : IUISettings {
         get() = try {
             getPreferences(app)
                 .getString("night_switch", AppCompatDelegate.MODE_NIGHT_YES.toString())!!
-                .trim { it <= ' ' }
+                .trim()
                 .toInt()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             AppCompatDelegate.MODE_NIGHT_YES
         }
 
@@ -149,8 +149,8 @@ internal class UISettings(context: Context) : IUISettings {
     override val swipes_chat_mode: Int
         get() = try {
             getPreferences(app).getString("swipes_for_chats", "1")!!
-                .trim { it <= ' ' }.toInt()
-        } catch (e: Exception) {
+                .trim().toInt()
+        } catch (_: Exception) {
             SwipesChatMode.SLIDR
         }
     override val isDisplay_writing: Boolean

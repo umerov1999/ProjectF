@@ -67,7 +67,7 @@ class M3U8 {
                         val urls = ArrayList<Map.Entry<Long, URL>>()
                         var newurl: Long = 0
                         while (br.readLine().also { line = it } != null) {
-                            line = line?.trim { it <= ' ' }
+                            line = line?.trim()
                             line ?: continue
                             val property = checkProperty(line ?: return@flow)
                             newurl = if (property == null) {
@@ -105,7 +105,7 @@ class M3U8 {
                     val iv = ByteArray(16)
                     var line: String?
                     while (br.readLine().also { line = it } != null) {
-                        line = line?.trim { it <= ' ' }
+                        line = line?.trim()
                         line ?: continue
                         val property = checkProperty(line ?: return@use)
                         if (property != null) {
@@ -172,7 +172,7 @@ class M3U8 {
                     val urls = ArrayList<Map.Entry<Long, URL>>()
                     var newurl: Long = 0
                     do {
-                        line = br.readLine()?.trim { it <= ' ' }
+                        line = br.readLine()?.trim()
                         line ?: continue
                         val property = checkProperty(line)
                         newurl = if (property == null) {
@@ -205,7 +205,7 @@ class M3U8 {
                 val iv = ByteArray(16)
                 var line: String?
                 do {
-                    line = br.readLine()?.trim { it <= ' ' }
+                    line = br.readLine()?.trim()
                     line ?: continue
                     val property = checkProperty(line ?: return@use)
                     if (property != null) {
@@ -310,7 +310,7 @@ class M3U8 {
             fun closeQuietly(closeable: Closeable?) {
                 try {
                     closeable?.close()
-                } catch (e: IOException) {
+                } catch (_: IOException) {
                     // Ignore.
                 }
             }
@@ -374,7 +374,7 @@ class M3U8 {
                 if (!response.isSuccessful) {
                     null
                 } else response.body.byteStream()
-            } catch (ignored: Exception) {
+            } catch (_: Exception) {
                 null
             }
         }
@@ -387,7 +387,7 @@ class M3U8 {
                 if (property.properties?.get("BANDWIDTH") != null) {
                     try {
                         property.properties?.get("BANDWIDTH")?.toLong()
-                    } catch (e: NumberFormatException) {
+                    } catch (_: NumberFormatException) {
                         return null
                     }
                 }
@@ -397,7 +397,7 @@ class M3U8 {
                 // #EXTINF:10.23,
                 try {
                     property.values?.get(0)?.toDouble()
-                } catch (e: NumberFormatException) {
+                } catch (_: NumberFormatException) {
                     return null
                 }
                 return property

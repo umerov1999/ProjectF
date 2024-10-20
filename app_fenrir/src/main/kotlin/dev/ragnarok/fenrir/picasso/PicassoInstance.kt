@@ -158,7 +158,6 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
             )
         }
 
-
         fun buildUriForPicassoNew(@Content_Local type: Int, id: Long): Uri {
             when (type) {
                 Content_Local.PHOTO -> return ContentUris.withAppendedId(
@@ -182,7 +181,6 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
         fun init(context: Context, proxySettings: IProxySettings) {
             instance = PicassoInstance(context.applicationContext, proxySettings)
         }
-
 
         fun with(): Picasso {
             return instance!!.getSingleton()
@@ -209,7 +207,7 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
                 val blockSize = statFs.blockSizeLong
                 val available = blockCount * blockSize
                 size = available / 50L
-            } catch (ignored: IllegalArgumentException) {
+            } catch (_: IllegalArgumentException) {
             }
             return size.coerceAtMost(52428800L).coerceAtLeast(5242880L)
         }

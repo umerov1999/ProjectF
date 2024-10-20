@@ -114,7 +114,7 @@ public final class QRCodeMultiReader extends QRCodeReader implements MultipleBar
     }
 
     // sort and concatenate the SA list items
-    Collections.sort(saResults, new SAComparator());
+    saResults.sort(new SAComparator());
     StringBuilder newText = new StringBuilder();
     ByteArrayOutputStream newRawBytes = new ByteArrayOutputStream();
     ByteArrayOutputStream newByteSegment = new ByteArrayOutputStream();

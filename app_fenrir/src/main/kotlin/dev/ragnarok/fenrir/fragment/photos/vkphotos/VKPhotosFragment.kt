@@ -45,6 +45,7 @@ import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.util.AppPerms.hasReadStoragePermission
 import dev.ragnarok.fenrir.util.AppPerms.hasReadWriteStoragePermission
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
@@ -111,7 +112,10 @@ class VKPhotosFragment : BaseMvpFragment<VKPhotosPresenter, IVKPhotosView>(),
         val root = inflater.inflate(R.layout.fragment_photo_gallery, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
         val columnCount = resources.getInteger(R.integer.local_gallery_column_count)
-        val manager: RecyclerView.LayoutManager = GridLayoutManager(requireActivity(), columnCount)
+        val manager =
+            if (Settings.get().main().single_line_photos) Utils.getSingleElementsLayoutManager(
+                requireActivity()
+            ) else GridLayoutManager(requireActivity(), columnCount)
         mSwipeRefreshLayout = root.findViewById(R.id.refresh)
         mSwipeRefreshLayout?.setOnRefreshListener {
             presenter?.fireRefresh()

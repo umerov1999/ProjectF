@@ -8,7 +8,6 @@ import dev.ragnarok.fenrir.putBoolean
 import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 
-
 class ParcelableOwnerWrapper : Parcelable, ParcelNative.ParcelableNative {
     private val type: Int
     private val isNull: Boolean

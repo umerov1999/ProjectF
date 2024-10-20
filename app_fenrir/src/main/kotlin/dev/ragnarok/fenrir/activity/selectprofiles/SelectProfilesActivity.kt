@@ -105,7 +105,6 @@ class SelectProfilesActivity : MainActivity(), SelectedProfilesAdapter.ActionLis
                 .putExtra(Extra.CRITERIA, criteria)
         }
 
-
         fun startFriendsSelection(context: Context): Intent {
             val aid = Settings.get()
                 .accounts()
@@ -124,7 +123,6 @@ class SelectProfilesActivity : MainActivity(), SelectedProfilesAdapter.ActionLis
             intent.putExtra(Extra.CRITERIA, criteria)
             return intent
         }
-
 
         fun startFaveSelection(context: Context): Intent {
             val aid = Settings.get()

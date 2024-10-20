@@ -17,7 +17,6 @@ import dev.ragnarok.filegallery.settings.Settings
 import kotlin.math.abs
 import kotlin.math.cos
 
-
 class AudioPlayerCoverDrawable(private val bitmap: Bitmap) : Drawable() {
     private val startTimeMillis: Long = SystemClock.uptimeMillis()
     private val settings: PlayerCoverBackgroundSettings =

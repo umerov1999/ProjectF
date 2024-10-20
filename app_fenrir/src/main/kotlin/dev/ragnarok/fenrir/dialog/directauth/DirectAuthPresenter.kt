@@ -37,14 +37,14 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
 
     private fun doLogin(forceSms: Boolean) {
         view?.hideKeyboard()
-        val trimmedUsername = if (username.nonNullNoEmpty()) username?.trim { it <= ' ' } else ""
-        val trimmedPass = if (pass.nonNullNoEmpty()) pass?.trim { it <= ' ' } else ""
+        val trimmedUsername = if (username.nonNullNoEmpty()) username?.trim() else ""
+        val trimmedPass = if (pass.nonNullNoEmpty()) pass?.trim() else ""
         val captchaSid = if (requiredCaptcha != null) requiredCaptcha?.sid else null
-        val captchaCode = if (captcha.nonNullNoEmpty()) captcha?.trim { it <= ' ' } else null
+        val captchaCode = if (captcha.nonNullNoEmpty()) captcha?.trim() else null
         val code: String? = if (requireSmsCode) {
-            if (smsCode.nonNullNoEmpty()) smsCode?.trim { it <= ' ' } else null
+            if (smsCode.nonNullNoEmpty()) smsCode?.trim() else null
         } else if (requireAppCode) {
-            if (appCode.nonNullNoEmpty()) appCode?.trim { it <= ' ' } else null
+            if (appCode.nonNullNoEmpty()) appCode?.trim() else null
         } else {
             null
         }
@@ -175,26 +175,28 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
         setLoginNow(false)
         var TwFa = "none"
         if (response.access_token.nonNullNoEmpty() && response.user_id > 0) {
-            val Pass = if (pass.nonNullNoEmpty()) pass?.trim { it <= ' ' } else ""
+            val Pass = if (pass.nonNullNoEmpty()) pass?.trim() else ""
             if (requireSmsCode) TwFa = "2fa_sms" else if (requireAppCode) TwFa = "2fa_app"
             val TwFafin = TwFa
             view?.returnSuccessToParent(
                 response.user_id,
                 response.access_token,
-                if (username.nonNullNoEmpty()) username?.trim { it <= ' ' } else "",
+                if (username.nonNullNoEmpty()) username?.trim() else "",
                 Pass,
                 TwFafin,
-                savePassword)
+                savePassword
+            )
         }
     }
 
     private fun onValidate() {
         view?.returnSuccessValidation(
             RedirectUrl,
-            if (username.nonNullNoEmpty()) username?.trim { it <= ' ' } else "",
-            if (pass.nonNullNoEmpty()) pass?.trim { it <= ' ' } else "",
+            if (username.nonNullNoEmpty()) username?.trim() else "",
+            if (pass.nonNullNoEmpty()) pass?.trim() else "",
             "web_validation",
-            savePassword)
+            savePassword
+        )
     }
 
     private fun setLoginNow(loginNow: Boolean) {

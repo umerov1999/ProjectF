@@ -23,7 +23,6 @@ object VKStringUtils {
         return sb.toString()
     }
 
-
     fun firstNonEmptyString(vararg array: String?): String? {
         for (s in array) {
             if (!s.isNullOrEmpty()) {
@@ -54,7 +53,6 @@ object VKStringUtils {
         return sb.toString()
     }
 
-
     fun extractPattern(string: String?, pattern: String?): String? {
         string ?: return null
         pattern ?: return null
@@ -65,17 +63,15 @@ object VKStringUtils {
         } else m.toMatchResult().group(1)
     }
 
-
     fun unescape(text: String?): String? {
         return text?.replace("&amp;", "&")?.replace("&quot;", "\"")?.replace("<br>", "\n")
             ?.replace("&gt;", ">")?.replace("&lt;", "<")?.replace("<br/>", "\n")
-            ?.replace("&ndash;", "-")?.trim { it <= ' ' }
+            ?.replace("&ndash;", "-")?.trim()
 
         //Баг в API
         //amp встречается в сообщении, br в Ответах тип comment_photo, gt lt на стене - баг API, ndash в статусе когда аудио транслируется
         //quot в тексте сообщения из LongPoll - то есть в уведомлении
     }
-
 
     fun parseProfileId(text: String?): String? {
         text ?: return null

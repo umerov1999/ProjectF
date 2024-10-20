@@ -41,10 +41,12 @@ import dev.ragnarok.fenrir.safeAllIsNullOrEmpty
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppTextUtils
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.view.AspectRatioImageView
 import dev.ragnarok.fenrir.view.VideoServiceIcons.getIconByType
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
+import kotlin.String
 
 class NewsfeedCommentsAdapter(
     private val context: Context, private var data: List<NewsfeedComment>,
@@ -134,7 +136,7 @@ class NewsfeedCommentsAdapter(
         })
         addOwnerAvatarClickHandling(holder.ownerAvatar, topic.ownerId)
         holder.ownerName.text = owner.fullName
-        holder.commentsCounter.text = topic.commentsCount.toString()
+        holder.commentsCounter.text = String.format(Utils.appLocale, "%d", topic.commentsCount)
         holder.title.text = topic.title
     }
 
@@ -177,7 +179,7 @@ class NewsfeedCommentsAdapter(
         val video = wrapper.video
         val owner = wrapper.owner
         holder.title.text = video.title
-        holder.viewsCounter.text = video.views.toString()
+        holder.viewsCounter.text = String.format(Utils.appLocale, "%d", video.views)
         holder.datitime.text = AppTextUtils.getDateFromUnixTime(context, video.date)
         val serviceIcon = getIconByType(video.platform)
         if (serviceIcon != null) {
@@ -242,7 +244,7 @@ class NewsfeedCommentsAdapter(
             if (comment.text.isNullOrEmpty()) View.GONE else View.VISIBLE
         holder.commentLikeCounter.visibility =
             if (comment.likesCount > 0) View.VISIBLE else View.GONE
-        holder.commentLikeCounter.text = comment.likesCount.toString()
+        holder.commentLikeCounter.text = String.format(Utils.appLocale, "%d", comment.likesCount)
         TextViewCompat.setCompoundDrawableTintList(
             holder.commentLikeCounter,
             ColorStateList.valueOf(if (comment.isUserLikes) iconColorActive else colorTextSecondary)

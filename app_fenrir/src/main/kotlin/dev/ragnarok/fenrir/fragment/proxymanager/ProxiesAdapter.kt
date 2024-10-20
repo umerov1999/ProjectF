@@ -8,6 +8,8 @@ import dev.ragnarok.fenrir.fragment.base.RecyclerBindableAdapter
 import dev.ragnarok.fenrir.model.ProxyConfig
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
+import java.util.Locale
+import kotlin.String
 
 class ProxiesAdapter(data: MutableList<ProxyConfig>, private val actionListener: ActionListener) :
     RecyclerBindableAdapter<ProxyConfig, ProxiesAdapter.Holder>(data) {
@@ -16,7 +18,7 @@ class ProxiesAdapter(data: MutableList<ProxyConfig>, private val actionListener:
         val config = getItem(position)
         val isActive = config == active
         viewHolder.address.text = config.getAddress()
-        viewHolder.port.text = config.getPort().toString()
+        viewHolder.port.text = String.format(Locale.US, "%d", config.getPort())
         viewHolder.username.text = config.getUser()
         val pass = StringBuilder()
         if (config.getPass().nonNullNoEmpty()) {

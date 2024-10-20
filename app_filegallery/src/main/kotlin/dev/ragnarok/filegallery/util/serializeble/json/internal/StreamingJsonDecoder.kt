@@ -51,7 +51,6 @@ internal open class StreamingJsonDecoder(
         return false
     }
 
-
     override val serializersModule: SerializersModule = json.serializersModule
     private var currentIndex = -1
     private val configuration = json.configuration
@@ -413,7 +412,7 @@ private inline fun <T> AbstractJsonLexer.parseString(
     val input = consumeStringLenient()
     try {
         return input.block()
-    } catch (e: IllegalArgumentException) {
+    } catch (_: IllegalArgumentException) {
         fail("Failed to parse type '$expectedType' for input '$input'")
     }
 }

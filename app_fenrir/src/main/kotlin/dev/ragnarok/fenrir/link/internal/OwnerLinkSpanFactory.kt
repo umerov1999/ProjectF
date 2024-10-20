@@ -110,7 +110,7 @@ object OwnerLinkSpanFactory {
         }
         try {
             return str.toLong() * pow_n
-        } catch (ignored: NumberFormatException) {
+        } catch (_: NumberFormatException) {
         }
         return Settings.get().accounts().current
     }

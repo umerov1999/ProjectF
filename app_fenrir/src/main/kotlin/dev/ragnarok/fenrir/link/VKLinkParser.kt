@@ -155,7 +155,7 @@ object VKLinkParser {
                 if (link != null) {
                     return link
                 }
-            } catch (ignored: Exception) {
+            } catch (_: Exception) {
             }
         }
         vkLink = parseBoard(string)
@@ -290,7 +290,7 @@ object VKLinkParser {
                     return BoardLink(groupId.toLong())
                 }
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         return null
     }
@@ -370,7 +370,7 @@ object VKLinkParser {
                     }
                 }
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
             if (string.contains("vk.com/im") || string.contains("vk.com/mail")) {
                 return DialogsLink()
             }
@@ -396,7 +396,7 @@ object VKLinkParser {
                     return OwnerLink(-abs(it.toLong()))
                 }
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         return null
     }
@@ -416,7 +416,7 @@ object VKLinkParser {
             if (matcher.find()) {
                 return matcher.group(1)
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         return null
     }
@@ -434,7 +434,7 @@ object VKLinkParser {
                     return null
                 }
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         return null
     }
@@ -445,7 +445,7 @@ object VKLinkParser {
             if (matcher.find()) {
                 return matcher.group(1)?.let { PhotoAlbumsLink(it.toLong()) }
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         return null
     }
@@ -456,7 +456,7 @@ object VKLinkParser {
             if (matcher.find()) {
                 return matcher.group(1)?.let { AppLink(string, it.toInt()) }
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         return null
     }
@@ -467,7 +467,7 @@ object VKLinkParser {
             if (matcher.find()) {
                 return matcher.group(1)?.let { ArticleLink(string, it) }
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         return null
     }
@@ -478,7 +478,7 @@ object VKLinkParser {
             if (matcher.find()) {
                 return matcher.group(2)?.let { OwnerLink(it.toLong()) }
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         return null
     }
@@ -492,7 +492,7 @@ object VKLinkParser {
                         ?.let { it1 -> TopicLink(it.toInt(), it1.toLong()) }
                 }
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         return null
     }
@@ -506,7 +506,7 @@ object VKLinkParser {
                         matcher.group(2)?.let { it1 -> VideoAlbumLink(it.toLong(), it1.toInt()) }
                     }
             }
-        } catch (ignored: NumberFormatException) {
+        } catch (_: NumberFormatException) {
         }
         matcher = patterns.PATTERN_VIDEOS_OWNER.matcher(string)
         try {
@@ -516,7 +516,7 @@ object VKLinkParser {
                         VideosLink(it.toLong())
                     }
             }
-        } catch (ignored: NumberFormatException) {
+        } catch (_: NumberFormatException) {
         }
         return null
     }
@@ -535,7 +535,7 @@ object VKLinkParser {
                     }
                 }
             }
-        } catch (ignored: NumberFormatException) {
+        } catch (_: NumberFormatException) {
         }
         matcher = patterns.PATTERN_VIDEO_METHOD_2.matcher(string)
         try {
@@ -550,7 +550,7 @@ object VKLinkParser {
                     }
                 }
             }
-        } catch (ignored: NumberFormatException) {
+        } catch (_: NumberFormatException) {
         }
         return null
     }
@@ -561,7 +561,7 @@ object VKLinkParser {
             if (matcher?.find() == true) {
                 return matcher.group(1)
             }
-        } catch (ignored: NumberFormatException) {
+        } catch (_: NumberFormatException) {
         }
         return null
     }
@@ -575,7 +575,7 @@ object VKLinkParser {
                         matcher.group(2)?.let { it1 -> AudioTrackLink(it.toLong(), it1.toInt()) }
                     }
             }
-        } catch (ignored: NumberFormatException) {
+        } catch (_: NumberFormatException) {
         }
         return null
     }
@@ -594,7 +594,7 @@ object VKLinkParser {
                     }
                 }
             }
-        } catch (ignored: NumberFormatException) {
+        } catch (_: NumberFormatException) {
         }
         return null
     }
@@ -613,7 +613,7 @@ object VKLinkParser {
                     }
                 }
             }
-        } catch (ignored: NumberFormatException) {
+        } catch (_: NumberFormatException) {
         }
         return null
     }
@@ -664,7 +664,7 @@ object VKLinkParser {
                     }
                 }
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         return null
     }
@@ -683,7 +683,7 @@ object VKLinkParser {
                     }
                 }
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         return null
     }
@@ -704,7 +704,7 @@ object VKLinkParser {
                         ?.let { it1 -> PollLink(it.toLong(), it1.toInt()) }
                 }
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         return null
     }

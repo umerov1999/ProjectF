@@ -27,7 +27,6 @@ open class AbsStorage(private val mRepositoryContext: AppStorages) : IStorage {
             return result.uri?.pathSegments?.get(1)?.toInt().orZero()
         }
 
-
         fun <T> addToListAndReturnIndex(target: MutableList<T>, item: T): Int {
             target.add(item)
             return target.size - 1

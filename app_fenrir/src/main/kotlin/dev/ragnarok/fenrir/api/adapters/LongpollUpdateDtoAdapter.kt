@@ -13,7 +13,6 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.serializeble.json.*
 import java.util.Collections
 
-
 class LongpollUpdateDtoAdapter : AbsDtoAdapter<AbsLongpollEvent?>("AbsLongpollEvent?") {
     @Throws(Exception::class)
     override fun deserialize(

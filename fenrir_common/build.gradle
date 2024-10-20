@@ -18,12 +18,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
         encoding = "utf-8"
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "21"
     }
 }
 
@@ -36,10 +36,10 @@ dependencies {
     compileOnly("org.jetbrains.kotlin:kotlin-annotations-jvm:$kotlin_version")
     implementation("androidx.annotation:annotation:$annotationVersion")
     implementation("androidx.appcompat:appcompat:$appcompatVersion")
-    implementation project(path: ":recyclerview")
+    implementation project(":recyclerview")
     implementation("androidx.core:core-ktx:$coreVersion")
     implementation("androidx.activity:activity-ktx:$activityVersion")
     implementation("androidx.fragment:fragment-ktx:$fragmentVersion")
-    implementation project(path: ":material")
+    implementation project(":material")
     implementation("androidx.constraintlayout:constraintlayout:$constraintlayoutVersion")
 }

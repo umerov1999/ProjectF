@@ -812,7 +812,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
             )
             effects.putExtra(AudioEffect.EXTRA_CONTENT_TYPE, AudioEffect.CONTENT_TYPE_MUSIC)
             requestEqualizer.launch(effects)
-        } catch (ignored: ActivityNotFoundException) {
+        } catch (_: ActivityNotFoundException) {
             CustomSnackbars.createCustomSnackbars(view, mPlayPauseButton)
                 ?.setDurationSnack(Snackbar.LENGTH_LONG)
                 ?.coloredSnack(R.string.no_system_equalizer, "#eeff0000".toColor())?.show()
@@ -823,10 +823,11 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         get() {
             val intent = Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL)
             val manager = requireActivity().packageManager
-            val info = if (Utils.hasTiramisu()) manager.queryIntentActivities(
-                intent,
-                PackageManager.ResolveInfoFlags.of(0)
-            ) else manager.queryIntentActivities(intent, 0)
+            val info =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) manager.queryIntentActivities(
+                    intent,
+                    PackageManager.ResolveInfoFlags.of(0)
+                ) else manager.queryIntentActivities(intent, 0)
             return info.isNotEmpty()
         }
 
@@ -1012,7 +1013,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
             return if (smoothrefreshtime < 20) {
                 20
             } else min(smoothrefreshtime, 500)
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         return 500
     }
@@ -1149,7 +1150,6 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         fun newInstance(accountId: Long): AudioPlayerFragment {
             return newInstance(buildArgs(accountId))
         }
-
 
         fun newInstance(args: Bundle?): AudioPlayerFragment {
             val fragment = AudioPlayerFragment()

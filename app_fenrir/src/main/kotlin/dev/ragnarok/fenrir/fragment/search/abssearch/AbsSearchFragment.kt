@@ -29,6 +29,10 @@ abstract class AbsSearchFragment<P : AbsSearchPresenter<V, *, T, *>, V : IBaseSe
         return inflater.inflate(R.layout.fragment_search, container, false)
     }
 
+    fun recreateLayoutManager() {
+        recyclerView?.layoutManager = createLayoutManager()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -36,8 +40,7 @@ abstract class AbsSearchFragment<P : AbsSearchPresenter<V, *, T, *>, V : IBaseSe
     ): View {
         val root = createViewLayout(inflater, container)
         recyclerView = root.findViewById(R.id.list)
-        val manager = createLayoutManager()
-        recyclerView?.layoutManager = manager
+        recyclerView?.layoutManager = createLayoutManager()
         recyclerView?.addOnScrollListener(object : EndlessRecyclerOnScrollListener() {
             override fun onScrollToLastElement() {
                 presenter?.fireScrollToEnd()

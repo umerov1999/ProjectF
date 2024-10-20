@@ -274,7 +274,7 @@ class AllFriendsPresenter(accountId: Long, private val userId: Long, savedInstan
     private fun reFillCache() {
         data[SEARCH_CACHE].users.clear()
         val db: List<User> = data[ALL].users
-        val preparedQ = q?.lowercase(Locale.getDefault())?.trim { it <= ' ' } ?: ""
+        val preparedQ = q?.lowercase(Locale.getDefault())?.trim() ?: ""
         var count = 0
         for (user in db) {
             if (allow(user, preparedQ)) {
@@ -293,7 +293,7 @@ class AllFriendsPresenter(accountId: Long, private val userId: Long, savedInstan
     }
 
     fun fireSearchRequestChanged(q: String?) {
-        val query = q?.trim { it <= ' ' }
+        val query = q?.trim()
         if (safeEquals(query, this.q)) {
             return
         }

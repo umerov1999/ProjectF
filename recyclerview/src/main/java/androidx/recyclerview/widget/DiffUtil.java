@@ -24,7 +24,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -84,7 +83,7 @@ public class DiffUtil {
         // utility class, no instance.
     }
 
-    private static final Comparator<Diagonal> DIAGONAL_COMPARATOR = (o1, o2) -> o1.x - o2.x;
+    private static final Comparator<Diagonal> DIAGONAL_COMPARATOR = Comparator.comparingInt(o -> o.x);
 
     // Myers' algorithm uses two lists as axis labels. In DiffUtil's implementation, `x` axis is
     // used for old list and `y` axis is used for new list.
@@ -167,7 +166,7 @@ public class DiffUtil {
 
         }
         // sort snakes
-        Collections.sort(diagonals, DIAGONAL_COMPARATOR);
+        diagonals.sort(DIAGONAL_COMPARATOR);
 
         return new DiffResult(cb, diagonals,
                 forward.backingData(), backward.backingData(),
@@ -465,28 +464,19 @@ public class DiffUtil {
     }
 
     /**
-     * A diagonal is a match in the graph.
-     * Rather than snakes, we only record the diagonals in the path.
-     */
-    static class Diagonal {
-        public final int x;
-        public final int y;
-        public final int size;
-
-        Diagonal(int x, int y, int size) {
-            this.x = x;
-            this.y = y;
-            this.size = size;
-        }
+         * A diagonal is a match in the graph.
+         * Rather than snakes, we only record the diagonals in the path.
+         */
+        record Diagonal(int x, int y, int size) {
 
         int endX() {
-            return x + size;
-        }
+                return x + size;
+            }
 
-        int endY() {
-            return y + size;
+            int endY() {
+                return y + size;
+            }
         }
-    }
 
     /**
      * Snakes represent a match between two lists. It is optionally prefixed or postfixed with an

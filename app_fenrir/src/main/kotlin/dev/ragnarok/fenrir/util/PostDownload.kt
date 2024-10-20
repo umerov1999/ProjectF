@@ -38,13 +38,11 @@ class PostDownload(private val context: Context) {
     private val mNotifyManager = createNotificationManager(context)
     private fun createNotificationManager(context: Context): NotificationManagerCompat {
         val mNotifyManager = NotificationManagerCompat.from(context)
-        if (Utils.hasOreo()) {
-            mNotifyManager.createNotificationChannel(
-                AppNotificationChannels.getDownloadChannel(
-                    context
-                )
+        mNotifyManager.createNotificationChannel(
+            AppNotificationChannels.getDownloadChannel(
+                context
             )
-        }
+        )
         return mNotifyManager
     }
 
@@ -356,8 +354,7 @@ class PostDownload(private val context: Context) {
     @Suppress(
         "DEPRECATION",
         "MissingPermission",
-        "CheckResult",
-        "BlockingMethodInNonBlockingContext"
+        "CheckResult"
     )
     fun doDownloadAsHTML(account_id: Long, post: Post) {
         flow {

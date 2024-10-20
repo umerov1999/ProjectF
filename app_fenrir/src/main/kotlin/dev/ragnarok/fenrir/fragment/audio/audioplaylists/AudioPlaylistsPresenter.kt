@@ -182,7 +182,7 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
     }
 
     fun fireSearchRequestChanged(q: String?) {
-        sleep_search(q?.trim { it <= ' ' })
+        sleep_search(q?.trim())
     }
 
     fun onDelete(index: Int, album: AudioPlaylist) {

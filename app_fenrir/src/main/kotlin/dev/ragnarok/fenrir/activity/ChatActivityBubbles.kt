@@ -7,7 +7,6 @@ import android.content.ServiceConnection
 import android.graphics.Color
 import android.os.Bundle
 import android.os.IBinder
-import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
@@ -38,7 +37,7 @@ import dev.ragnarok.fenrir.place.PlaceProvider
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCream
+import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.fenrir.util.ViewUtils
 
 class ChatActivityBubbles : NoMainActivity(), PlaceProvider, AppStyleable, ServiceConnection {
@@ -124,7 +123,7 @@ class ChatActivityBubbles : NoMainActivity(), PlaceProvider, AppStyleable, Servi
                 window.decorView.rootView.windowToken,
                 InputMethodManager.HIDE_NOT_ALWAYS
             )
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
     }
 
@@ -233,7 +232,7 @@ class ChatActivityBubbles : NoMainActivity(), PlaceProvider, AppStyleable, Servi
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val w = window
-        if (!hasVanillaIceCream()) {
+        if (!hasVanillaIceCreamTarget()) {
             w.statusBarColor =
                 if (colored) CurrentTheme.getStatusBarColor(this) else CurrentTheme.getStatusBarNonColored(
                     this
@@ -244,11 +243,6 @@ class ChatActivityBubbles : NoMainActivity(), PlaceProvider, AppStyleable, Servi
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons
-
-        if (!Utils.hasMarshmallow()) {
-            w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        }
     }
 
     companion object {

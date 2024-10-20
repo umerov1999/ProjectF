@@ -1,14 +1,12 @@
 package dev.ragnarok.fenrir.service
 
 import android.annotation.SuppressLint
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.util.Base64
 import android.webkit.MimeTypeMap
 import androidx.core.app.NotificationCompat
@@ -41,7 +39,6 @@ import dev.ragnarok.fenrir.util.AppTextUtils.getDateFromUnixTime
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.CheckDirectory
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.makeLegalFilename
 import dev.ragnarok.fenrir.util.Utils.appLocale
-import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.inMainThread
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingle
@@ -65,13 +62,11 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
     private val mNotifyManager = createNotificationManager(applicationContext)
     private fun createNotificationManager(context: Context): NotificationManagerCompat {
         val mNotifyManager = NotificationManagerCompat.from(context)
-        if (hasOreo()) {
-            mNotifyManager.createNotificationChannel(
-                AppNotificationChannels.getDownloadChannel(
-                    context
-                )
+        mNotifyManager.createNotificationChannel(
+            AppNotificationChannels.getDownloadChannel(
+                context
             )
-        }
+        )
         return mNotifyManager
     }
 
@@ -653,11 +648,11 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                                 output.write(','.code)
                             }
                             output.write(i)
-                        } catch (ignored: Exception) {
+                        } catch (_: Exception) {
                         }
                     }
                     offset += messages.size
-                } catch (e: Throwable) {
+                } catch (_: Throwable) {
                     break
                 }
             }
@@ -731,19 +726,14 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
 
     @Suppress("DEPRECATION")
     private fun createForeground() {
-        val builder: NotificationCompat.Builder =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val channel = NotificationChannel(
-                    "worker_channel",
-                    applicationContext.getString(R.string.channel_keep_work_manager),
-                    NotificationManager.IMPORTANCE_NONE
-                )
-                mNotifyManager.createNotificationChannel(channel)
-                NotificationCompat.Builder(applicationContext, channel.id)
-            } else {
-                NotificationCompat.Builder(applicationContext, "worker_channel")
-                    .setPriority(Notification.PRIORITY_MIN)
-            }
+        val channel = NotificationChannel(
+            "worker_channel",
+            applicationContext.getString(R.string.channel_keep_work_manager),
+            NotificationManager.IMPORTANCE_NONE
+        )
+        mNotifyManager.createNotificationChannel(channel)
+
+        val builder = NotificationCompat.Builder(applicationContext, channel.id)
         builder.setContentTitle(applicationContext.getString(R.string.work_manager))
             .setContentText(applicationContext.getString(R.string.foreground_downloader))
             .setSmallIcon(R.drawable.web)
@@ -787,7 +777,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                     val name = file.name
                     extension = name.substring(name.lastIndexOf('.') + 1)
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 extension = ""
             }
             return extension

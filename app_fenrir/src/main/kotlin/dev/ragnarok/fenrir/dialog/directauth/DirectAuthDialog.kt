@@ -159,7 +159,7 @@ class DirectAuthDialog : BaseMvpDialogFragment<DirectAuthPresenter, IDirectAuthV
             im?.hideSoftInputFromWindow(mPassword?.windowToken, 0)
             im?.hideSoftInputFromWindow(mCaptcha?.windowToken, 0)
             im?.hideSoftInputFromWindow(mSmsCode?.windowToken, 0)
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
     }
 

@@ -6,7 +6,6 @@ import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.toColor
 import dev.ragnarok.filegallery.view.media.PathAnimator
 
-
 object CurrentTheme {
     val playPauseAnimator = createPathAnimator()
     private fun createPathAnimator(): PathAnimator {

@@ -384,7 +384,7 @@ class PostEditPresenter(
         internal fun safelyClone(post: Post): Post {
             return try {
                 post.clone()
-            } catch (e: CloneNotSupportedException) {
+            } catch (_: CloneNotSupportedException) {
                 throw IllegalArgumentException("Unable to clone post")
             }
         }

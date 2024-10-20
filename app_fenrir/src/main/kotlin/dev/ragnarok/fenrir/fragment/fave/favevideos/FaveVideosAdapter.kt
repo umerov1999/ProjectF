@@ -16,7 +16,9 @@ import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.util.AppTextUtils
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.view.VideoServiceIcons.getIconByType
+import kotlin.String
 
 class FaveVideosAdapter(private val context: Context, private var data: List<Video>) :
     RecyclerView.Adapter<FaveVideosAdapter.Holder>() {
@@ -28,7 +30,7 @@ class FaveVideosAdapter(private val context: Context, private var data: List<Vid
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val video = data[position]
-        holder.viewsCount.text = video.views.toString()
+        holder.viewsCount.text = String.format(Utils.appLocale, "%d", video.views)
         holder.title.text = video.title
         holder.videoLenght.text = AppTextUtils.getDurationString(video.duration)
         val photoUrl = video.image

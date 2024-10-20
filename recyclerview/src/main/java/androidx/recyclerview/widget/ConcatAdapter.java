@@ -206,7 +206,7 @@ public final class ConcatAdapter extends Adapter<ViewHolder> {
 
     /**
      * Calling this method is an error and will result in an {@link UnsupportedOperationException}.
-     *
+     * <p>
      * ConcatAdapter infers this value from added {@link Adapter}s.
      *
      * @param strategy The saved state restoration strategy for this Adapter such that
@@ -283,7 +283,7 @@ public final class ConcatAdapter extends Adapter<ViewHolder> {
 
     /**
      * Returns the position of the given {@link ViewHolder} in the given {@link Adapter}.
-     *
+     * <p>
      * If the given {@link Adapter} is not part of this {@link ConcatAdapter},
      * {@link RecyclerView#NO_POSITION} is returned.
      *
@@ -306,7 +306,7 @@ public final class ConcatAdapter extends Adapter<ViewHolder> {
 
     /**
      * Retrieve the adapter and local position for a given position in this {@code ConcatAdapter}.
-     *
+     * <p>
      * This allows for retrieving wrapped adapter information in situations where you don't have a
      * {@link ViewHolder}, such as within a
      * {@link androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup} in which you want to
@@ -338,7 +338,7 @@ public final class ConcatAdapter extends Adapter<ViewHolder> {
          * it also means these adapters should not have conflicting view types
          * ({@link Adapter#getItemViewType(int)}) such that two different adapters return the same
          * view type for different {@link ViewHolder}s.
-         *
+         * <p>
          * By default, it is set to {@code true} which means {@link ConcatAdapter} will isolate
          * view types across adapters, preventing them from using the same {@link ViewHolder}s.
          */
@@ -349,11 +349,11 @@ public final class ConcatAdapter extends Adapter<ViewHolder> {
          * ({@link Adapter#hasStableIds()}.
          * <p>
          * There are 3 possible options:
-         *
+         * <p>
          * {@link StableIdMode#NO_STABLE_IDS}: In this mode, {@link ConcatAdapter} ignores the
          * stable
          * ids reported by sub adapters. This is the default mode.
-         *
+         * <p>
          * {@link StableIdMode#ISOLATED_STABLE_IDS}: In this mode, {@link ConcatAdapter} will return
          * {@code true} from {@link ConcatAdapter#hasStableIds()} and will <b>require</b> all added
          * {@link Adapter}s to have stable ids. As two different adapters may return same stable ids
@@ -362,14 +362,14 @@ public final class ConcatAdapter extends Adapter<ViewHolder> {
          * id before reporting back to the {@link RecyclerView}. In this mode, the value returned
          * from {@link ViewHolder#getItemId()} might differ from the value returned from
          * {@link Adapter#getItemId(int)}.
-         *
+         * <p>
          * {@link StableIdMode#SHARED_STABLE_IDS}: In this mode, {@link ConcatAdapter} will return
          * {@code true} from {@link ConcatAdapter#hasStableIds()} and will <b>require</b> all added
          * {@link Adapter}s to have stable ids. Unlike {@link StableIdMode#ISOLATED_STABLE_IDS},
          * {@link ConcatAdapter} will not override the returned item ids. In this mode,
          * child {@link Adapter}s must be aware of each-other and never return the same id unless
          * an item is moved between {@link Adapter}s.
-         *
+         * <p>
          * Default value is {@link StableIdMode#NO_STABLE_IDS}.
          */
         @NonNull
@@ -409,7 +409,7 @@ public final class ConcatAdapter extends Adapter<ViewHolder> {
              * the reported stable id before reporting back to the {@link RecyclerView}. In this
              * mode, the value returned from {@link ViewHolder#getItemId()} might differ from the
              * value returned from {@link Adapter#getItemId(int)}.
-             *
+             * <p>
              * Adding an adapter without stable ids will result in an
              * {@link IllegalArgumentException}.
              */

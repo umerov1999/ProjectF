@@ -105,13 +105,6 @@
             tools:ignore="DiscouragedApi,LockedOrientationActivity" />
 
         <activity
-            android:name="dev.ragnarok.fenrir.activity.QuickAnswerActivity"
-            android:excludeFromRecents="true"
-            android:taskAffinity=""
-            android:theme="@style/QuickReply"
-            android:windowSoftInputMode="adjustResize" />
-
-        <activity
             android:name="dev.ragnarok.fenrir.activity.ChatActivityBubbles"
             android:allowEmbedded="true"
             android:configChanges="keyboardHidden|orientation"

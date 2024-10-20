@@ -18,7 +18,7 @@ internal class RecentChatsSettings(app: Context) : IRecentChats {
                 try {
                     val recentChat: RecentChat = kJson.decodeFromString(RecentChat.serializer(), s)
                     recentChats.add(recentChat)
-                } catch (ignored: Exception) {
+                } catch (_: Exception) {
                 }
             }
         }

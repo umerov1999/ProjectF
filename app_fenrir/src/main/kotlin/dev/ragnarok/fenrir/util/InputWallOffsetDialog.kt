@@ -13,6 +13,7 @@ import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayedFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import kotlin.String
 
 class InputWallOffsetDialog internal constructor(
     private val context: Context,
@@ -31,14 +32,14 @@ class InputWallOffsetDialog internal constructor(
         val view = View.inflate(context, R.layout.dialog_enter_offset, null)
         val input: TextInputEditText = view.findViewById(R.id.editText)
         val dt: TextView = view.findViewById(R.id.datePost)
-        input.setText(value.toString())
+        input.setText(String.format(Utils.appLocale, "%d", value))
         input.setSelection(input.text?.length ?: 0)
         builder.setView(view)
         builder.setPositiveButton(R.string.button_ok) { dialog, _ ->
             input.error = null
             var newValue: Int = -1
             try {
-                newValue = input.text.toString().trim { it <= ' ' }.toInt()
+                newValue = input.text.toString().trim().toInt()
             } catch (e: Exception) {
                 input.error = e.localizedMessage
                 input.requestFocus()

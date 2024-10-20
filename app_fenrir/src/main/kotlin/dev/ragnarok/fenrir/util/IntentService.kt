@@ -58,7 +58,6 @@ abstract class IntentService(private val mName: String) : Service() {
         return null
     }
 
-
     @WorkerThread
     protected abstract fun onHandleIntent(intent: Intent?)
 }

@@ -48,7 +48,7 @@ object CryptHelper {
                     exchangeMessageBody
                 )
             0 < message.sessionId && 0 < message.version && 0 < message.senderSessionState
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
     }
@@ -100,7 +100,6 @@ object CryptHelper {
         return yesAes && 1 < digitsCount && hasDivider
     }
 
-
     fun encryptWithAes(
         text: String, key: String, ifError: String, sessionId: Long,
         @KeyLocationPolicy keyLocationPolicy: Int
@@ -114,12 +113,10 @@ object CryptHelper {
         }
     }
 
-
     @Throws(GeneralSecurityException::class)
     fun decryptWithAes(text: String, key: String): String {
         return decrypt(key, text)
     }
-
 
     @Throws(EncryptedMessageParseException::class)
     fun parseEncryptedMessage(text: String?): EncryptedMessage? {
@@ -131,13 +128,12 @@ object CryptHelper {
             val sessionId = text.substring(4, dividerLocation).toLong()
             val originalBody = text.substring(dividerLocation + 1)
             EncryptedMessage(sessionId, originalBody, keyLocationPolicy)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             throw EncryptedMessageParseException()
         }
 
         // AES{$key_location_policy}{$session_id}:{$encrypted_body}
     }
-
 
     @Throws(NoSuchAlgorithmException::class, InvalidKeySpecException::class)
     fun createRsaPublicKeyFromString(key: String): PublicKey {
@@ -147,7 +143,6 @@ object CryptHelper {
         return kf.generatePublic(X509publicKey)
     }
 
-
     @Throws(NoSuchAlgorithmException::class)
     fun generateRandomAesKey(keysize: Int): String {
         val keyGen = KeyGenerator.getInstance("AES")
@@ -156,7 +151,6 @@ object CryptHelper {
         val encoded = secretKey.encoded
         return Base64.encodeToString(encoded, Base64.DEFAULT)
     }
-
 
     @Throws(NoSuchAlgorithmException::class)
     fun generateRsaKeyPair(keysize: Int): KeyPair {

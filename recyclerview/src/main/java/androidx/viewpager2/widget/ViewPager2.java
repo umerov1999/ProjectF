@@ -266,7 +266,7 @@ public final class ViewPager2 extends ViewGroup {
 
     /**
      * A lot of places in code rely on an assumption that the page fills the whole ViewPager2.
-     *
+     * <p>
      * TODO(b/70666617) Allow page width different than width/height 100%/100%
      */
     private RecyclerView.OnChildAttachStateChangeListener enforceChildFillListener() {
@@ -334,12 +334,11 @@ public final class ViewPager2 extends ViewGroup {
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
-        if (!(state instanceof SavedState)) {
+        if (!(state instanceof SavedState ss)) {
             super.onRestoreInstanceState(state);
             return;
         }
 
-        SavedState ss = (SavedState) state;
         super.onRestoreInstanceState(ss.getSuperState());
         mPendingCurrentItem = ss.mCurrentItem;
         mPendingAdapterState = ss.mAdapterState;
@@ -420,7 +419,7 @@ public final class ViewPager2 extends ViewGroup {
             out.writeParcelable(mAdapterState, flags);
         }
 
-        public static final Creator<SavedState> CREATOR = new ClassLoaderCreator<SavedState>() {
+        public static final Creator<SavedState> CREATOR = new ClassLoaderCreator<>() {
             @Override
             public SavedState createFromParcel(Parcel source, ClassLoader loader) {
                 return Build.VERSION.SDK_INT >= 24

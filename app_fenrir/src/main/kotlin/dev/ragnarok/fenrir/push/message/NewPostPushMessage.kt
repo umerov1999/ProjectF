@@ -15,13 +15,10 @@ import dev.ragnarok.fenrir.longpoll.AppNotificationChannels.getNewPostChannel
 import dev.ragnarok.fenrir.longpoll.AppNotificationChannels.newPostChannelId
 import dev.ragnarok.fenrir.longpoll.NotificationHelper
 import dev.ragnarok.fenrir.push.NotificationScheduler.INSTANCE
-import dev.ragnarok.fenrir.push.NotificationUtils.configOtherPushNotification
 import dev.ragnarok.fenrir.push.OwnerInfo.Companion.getRx
-import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.settings.theme.ThemesController.toastColor
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.Logger.wtf
-import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 import java.util.regex.Pattern
@@ -33,16 +30,10 @@ class NewPostPushMessage {
     private var title: String? = null
 
     @SuppressLint("CheckResult")
-    fun notifyIfNeed(context: Context) {
+    fun notify(context: Context) {
         val pUrl = url
         if (pUrl == null) {
             wtf("NewPostPushMessage", "url is NULL!!!")
-            return
-        }
-        if (!get()
-                .notifications()
-                .isNewPostsNotificationEnabled
-        ) {
             return
         }
         val matcher = PATTERN_WALL_POST.matcher(pUrl)
@@ -65,9 +56,7 @@ class NewPostPushMessage {
 
     private fun notifyImpl(context: Context, bitmap: Bitmap?) {
         val nManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        if (hasOreo()) {
-            nManager.createNotificationChannel(getNewPostChannel(context))
-        }
+        nManager.createNotificationChannel(getNewPostChannel(context))
         val builder = NotificationCompat.Builder(context, newPostChannelId)
             .setSmallIcon(R.drawable.client_round)
             .setContentTitle(title)
@@ -91,7 +80,6 @@ class NewPostPushMessage {
         )
         builder.setContentIntent(contentIntent)
         val notification = builder.build()
-        configOtherPushNotification(notification)
         if (AppPerms.hasNotificationPermissionSimple(context)) {
             nManager.notify(url, NotificationHelper.NOTIFICATION_NEW_POSTS_ID, notification)
         }

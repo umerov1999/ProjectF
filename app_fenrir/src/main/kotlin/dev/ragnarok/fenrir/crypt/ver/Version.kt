@@ -20,8 +20,6 @@ object Version {
         override val aesKeySize: Int
             get() = 256
     }
-
-
     val currentVersion: Int
         get() = Settings.get().main().cryptVersion
 

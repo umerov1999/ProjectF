@@ -360,7 +360,7 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
                 override fun onChanged(newValue: String?) {
                     appendJob(feedInteractor.saveList(
                         accountId,
-                        newValue?.trim { it <= ' ' },
+                        newValue?.trim(),
                         iIds
                     )
                         .fromIOToMain({

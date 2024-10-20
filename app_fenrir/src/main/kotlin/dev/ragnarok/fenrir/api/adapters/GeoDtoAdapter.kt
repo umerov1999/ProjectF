@@ -21,7 +21,7 @@ class GeoDtoAdapter : AbsDtoAdapter<VKApiGeo>("VKApiGeo") {
                 geo.latitude = tmp?.get(0)
                 geo.longitude = tmp?.get(1)
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         if (hasObject(root, "place")) {
             root["place"]?.let {
@@ -33,7 +33,7 @@ class GeoDtoAdapter : AbsDtoAdapter<VKApiGeo>("VKApiGeo") {
                     try {
                         geo.latitude = optDouble(it.jsonObject, "latitude").toString()
                         geo.longitude = optDouble(it.jsonObject, "longitude").toString()
-                    } catch (ignored: Exception) {
+                    } catch (_: Exception) {
                     }
                 }
             }

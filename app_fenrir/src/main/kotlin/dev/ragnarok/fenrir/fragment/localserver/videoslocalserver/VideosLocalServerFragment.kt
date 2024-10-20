@@ -16,7 +16,9 @@ import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.InternalVideoSize
 import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.place.PlaceFactory.getVkInternalPlayerPlace
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.MySearchView
@@ -62,7 +64,10 @@ class VideosLocalServerFragment :
         setupSwipeRefreshLayoutWithCurrentTheme(requireActivity(), mSwipeRefreshLayout)
         val recyclerView: RecyclerView = root.findViewById(R.id.recycler_view)
         val columns = requireActivity().resources.getInteger(R.integer.videos_column_count)
-        val manager = StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL)
+        val manager =
+            if (Settings.get().main().single_line_videos) Utils.getSingleElementsLayoutManager(
+                requireActivity()
+            ) else StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.layoutManager = manager
         PicassoPauseOnScrollListener.addListener(recyclerView)
         recyclerView.addOnScrollListener(object : EndlessRecyclerOnScrollListener() {

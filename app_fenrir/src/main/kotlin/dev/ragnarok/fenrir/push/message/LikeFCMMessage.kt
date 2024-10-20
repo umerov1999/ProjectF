@@ -21,10 +21,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getCommentsPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getPostPreviewPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getSimpleGalleryPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getVideoPreviewPlace
-import dev.ragnarok.fenrir.push.NotificationUtils.configOtherPushNotification
-import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.AppPerms
-import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
 import kotlinx.serialization.SerialName
@@ -54,7 +51,7 @@ class LikeFCMMessage {
     private var like_type: String? = null
     private var reply_id = 0
 
-    private fun notifyImpl(context: Context) {
+    fun notify(context: Context) {
         var place: Place? = null
         when (like_type) {
             "post" -> {
@@ -143,9 +140,7 @@ class LikeFCMMessage {
 //        }
         val nManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
-        if (hasOreo()) {
-            nManager?.createNotificationChannel(getLikesChannel(context))
-        }
+        nManager?.createNotificationChannel(getLikesChannel(context))
         val builder = NotificationCompat.Builder(context, likesChannelId)
             .setSmallIcon(R.drawable.heart)
             .setContentTitle(context.getString(R.string.like_title))
@@ -166,20 +161,9 @@ class LikeFCMMessage {
         )
         builder.setContentIntent(contentIntent)
         val notification = builder.build()
-        configOtherPushNotification(notification)
         if (AppPerms.hasNotificationPermissionSimple(context)) {
             nManager?.notify(id, NotificationHelper.NOTIFICATION_LIKE, notification)
         }
-    }
-
-    fun notifyIfNeed(context: Context) {
-        if (!get()
-                .notifications()
-                .isLikeNotificationEnable
-        ) {
-            return
-        }
-        notifyImpl(context)
     }
 
     @Serializable

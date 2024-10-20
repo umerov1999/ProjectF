@@ -42,7 +42,6 @@ import dev.ragnarok.fenrir.getParcelableArrayListCompat
 import dev.ragnarok.fenrir.trimmedIsNullOrEmpty
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.InputTextDialog
-import dev.ragnarok.fenrir.util.Utils.hasMarshmallow
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.DateTimePicker
 import java.util.Calendar
@@ -294,7 +293,7 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
             null
         } else try {
             Integer.valueOf(line)
-        } catch (ignored: NumberFormatException) {
+        } catch (_: NumberFormatException) {
             null
         }
     }
@@ -452,7 +451,7 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
 
         @SuppressLint("MissingPermission")
         fun getLocation(context: Context, result: LocationResult?): Boolean {
-            if (hasMarshmallow() && ContextCompat.checkSelfPermission(
+            if (ContextCompat.checkSelfPermission(
                     context,
                     Manifest.permission.ACCESS_FINE_LOCATION
                 ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
@@ -472,12 +471,12 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
                 // Exceptions will be thrown if the provider is not permitted.
                 try {
                     gps_enabled = it.isProviderEnabled(LocationManager.GPS_PROVIDER)
-                } catch (ignored: Exception) {
+                } catch (_: Exception) {
                 }
                 try {
                     network_enabled = it
                         .isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-                } catch (ignored: Exception) {
+                } catch (_: Exception) {
                 }
 
                 // Don't start listeners if no provider is enabled.
@@ -499,7 +498,7 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
         inner class GetLastLocation : TimerTask() {
             @SuppressLint("MissingPermission")
             override fun run() {
-                if (hasMarshmallow() && ContextCompat.checkSelfPermission(
+                if (ContextCompat.checkSelfPermission(
                         requireActivity(),
                         Manifest.permission.ACCESS_FINE_LOCATION
                     ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(

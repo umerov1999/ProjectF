@@ -90,7 +90,7 @@ class ExoVoicePlayerSensored(context: Context, config: ProxyConfig?) : IVoicePla
             sensorManager?.registerListener(this, proxym, SensorManager.SENSOR_DELAY_NORMAL)
             val filter = IntentFilter(Intent.ACTION_HEADSET_PLUG)
             app.registerReceiver(headset, filter)
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
     }
 
@@ -111,7 +111,7 @@ class ExoVoicePlayerSensored(context: Context, config: ProxyConfig?) : IVoicePla
             isProximityNear = false
             isHeadset = false
             isPlaying = false
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
     }
 
@@ -227,7 +227,6 @@ class ExoVoicePlayerSensored(context: Context, config: ProxyConfig?) : IVoicePla
             }
         }
 
-
     override fun setCallback(listener: IPlayerStatusListener?) {
         statusListener = listener
     }
@@ -260,7 +259,7 @@ class ExoVoicePlayerSensored(context: Context, config: ProxyConfig?) : IVoicePla
                 exoPlayer?.release()
                 UnRegisterCallBack()
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
     }
 
@@ -294,7 +293,7 @@ class ExoVoicePlayerSensored(context: Context, config: ProxyConfig?) : IVoicePla
                                 ).build(), true
                         )
                     }
-                } catch (ignored: Exception) {
+                } catch (_: Exception) {
                 }
             }
         }
@@ -322,7 +321,7 @@ class ExoVoicePlayerSensored(context: Context, config: ProxyConfig?) : IVoicePla
                                     C.AUDIO_CONTENT_TYPE_MUSIC
                                 ).setUsage(C.USAGE_MEDIA).build(), true
                             )
-                        } catch (ignored: Exception) {
+                        } catch (_: Exception) {
                         }
                     }
 

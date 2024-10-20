@@ -360,7 +360,7 @@ LoadModule* LoaderMgr::loader(const char* key)
 }
 
 
-LoadModule* LoaderMgr::loader(const char* data, uint32_t size, const string& mimeType, const string& rpath, bool copy)
+LoadModule* LoaderMgr::loader(const char* data, uint32_t size, const string& mimeType, bool copy)
 {
     //Note that users could use the same data pointer with the different content.
     //Thus caching is only valid for shareable.
@@ -379,7 +379,7 @@ LoadModule* LoaderMgr::loader(const char* data, uint32_t size, const string& mim
     //Try with the given MimeType
     if (!mimeType.empty()) {
         if (auto loader = _findByType(mimeType)) {
-            if (loader->open(data, size, rpath, copy)) {
+            if (loader->open(data, size, copy)) {
                 if (allowCache) {
                     loader->hashkey = HASH_KEY(data);
                     ScopedLock lock(key);
@@ -396,7 +396,7 @@ LoadModule* LoaderMgr::loader(const char* data, uint32_t size, const string& mim
     for (int i = 0; i < static_cast<int>(FileType::Raw); i++) {
         auto loader = _find(static_cast<FileType>(i));
         if (loader) {
-            if (loader->open(data, size, rpath, copy)) {
+            if (loader->open(data, size, copy)) {
                 if (allowCache) {
                     loader->hashkey = HASH_KEY(data);
                     ScopedLock lock(key);
@@ -411,7 +411,7 @@ LoadModule* LoaderMgr::loader(const char* data, uint32_t size, const string& mim
 }
 
 
-LoadModule* LoaderMgr::loader(const uint32_t *data, uint32_t w, uint32_t h, bool premultiplied, bool copy)
+LoadModule* LoaderMgr::loader(const uint32_t *data, uint32_t w, uint32_t h, bool copy)
 {
     //Note that users could use the same data pointer with the different content.
     //Thus caching is only valid for shareable.
@@ -422,7 +422,7 @@ LoadModule* LoaderMgr::loader(const uint32_t *data, uint32_t w, uint32_t h, bool
 
     //function is dedicated for raw images only
     auto loader = new RawLoader;
-    if (loader->open(data, w, h, premultiplied, copy)) {
+    if (loader->open(data, w, h, copy)) {
         if (!copy) {
             loader->hashkey = HASH_KEY((const char*)data);
             ScopedLock lock(key);
@@ -444,7 +444,7 @@ LoadModule* LoaderMgr::loader(const char* name, const char* data, uint32_t size,
 
     //function is dedicated for ttf loader (the only supported font loader)
     auto loader = new TtfLoader;
-    if (loader->open(data, size, "", copy)) {
+    if (loader->open(data, size, copy)) {
         loader->hashpath = strdup(name);
         loader->pathcache = true;
         ScopedLock lock(key);

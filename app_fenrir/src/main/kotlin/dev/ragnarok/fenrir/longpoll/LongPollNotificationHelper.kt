@@ -2,10 +2,8 @@ package dev.ragnarok.fenrir.longpoll
 
 import android.content.Context
 import dev.ragnarok.fenrir.model.Message
-import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Logger.d
-import dev.ragnarok.fenrir.util.Utils.hasFlag
 
 object LongPollNotificationHelper {
     val TAG: String = LongPollNotificationHelper::class.simpleName.orEmpty()
@@ -32,8 +30,7 @@ object LongPollNotificationHelper {
     }
 
     private fun notifyAbountNewMessage(context: Context, accountId: Long, message: Message) {
-        val mask = Settings.get().notifications().getNotifPref(accountId, message.peerId)
-        if (!hasFlag(mask, ISettings.INotificationSettings.FLAG_SHOW_NOTIF)) {
+        if (Settings.get().notifications().isSilentPeer(accountId, message.peerId)) {
             return
         }
         if (Settings.get().accounts().current != accountId) {

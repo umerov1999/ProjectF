@@ -75,7 +75,6 @@ open class UploadDestination : Parcelable {
                 }
             }
 
-
         fun forRemotePlay(): UploadDestination {
             return UploadDestination(
                 NO_ID,

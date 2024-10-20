@@ -38,67 +38,67 @@ object SearchFragmentFactory {
         return when (type) {
             SearchContentType.PEOPLE -> newInstance(
                 accountId,
-                if (criteria is PeopleSearchCriteria) criteria else null
+                criteria as? PeopleSearchCriteria
             )
 
             SearchContentType.COMMUNITIES -> CommunitiesSearchFragment.newInstance(
                 accountId,
-                if (criteria is GroupSearchCriteria) criteria else null
+                criteria as? GroupSearchCriteria
             )
 
             SearchContentType.VIDEOS -> VideoSearchFragment.newInstance(
                 accountId,
-                if (criteria is VideoSearchCriteria) criteria else null
+                criteria as? VideoSearchCriteria
             )
 
             SearchContentType.AUDIOS -> newInstance(
                 accountId,
-                if (criteria is AudioSearchCriteria) criteria else null
+                criteria as? AudioSearchCriteria
             )
 
             SearchContentType.ARTISTS -> newInstance(
                 accountId,
-                if (criteria is ArtistSearchCriteria) criteria else null
+                criteria as? ArtistSearchCriteria
             )
 
             SearchContentType.AUDIOS_SELECT -> newInstanceSelect(
                 accountId,
-                if (criteria is AudioSearchCriteria) criteria else null
+                criteria as? AudioSearchCriteria
             )
 
             SearchContentType.AUDIO_PLAYLISTS -> newInstance(
                 accountId,
-                if (criteria is AudioPlaylistSearchCriteria) criteria else null
+                criteria as? AudioPlaylistSearchCriteria
             )
 
             SearchContentType.DOCUMENTS -> newInstance(
                 accountId,
-                if (criteria is DocumentSearchCriteria) criteria else null
+                criteria as? DocumentSearchCriteria
             )
 
             SearchContentType.NEWS -> newInstance(
                 accountId,
-                if (criteria is NewsFeedCriteria) criteria else null
+                criteria as? NewsFeedCriteria
             )
 
             SearchContentType.MESSAGES -> newInstance(
                 accountId,
-                if (criteria is MessageSearchCriteria) criteria else null
+                criteria as? MessageSearchCriteria
             )
 
             SearchContentType.WALL -> WallSearchFragment.newInstance(
                 accountId,
-                if (criteria is WallSearchCriteria) criteria else null
+                criteria as? WallSearchCriteria
             )
 
             SearchContentType.DIALOGS -> newInstance(
                 accountId,
-                if (criteria is DialogsSearchCriteria) criteria else null
+                criteria as? DialogsSearchCriteria
             )
 
             SearchContentType.PHOTOS -> newInstance(
                 accountId,
-                if (criteria is PhotoSearchCriteria) criteria else null
+                criteria as? PhotoSearchCriteria
             )
 
             else -> throw UnsupportedOperationException()

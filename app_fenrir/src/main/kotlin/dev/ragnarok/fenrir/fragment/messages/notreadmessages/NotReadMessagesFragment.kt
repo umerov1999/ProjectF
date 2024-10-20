@@ -429,7 +429,7 @@ class NotReadMessagesFragment :
                 var name = peer?.getTitle()
                 EmptyAvatar?.visibility = View.VISIBLE
                 if ((name?.length ?: 0) > 2) name = name?.substring(0, 2)
-                name = name?.trim { it <= ' ' }
+                name = name?.trim()
                 EmptyAvatar?.text = name
             } else {
                 EmptyAvatar?.visibility = View.GONE

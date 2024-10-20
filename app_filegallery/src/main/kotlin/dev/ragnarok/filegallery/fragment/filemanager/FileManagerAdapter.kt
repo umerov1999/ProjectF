@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -182,7 +183,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
         return flow {
             val retriever = MediaMetadataRetriever()
             var finalUrl = url
-            if (!Utils.hasR()) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
                 val uri = Uri.parse(url)
                 if ("file" == uri.scheme) {
                     finalUrl = uri.path.toString()

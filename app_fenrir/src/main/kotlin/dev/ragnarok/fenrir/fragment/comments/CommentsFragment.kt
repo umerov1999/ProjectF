@@ -377,7 +377,7 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
         mGotoSourceText = gotoSourceText
         try {
             requireActivity().invalidateOptionsMenu()
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
     }
 

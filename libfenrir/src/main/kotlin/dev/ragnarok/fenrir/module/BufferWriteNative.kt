@@ -71,7 +71,7 @@ class BufferWriteNative(reserved: Int) {
             while (inputStream.read(buffer, 0, buffer.size).also { readLen = it } >= 0) {
                 putByteArray(pointer, buffer, readLen)
             }
-        } catch (e: Throwable) {
+        } catch (_: Throwable) {
             return
         }
     }

@@ -107,7 +107,7 @@ enum class PathCommand
 /**
  * @brief Enumeration determining the ending type of a stroke in the open sub-paths.
  */
-enum class StrokeCap : uint8_t
+enum class StrokeCap
 {
     Square = 0, ///< The stroke is extended in both end-points of a sub-path by a rectangle, with the width equal to the stroke width and the length equal to the half of the stroke width. For zero length sub-paths the square is rendered with the size of the stroke width.
     Round,      ///< The stroke is extended in both end-points of a sub-path by a half circle, with a radius equal to the half of a stroke width. For zero length sub-paths a full circle is rendered.
@@ -118,7 +118,7 @@ enum class StrokeCap : uint8_t
 /**
  * @brief Enumeration determining the style used at the corners of joined stroked path segments.
  */
-enum class StrokeJoin : uint8_t
+enum class StrokeJoin
 {
     Bevel = 0, ///< The outer corner of the joined path segments is bevelled at the join point. The triangular region of the corner is enclosed by a straight line between the outer corners of each stroke.
     Round,     ///< The outer corner of the joined path segments is rounded. The circular region is centered at the join point.
@@ -129,7 +129,7 @@ enum class StrokeJoin : uint8_t
 /**
  * @brief Enumeration specifying how to fill the area outside the gradient bounds.
  */
-enum class FillSpread : uint8_t
+enum class FillSpread
 {
     Pad = 0, ///< The remaining area is filled with the closest stop color.
     Reflect, ///< The gradient pattern is reflected outside the gradient area until the expected region is filled.
@@ -140,7 +140,7 @@ enum class FillSpread : uint8_t
 /**
  * @brief Enumeration specifying the algorithm used to establish which parts of the shape are treated as the inside of the shape.
  */
-enum class FillRule : uint8_t
+enum class FillRule
 {
     Winding = 0, ///< A line from the point to a location outside the shape is drawn. The intersections of the line with the path segment of the shape are counted. Starting from zero, if the path segment of the shape crosses the line clockwise, one is added, otherwise one is subtracted. If the resulting sum is non zero, the point is inside the shape.
     EvenOdd      ///< A line from the point to a location outside the shape is drawn and its intersections with the path segments of the shape are counted. If the number of intersections is an odd number, the point is inside the shape.
@@ -154,10 +154,10 @@ enum class FillRule : uint8_t
  *
  * @see Paint::composite()
  */
-enum class CompositeMethod : uint8_t
+enum class CompositeMethod
 {
     None = 0,           ///< No composition is applied.
-    ClipPath,           ///< The intersection of the source and the target is determined and only the resulting pixels from the source are rendered. Note that ClipPath only supports the Shape type.
+    ClipPath,           ///< The intersection of the source and the target is determined and only the resulting pixels from the source are rendered. Note that ClipPath only supports the Shape type. @deprecated Use Paint::clip() instead.
     AlphaMask,          ///< Alpha Masking using the compositing target's pixels as an alpha value.
     InvAlphaMask,       ///< Alpha Masking using the complement to the compositing target's pixels as an alpha value.
     LumaMask,           ///< Alpha Masking using the grayscale (0.2125R + 0.7154G + 0.0721*B) of the compositing target's pixels. @since 0.9
@@ -178,36 +178,56 @@ enum class CompositeMethod : uint8_t
  *
  * @see Paint::blend()
  *
- * @note Experimental API
+ * @since 0.15
  */
 enum class BlendMethod : uint8_t
 {
     Normal = 0,        ///< Perform the alpha blending(default). S if (Sa == 255), otherwise (Sa * S) + (255 - Sa) * D
-    Add,               ///< Simply adds pixel values of one layer with the other. (S + D)
-    Screen,            ///< The values of the pixels in the two layers are inverted, multiplied, and then inverted again. (S + D) - (S * D)
     Multiply,          ///< Takes the RGB channel values from 0 to 255 of each pixel in the top layer and multiples them with the values for the corresponding pixel from the bottom layer. (S * D)
+    Screen,            ///< The values of the pixels in the two layers are inverted, multiplied, and then inverted again. (S + D) - (S * D)
     Overlay,           ///< Combines Multiply and Screen blend modes. (2 * S * D) if (2 * D < Da), otherwise (Sa * Da) - 2 * (Da - S) * (Sa - D)
-    Difference,        ///< Subtracts the bottom layer from the top layer or the other way around, to always get a non-negative value. (S - D) if (S > D), otherwise (D - S)
-    Exclusion,         ///< The result is twice the product of the top and bottom layers, subtracted from their sum. s + d - (2 * s * d)
-    SrcOver,           ///< Replace the bottom layer with the top layer.
     Darken,            ///< Creates a pixel that retains the smallest components of the top and bottom layer pixels. min(S, D)
     Lighten,           ///< Only has the opposite action of Darken Only. max(S, D)
     ColorDodge,        ///< Divides the bottom layer by the inverted top layer. D / (255 - S)
     ColorBurn,         ///< Divides the inverted bottom layer by the top layer, and then inverts the result. 255 - (255 - D) / S
     HardLight,         ///< The same as Overlay but with the color roles reversed. (2 * S * D) if (S < Sa), otherwise (Sa * Da) - 2 * (Da - S) * (Sa - D)
-    SoftLight          ///< The same as Overlay but with applying pure black or white does not result in pure black or white. (1 - 2 * S) * (D ^ 2) + (2 * S * D)
+    SoftLight,         ///< The same as Overlay but with applying pure black or white does not result in pure black or white. (1 - 2 * S) * (D ^ 2) + (2 * S * D)
+    Difference,        ///< Subtracts the bottom layer from the top layer or the other way around, to always get a non-negative value. (S - D) if (S > D), otherwise (D - S)
+    Exclusion,         ///< The result is twice the product of the top and bottom layers, subtracted from their sum. s + d - (2 * s * d)
+    Hue,               ///< Reserved. Not supported.
+    Saturation,        ///< Reserved. Not supported.
+    Color,             ///< Reserved. Not supported.
+    Luminosity,        ///< Reserved. Not supported.
+    Add,               ///< Simply adds pixel values of one layer with the other. (S + D)
+    HardMix            ///< Reserved. Not supported.
+};
+
+
+/**
+ * @brief Enumeration that defines methods used for Scene Effects.
+ *
+ * This enum provides options to apply various post-processing effects to a scene.
+ * Scene effects are typically applied to modify the final appearance of a rendered scene, such as blurring.
+ *
+ * @see Scene::push(SceneEffect effect, ...)
+ *
+ * @note Experimental API
+ */
+enum class SceneEffect : uint8_t
+{
+    ClearAll = 0,      ///< Reset all previously applied scene effects, restoring the scene to its original state.
+    GaussianBlur       ///< Apply a blur effect with a Gaussian filter. Param(3) = {sigma(float)[> 0], direction(int)[both: 0 / horizontal: 1 / vertical: 2], border(int)[duplicate: 0 / wrap: 1], quality(int)[0 - 100]}
 };
 
 
 /**
  * @brief Enumeration specifying the engine type used for the graphics backend. For multiple backends bitwise operation is allowed.
  */
-enum class CanvasEngine : uint8_t
+enum class CanvasEngine
 {
-    All = 0,       ///< All feasible rasterizers. @since 1.0
     Sw = (1 << 1), ///< CPU rasterizer.
     Gl = (1 << 2), ///< OpenGL rasterizer.
-    Wg = (1 << 3), ///< WebGPU rasterizer. (Experimental API)
+    Wg = (1 << 3), ///< WebGPU rasterizer. @since 0.15
 };
 
 
@@ -335,7 +355,6 @@ public:
      * @param[in] o The opacity value in the range [0 ~ 255], where 0 is completely transparent and 255 is opaque.
      *
      * @note Setting the opacity with this API may require multiple render pass for composition. It is recommended to avoid changing the opacity if possible.
-     * @note ClipPath won't use the opacity value. (see: enum class CompositeMethod::ClipPath)
      */
     Result opacity(uint8_t o) noexcept;
 
@@ -346,6 +365,20 @@ public:
      * @param[in] method The method used to composite the source object with the target.
      */
     Result composite(std::unique_ptr<Paint> target, CompositeMethod method) noexcept;
+
+    /**
+     * @brief Clip the drawing region of the paint object.
+     *
+     * This function restricts the drawing area of the paint object to the specified shape's paths.
+     *
+     * @param[in] clipper The shape object as the clipper.
+     *
+     * @retval Result::NonSupport If the @p clipper type is not Shape.
+     *
+     * @note @p clipper only supports the Shape type.
+     * @note Experimental API
+     */
+    Result clip(std::unique_ptr<Paint> clipper) noexcept;
 
     /**
      * @brief Sets the blending method for the paint object.
@@ -361,6 +394,11 @@ public:
     Result blend(BlendMethod method) noexcept;
 
     /**
+     * @deprecated Use bounds(float* x, float* y, float* w, float* h, bool transformed) instead
+     */
+    TVG_DEPRECATED Result bounds(float* x, float* y, float* w, float* h) const noexcept;
+
+    /**
      * @brief Gets the axis-aligned bounding box of the paint object.
      *
      * @param[out] x The x-coordinate of the upper-left corner of the object.
@@ -374,7 +412,7 @@ public:
      * @note If @p transformed is @c true, the paint needs to be pushed into a canvas and updated before this api is called.
      * @see Canvas::update()
      */
-    Result bounds(float* x, float* y, float* w, float* h, bool transformed = false) const noexcept;
+    Result bounds(float* x, float* y, float* w, float* h, bool transformed) const noexcept;
 
     /**
      * @brief Duplicates the object.
@@ -402,15 +440,6 @@ public:
      * @since 0.5
      */
     CompositeMethod composite(const Paint** target) const noexcept;
-
-    /**
-     * @brief Retrieves the current blending method applied to the paint object.
-     *
-     * @return The currently set blending method.
-     *
-     * @note Experimental API
-     */
-    BlendMethod blend() const noexcept;
 
     /**
      * @brief Returns the ID value of this class.
@@ -563,6 +592,8 @@ public:
     Canvas(RenderMethod*);
     virtual ~Canvas();
 
+    TVG_DEPRECATED Result reserve(uint32_t n) noexcept;
+
     /**
      * @brief Returns the list of the paints that currently held by the Canvas.
      *
@@ -595,16 +626,16 @@ public:
      * @brief Clear the internal canvas resources that used for the drawing.
      *
      * This API sets the total number of paints pushed into the canvas to zero.
-     * Depending on the value of the @p paints argument, the paints are either freed or retained.
-     * So if you need to update paint properties while maintaining the existing scene structure, you can set @p paints = false.
+     * Depending on the value of the @p free argument, the paints are either freed or retained.
+     * So if you need to update paint properties while maintaining the existing scene structure, you can set @p free = false.
      *
-     * @param[in] paints If @c true, the memory occupied by paints is deallocated; otherwise, the paints will be retained on the canvas.
-     * @param[in] buffer If @c true, the canvas target buffer is cleared with a zero value.
+     * @param[in] free If @c true, the memory occupied by paints is deallocated, otherwise it is not.
+     *
      *
      * @see Canvas::push()
      * @see Canvas::paints()
      */
-    virtual Result clear(bool paints = true, bool buffer = true) noexcept;
+    virtual Result clear(bool free = true) noexcept;
 
     /**
      * @brief Request the canvas to update the paint objects.
@@ -644,7 +675,7 @@ public:
      * @warning It's not allowed to change the viewport during Canvas::push() - Canvas::sync() or Canvas::update() - Canvas::sync().
      *
      * @note When resetting the target, the viewport will also be reset to the target size.
-     * @note Experimental API
+     * @since 0.15
      */
     virtual Result viewport(int32_t x, int32_t y, int32_t w, int32_t h) noexcept;
 
@@ -818,11 +849,11 @@ public:
     ~Shape();
 
     /**
-     * @brief Resets the properties of the shape path.
+     * @brief Resets the shape path.
      *
-     * The transformation matrix, the color, the fill and the stroke properties are retained.
+     * The transformation matrix, color, fill, and stroke properties are retained.
      *
-     * @note The memory, where the path data is stored, is not deallocated at this stage for caching effect.
+     * @note The memory where the path data is stored is not deallocated at this stage to allow for caching.
      */
     Result reset() noexcept;
 
@@ -954,7 +985,7 @@ public:
      * @param[in] width The width of the stroke. The default value is 0.
      *
      */
-    Result strokeWidth(float width) noexcept;
+    Result stroke(float width) noexcept;
 
     /**
      * @brief Sets the color of the stroke for all of the figures from the path.
@@ -965,7 +996,7 @@ public:
      * @param[in] a The alpha channel value in the range [0 ~ 255], where 0 is completely transparent and 255 is opaque. The default value is 0.
      *
      */
-    Result strokeFill(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) noexcept;
+    Result stroke(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) noexcept;
 
     /**
      * @brief Sets the gradient fill of the stroke for all of the figures from the path.
@@ -974,23 +1005,20 @@ public:
      *
      * @retval Result::MemoryCorruption In case a @c nullptr is passed as the argument.
      */
-    Result strokeFill(std::unique_ptr<Fill> f) noexcept;
+    Result stroke(std::unique_ptr<Fill> f) noexcept;
 
     /**
      * @brief Sets the dash pattern of the stroke.
      *
      * @param[in] dashPattern The array of consecutive pair values of the dash length and the gap length.
      * @param[in] cnt The length of the @p dashPattern array.
-     * @param[in] offset The shift of the starting point within the repeating dash pattern from which the path's dashing begins.
      *
      * @retval Result::InvalidArguments In case @p dashPattern is @c nullptr and @p cnt > 0, @p cnt is zero, any of the dash pattern values is zero or less.
      *
      * @note To reset the stroke dash pattern, pass @c nullptr to @p dashPattern and zero to @p cnt.
      * @warning @p cnt must be greater than 1 if the dash pattern is valid.
-     *
-     * @since 1.0
      */
-    Result strokeDash(const float* dashPattern, uint32_t cnt, float offset = 0.0f) noexcept;
+    Result stroke(const float* dashPattern, uint32_t cnt) noexcept;
 
     /**
      * @brief Sets the cap style of the stroke in the open sub-paths.
@@ -998,7 +1026,7 @@ public:
      * @param[in] cap The cap style value. The default value is @c StrokeCap::Square.
      *
      */
-    Result strokeCap(StrokeCap cap) noexcept;
+    Result stroke(StrokeCap cap) noexcept;
 
     /**
      * @brief Sets the join style for stroked path segments.
@@ -1008,7 +1036,7 @@ public:
      * @param[in] join The join style value. The default value is @c StrokeJoin::Bevel.
      *
      */
-    Result strokeJoin(StrokeJoin join) noexcept;
+    Result stroke(StrokeJoin join) noexcept;
 
     /**
      * @brief Sets the stroke miterlimit.
@@ -1046,7 +1074,6 @@ public:
      * @param[in] a The alpha channel value in the range [0 ~ 255], where 0 is completely transparent and 255 is opaque. The default value is 0.
      *
      * @note Either a solid color or a gradient fill is applied, depending on what was set as last.
-     * @note ClipPath won't use the fill values. (see: enum class CompositeMethod::ClipPath)
      */
     Result fill(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) noexcept;
 
@@ -1136,7 +1163,7 @@ public:
      * @param[out] a The alpha channel value in the range [0 ~ 255], where 0 is completely transparent and 255 is opaque.
      *
      */
-    Result strokeFill(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a = nullptr) const noexcept;
+    Result strokeColor(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a = nullptr) const noexcept;
 
     /**
      * @brief Gets the pointer to the gradient fill of the stroke.
@@ -1149,13 +1176,10 @@ public:
      * @brief Gets the dash pattern of the stroke.
      *
      * @param[out] dashPattern The pointer to the memory, where the dash pattern array is stored.
-     * @param[out] offset The shift of the starting point within the repeating dash pattern.
      *
      * @return The length of the @p dashPattern array.
-     *
-     * @since 1.0
      */
-    uint32_t strokeDash(const float** dashPattern, float* offset = nullptr) const noexcept;
+    uint32_t strokeDash(const float** dashPattern) const noexcept;
 
     /**
      * @brief Gets the cap style used for stroking the path.
@@ -1179,18 +1203,6 @@ public:
      * @since 0.11
      */
     float strokeMiterlimit() const noexcept;
-
-    /**
-     * @brief Gets the trim of the stroke along the defined path segment.
-     *
-     * @param[out] begin The starting point of the segment to display along the path.
-     * @param[out] end Specifies the end of the segment to display along the path.
-     *
-     * @return @c true if trimming is applied simultaneously to all paths of the shape, @c false otherwise.
-     *
-     * @note Experimental API
-     */
-    bool strokeTrim(float* begin, float* end) const noexcept;
 
     /**
      * @brief Creates a new Shape object.
@@ -1251,6 +1263,11 @@ public:
     Result load(const std::string& path) noexcept;
 
     /**
+     * @deprecated Use load(const char* data, uint32_t size, const std::string& mimeType, bool copy) instead.
+     */
+    TVG_DEPRECATED Result load(const char* data, uint32_t size, bool copy = false) noexcept;
+
+    /**
      * @brief Loads a picture data from a memory block of a given size.
      *
      * ThorVG efficiently caches the loaded data using the specified @p data address as a key
@@ -1260,7 +1277,6 @@ public:
      * @param[in] data A pointer to a memory location where the content of the picture file is stored. A null-terminated string is expected for non-binary data if @p copy is @c false.
      * @param[in] size The size in bytes of the memory occupied by the @p data.
      * @param[in] mimeType Mimetype or extension of data such as "jpg", "jpeg", "lottie", "svg", "svg+xml", "png", etc. In case an empty string or an unknown type is provided, the loaders will be tried one by one.
-     * @param[in] rpath A resource directory path, if the @p data needs to access any external resources.
      * @param[in] copy If @c true the data are copied into the engine local buffer, otherwise they are not.
      *
      * @retval Result::InvalidArguments In case no data are provided or the @p size is zero or less.
@@ -1271,7 +1287,7 @@ public:
      * @note If you are unsure about the MIME type, you can provide an empty value like @c "", and thorvg will attempt to figure it out.
      * @since 0.5
      */
-    Result load(const char* data, uint32_t size, const std::string& mimeType, const std::string& rpath = "", bool copy = false) noexcept;
+    Result load(const char* data, uint32_t size, const std::string& mimeType, bool copy = false) noexcept;
 
     /**
      * @brief Resizes the picture content to the given width and height.
@@ -1309,7 +1325,7 @@ public:
      *
      * @since 0.9
      */
-    Result load(uint32_t* data, uint32_t w, uint32_t h, bool premultiplied, bool copy = false) noexcept;
+    Result load(uint32_t* data, uint32_t w, uint32_t h, bool copy) noexcept;
 
     /**
      * @brief Retrieve a paint object from the Picture scene by its Unique ID.
@@ -1384,6 +1400,8 @@ public:
      */
     Result push(std::unique_ptr<Paint> paint) noexcept;
 
+    TVG_DEPRECATED Result reserve(uint32_t size) noexcept;
+
     /**
      * @brief Returns the list of the paints that currently held by the Scene.
      *
@@ -1391,7 +1409,7 @@ public:
      *
      * @warning Please avoid accessing the paints during Scene update/draw. You can access them after calling Canvas::sync().
      * @see Canvas::sync()
-     * @see Scene::push()
+     * @see Scene::push(std::unique_ptr<Paint> paint)
      * @see Scene::clear()
      *
      * @note Experimental API
@@ -1409,6 +1427,20 @@ public:
      * @since 0.2
      */
     Result clear(bool free = true) noexcept;
+
+    /**
+     * @brief Apply a post-processing effect to the scene.
+     *
+     * This function adds a specified scene effect, such as clearing all effects or applying a Gaussian blur,
+     * to the scene after it has been rendered. Multiple effects can be applied in sequence.
+     *
+     * @param[in] effect The scene effect to apply. Options are defined in the SceneEffect enum.
+     *                   For example, use SceneEffect::GaussianBlur to apply a blur with specific parameters.
+     * @param[in] ... Additional variadic parameters required for certain effects (e.g., sigma and direction for GaussianBlur).
+     *
+     * @note Experimental API
+     */
+    Result push(SceneEffect effect, ...) noexcept;
 
     /**
      * @brief Creates a new Scene object.
@@ -1442,7 +1474,7 @@ public:
  *
  * @brief A class to represent text objects in a graphical context, allowing for rendering and manipulation of unicode text.
  *
- * @note Experimental API
+ * @since 0.15
  */
 class TVG_API Text final : public Paint
 {
@@ -1487,7 +1519,7 @@ public:
      *
      * @see Text::font()
      *
-     * @note Experimental API
+     * @since 0.15
      */
     Result fill(uint8_t r, uint8_t g, uint8_t b) noexcept;
 
@@ -1499,9 +1531,9 @@ public:
      * @param[in] f The unique pointer to the gradient fill.
      *
      * @note Either a solid color or a gradient fill is applied, depending on what was set as last.
-     * @note Experimental API
-     *
      * @see Text::font()
+     *
+     * @since 0.15
      */
     Result fill(std::unique_ptr<Fill> f) noexcept;
 
@@ -1517,9 +1549,9 @@ public:
      * @retval Result::InvalidArguments In case the @p path is invalid.
      * @retval Result::NonSupport When trying to load a file with an unknown extension.
      *
-     * @note Experimental API
-     *
      * @see Text::unload(const std::string& path)
+     *
+     * @since 0.15
      */
     static Result load(const std::string& path) noexcept;
 
@@ -1544,9 +1576,9 @@ public:
      *
      * @note To unload the font data loaded using this API, pass the proper @p name and @c nullptr as @p data.
      * @note If you are unsure about the MIME type, you can provide an empty value like @c "", and thorvg will attempt to figure it out.
-     * @note Experimental API
-     *
      * @see Text::font(const char* name, float size, const char* style)
+     *
+     * @note 0.15
      */
     static Result load(const char* name, const char* data, uint32_t size, const std::string& mimeType = "ttf", bool copy = false) noexcept;
 
@@ -1560,9 +1592,9 @@ public:
      * @retval Result::InsufficientCondition Fails if the loader is not initialized.
      *
      * @note If the font data is currently in use, it will not be immediately unloaded.
-     * @note Experimental API
-     *
      * @see Text::load(const std::string& path)
+     * 
+     * @since 0.15
      */
     static Result unload(const std::string& path) noexcept;
 
@@ -1571,7 +1603,7 @@ public:
      *
      * @return A new Text object.
      *
-     * @note Experimental API
+     * @since 0.15
      */
     static std::unique_ptr<Text> gen() noexcept;
 
@@ -1603,7 +1635,7 @@ public:
     /**
      * @brief Enumeration specifying the methods of combining the 8-bit color channels into 32-bit color.
      */
-    enum Colorspace : uint8_t
+    enum Colorspace
     {
         ABGR8888 = 0,      ///< The channels are joined in the order: alpha, blue, green, red. Colors are alpha-premultiplied. (a << 24 | b << 16 | g << 8 | r)
         ARGB8888,          ///< The channels are joined in the order: alpha, red, green, blue. Colors are alpha-premultiplied. (a << 24 | r << 16 | g << 8 | b)
@@ -1615,7 +1647,7 @@ public:
      * @brief Enumeration specifying the methods of Memory Pool behavior policy.
      * @since 0.4
      */
-    enum MempoolPolicy : uint8_t
+    enum MempoolPolicy
     {
         Default = 0, ///< Default behavior that ThorVG is designed to.
         Shareable,   ///< Memory Pool is shared among the SwCanvases.
@@ -1731,7 +1763,7 @@ public:
  *
  * @warning Please do not use it. This class is not fully supported yet.
  *
- * @note Experimental API
+ * @since 0.15
  */
 class TVG_API WgCanvas final : public Canvas
 {
@@ -1762,7 +1794,7 @@ public:
      *
      * @return A new WgCanvas object.
      *
-     * @note Experimental API
+     * @since 0.15
      */
     static std::unique_ptr<WgCanvas> gen() noexcept;
 
@@ -1786,15 +1818,15 @@ public:
      * You can indicate the number of threads, the count of which is designated @p threads.
      * In the initialization step, TVG will generate/spawn the threads as set by @p threads count.
      *
-     * @param[in] threads The number of additional threads. Zero indicates only the main thread is to be used.
      * @param[in] engine The engine types to initialize. This is relative to the Canvas types, in which it will be used. For multiple backends bitwise operation is allowed.
+     * @param[in] threads The number of additional threads. Zero indicates only the main thread is to be used.
      *
      * @retval Result::NonSupport In case the engine type is not supported on the system.
      *
      * @note The Initializer keeps track of the number of times it was called. Threads count is fixed at the first init() call.
      * @see Initializer::term()
      */
-    static Result init(uint32_t threads, CanvasEngine engine = tvg::CanvasEngine::All) noexcept;
+    static Result init(CanvasEngine engine, uint32_t threads) noexcept;
 
     /**
      * @brief Terminates TVG engines.
@@ -1807,7 +1839,7 @@ public:
      * @note Initializer does own reference counting for multiple calls.
      * @see Initializer::init()
      */
-    static Result term(CanvasEngine engine = tvg::CanvasEngine::All) noexcept;
+    static Result term(CanvasEngine engine) noexcept;
 
     /**
      * @brief Retrieves the version of the TVG engine.
@@ -1818,7 +1850,7 @@ public:
      *
      * @return The version of the engine in the format major.minor.micro, or a @p nullptr in case of an internal error.
      *
-     * @note Experimental API
+     * @since 0.15
      */
     static const char* version(uint32_t* major, uint32_t* minor, uint32_t* micro) noexcept;
 
@@ -1923,6 +1955,7 @@ public:
      * @note Animation allows a range from 0.0 to 1.0. @p end should not be higher than @p begin.
      * @note If a marker has been specified, its range will be disregarded.
      * @see LottieAnimation::segment(const char* marker)
+     *
      * @note Experimental API
      */
     Result segment(float begin, float end) noexcept;
@@ -1992,7 +2025,7 @@ public:
      *
      * @param[in] paint The paint to be saved with all its associated properties.
      * @param[in] path A path to the file, in which the paint data is to be saved.
-     * @param[in] quality The encoded quality level. @c 0 is the minimum, @c 100 is the maximum value(recommended).
+     * @param[in] compress If @c true then compress data if possible.
      *
      * @retval Result::InsufficientCondition If currently saving other resources.
      * @retval Result::NonSupport When trying to save a file with an unknown extension or in an unsupported format.
@@ -2003,7 +2036,7 @@ public:
      *
      * @since 0.5
      */
-    Result save(std::unique_ptr<Paint> paint, const std::string& path, uint32_t quality = 100) noexcept;
+    Result save(std::unique_ptr<Paint> paint, const std::string& path, bool compress = true) noexcept;
 
     /**
      * @brief Export the provided animation data to the specified file path.

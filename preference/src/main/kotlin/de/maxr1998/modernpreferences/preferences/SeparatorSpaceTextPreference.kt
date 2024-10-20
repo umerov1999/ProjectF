@@ -15,7 +15,6 @@ import de.maxr1998.modernpreferences.PreferencesExtra
 import de.maxr1998.modernpreferences.R
 import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
 
-
 class SeparatorSpaceTextPreference(key: String, fragmentManager: FragmentManager) :
     DialogPreference(key, fragmentManager) {
 
@@ -69,8 +68,8 @@ class SeparatorSpaceTextPreference(key: String, fragmentManager: FragmentManager
                 }
                 val tmp: ArrayList<String> = ArrayList()
                 for (i in l.split(' ')) {
-                    if (i.trim { it <= ' ' }.isNotEmpty()) {
-                        tmp.add(i.trim { it <= ' ' })
+                    if (i.trim().isNotEmpty()) {
+                        tmp.add(i.trim())
                     }
                 }
                 var first = true

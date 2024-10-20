@@ -60,7 +60,7 @@ struct Picture::Impl
     ImageLoader* loader = nullptr;
 
     Paint* paint = nullptr;           //vector picture uses
-    Surface* surface = nullptr;       //bitmap picture uses
+    RenderSurface* surface = nullptr; //bitmap picture uses
     RenderData rd = nullptr;          //engine data
     float w = 0, h = 0;
     Picture* picture = nullptr;
@@ -135,19 +135,19 @@ struct Picture::Impl
         return load(loader);
     }
 
-    Result load(const char* data, uint32_t size, const string& mimeType, const string& rpath, bool copy)
+    Result load(const char* data, uint32_t size, const string& mimeType, bool copy)
     {
         if (paint || surface) return Result::InsufficientCondition;
-        auto loader = static_cast<ImageLoader*>(LoaderMgr::loader(data, size, mimeType, rpath, copy));
+        auto loader = static_cast<ImageLoader*>(LoaderMgr::loader(data, size, mimeType, copy));
         if (!loader) return Result::NonSupport;
         return load(loader);
     }
 
-    Result load(uint32_t* data, uint32_t w, uint32_t h, bool premultiplied, bool copy)
+    Result load(uint32_t* data, uint32_t w, uint32_t h, bool copy)
     {
         if (paint || surface) return Result::InsufficientCondition;
 
-        auto loader = static_cast<ImageLoader*>(LoaderMgr::loader(data, w, h, premultiplied, copy));
+        auto loader = static_cast<ImageLoader*>(LoaderMgr::loader(data, w, h, copy));
         if (!loader) return Result::FailedAllocation;
 
         return load(loader);

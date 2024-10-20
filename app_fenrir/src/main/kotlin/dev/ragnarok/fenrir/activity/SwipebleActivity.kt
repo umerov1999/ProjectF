@@ -40,7 +40,6 @@ class SwipebleActivity : MainActivity() {
             intent.putExtra(EXTRA_NO_REQUIRE_PIN, true)
         }
 
-
         fun start(context: Context, intent: Intent) {
             intent.putExtra(EXTRA_NO_REQUIRE_PIN, true)
             context.startActivity(intent)

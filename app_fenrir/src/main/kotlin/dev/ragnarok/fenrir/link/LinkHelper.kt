@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.net.Uri
+import android.os.Build
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService
@@ -81,7 +82,6 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getVideoPreviewPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getVideosPlace
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
@@ -130,7 +130,6 @@ object LinkHelper {
             }
         }
     }
-
 
     @SuppressLint("CheckResult")
     fun openVKLink(context: Context, accountId: Long, link: AbsLink, isMain: Boolean): Boolean {
@@ -426,16 +425,17 @@ object LinkHelper {
     private fun getCustomTabsPackages(context: Context): ArrayList<ResolveInfo> {
         val pm = context.packageManager
         val activityIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com"))
-        val resolvedActivityList = if (Utils.hasTiramisu()) pm.queryIntentActivities(
-            activityIntent,
-            PackageManager.ResolveInfoFlags.of(0)
-        ) else pm.queryIntentActivities(activityIntent, 0)
+        val resolvedActivityList =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) pm.queryIntentActivities(
+                activityIntent,
+                PackageManager.ResolveInfoFlags.of(0)
+            ) else pm.queryIntentActivities(activityIntent, 0)
         val packagesSupportingCustomTabs = ArrayList<ResolveInfo>()
         for (info in resolvedActivityList) {
             val serviceIntent = Intent()
             serviceIntent.action = CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION
             serviceIntent.setPackage(info.activityInfo.packageName)
-            if ((if (Utils.hasTiramisu()) pm.resolveService(
+            if ((if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) pm.resolveService(
                     serviceIntent,
                     PackageManager.ResolveInfoFlags.of(0)
                 ) else pm.resolveService(serviceIntent, 0)) != null
@@ -445,7 +445,6 @@ object LinkHelper {
         }
         return packagesSupportingCustomTabs
     }
-
 
     fun openLinkInBrowser(context: Context, url: String?) {
         val intentBuilder = CustomTabsIntent.Builder()

@@ -29,7 +29,7 @@ class LocalVideosPresenter(savedInstanceState: Bundle?) :
     }
 
     fun fireSearchRequestChanged(q: String?, force: Boolean) {
-        val query = q?.trim { it <= ' ' }
+        val query = q?.trim()
         if (!force && safeEquals(query, this.q)) {
             return
         }

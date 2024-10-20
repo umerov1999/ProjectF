@@ -153,7 +153,7 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
                     return@flow
                 }
                 cache.renameTempFile(res)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 emit(false)
                 return@flow
             }

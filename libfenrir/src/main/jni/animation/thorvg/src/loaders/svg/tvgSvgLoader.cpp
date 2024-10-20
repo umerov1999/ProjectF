@@ -177,6 +177,7 @@ static float _toFloat(const SvgParser* svgParse, const char* str, SvgParserLengt
     else if (strstr(str, "%")) {
         if (type == SvgParserLengthType::Vertical) parsedValue = (parsedValue / 100.0f) * svgParse->global.h;
         else if (type == SvgParserLengthType::Horizontal) parsedValue = (parsedValue / 100.0f) * svgParse->global.w;
+        else if (type == SvgParserLengthType::Diagonal) parsedValue = (sqrtf(powf(svgParse->global.w, 2) + powf(svgParse->global.h, 2)) / sqrtf(2.0f)) * (parsedValue / 100.0f);
         else //if other than it's radius
         {
             float max = svgParse->global.w;
@@ -1070,7 +1071,7 @@ static void _handleStrokeDashOffsetAttr(SvgLoaderData* loader, SvgNode* node, co
 static void _handleStrokeWidthAttr(SvgLoaderData* loader, SvgNode* node, const char* value)
 {
     node->style->stroke.flags = (node->style->stroke.flags | SvgStrokeFlags::Width);
-    node->style->stroke.width = _toFloat(loader->svgParse, value, SvgParserLengthType::Horizontal);
+    node->style->stroke.width = _toFloat(loader->svgParse, value, SvgParserLengthType::Diagonal);
 }
 
 
@@ -1618,7 +1619,7 @@ static constexpr struct
 } circleTags[] = {
     {"cx", SvgParserLengthType::Horizontal, sizeof("cx"), offsetof(SvgCircleNode, cx)},
     {"cy", SvgParserLengthType::Vertical, sizeof("cy"), offsetof(SvgCircleNode, cy)},
-    {"r", SvgParserLengthType::Other, sizeof("r"), offsetof(SvgCircleNode, r)}
+    {"r", SvgParserLengthType::Diagonal, sizeof("r"), offsetof(SvgCircleNode, r)}
 };
 
 
@@ -2187,6 +2188,7 @@ static SvgNode* _createTextNode(SvgLoaderData* loader, SvgNode* parent, const ch
     //TODO: support the def font and size as used in a system?
     loader->svgParse->node->node.text.fontSize = 10.0f;
     loader->svgParse->node->node.text.fontFamily = nullptr;
+    loader->svgParse->node->node.text.text = nullptr;
 
     func(buf, bufLength, _attrParseTextNode, loader);
 
@@ -3404,8 +3406,7 @@ static void _svgLoaderParserXmlOpen(SvgLoaderData* loader, const char* content, 
 static void _svgLoaderParserText(SvgLoaderData* loader, const char* content, unsigned int length)
 {
     auto text = &loader->svgParse->node->node.text;
-    if (text->text) free(text->text);
-    text->text = strDuplicate(content, length);
+    text->text = strAppend(text->text, content, length);
 }
 
 
@@ -3932,7 +3933,7 @@ bool SvgLoader::header()
 }
 
 
-bool SvgLoader::open(const char* data, uint32_t size, TVG_UNUSED const string& rpath, bool copy)
+bool SvgLoader::open(const char* data, uint32_t size, bool copy)
 {
     clear();
 

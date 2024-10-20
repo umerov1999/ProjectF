@@ -407,7 +407,6 @@ object Dto2Entity {
         throw UnsupportedOperationException("Unsupported commentable type: $commentable")
     }
 
-
     fun buildVideoAlbumDbo(dto: VKApiVideoAlbum): VideoAlbumDboEntity {
         return VideoAlbumDboEntity(dto.id, dto.owner_id)
             .setUpdateTime(dto.updated_time)
@@ -416,7 +415,6 @@ object Dto2Entity {
             .setTitle(dto.title)
             .setPrivacy(dto.privacy?.let { mapPrivacy(it) })
     }
-
 
     fun buildTopicDbo(dto: VKApiTopic): TopicDboEntity {
         return TopicDboEntity().set(dto.id, dto.owner_id)
@@ -433,7 +431,6 @@ object Dto2Entity {
             .setPoll(null)
     }
 
-
     fun buildPhotoAlbumDbo(dto: VKApiPhotoAlbum): PhotoAlbumDboEntity {
         return PhotoAlbumDboEntity().set(dto.id, dto.owner_id)
             .setTitle(dto.title)
@@ -449,11 +446,9 @@ object Dto2Entity {
             .setPrivacyComment(dto.privacy_comment?.let { mapPrivacy(it) })
     }
 
-
     fun mapOwners(users: List<VKApiUser>?, communities: List<VKApiCommunity>?): OwnerEntities {
         return OwnerEntities(mapUsers(users), mapCommunities(communities))
     }
-
 
     fun mapCommunities(communities: List<VKApiCommunity>?): List<CommunityEntity> {
         return mapAll(
@@ -463,7 +458,6 @@ object Dto2Entity {
         }
     }
 
-
     fun mapUsers(users: List<VKApiUser>?): List<UserEntity> {
         return mapAll(
             users
@@ -471,7 +465,6 @@ object Dto2Entity {
             mapUser(it)
         }
     }
-
 
     fun mapCommunity(community: VKApiCommunity): CommunityEntity {
         return CommunityEntity(community.id)
@@ -492,7 +485,6 @@ object Dto2Entity {
             .setHasUnseenStories(community.has_unseen_stories)
     }
 
-
     fun mapFavePage(favePage: FavePageResponse): FavePageEntity {
         var id = 0L
         favePage.user.requireNonNull {
@@ -508,7 +500,6 @@ object Dto2Entity {
             .setGroup(favePage.group?.let { mapCommunity(it) })
             .setUser(favePage.user?.let { mapUser(it) })
     }
-
 
     fun mapUser(user: VKApiUser): UserEntity {
         return UserEntity(user.id)
@@ -537,7 +528,6 @@ object Dto2Entity {
             .setBdate(user.bdate)
             .setHasUnseenStories(user.has_unseen_stories)
     }
-
 
     fun mapCommunityDetails(dto: VKApiCommunity): CommunityDetailsEntity {
         val details = CommunityDetailsEntity()
@@ -590,7 +580,6 @@ object Dto2Entity {
         return details
     }
 
-
     fun mapUserDetails(user: VKApiUser): UserDetailsEntity {
         val dbo = UserDetailsEntity()
         try {
@@ -601,7 +590,7 @@ object Dto2Entity {
                     dbo.setPhotoId(IdPairEntity().set(photoId, user.id))
                 }
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         dbo.setStatusAudio(user.status_audio?.let { mapAudio(it) })
         dbo.setClosed(user.is_closed)
@@ -772,7 +761,6 @@ object Dto2Entity {
             .setRegion(dto.region)
     }
 
-
     fun mapNews(news: VKApiNews): NewsDboEntity {
         val entity = NewsDboEntity()
             .setType(news.type)
@@ -816,7 +804,6 @@ object Dto2Entity {
         })
         return entity
     }
-
 
     fun mapComment(
         sourceId: Int,
@@ -872,7 +859,6 @@ object Dto2Entity {
         return o
     }
 
-
     fun mapPeerDialog(
         dto: VKApiConversation,
         contacts: List<VKApiConversation.ContactElement>?
@@ -910,7 +896,6 @@ object Dto2Entity {
         entity.setCurrentKeyboard(mapKeyboard(dto.current_keyboard))
         return entity
     }
-
 
     fun mapDialog(
         dto: VKApiDialog,
@@ -1202,7 +1187,6 @@ object Dto2Entity {
             .setBackground(buildPollBackgroundGradient(dto.background))
     }
 
-
     fun mapPost(dto: VKApiPost): PostDboEntity {
         val dbo = PostDboEntity().set(dto.id, dto.owner_id)
             .setFromId(dto.from_id)
@@ -1252,7 +1236,6 @@ object Dto2Entity {
         return dbo
     }
 
-
     fun mapSticker(sticker: VKApiSticker): StickerDboEntity {
         return StickerDboEntity().setId(sticker.sticker_id)
             .setImages(
@@ -1278,7 +1261,6 @@ object Dto2Entity {
             )
             .setAnimationUrl(sticker.animation_url)
     }
-
 
     fun mapStickerSet(dto: Product): StickerSetEntity {
         return StickerSetEntity(dto.id)
@@ -1349,7 +1331,6 @@ object Dto2Entity {
             .setPreviewPhoto(link.preview_photo)
             .setPhoto(link.photo?.let { mapPhoto(it) })
     }
-
 
     fun mapArticle(article: VKApiArticle): ArticleDboEntity {
         return ArticleDboEntity().set(article.id, article.owner_id)
@@ -1426,7 +1407,6 @@ object Dto2Entity {
         return EventDboEntity().setId(dto.id).setButton_text(dto.button_text).setText(dto.text)
     }
 
-
     fun mapMarket(dto: VKApiMarket): MarketDboEntity {
         return MarketDboEntity().set(dto.id, dto.owner_id)
             .setAccess_key(dto.access_key)
@@ -1476,7 +1456,6 @@ object Dto2Entity {
             .setWasListened(dto.was_listened)
     }
 
-
     fun mapDoc(dto: VKApiDoc): DocumentDboEntity {
         val dbo = DocumentDboEntity().set(dto.id, dto.ownerId)
             .setTitle(dto.title)
@@ -1500,14 +1479,13 @@ object Dto2Entity {
         return dbo
     }
 
-
     fun mapMessage(dto: VKApiMessage): MessageDboEntity {
         val encrypted = analizeMessageBody(dto.text) == MessageType.CRYPTED
         var randomId: Long = 0
         dto.random_id.nonNullNoEmpty {
             try {
                 randomId = it.toLong()
-            } catch (ignored: NumberFormatException) {
+            } catch (_: NumberFormatException) {
             }
         }
         val entity = MessageDboEntity().set(dto.id, dto.peer_id, dto.from_id)
@@ -1650,7 +1628,6 @@ object Dto2Entity {
             .setThumb96(dto.thumb_96)
             .setThumb256(dto.thumb_256)
     }
-
 
     fun mapPhoto(dto: VKApiPhoto): PhotoDboEntity {
         return PhotoDboEntity().set(dto.id, dto.owner_id)

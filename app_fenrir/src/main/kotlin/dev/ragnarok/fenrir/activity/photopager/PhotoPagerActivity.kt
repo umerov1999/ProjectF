@@ -17,7 +17,6 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -77,7 +76,7 @@ import dev.ragnarok.fenrir.settings.CurrentTheme.getStatusBarNonColored
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCream
+import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
@@ -287,18 +286,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                         var tmp = 1f - percent
                         tmp *= 4
                         tmp = Utils.clamp(1f - tmp, 0f, 1f)
-                        if (Utils.hasOreo()) {
-                            mContentRoot?.setBackgroundColor(Color.argb(tmp, 0f, 0f, 0f))
-                        } else {
-                            mContentRoot?.setBackgroundColor(
-                                Color.argb(
-                                    (tmp * 255).toInt(),
-                                    0,
-                                    0,
-                                    0
-                                )
-                            )
-                        }
+                        mContentRoot?.setBackgroundColor(Color.argb(tmp, 0f, 0f, 0f))
                         mButtonsRoot?.alpha = tmp
                         mToolbar?.alpha = tmp
                         mPreviewsRecycler?.alpha = tmp
@@ -829,7 +817,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val w = window
-        if (!hasVanillaIceCream()) {
+        if (!hasVanillaIceCreamTarget()) {
             w.statusBarColor =
                 if (colored) getStatusBarColor(this) else getStatusBarNonColored(
                     this
@@ -840,11 +828,6 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons
-
-        if (!Utils.hasMarshmallow()) {
-            w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        }
     }
 
     override fun onResume() {

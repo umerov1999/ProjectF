@@ -29,7 +29,7 @@ internal class HandlerDispatcher internal constructor(
     @get:JvmName("-service") val service: ExecutorService,
     mainThreadHandler: Handler,
     cache: PlatformLruCache
-) : BaseDispatcher(context, mainThreadHandler, cache) {
+) : BaseDispatcher(context, cache) {
 
     private val dispatcherThread: DispatcherThread
     private val handler: Handler

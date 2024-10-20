@@ -117,12 +117,10 @@ object PlaceFactory {
             .withLongExtra(Extra.ACCOUNT_ID, accountId)
     }
 
-
     fun getRequestExecutorPlace(accountId: Long): Place {
         return Place(Place.REQUEST_EXECUTOR)
             .withLongExtra(Extra.ACCOUNT_ID, accountId)
     }
-
 
     fun getCommunityManagerEditPlace(accountId: Long, groupId: Long, manager: Manager?): Place {
         return Place(Place.COMMUNITY_MANAGER_EDIT)
@@ -130,7 +128,6 @@ object PlaceFactory {
             .withLongExtra(Extra.GROUP_ID, groupId)
             .withParcelableExtra(Extra.MANAGER, manager)
     }
-
 
     fun getCommunityManagerAddPlace(
         accountId: Long,
@@ -144,14 +141,12 @@ object PlaceFactory {
         return place
     }
 
-
     fun getTmpSourceGalleryPlace(accountId: Long, source: TmpSource, index: Int): Place {
         return Place(Place.VK_PHOTO_TMP_SOURCE)
             .withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withIntExtra(Extra.INDEX, index)
             .withParcelableExtra(Extra.SOURCE, source)
     }
-
 
     fun getTmpSourceGalleryPlace(accountId: Long, ptr: Long, index: Int): Place {
         Utils.registerParcelNative(ptr)
@@ -161,7 +156,6 @@ object PlaceFactory {
             .withLongExtra(Extra.SOURCE, ptr)
     }
 
-
     fun getCommunityAddBanPlace(accountId: Long, groupId: Long, users: ArrayList<User>?): Place {
         val place = Place(Place.COMMUNITY_ADD_BAN)
             .withLongExtra(Extra.ACCOUNT_ID, accountId)
@@ -170,14 +164,12 @@ object PlaceFactory {
         return place
     }
 
-
     fun getCommunityBanEditPlace(accountId: Long, groupId: Long, banned: Banned?): Place {
         return Place(Place.COMMUNITY_BAN_EDIT)
             .withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withLongExtra(Extra.GROUP_ID, groupId)
             .withParcelableExtra(Extra.BANNED, banned)
     }
-
 
     fun getCommunityControlPlace(
         accountId: Long,
@@ -190,13 +182,11 @@ object PlaceFactory {
             .withParcelableExtra(Extra.OWNER, community)
     }
 
-
     fun getShowCommunityInfoPlace(accountId: Long, community: Community?): Place {
         return Place(Place.COMMUNITY_INFO)
             .withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withParcelableExtra(Extra.OWNER, community)
     }
-
 
     fun getShowCommunityLinksInfoPlace(accountId: Long, community: Community?): Place {
         return Place(Place.COMMUNITY_INFO_LINKS)
@@ -208,7 +198,6 @@ object PlaceFactory {
         return Place(Place.NEWSFEED_COMMENTS)
             .withLongExtra(Extra.ACCOUNT_ID, accountId)
     }
-
 
     fun getSingleTabSearchPlace(
         accountId: Long,
@@ -228,7 +217,6 @@ object PlaceFactory {
             .withParcelableExtra(Extra.ALBUM, album)
     }
 
-
     fun getCommentCreatePlace(
         accountId: Long,
         commentId: Int,
@@ -241,7 +229,6 @@ object PlaceFactory {
             .withLongExtra(Extra.OWNER_ID, sourceOwnerId)
             .withStringExtra(Extra.BODY, body)
     }
-
 
     fun getPhotoAlbumGalleryPlace(
         accountId: Long,
@@ -266,7 +253,6 @@ object PlaceFactory {
             )
     }
 
-
     fun getPhotoAlbumGalleryPlace(
         accountId: Long,
         albumId: Int,
@@ -289,7 +275,6 @@ object PlaceFactory {
                 )
             )
     }
-
 
     fun getPhotoAlbumGalleryPlace(
         accountId: Long,
@@ -369,13 +354,11 @@ object PlaceFactory {
         return Place(Place.POLL).setArguments(PollFragment.buildArgs(accountId, poll))
     }
 
-
     fun getGifPagerPlace(accountId: Long, documents: ArrayList<Document>, index: Int): Place {
         val place = Place(Place.GIF_PAGER)
         place.setArguments(GifPagerActivity.buildArgs(accountId, documents, index))
         return place
     }
-
 
     fun getWallAttachmentsPlace(accountId: Long, ownerId: Long, type: String?): Place {
         return Place(Place.WALL_ATTACHMENTS)
@@ -394,7 +377,6 @@ object PlaceFactory {
             .setArguments(MessagesLookFragment.buildArgs(aid, peerId, focusMessageId, message))
     }
 
-
     fun getWallSearchCommentsAttachmentsPlace(
         accountId: Long,
         ownerId: Long,
@@ -409,7 +391,6 @@ object PlaceFactory {
                 )
             )
     }
-
 
     fun getUnreadMessagesPlace(
         aid: Long,
@@ -432,12 +413,10 @@ object PlaceFactory {
             )
     }
 
-
     fun getEditPhotoAlbumPlace(aid: Long, album: PhotoAlbum, editor: PhotoAlbumEditor): Place {
         return Place(Place.EDIT_PHOTO_ALBUM)
             .setArguments(CreatePhotoAlbumFragment.buildArgsForEdit(aid, album, editor))
     }
-
 
     fun getCreatePhotoAlbumPlace(aid: Long, ownerId: Long): Place {
         return Place(Place.CREATE_PHOTO_ALBUM)
@@ -464,13 +443,11 @@ object PlaceFactory {
             .withBoolExtra(Extra.SERVICE, isService)
     }
 
-
     fun getPhotoAllCommentsPlace(accountId: Long, ownerId: Long): Place {
         return Place(Place.PHOTO_ALL_COMMENT)
             .withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withLongExtra(Extra.OWNER_ID, ownerId)
     }
-
 
     fun getMarketViewPlace(accountId: Long, market: Market): Place {
         return Place(Place.MARKET_VIEW).setArguments(
@@ -480,10 +457,6 @@ object PlaceFactory {
             )
         )
     }
-
-    val notificationSettingsPlace: Place
-        get() = Place(Place.NOTIFICATION_SETTINGS)
-
 
     val securitySettingsPlace: Place
         get() = Place(Place.SECURITY)
@@ -500,7 +473,6 @@ object PlaceFactory {
         place.prepareArguments().putBoolean(VideoPlayerActivity.EXTRA_LOCAL, isLocal)
         return place
     }
-
 
     fun getResolveDomainPlace(aid: Long, url: String?, domain: String?): Place {
         return Place(Place.RESOLVE_DOMAIN).setArguments(
@@ -539,7 +511,6 @@ object PlaceFactory {
             .withStringExtra(Extra.SUBTITLE, subtitle)
     }
 
-
     fun getChatPlace(accountId: Long, messagesOwnerId: Long, peer: Peer): Place {
         return Place(Place.CHAT)
             .withLongExtra(Extra.ACCOUNT_ID, accountId)
@@ -547,12 +518,10 @@ object PlaceFactory {
             .withParcelableExtra(Extra.PEER, peer)
     }
 
-
     fun getLocalServerPhotosPlace(accountId: Long): Place {
         return Place(Place.LOCAL_SERVER_PHOTO)
             .withLongExtra(Extra.ACCOUNT_ID, accountId)
     }
-
 
     fun getVKPhotosAlbumPlace(
         accountId: Long,
@@ -622,7 +591,6 @@ object PlaceFactory {
         return Place(Place.SHORT_LINKS).withLongExtra(Extra.ACCOUNT_ID, accountId)
     }
 
-
     fun getImportantMessages(accountId: Long): Place {
         return Place(Place.IMPORTANT_MESSAGES).withLongExtra(Extra.ACCOUNT_ID, accountId)
     }
@@ -637,12 +605,10 @@ object PlaceFactory {
         )
     }
 
-
     fun getMentionsPlace(accountId: Long, ownerId: Long): Place {
         return Place(Place.MENTIONS).withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withLongExtra(Extra.OWNER_ID, ownerId)
     }
-
 
     fun getAudiosInAlbumPlace(
         accountId: Long,
@@ -660,14 +626,12 @@ object PlaceFactory {
         )
     }
 
-
     fun SearchByAudioPlace(accountId: Long, audio_ownerId: Long, audio_id: Int): Place {
         return Place(Place.SEARCH_BY_AUDIO).withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withLongExtra(
                 Extra.OWNER_ID, audio_ownerId
             ).withIntExtra(Extra.ID, audio_id)
     }
-
 
     fun getPlayerPlace(accountId: Long): Place {
         return Place(Place.PLAYER).setArguments(AudioPlayerFragment.buildArgs(accountId))
@@ -683,7 +647,6 @@ object PlaceFactory {
         )
     }
 
-
     fun getVideoAlbumPlace(
         accountId: Long,
         ownerId: Long,
@@ -694,7 +657,6 @@ object PlaceFactory {
         return Place(Place.VIDEO_ALBUM)
             .setArguments(VideosFragment.buildArgs(accountId, ownerId, albumId, action, albumTitle))
     }
-
 
     fun getVideoPreviewPlace(accountId: Long, video: Video): Place {
         return Place(Place.VIDEO_PREVIEW)
@@ -708,7 +670,6 @@ object PlaceFactory {
                 )
             )
     }
-
 
     fun getHistoryVideoPreviewPlace(accountId: Long, stories: ArrayList<Story>, index: Int): Place {
         return Place(Place.STORY_PLAYER)
@@ -780,7 +741,6 @@ object PlaceFactory {
             .setArguments(FriendsTabsFragment.buildArgs(accountId, userId, tab, counters))
     }
 
-
     fun getChatMembersPlace(accountId: Long, chatId: Long): Place {
         return Place(Place.CHAT_MEMBERS).setArguments(
             ChatMembersFragment.buildArgs(
@@ -799,7 +759,6 @@ object PlaceFactory {
         return Place(Place.WALL).setArguments(AbsWallFragment.buildArgs(accountId, ownerId, owner))
     }
 
-
     fun getTopicsPlace(accountId: Long, ownerId: Long): Place {
         return Place(Place.TOPICS).setArguments(TopicsFragment.buildArgs(accountId, ownerId))
     }
@@ -816,7 +775,6 @@ object PlaceFactory {
         )
     }
 
-
     fun getGroupChatsPlace(accountId: Long, groupId: Long): Place {
         return Place(Place.GROUP_CHATS).setArguments(
             GroupChatsFragment.buildArgs(
@@ -825,7 +783,6 @@ object PlaceFactory {
             )
         )
     }
-
 
     fun getCreatePostPlace(
         accountId: Long, ownerId: Long, @EditingPostType editingType: Int,
@@ -851,7 +808,6 @@ object PlaceFactory {
             )
     }
 
-
     fun getForwardMessagesPlace(accountId: Long, messages: ArrayList<Message>): Place {
         return Place(Place.FORWARD_MESSAGES).setArguments(
             FwdsFragment.buildArgs(
@@ -860,7 +816,6 @@ object PlaceFactory {
             )
         )
     }
-
 
     fun getEditPostPlace(accountId: Long, post: Post, attrs: WallEditorAttrs): Place {
         return Place(Place.EDIT_POST)
@@ -921,7 +876,6 @@ object PlaceFactory {
             )
     }
 
-
     fun getDocPreviewPlace(
         accountId: Long,
         docId: Int,
@@ -942,7 +896,6 @@ object PlaceFactory {
         return place
     }
 
-
     fun getDocPreviewPlace(accountId: Long, document: Document): Place {
         return getDocPreviewPlace(
             accountId,
@@ -952,7 +905,6 @@ object PlaceFactory {
             document
         )
     }
-
 
     fun getConversationAttachmentsPlace(accountId: Long, peerId: Long, type: String?): Place {
         return Place(Place.CONVERSATION_ATTACHMENTS)
@@ -985,7 +937,6 @@ object PlaceFactory {
                 )
             )
     }
-
 
     fun getArtistPlace(accountId: Long, id: String?): Place {
         return if (Settings.get().main().isAudio_catalog_v2) getCatalogV2AudioCatalogPlace(

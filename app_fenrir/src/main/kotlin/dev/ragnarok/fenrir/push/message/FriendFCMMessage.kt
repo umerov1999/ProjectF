@@ -17,11 +17,9 @@ import dev.ragnarok.fenrir.longpoll.NotificationHelper
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.push.NotificationScheduler.INSTANCE
-import dev.ragnarok.fenrir.push.NotificationUtils.configOtherPushNotification
 import dev.ragnarok.fenrir.push.OwnerInfo.Companion.getRx
 import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.AppPerms
-import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 
@@ -34,12 +32,6 @@ class FriendFCMMessage {
 
     @SuppressLint("CheckResult")
     fun notify(context: Context, accountId: Long) {
-        if (!get()
-                .notifications()
-                .isNewFollowerNotifEnabled
-        ) {
-            return
-        }
         val app = context.applicationContext
         getRx(app, accountId, from_id)
             .fromScopeToMain(INSTANCE) { ownerInfo ->
@@ -53,9 +45,7 @@ class FriendFCMMessage {
 
     private fun notifyImpl(context: Context, user: User, bitmap: Bitmap?) {
         val nManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        if (hasOreo()) {
-            nManager.createNotificationChannel(getFriendRequestsChannel(context))
-        }
+        nManager.createNotificationChannel(getFriendRequestsChannel(context))
         val builder = NotificationCompat.Builder(context, friendRequestsChannelId)
             .setSmallIcon(R.drawable.friends)
             .setLargeIcon(bitmap)
@@ -78,7 +68,6 @@ class FriendFCMMessage {
         )
         builder.setContentIntent(contentIntent)
         val notification = builder.build()
-        configOtherPushNotification(notification)
         if (AppPerms.hasNotificationPermissionSimple(context)) {
             nManager.notify(
                 from_id.toString(),

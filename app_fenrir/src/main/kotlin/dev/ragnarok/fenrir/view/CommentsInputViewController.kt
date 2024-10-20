@@ -14,6 +14,7 @@ import com.google.android.material.textfield.TextInputEditText
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.Companion.input
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnEmojiconBackspaceClickedListener
@@ -21,6 +22,7 @@ import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnEmojiconClickedListener
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnSoftKeyboardOpenCloseListener
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnStickerClickedListener
 import dev.ragnarok.fenrir.view.emoji.section.Emojicon
+import kotlin.String
 
 class CommentsInputViewController(
     activity: Activity,
@@ -135,7 +137,7 @@ class CommentsInputViewController(
     }
 
     fun setAttachmentsCount(count: Int) {
-        tvAttCount.text = count.toString()
+        tvAttCount.text = String.format(Utils.appLocale, "%d", count)
         tvAttCount.visibility = if (count > 0) View.VISIBLE else View.GONE
         tvAttCount.setTextSize(TypedValue.COMPLEX_UNIT_DIP, if (count > 9) 10f else 12.toFloat())
         val color = if (count > 0) mIconColorActive else mIconColorInactive

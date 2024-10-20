@@ -24,6 +24,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -206,7 +207,7 @@ public final class HighLevelEncoder {
       }
     }
     // We are left with a set of states.  Find the shortest one.
-    State minState = Collections.min(states, (a, b) -> a.getBitCount() - b.getBitCount());
+    State minState = Collections.min(states, Comparator.comparingInt(State::getBitCount));
     // Convert it to a bit array, and return.
     return minState.toBitArray(text);
   }

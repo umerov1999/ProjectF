@@ -31,6 +31,7 @@ import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnMyStickerClickedListener
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnSoftKeyboardOpenCloseListener
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnStickerClickedListener
 import dev.ragnarok.fenrir.view.emoji.section.Emojicon
+import kotlin.String
 
 class InputViewController(
     activity: Activity,
@@ -223,7 +224,7 @@ class InputViewController(
     private val text: String
         get() = mInputField.text.toString()
     private val trimmedText: String
-        get() = text.trim { it <= ' ' }
+        get() = text.trim()
 
     fun setTextQuietly(text: String?) {
         mInputField.removeTextChangedListener(mTextWatcher)
@@ -250,7 +251,7 @@ class InputViewController(
     }
 
     fun setAttachmentsCount(count: Int) {
-        tvAttCount.text = count.toString()
+        tvAttCount.text = String.format(Utils.appLocale, "%d", count)
         tvAttCount.visibility = if (count > 0) View.VISIBLE else View.GONE
         tvAttCount.setTextSize(TypedValue.COMPLEX_UNIT_DIP, if (count > 9) 10f else 12.toFloat())
         val color = if (count > 0) mIconColorActive else mIconColorInactive
@@ -342,10 +343,8 @@ class InputViewController(
         mButtonSend.drawable.setTint(if (active) mIconColorActive else mIconColorInactive)
     }
 
-    fun setupRecordPauseButton(visible: Boolean, isRecording: Boolean) {
-        mRecordResumePause.visibility =
-            if (visible) View.VISIBLE else View.INVISIBLE
-        mRecordResumePause.setImageResource(if (visible) if (isRecording) R.drawable.pause else R.drawable.play else R.drawable.pause_disabled)
+    fun setupRecordPauseButton(isRecording: Boolean) {
+        mRecordResumePause.setImageResource(if (isRecording) R.drawable.pause else R.drawable.play)
     }
 
     fun switchModeToEditing(canSave: Boolean) {

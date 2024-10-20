@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.30.5 FATAL_ERROR)
 project(fenrir_jni C CXX ASM)
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
@@ -41,6 +41,7 @@ add_library(thorvg STATIC
         animation/thorvg/src/renderer/sw_engine/tvgSwImage.cpp
         animation/thorvg/src/renderer/sw_engine/tvgSwMath.cpp
         animation/thorvg/src/renderer/sw_engine/tvgSwMemPool.cpp
+        animation/thorvg/src/renderer/sw_engine/tvgSwPostEffect.cpp
         animation/thorvg/src/renderer/sw_engine/tvgSwRaster.cpp
         animation/thorvg/src/renderer/sw_engine/tvgSwRenderer.cpp
         animation/thorvg/src/renderer/sw_engine/tvgSwRle.cpp
@@ -75,7 +76,7 @@ add_library(thorvg STATIC
         animation/thorvg/src/common/tvgStr.cpp)
 
 target_compile_options(thorvg PRIVATE
-        -DTVG_STATIC=1 -fno-exceptions -ffast-math ${OPTIMIZE_NORMAL} -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -Woverloaded-virtual -Wno-unused-parameter ${SYM_VISIBILITY})
+        -DTVG_STATIC=1 -fno-exceptions -ffast-math ${OPTIMIZE_NORMAL} -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -Woverloaded-virtual -Wno-unused-parameter -Wno-nan-infinity-disabled ${SYM_VISIBILITY})
 target_include_directories(thorvg PRIVATE
         animation/thorvg/inc
         animation/thorvg/src/renderer
@@ -118,7 +119,7 @@ add_library(rlottie STATIC
         animation/rlottie/src/vector/vrect.cpp
         animation/rlottie/src/vector/vrle.cpp)
 target_compile_options(rlottie PRIVATE
-        -fno-exceptions -ffast-math ${OPTIMIZE_NORMAL} -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -Woverloaded-virtual -Wno-unused-parameter ${SYM_VISIBILITY})
+        -fno-exceptions -ffast-math ${OPTIMIZE_NORMAL} -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -Woverloaded-virtual -Wno-unused-parameter -Wno-nan-infinity-disabled ${SYM_VISIBILITY})
 target_include_directories(rlottie PRIVATE
         animation/rlottie/inc
         animation/rlottie/src/vector
@@ -180,7 +181,7 @@ add_library(libyuv STATIC
 target_compile_options(libyuv PRIVATE -ffast-math ${OPTIMIZE_NORMAL} -funroll-loops -fno-strict-aliasing -fno-math-errno ${SYM_VISIBILITY})
 target_include_directories(libyuv PRIVATE animation/libyuv/include)
 if (${ANDROID_ABI} STREQUAL "arm64-v8a")
-    target_compile_options(libyuv PRIVATE -march=armv8-a+dotprod+i8mm -DLIBYUV_DISABLE_SVE)
+    target_compile_options(libyuv PRIVATE -march=armv8-a+dotprod+i8mm -DLIBYUV_DISABLE_SVE -DLIBYUV_DISABLE_SME)
 endif ()
 
 add_library(opus STATIC

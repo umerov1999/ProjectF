@@ -8,11 +8,9 @@
 #include <filesystem>
 #include "fenrir_native.h"
 
-using namespace std;
-namespace fs = std::filesystem;
-
-static void listDirRecursive(JNIEnv *env, const string &name, jobject listener, int64_t pointer) {
-    for (const auto &entry: fs::directory_iterator(name)) {
+static void
+listDirRecursive(JNIEnv *env, const std::string &name, jobject listener, int64_t pointer) {
+    for (const auto &entry: std::filesystem::directory_iterator(name)) {
         if (entry.path().filename().string() == "." || entry.path().filename().string() == "..")
             continue;
         if (entry.is_directory()) {
@@ -27,7 +25,7 @@ static void listDirRecursive(JNIEnv *env, const string &name, jobject listener, 
                                         env->NewStringUTF(entry.path().string().c_str()));
                 }
             } else if (pointer != 0) {
-                auto *dt = (list<string> *) (intptr_t) pointer;
+                auto *dt = (std::list<std::string> *) (intptr_t) pointer;
                 dt->push_back(entry.path().string());
             }
         }
@@ -41,7 +39,7 @@ Java_dev_ragnarok_fenrir_module_FileUtils_listDirRecursiveNative(JNIEnv *env, jo
     if (!dirString) {
         return;
     }
-    string v = dirString;
+    std::string v = dirString;
     env->ReleaseStringUTFChars(dir, dirString);
     listDirRecursive(env, v, listener, 0);
 }
@@ -54,12 +52,12 @@ Java_dev_ragnarok_fenrir_module_FileUtils_listDirRecursiveNativePointer(JNIEnv *
     if (!dirString) {
         return;
     }
-    string v = dirString;
+    std::string v = dirString;
     env->ReleaseStringUTFChars(dir, dirString);
     listDirRecursive(env, v, nullptr, pointer);
 }
 
 extern "C" JNIEXPORT jint
-Java_dev_ragnarok_fenrir_module_FileUtils_getThreadsCountNative(JNIEnv *env, jobject) {
-    return std::thread::hardware_concurrency();
+Java_dev_ragnarok_fenrir_module_FileUtils_getThreadsCountNative(JNIEnv *, jobject) {
+    return (jint) std::thread::hardware_concurrency();
 }

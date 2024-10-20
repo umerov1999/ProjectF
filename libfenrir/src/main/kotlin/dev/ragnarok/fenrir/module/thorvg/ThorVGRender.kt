@@ -47,12 +47,12 @@ object ThorVGRender {
                 return null
             }
             res
-        } catch (e: Throwable) {
+        } catch (_: Throwable) {
             return null
         } finally {
             try {
                 inputStream?.close()
-            } catch (ignore: Throwable) {
+            } catch (_: Throwable) {
             }
         }
     }

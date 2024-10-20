@@ -20,7 +20,6 @@ import dev.ragnarok.filegallery.model.tags.TagOwner
 import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.toColor
 
-
 class TagOwnerAdapter(private var data: List<TagOwner>, private val context: Context) :
     RecyclerView.Adapter<TagOwnerAdapter.Holder>() {
     private var recyclerView: RecyclerView? = null
@@ -138,7 +137,7 @@ class TagOwnerAdapter(private var data: List<TagOwner>, private val context: Con
         if (item.name.nonNullNoEmpty()) {
             var name: String = item.name ?: ""
             if (name.length > 2) name = name.substring(0, 2)
-            name = name.trim { it <= ' ' }
+            name = name.trim()
             holder.tvBackgroundText.text = name
         } else {
             holder.tvBackgroundText.visibility = View.GONE

@@ -14,8 +14,8 @@ class ErrorIgnoreDrawerLayout : DrawerLayout {
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
         try {
             return super.onInterceptTouchEvent(ev)
-        } catch (ignored: IllegalArgumentException) {
-        } catch (ignored: ArrayIndexOutOfBoundsException) {
+        } catch (_: IllegalArgumentException) {
+        } catch (_: ArrayIndexOutOfBoundsException) {
         }
         return false
     }

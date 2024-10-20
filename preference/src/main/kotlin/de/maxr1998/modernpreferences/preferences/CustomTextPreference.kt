@@ -17,7 +17,6 @@ import de.maxr1998.modernpreferences.PreferencesExtra
 import de.maxr1998.modernpreferences.R
 import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
 
-
 class CustomTextPreference(key: String, val fragmentManager: FragmentManager) :
     Preference(key) {
 

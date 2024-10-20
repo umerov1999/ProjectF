@@ -37,7 +37,6 @@ internal fun <T> JsonIterator(
     DecodeSequenceMode.AUTO_DETECT -> error("AbstractJsonLexer.determineFormat must be called beforehand.")
 }
 
-
 private fun AbstractJsonLexer.determineFormat(suggested: DecodeSequenceMode): DecodeSequenceMode =
     when (suggested) {
         DecodeSequenceMode.WHITESPACE_SEPARATED ->

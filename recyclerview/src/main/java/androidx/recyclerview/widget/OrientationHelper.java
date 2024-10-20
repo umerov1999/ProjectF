@@ -238,13 +238,11 @@ public abstract class OrientationHelper {
      */
     public static OrientationHelper createOrientationHelper(
             RecyclerView.LayoutManager layoutManager, @RecyclerView.Orientation int orientation) {
-        switch (orientation) {
-            case HORIZONTAL:
-                return createHorizontalHelper(layoutManager);
-            case VERTICAL:
-                return createVerticalHelper(layoutManager);
-        }
-        throw new IllegalArgumentException("invalid orientation");
+        return switch (orientation) {
+            case HORIZONTAL -> createHorizontalHelper(layoutManager);
+            case VERTICAL -> createVerticalHelper(layoutManager);
+            default -> throw new IllegalArgumentException("invalid orientation");
+        };
     }
 
     /**

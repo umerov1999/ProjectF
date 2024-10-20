@@ -15,7 +15,6 @@ import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-
 class PollGradientDrawable(val pollBackground: Poll.PollBackground) :
     Drawable() {
     private val DEFAULT_RADIUS = 26f

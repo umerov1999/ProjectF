@@ -11,6 +11,8 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.RecyclerBindableAdapter
 import dev.ragnarok.fenrir.model.Poll
 import dev.ragnarok.fenrir.settings.CurrentTheme
+import dev.ragnarok.fenrir.util.Utils
+import kotlin.String
 
 class PollAnswersAdapter(private val context: Context, items: MutableList<Poll.Answer>) :
     RecyclerBindableAdapter<Poll.Answer, PollAnswersAdapter.ViewHolder>(items) {
@@ -22,7 +24,7 @@ class PollAnswersAdapter(private val context: Context, items: MutableList<Poll.A
         val answer = getItem(position)
         viewHolder.tvTitle.text = answer.text
         viewHolder.rbButton.text = answer.text
-        viewHolder.tvCount.text = answer.voteCount.toString()
+        viewHolder.tvCount.text = String.format(Utils.appLocale, "%d", answer.voteCount)
         viewHolder.pbRate.progress = answer.rate.toInt()
         viewHolder.pbRate.progressTintList = ColorStateList.valueOf(
             CurrentTheme.getColorPrimary(

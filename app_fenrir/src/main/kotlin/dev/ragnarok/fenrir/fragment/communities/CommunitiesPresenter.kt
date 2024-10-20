@@ -346,7 +346,7 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
             if (filter.trimmedIsNullOrEmpty()) {
                 return true
             }
-            val lower = filter.lowercase(Locale.getDefault()).trim { it <= ' ' }
+            val lower = filter.lowercase(Locale.getDefault()).trim()
             community.fullName.nonNullNoEmpty {
                 val lowername = it.lowercase(Locale.getDefault())
                 if (lowername.contains(lower)) {
@@ -357,7 +357,7 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
                     if (t != null && lowername.contains(t)) {
                         return true
                     }
-                } catch (ignored: Exception) {
+                } catch (_: Exception) {
                 }
                 try {
                     val t = lat2cyr(lower)
@@ -365,7 +365,7 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
                     if (t != null && lowername.contains(t)) {
                         return true
                     }
-                } catch (ignored: Exception) {
+                } catch (_: Exception) {
                 }
             }
             return community.domain.nonNullNoEmpty() && community.domain?.lowercase(Locale.getDefault())

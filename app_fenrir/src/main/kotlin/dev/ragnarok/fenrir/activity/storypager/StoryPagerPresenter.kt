@@ -110,7 +110,7 @@ class StoryPagerPresenter(
         }
         try {
             mStoryPlayer?.play()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             view?.showError(R.string.unable_to_play_file)
         }
     }

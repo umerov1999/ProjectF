@@ -40,8 +40,8 @@ class RequestExecutePresenter(accountId: Long, savedInstanceState: Bundle?) :
     private var trimmedResponseBody: String? = null
     private var loadingNow = false
     private fun executeRequest() {
-        val trimmedMethod = if (method.nonNullNoEmpty()) method?.trim { it <= ' ' } else null
-        val trimmedBody = if (body.nonNullNoEmpty()) body?.trim { it <= ' ' } else null
+        val trimmedMethod = if (method.nonNullNoEmpty()) method?.trim() else null
+        val trimmedBody = if (body.nonNullNoEmpty()) body?.trim() else null
         if (trimmedMethod.isNullOrEmpty()) {
             showError(Exception("Method can't be empty"))
             return
@@ -52,8 +52,8 @@ class RequestExecutePresenter(accountId: Long, savedInstanceState: Bundle?) :
                 val lines = trimmedBody.split(Regex("\\r?\\n")).toTypedArray()
                 for (line in lines) {
                     val parts = line.split(Regex("=>")).toTypedArray()
-                    val name = parts[0].lowercase(Locale.getDefault()).trim { it <= ' ' }
-                    var value = parts[1].trim { it <= ' ' }
+                    val name = parts[0].lowercase(Locale.getDefault()).trim()
+                    var value = parts[1].trim()
                     value = value.replace("\"".toRegex(), "")
                     if ((name == "user_id" || name == "peer_id" || name == "peer_ids" || name == "owner_id") && (value.equals(
                             "my",

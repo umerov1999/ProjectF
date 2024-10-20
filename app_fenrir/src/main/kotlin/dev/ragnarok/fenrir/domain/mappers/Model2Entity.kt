@@ -298,7 +298,6 @@ object Model2Entity {
         return entities
     }
 
-
     fun buildDboAttachments(models: List<AbsModel>): List<DboEntity> {
         val entities: MutableList<DboEntity> = ArrayList(models.size)
         for (model in models) {
@@ -596,7 +595,6 @@ object Model2Entity {
             .setWidth(dbo.width)
             .setUrl(dbo.url)
     }
-
 
     fun buildPostDbo(post: Post): PostDboEntity {
         val dbo = PostDboEntity().set(post.vkid, post.ownerId)

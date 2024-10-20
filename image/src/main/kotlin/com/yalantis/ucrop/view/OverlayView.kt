@@ -7,8 +7,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
-import android.graphics.Region
-import android.os.Build
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -378,17 +376,9 @@ class OverlayView @JvmOverloads constructor(
     private fun drawDimmedLayer(canvas: Canvas) {
         canvas.save()
         if (mCircleDimmedLayer) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                canvas.clipOutPath(mCircularPath)
-            } else {
-                canvas.clipPath(mCircularPath, Region.Op.DIFFERENCE)
-            }
+            canvas.clipOutPath(mCircularPath)
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                canvas.clipOutRect(cropViewRect)
-            } else {
-                canvas.clipRect(cropViewRect, Region.Op.DIFFERENCE)
-            }
+            canvas.clipOutRect(cropViewRect)
         }
         canvas.drawColor(mDimmedColor)
         canvas.restore()
@@ -443,21 +433,13 @@ class OverlayView @JvmOverloads constructor(
                 mCropRectCornerTouchAreaLineLength.toFloat(),
                 -mCropRectCornerTouchAreaLineLength.toFloat()
             )
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                canvas.clipOutRect(mTempRect)
-            } else {
-                canvas.clipRect(mTempRect, Region.Op.DIFFERENCE)
-            }
+            canvas.clipOutRect(mTempRect)
             mTempRect.set(cropViewRect)
             mTempRect.inset(
                 -mCropRectCornerTouchAreaLineLength.toFloat(),
                 mCropRectCornerTouchAreaLineLength.toFloat()
             )
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                canvas.clipOutRect(mTempRect)
-            } else {
-                canvas.clipRect(mTempRect, Region.Op.DIFFERENCE)
-            }
+            canvas.clipOutRect(mTempRect)
             canvas.drawRect(cropViewRect, mCropFrameCornersPaint)
             canvas.restore()
         }

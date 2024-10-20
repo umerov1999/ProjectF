@@ -35,7 +35,7 @@ class MessagesDecryptor(private val store: IStorages) : IMessagesDecryptor {
                     } else {
                         message.cryptStatus = CryptStatus.DECRYPT_FAILED
                     }
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     message.cryptStatus = CryptStatus.DECRYPT_FAILED
                 }
             }
@@ -58,7 +58,7 @@ class MessagesDecryptor(private val store: IStorages) : IMessagesDecryptor {
                                 val decryptedText = decryptWithAes(em.originalText, key)
                                 message.decryptedText = decryptedText
                                 message.cryptStatus = CryptStatus.DECRYPTED
-                            } catch (e: Exception) {
+                            } catch (_: Exception) {
                                 message.cryptStatus = CryptStatus.DECRYPT_FAILED
                             }
                         }

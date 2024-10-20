@@ -81,7 +81,7 @@ class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
                 )
                 return true
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         return false
     }
@@ -122,7 +122,7 @@ class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
                 )
                 return true
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         return false
     }
@@ -144,7 +144,7 @@ class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
                 )
                 return true
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         return false
     }

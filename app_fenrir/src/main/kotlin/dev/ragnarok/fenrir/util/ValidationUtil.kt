@@ -11,14 +11,13 @@ object ValidationUtil {
         return url != null && PatternsCompat.AUTOLINK_WEB_URL.matcher(url).find()
     }
 
-
     fun isValidIpAddress(ipv4: String?): Boolean {
         ipv4 ?: return false
         var ipv4T = ipv4
         if (ipv4.trimmedIsNullOrEmpty()) {
             return false
         }
-        ipv4T = ipv4T.trim { it <= ' ' }
+        ipv4T = ipv4T.trim()
         val blocks = ipv4T.split(Regex("\\.")).toTypedArray()
         if (blocks.size != 4) {
             return false
@@ -29,7 +28,7 @@ object ValidationUtil {
                 if (num > 255 || num < 0) {
                     return false
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 return false
             }
         }

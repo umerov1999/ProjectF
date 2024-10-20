@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.os.PowerManager
 import android.os.Process
@@ -20,9 +21,6 @@ import dev.ragnarok.fenrir.util.toast.CustomToast
 object AppPerms {
     @SuppressLint("BatteryLife")
     fun ignoreBattery(context: Context) {
-        if (!Utils.hasMarshmallow()) {
-            return
-        }
         if (!HelperSimple.needHelp(HelperSimple.BATTERY_OPTIMIZATION, 1)) {
             return
         }
@@ -42,7 +40,6 @@ object AppPerms {
     }
 
     fun hasReadWriteStoragePermission(context: Context): Boolean {
-        if (!Utils.hasMarshmallow()) return true
         if (Utils.hasScopedStorage()) {
             if (!Environment.isExternalStorageManager()) {
                 val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
@@ -66,7 +63,6 @@ object AppPerms {
     }
 
     fun hasReadStoragePermission(context: Context): Boolean {
-        if (!Utils.hasMarshmallow()) return true
         if (Utils.hasScopedStorage()) {
             if (!Environment.isExternalStorageManager()) {
                 val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
@@ -86,7 +82,7 @@ object AppPerms {
     }
 
     fun hasNotificationPermissionSimple(context: Context): Boolean {
-        if (!Utils.hasTiramisu()) return true
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return true
         val hasNPermission = PermissionChecker.checkSelfPermission(
             context,
             Manifest.permission.POST_NOTIFICATIONS
@@ -95,7 +91,6 @@ object AppPerms {
     }
 
     fun hasReadStoragePermissionSimple(context: Context): Boolean {
-        if (!Utils.hasMarshmallow()) return true
         if (Utils.hasScopedStorage()) {
             return Environment.isExternalStorageManager()
         }
@@ -107,21 +102,20 @@ object AppPerms {
     }
 
     fun hasCameraPermission(context: Context): Boolean {
-        if (!Utils.hasMarshmallow()) return true
         val hasCameraPermission =
             PermissionChecker.checkSelfPermission(context, Manifest.permission.CAMERA)
         return hasReadWriteStoragePermission(context) && hasCameraPermission == PackageManager.PERMISSION_GRANTED
     }
 
     fun hasContactsPermission(context: Context): Boolean {
-        return if (!Utils.hasMarshmallow()) true else PermissionChecker.checkSelfPermission(
+        return PermissionChecker.checkSelfPermission(
             context,
             Manifest.permission.READ_CONTACTS
         ) == PermissionChecker.PERMISSION_GRANTED
     }
 
     fun hasAccessNetworkStatePermission(context: Context): Boolean {
-        return if (!Utils.hasMarshmallow()) true else PermissionChecker.checkSelfPermission(
+        return PermissionChecker.checkSelfPermission(
             context,
             Manifest.permission.ACCESS_NETWORK_STATE
         ) == PermissionChecker.PERMISSION_GRANTED

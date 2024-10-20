@@ -18,6 +18,8 @@ package com.google.android.material.slider;
 
 import com.google.android.material.R;
 
+import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_CONTROLS;
+import static android.view.accessibility.AccessibilityManager.FLAG_CONTENT_TEXT;
 import static androidx.core.math.MathUtils.clamp;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.RangeInfoCompat.RANGE_TYPE_FLOAT;
 import static com.google.android.material.shape.CornerFamily.ROUNDED;
@@ -102,6 +104,8 @@ import com.google.android.material.tooltip.TooltipDrawable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -239,8 +243,12 @@ abstract class BaseSlider<
       "Floating point value used for %s(%s). Using floats can have rounding errors which may"
           + " result in incorrect values. Instead, consider using integers with a custom"
           + " LabelFormatter to display the value correctly.";
+  private static final String WARNING_PARSE_ERROR =
+      "Error parsing value(%s), valueFrom(%s), and valueTo(%s) into a float.";
 
   private static final int TIMEOUT_SEND_ACCESSIBILITY_EVENT = 200;
+  private static final int MIN_TIMEOUT_TOOLTIP_WITH_ACCESSIBILITY = 10000;
+  private static final int MAX_TIMEOUT_TOOLTIP_WITH_ACCESSIBILITY = 120000;
   private static final int HALO_ALPHA = 63;
   private static final double THRESHOLD = .0001;
   private static final float THUMB_WIDTH_PRESSED_RATIO = .5f;
@@ -346,12 +354,23 @@ abstract class BaseSlider<
   private float touchPosition;
   @SeparationUnit private int separationUnit = UNIT_PX;
 
+  private final int tooltipTimeoutMillis;
+
   @NonNull
   private final ViewTreeObserver.OnScrollChangedListener onScrollChangedListener =
       this::updateLabels;
+
   @NonNull
-  private final ViewTreeObserver.OnGlobalLayoutListener onGlobalLayoutListener =
-      this::updateLabels;
+  private final ViewTreeObserver.OnGlobalLayoutListener onGlobalLayoutListener = this::updateLabels;
+
+  @NonNull
+  private final Runnable resetActiveThumbIndex =
+      () -> {
+        setActiveThumbIndex(-1);
+        invalidate();
+      };
+
+  private boolean thisAndAncestorsVisible;
 
   /**
    * Determines the behavior of the label which can be any of the following.
@@ -388,6 +407,9 @@ abstract class BaseSlider<
     super(wrap(context, attrs, defStyleAttr, DEF_STYLE_RES), attrs, defStyleAttr);
     // Ensure we are using the correctly themed context rather than the context that was passed in.
     context = getContext();
+
+    // Initialize with just this view's visibility.
+    thisAndAncestorsVisible = isShown();
 
     inactiveTrackPaint = new Paint();
     activeTrackPaint = new Paint();
@@ -428,6 +450,13 @@ abstract class BaseSlider<
 
     accessibilityManager =
         (AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
+    if (VERSION.SDK_INT >= VERSION_CODES.Q) {
+      tooltipTimeoutMillis =
+          accessibilityManager.getRecommendedTimeoutMillis(
+              MIN_TIMEOUT_TOOLTIP_WITH_ACCESSIBILITY, FLAG_CONTENT_CONTROLS | FLAG_CONTENT_TEXT);
+    } else {
+      tooltipTimeoutMillis = MAX_TIMEOUT_TOOLTIP_WITH_ACCESSIBILITY;
+    }
   }
 
   private void loadResources(@NonNull Resources resources) {
@@ -679,6 +708,11 @@ abstract class BaseSlider<
       warnAboutFloatingPointError();
       dirtyConfig = false;
     }
+  }
+
+  public void scheduleTooltipTimeout() {
+    removeCallbacks(resetActiveThumbIndex);
+    postDelayed(resetActiveThumbIndex, tooltipTimeoutMillis);
   }
 
   /**
@@ -1885,6 +1919,10 @@ abstract class BaseSlider<
   @Override
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
+
+    // Update factoring in the visibility of all ancestors.
+    thisAndAncestorsVisible = isShown();
+
     getViewTreeObserver().addOnScrollChangedListener(onScrollChangedListener);
     getViewTreeObserver().addOnGlobalLayoutListener(onGlobalLayoutListener);
     // The label is attached on the Overlay relative to the content.
@@ -2234,11 +2272,7 @@ abstract class BaseSlider<
 
     // Draw ticks on the left inactive track (if any).
     if (leftActiveTickIndex > 0) {
-      canvas.drawPoints(
-          ticksCoordinates,
-          0,
-          leftActiveTickIndex * 2,
-          inactiveTicksPaint);
+      canvas.drawPoints(ticksCoordinates, 0, leftActiveTickIndex * 2, inactiveTicksPaint);
     }
 
     // Draw ticks on the active track (if any).
@@ -2680,7 +2714,19 @@ abstract class BaseSlider<
   private boolean isSliderVisibleOnScreen() {
     final Rect contentViewBounds = new Rect();
     ViewUtils.getContentView(this).getHitRect(contentViewBounds);
-    return getLocalVisibleRect(contentViewBounds);
+    return getLocalVisibleRect(contentViewBounds) && isThisAndAncestorsVisible();
+  }
+
+  private boolean isThisAndAncestorsVisible() {
+    // onVisibilityAggregated is only available on N+ devices, so on pre-N devices we check if this
+    // view and its ancestors are visible each time, in case one of the visibilities has changed.
+    return (VERSION.SDK_INT >= VERSION_CODES.N) ? thisAndAncestorsVisible : isShown();
+  }
+
+  @Override
+  public void onVisibilityAggregated(boolean isVisible) {
+    super.onVisibilityAggregated(isVisible);
+    this.thisAndAncestorsVisible = isVisible;
   }
 
   private void ensureLabelsRemoved() {
@@ -2933,7 +2979,7 @@ abstract class BaseSlider<
         moveFocusInAbsoluteDirection(1);
         return true;
       case KeyEvent.KEYCODE_EQUALS:
-        // Numpad Plus == Shift + Equals, at least in AVD, so fall through.
+      // Numpad Plus == Shift + Equals, at least in AVD, so fall through.
       case KeyEvent.KEYCODE_PLUS:
         moveFocus(1);
         return true;
@@ -3012,7 +3058,7 @@ abstract class BaseSlider<
       case KeyEvent.KEYCODE_MINUS:
         return -increment;
       case KeyEvent.KEYCODE_EQUALS:
-        // Numpad Plus == Shift + Equals, at least in AVD, so fall through.
+      // Numpad Plus == Shift + Equals, at least in AVD, so fall through.
       case KeyEvent.KEYCODE_PLUS:
         return increment;
       default:
@@ -3251,7 +3297,7 @@ abstract class BaseSlider<
       info.addAction(AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_PROGRESS);
 
       List<Float> values = slider.getValues();
-      final float value = values.get(virtualViewId);
+      float value = values.get(virtualViewId);
       float valueFrom = slider.getValueFrom();
       float valueTo = slider.getValueTo();
 
@@ -3262,6 +3308,16 @@ abstract class BaseSlider<
         if (value < valueTo) {
           info.addAction(AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD);
         }
+      }
+
+      NumberFormat nf = NumberFormat.getNumberInstance();
+      nf.setMaximumFractionDigits(2);
+      try {
+        valueFrom = nf.parse(nf.format(valueFrom)).floatValue();
+        valueTo = nf.parse(nf.format(valueTo)).floatValue();
+        value = nf.parse(nf.format(value)).floatValue();
+      } catch (ParseException e) {
+        Log.w(TAG, String.format(WARNING_PARSE_ERROR, value, valueFrom, valueTo));
       }
 
       info.setRangeInfo(RangeInfoCompat.obtain(RANGE_TYPE_FLOAT, valueFrom, valueTo, value));
@@ -3343,6 +3399,8 @@ abstract class BaseSlider<
                     slider.getValueFrom(),
                     slider.getValueTo());
             if (slider.snapThumbToValue(virtualViewId, clamped)) {
+              slider.setActiveThumbIndex(virtualViewId);
+              slider.scheduleTooltipTimeout();
               slider.updateHaloHotspot();
               slider.postInvalidate();
               invalidateVirtualView(virtualViewId);

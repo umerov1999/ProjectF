@@ -195,7 +195,7 @@ bool encode_to_mp4a_to_mp4_audio(const char *src, const char *dst) {
                                 &convertedData,
                                 audioFrameConverted->nb_samples, nullptr, 0);
 
-                    size_t buffer_size = av_samples_get_buffer_size(nullptr,
+                    auto buffer_size = av_samples_get_buffer_size(nullptr,
                                                                     audioCodecContext->ch_layout.nb_channels,
                                                                     audioFrameConverted->nb_samples,
                                                                     audioCodecContext->sample_fmt,

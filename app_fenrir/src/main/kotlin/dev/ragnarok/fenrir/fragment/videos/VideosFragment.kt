@@ -45,8 +45,10 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getAlbumsByVideoPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getVideoPreviewPlace
 import dev.ragnarok.fenrir.place.PlaceUtil.goToPostCreation
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.shareLink
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
@@ -229,7 +231,10 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
         uploadRecyclerView.layoutManager =
             LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
         val columns = requireActivity().resources.getInteger(R.integer.videos_column_count)
-        val manager = StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL)
+        val manager =
+            if (Settings.get().main().single_line_videos) Utils.getSingleElementsLayoutManager(
+                requireActivity()
+            ) else StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.layoutManager = manager
         PicassoPauseOnScrollListener.addListener(recyclerView)
         recyclerView.addOnScrollListener(object : EndlessRecyclerOnScrollListener() {

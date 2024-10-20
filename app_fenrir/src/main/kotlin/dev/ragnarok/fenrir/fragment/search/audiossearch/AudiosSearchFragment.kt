@@ -138,7 +138,6 @@ class AudiosSearchFragment :
             return fragment
         }
 
-
         fun newInstanceSelect(
             accountId: Long,
             criteria: AudioSearchCriteria?

@@ -139,7 +139,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         if (query == null) {
             return emptyTaskFlow()
         }
-        val queryClean = query.trim { it <= ' ' }
+        val queryClean = query.trim()
         return if (queryClean.isEmpty()) {
             emptyTaskFlow()
         } else flow {

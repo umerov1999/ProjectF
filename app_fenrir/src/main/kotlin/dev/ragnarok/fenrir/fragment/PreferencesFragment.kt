@@ -285,8 +285,6 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             preferencesAdapter?.applyToPreference("music_dir") { ss -> (ss as CustomTextPreference).reload() }
         }
     }
-
-
     private val photoDir = registerForActivityResult(
         StartActivityForResult()
     ) { result ->
@@ -325,8 +323,6 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             preferencesAdapter?.applyToPreference("docs_dir") { ss -> (ss as CustomTextPreference).reload() }
         }
     }
-
-
     private val stickerDir = registerForActivityResult(
         StartActivityForResult()
     ) { result ->
@@ -340,7 +336,6 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
 
         }
     }
-
 
     private fun selectLocalImage(isDark: Boolean) {
         if (!AppPerms.hasReadStoragePermission(requireActivity())) {
@@ -511,17 +506,13 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 titleRes = R.string.notif_setting_title
                 iconRes = R.drawable.feed_settings
                 onClick {
-                    if (Utils.hasOreo()) {
-                        val intent = Intent()
-                        intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
-                        intent.putExtra(
-                            "android.provider.extra.APP_PACKAGE",
-                            requireContext().packageName
-                        )
-                        requireContext().startActivity(intent)
-                    } else {
-                        PlaceFactory.notificationSettingsPlace.tryOpenWith(requireActivity())
-                    }
+                    val intent = Intent()
+                    intent.action = "android.settings.APP_NOTIFICATION_SETTINGS"
+                    intent.putExtra(
+                        "android.provider.extra.APP_PACKAGE",
+                        requireContext().packageName
+                    )
+                    requireContext().startActivity(intent)
                     true
                 }
             }
@@ -537,7 +528,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                                 for (i in it) {
                                     if (i.disabled_until < 0) {
                                         Settings.get().notifications()
-                                            .forceDisable(accountId, i.peer_id)
+                                            .setSilentPeer(accountId, i.peer_id, true)
                                     }
                                 }
                                 createCustomToast(requireActivity()).showToast(R.string.success)
@@ -549,14 +540,11 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             pref("reset_notifications_groups") {
                 titleRes = R.string.reset_notifications_groups
                 iconRes = R.drawable.feed_settings
-                visible = Utils.hasOreo()
                 onClick {
-                    if (Utils.hasOreo()) {
-                        AppNotificationChannels.invalidateSoundChannels(requireActivity())
-                        createCustomToast(requireActivity())
-                            .setDuration(Toast.LENGTH_LONG)
-                            .showToastSuccessBottom(R.string.success)
-                    }
+                    AppNotificationChannels.invalidateSoundChannels(requireActivity())
+                    createCustomToast(requireActivity())
+                        .setDuration(Toast.LENGTH_LONG)
+                        .showToastSuccessBottom(R.string.success)
                     true
                 }
             }
@@ -596,13 +584,9 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             pref("select_custom_icon") {
                 titleRes = R.string.select_custom_icon
                 iconRes = R.drawable.app_icon_pref
-                val hasOreo = Utils.hasOreo()
-                visible = hasOreo
-                if (hasOreo) {
-                    onClick {
-                        showSelectIcon()
-                        true
-                    }
+                onClick {
+                    showSelectIcon()
+                    true
                 }
             }
 
@@ -628,6 +612,20 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 titleRes = R.string.theme_overlay
                 onSelectionChange {
                     requireActivity().recreate()
+                }
+            }
+
+            subScreen("single_line_elements") {
+                titleRes = R.string.single_line_elements
+
+                switch("single_line_videos") {
+                    defaultValue = false
+                    titleRes = R.string.single_line_videos
+                }
+
+                switch("single_line_photos") {
+                    defaultValue = false
+                    titleRes = R.string.single_line_photos
                 }
             }
 
@@ -766,7 +764,6 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             switch("new_loading_dialog") {
                 defaultValue = true
                 titleRes = R.string.new_loading_dialog
-                visible = Utils.hasMarshmallow()
             }
 
             switch("autoplay_gif") {
@@ -1638,8 +1635,8 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 onTextBeforeChanged { its ->
                     var sz = -1
                     try {
-                        sz = its.toString().trim { it <= ' ' }.toInt()
-                    } catch (ignored: NumberFormatException) {
+                        sz = its.toString().trim().toInt()
+                    } catch (_: NumberFormatException) {
                     }
                     if (isOverflowCanvas(sz) || sz in 0..99) {
                         return@onTextBeforeChanged false
@@ -1663,8 +1660,8 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 onTextBeforeChanged { its ->
                     var sz = -1
                     try {
-                        sz = its.toString().trim { it <= ' ' }.toInt()
-                    } catch (ignored: NumberFormatException) {
+                        sz = its.toString().trim().toInt()
+                    } catch (_: NumberFormatException) {
                     }
                     if (isOverflowCanvas(sz) || sz in 0..99) {
                         return@onTextBeforeChanged false
@@ -1686,12 +1683,12 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             ) {
                 initialSelection = "0"
                 titleRes = R.string.rendering_mode
-                visible = Utils.hasPie()
+                visible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
                 onSelectionChange { it ->
                     var sz = 0
                     try {
-                        sz = it.trim { it <= ' ' }.toInt()
-                    } catch (ignored: NumberFormatException) {
+                        sz = it.trim().toInt()
+                    } catch (_: NumberFormatException) {
                     }
                     setHardwareRendering(sz)
                     requireActivity().recreate()
@@ -1840,15 +1837,12 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             pref("delete_dynamic_shortcuts") {
                 dependency = "developer_mode"
                 titleRes = R.string.delete_dynamic_shortcuts
-                visible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1
                 onClick {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                        val manager: ShortcutManager? = requireActivity().getSystemService(
-                            ShortcutManager::class.java
-                        )
-                        manager?.removeAllDynamicShortcuts()
-                        createCustomToast(context).showToast(R.string.success)
-                    }
+                    val manager: ShortcutManager? = requireActivity().getSystemService(
+                        ShortcutManager::class.java
+                    )
+                    manager?.removeAllDynamicShortcuts()
+                    createCustomToast(context).showToast(R.string.success)
                     true
                 }
             }
@@ -1920,13 +1914,10 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                                 PreferenceScreen.getPreferences(Includes.provideApplicationContext())
                             val preferences = Preferences(pref)
 
-                            for (i in Settings.get().notifications().chatsNotifKeys) {
-                                pref.edit().remove(i).apply()
-                            }
+                            Settings.get().notifications().resetAll()
+                            Settings.get().main().resetAllUserNameChanges()
+                            Settings.get().main().resetAllChangesMonitor()
 
-                            for (i in Settings.get().main().userNameChangesKeys) {
-                                pref.edit().remove(i).apply()
-                            }
                             SettingsBackup.AppPreferencesList().let {
                                 preferences.encode(
                                     SettingsBackup.AppPreferencesList.serializer(),
@@ -2119,16 +2110,14 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             .setPositiveButton(R.string.button_ok, null)
             .setTitle(R.string.additional_info)
             .setView(view)
-        if (Utils.hasNougat()) {
-            ot.setNegativeButton(R.string.data) { _, _ ->
-                internalDataIntent.launch(
-                    FileManagerSelectActivity.makeFileManager(
-                        requireActivity(),
-                        requireActivity().dataDir.absolutePath,
-                        null
-                    )
+        ot.setNegativeButton(R.string.data) { _, _ ->
+            internalDataIntent.launch(
+                FileManagerSelectActivity.makeFileManager(
+                    requireActivity(),
+                    requireActivity().dataDir.absolutePath,
+                    null
                 )
-            }
+            )
         }
         ot.show()
     }
@@ -2802,7 +2791,6 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             return args
         }
 
-
         fun newInstance(args: Bundle?): PreferencesFragment {
             val fragment = PreferencesFragment()
             fragment.arguments = args
@@ -2812,7 +2800,6 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
         fun getDrawerBackgroundFile(context: Context, light: Boolean): File {
             return File(context.filesDir, if (light) "chat_light.jpg" else "chat_dark.jpg")
         }
-
 
         fun cleanCache(context: Context, notify: Boolean) {
             try {

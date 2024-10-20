@@ -51,7 +51,6 @@ internal open class StreamingJsonDecoder(
         return false
     }
 
-
     override val serializersModule: SerializersModule = json.serializersModule
     private var currentIndex = -1
     private val configuration = json.configuration

@@ -97,6 +97,7 @@ import dev.ragnarok.fenrir.view.VP2NestedRecyclerView
 import dev.ragnarok.fenrir.view.WeakViewAnimatorAdapter
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 import java.lang.ref.WeakReference
+import kotlin.String
 
 class CatalogV2SectionAdapter(
     data: MutableList<AbsModel>,
@@ -423,7 +424,7 @@ class CatalogV2SectionAdapter(
             }
             if (playlist.year == 0) year.visibility = View.GONE else {
                 year.visibility = View.VISIBLE
-                year.text = playlist.year.toString()
+                year.text = String.format(Utils.appLocale, "%d", playlist.year)
             }
             playlist_container.setOnClickListener {
                 if (playlist.original_access_key
@@ -598,7 +599,6 @@ class CatalogV2SectionAdapter(
         mPlayerDisposable.cancel()
         audioListDisposable.cancel()
     }
-
 
     private fun deleteTrack(accountId: Long, audio: Audio, position: Int) {
         audioListDisposable += mAudioInteractor.delete(accountId, audio.id, audio.ownerId)

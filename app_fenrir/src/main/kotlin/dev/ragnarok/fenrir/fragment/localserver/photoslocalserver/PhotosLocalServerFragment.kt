@@ -23,6 +23,7 @@ import dev.ragnarok.fenrir.model.TmpSource
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory.getPhotoAlbumGalleryPlace
 import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.view.MySearchView
 import dev.ragnarok.fenrir.view.MySearchView.OnAdditionalButtonClickListener
@@ -85,7 +86,10 @@ class PhotosLocalServerFragment :
         setupSwipeRefreshLayoutWithCurrentTheme(requireActivity(), mSwipeRefreshLayout)
         recyclerView = root.findViewById(R.id.recycler_view)
         val columns = requireActivity().resources.getInteger(R.integer.photos_column_count)
-        val manager = StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL)
+        val manager =
+            if (Settings.get().main().single_line_photos) Utils.getSingleElementsLayoutManager(
+                requireActivity()
+            ) else StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL)
         recyclerView?.layoutManager = manager
         PicassoPauseOnScrollListener.addListener(recyclerView)
         recyclerView?.addOnScrollListener(object : EndlessRecyclerOnScrollListener() {

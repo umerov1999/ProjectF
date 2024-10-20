@@ -123,7 +123,7 @@ class OkHttpDataSource internal constructor(
                 val buffer = Buffer()
                 Assertions.checkNotNull(responseByteStream).readAll(buffer)
                 buffer.readByteArray()
-            } catch (e: IOException) {
+            } catch (_: IOException) {
                 Util.EMPTY_BYTE_ARRAY
             }
             val headers = response.headers.toMultimap()
@@ -253,7 +253,7 @@ class OkHttpDataSource internal constructor(
             })
         return try {
             future.get()
-        } catch (e: InterruptedException) {
+        } catch (_: InterruptedException) {
             call.cancel()
             throw InterruptedIOException()
         } catch (ee: ExecutionException) {

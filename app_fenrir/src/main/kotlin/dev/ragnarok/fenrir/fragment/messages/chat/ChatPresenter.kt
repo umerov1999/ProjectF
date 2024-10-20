@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -102,9 +101,9 @@ import dev.ragnarok.fenrir.util.Utils.countOfSelection
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.getSelected
 import dev.ragnarok.fenrir.util.Utils.hasFlag
-import dev.ragnarok.fenrir.util.Utils.hasMarshmallow
 import dev.ragnarok.fenrir.util.Utils.isHiddenAccount
 import dev.ragnarok.fenrir.util.Utils.safelyClose
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CompositeJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.andThen
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
@@ -158,7 +157,7 @@ class ChatPresenter(
     private val longpollManager: ILongpollManager = LongpollInstance.longpollManager
     private val uploadManager: IUploadManager = Includes.uploadManager
 
-    private var stickersWordsDisplayDisposable = CompositeJob()
+    private var stickersWordsDisplayDisposable = CancelableJob()
     private var cacheLoadingDisposable = CompositeJob()
     private var netLoadingDisposable = CompositeJob()
     private var fetchConversationDisposable = CompositeJob()
@@ -1200,22 +1199,17 @@ class ChatPresenter(
     }
 
     fun fireRecordResumePauseClick() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            try {
-                val isRecorderPaused = audioRecordWrapper.recorderStatus == Recorder.Status.PAUSED
-                if (!isRecorderPaused) {
-                    audioRecordWrapper.pause()
-                } else {
-                    audioRecordWrapper.doRecord()
-                }
-
-                resolveRecordPauseButton()
-            } catch (e: AudioRecordException) {
-                e.printStackTrace()
+        try {
+            val isRecorderPaused = audioRecordWrapper.recorderStatus == Recorder.Status.PAUSED
+            if (!isRecorderPaused) {
+                audioRecordWrapper.pause()
+            } else {
+                audioRecordWrapper.doRecord()
             }
 
-        } else {
-            view?.showError(R.string.pause_is_not_supported)
+            resolveRecordPauseButton()
+        } catch (e: AudioRecordException) {
+            e.printStackTrace()
         }
     }
 
@@ -1236,8 +1230,7 @@ class ChatPresenter(
 
     private fun resolveRecordPauseButton() {
         val paused = audioRecordWrapper.recorderStatus == Recorder.Status.PAUSED
-        val available = audioRecordWrapper.isPauseSupported
-        view?.setupRecordPauseButton(available, !paused)
+        view?.setupRecordPauseButton(!paused)
     }
 
     fun fireRecordPermissionsResolved() {
@@ -1258,7 +1251,6 @@ class ChatPresenter(
     }
 
     private fun hasAudioRecordPermissions(): Boolean {
-        if (!hasMarshmallow()) return true
         val app = applicationContext
 
         val recordPermission =

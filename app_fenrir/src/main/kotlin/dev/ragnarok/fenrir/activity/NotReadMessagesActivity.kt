@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
@@ -33,7 +32,7 @@ import dev.ragnarok.fenrir.settings.CurrentTheme.getNavigationBarColor
 import dev.ragnarok.fenrir.settings.CurrentTheme.getStatusBarColor
 import dev.ragnarok.fenrir.settings.CurrentTheme.getStatusBarNonColored
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCream
+import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.fenrir.util.ViewUtils
 
 class NotReadMessagesActivity : NoMainActivity(), PlaceProvider, AppStyleable {
@@ -88,7 +87,7 @@ class NotReadMessagesActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                 window.decorView.rootView.windowToken,
                 InputMethodManager.HIDE_NOT_ALWAYS
             )
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
     }
 
@@ -185,7 +184,7 @@ class NotReadMessagesActivity : NoMainActivity(), PlaceProvider, AppStyleable {
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val w = window
-        if (!hasVanillaIceCream()) {
+        if (!hasVanillaIceCreamTarget()) {
             w.statusBarColor =
                 if (colored) getStatusBarColor(this) else getStatusBarNonColored(
                     this
@@ -196,11 +195,6 @@ class NotReadMessagesActivity : NoMainActivity(), PlaceProvider, AppStyleable {
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons
-
-        if (!Utils.hasMarshmallow()) {
-            w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        }
     }
 
     companion object {

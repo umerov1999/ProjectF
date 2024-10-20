@@ -60,7 +60,6 @@ import dev.ragnarok.filegallery.util.AppPerms.requestPermissionsResultAbs
 import dev.ragnarok.filegallery.util.Utils
 import java.util.EnumSet
 
-
 class CameraScanActivity : NoMainActivity() {
     private lateinit var textureView: PreviewView
     private var camera: Camera? = null

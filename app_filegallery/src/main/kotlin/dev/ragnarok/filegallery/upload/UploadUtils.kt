@@ -57,7 +57,7 @@ object UploadUtils {
                 }
                 cursor?.close()
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         return fileName
     }

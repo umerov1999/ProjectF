@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
+import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -37,6 +38,7 @@ import androidx.core.graphics.ColorUtils
 import androidx.media3.common.MediaItem
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import de.maxr1998.modernpreferences.PreferenceScreen
@@ -44,7 +46,6 @@ import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.BuildConfig
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Extra
-import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.Includes.proxySettings
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.UserAgentTool
@@ -158,7 +159,7 @@ object Utils {
                 return "hash" == StringHash.calculateSha1(sign.toByteArray())
             }
             true
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             true
         }
     }
@@ -265,7 +266,6 @@ object Utils {
         return orig ?: emptyList()
     }
 
-
     inline fun <reified T> listEmptyIfNullMutable(orig: MutableList<T>?): MutableList<T> {
         return orig ?: mutableListOf()
     }
@@ -329,7 +329,6 @@ object Utils {
         return count
     }
 
-
     fun getCauseIfRuntime(throwable: Throwable?): Throwable {
         var target = throwable
         while (target is RuntimeException) {
@@ -383,7 +382,6 @@ object Utils {
         }
         return sb.toString()
     }
-
 
     fun joinNonEmptyStrings(delimiter: String, vararg tokens: String?): String? {
         val nonEmpty: MutableList<String> = ArrayList()
@@ -497,8 +495,7 @@ object Utils {
         return sb.toString()
     }
 
-
-    fun safeLenghtOf(text: CharSequence?): Int {
+    fun safeLengthOf(text: CharSequence?): Int {
         return text?.length ?: 0
     }
 
@@ -532,24 +529,22 @@ object Utils {
         cursor?.close()
     }
 
-
     fun safelyRecycle(bitmap: Bitmap?) {
         if (bitmap != null) {
             try {
                 if (!bitmap.isRecycled) {
                     bitmap.recycle()
                 }
-            } catch (ignored: Exception) {
+            } catch (_: Exception) {
             }
         }
     }
-
 
     fun safelyClose(closeable: Closeable?) {
         if (closeable != null) {
             try {
                 closeable.close()
-            } catch (ignored: IOException) {
+            } catch (_: IOException) {
             }
         }
     }
@@ -566,18 +561,15 @@ object Utils {
         return cursor?.count ?: 0
     }
 
-
     fun startOfTodayMillis(): Long {
         return startOfToday().timeInMillis
     }
-
 
     private fun startOfToday(): Calendar {
         val current = Calendar.getInstance()
         current[current[Calendar.YEAR], current[Calendar.MONTH], current[Calendar.DATE], 0, 0] = 0
         return current
     }
-
 
     fun idsListOf(data: Collection<Identificable>): List<Int> {
         val ids: MutableList<Int> = ArrayList(data.size)
@@ -646,11 +638,9 @@ object Utils {
         return -1
     }
 
-
     fun <T : ISelectable> getSelected(fullData: List<T>): ArrayList<T> {
         return getSelected(fullData, false)
     }
-
 
     fun <T : ISelectable> getSelected(fullData: List<T>, reverse: Boolean): ArrayList<T> {
         val result = ArrayList<T>()
@@ -670,7 +660,6 @@ object Utils {
         }
         return result
     }
-
 
     fun countOfSelection(data: List<ISelectable>?): Int {
         data ?: return 0
@@ -754,50 +743,18 @@ object Utils {
         return i
     }
 
-    fun hasMarshmallow(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-    }
-
     fun hasScopedStorage(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && BuildConfig.MANAGE_SCOPED_STORAGE
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && BuildConfig.TARGET_SDK >= Build.VERSION_CODES.R
     }
 
-    fun hasNougat(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-    }
-
-    fun hasOreo(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-    }
-
-    fun hasPie(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
-    }
-
-    fun hasQ(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-    }
-
-    fun hasR(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-    }
-
-    fun hasTiramisu(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-    }
-
-    fun hasUpsideDownCake(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-    }
-
-    fun hasVanillaIceCream(): Boolean {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && Includes.provideApplicationContext().applicationInfo.targetSdkVersion >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+    fun hasVanillaIceCreamTarget(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && BuildConfig.TARGET_SDK >= Build.VERSION_CODES.VANILLA_ICE_CREAM
     }
 
     @Suppress("deprecation")
     fun finishActivityImmediate(activity: Activity) {
         activity.finish()
-        if (!hasUpsideDownCake()) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             activity.overridePendingTransition(0, 0)
         } else {
             activity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_CLOSE, 0, 0)
@@ -806,7 +763,7 @@ object Utils {
 
     @Suppress("deprecation")
     fun activityTransactionImmediate(activity: Activity) {
-        if (!hasUpsideDownCake()) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             activity.overridePendingTransition(0, 0)
         } else {
             activity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, 0, 0)
@@ -893,16 +850,13 @@ object Utils {
         return list
     }
 
-
     fun isLandscape(context: Context): Boolean {
-        return context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        return context.resources.configuration.orientation == ORIENTATION_LANDSCAPE
     }
-
 
     fun is600dp(context: Context): Boolean {
         return context.resources.getBoolean(R.bool.is_tablet)
     }
-
 
     fun intValueNotIn(value: Int, vararg variants: Int): Boolean {
         for (variant in variants) {
@@ -913,7 +867,6 @@ object Utils {
         return true
     }
 
-
     fun intValueIn(value: Int, vararg variants: Int): Boolean {
         for (variant in variants) {
             if (value == variant) {
@@ -922,7 +875,6 @@ object Utils {
         }
         return false
     }
-
 
     fun hasOneElement(collection: Collection<*>?): Boolean {
         return safeCountOf(collection) == 1
@@ -962,8 +914,6 @@ object Utils {
             val sdkVersion = Build.VERSION.SDK_INT
             return "Android SDK: $sdkVersion ($release)"
         }
-
-
     val deviceName: String
         get() {
             val manufacturer = Build.MANUFACTURER
@@ -1032,16 +982,16 @@ object Utils {
 
     fun getAppVersionName(context: Context): String? {
         return try {
-            val packageInfo = if (hasTiramisu()) context.packageManager.getPackageInfo(
-                context.packageName,
-                PackageManager.PackageInfoFlags.of(0)
-            ) else context.packageManager.getPackageInfo(context.packageName, 0)
+            val packageInfo =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) context.packageManager.getPackageInfo(
+                    context.packageName,
+                    PackageManager.PackageInfoFlags.of(0)
+                ) else context.packageManager.getPackageInfo(context.packageName, 0)
             packageInfo.versionName
-        } catch (ignored: PackageManager.NameNotFoundException) {
+        } catch (_: PackageManager.NameNotFoundException) {
             null
         }
     }
-
 
     private fun capitalize(s: String?): String {
         if (s.isNullOrEmpty()) {
@@ -1055,7 +1005,6 @@ object Utils {
         }
     }
 
-
     fun dpToPx(dp: Float, context: Context): Float {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
@@ -1064,7 +1013,6 @@ object Utils {
         )
     }
 
-
     fun spToPx(dp: Float, context: Context): Float {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_SP,
@@ -1072,7 +1020,6 @@ object Utils {
             context.resources.displayMetrics
         )
     }
-
 
     fun shareLink(activity: Activity, link: String?, subject: String?) {
         link ?: return
@@ -1130,14 +1077,12 @@ object Utils {
         }
     }
 
-
     @StringRes
     fun declOfNum(number_z: Int, @StringRes titles: IntArray): Int {
         val number = abs(number_z)
         val cases = intArrayOf(2, 0, 1, 1, 1, 2)
         return titles[if (number % 100 in 5..19) 2 else cases[(number % 10).coerceAtMost(5)]]
     }
-
 
     @StringRes
     fun declOfNum(number_z: Long, @StringRes titles: IntArray): Int {
@@ -1146,7 +1091,6 @@ object Utils {
         return titles[if (number % 100 in 5..19) 2 else cases[(number % 10).coerceAtMost(5)
             .toInt()]]
     }
-
 
     fun doWavesLottie(visual: RLottieImageView?, Play: Boolean) {
         visual?.clearAnimationDrawable()
@@ -1243,7 +1187,6 @@ object Utils {
         return bitmap
     }
 
-
     fun getExoPlayerFactory(
         userAgent: String?,
         proxyConfig: ProxyConfig?
@@ -1257,11 +1200,9 @@ object Utils {
         return OkHttpDataSource.Factory(builder.build()).setUserAgent(userAgent)
     }
 
-
     fun isColorDark(color: Int): Boolean {
         return ColorUtils.calculateLuminance(color) < 0.5
     }
-
 
     fun getAnimator(view: View?): Animator {
         return ObjectAnimator.ofFloat(view, "alpha", 0f, 1f)
@@ -1332,7 +1273,6 @@ object Utils {
         } else floor((density * value).toDouble())
             .toInt()
     }
-
 
     fun dpf2(value: Float): Float {
         return if (value == 0f) {
@@ -1436,7 +1376,6 @@ object Utils {
         return value
     }
 
-
     fun clamp(value: Float, min: Float, max: Float): Float {
         if (value > max) {
             return max
@@ -1507,11 +1446,9 @@ object Utils {
         return ret
     }
 
-
     fun makeMediaItem(url: String?): MediaItem {
         return MediaItem.Builder().setUri(url).build()
     }
-
 
     fun <T : RecyclerView.ViewHolder?> createAlertRecycleFrame(
         context: Context,
@@ -1542,7 +1479,6 @@ object Utils {
         return root
     }
 
-
     private fun getLocaleSettings(@Lang lang: Int): Locale {
         when (lang) {
             Lang.ENGLISH -> {
@@ -1561,26 +1497,15 @@ object Utils {
         return Locale.getDefault()
     }
 
-
     val appLocale: Locale
         get() = getLocaleSettings(Settings.get().main().language)
 
-    @Suppress("DEPRECATION")
     private fun getSystemLocale(config: Configuration): Locale? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            config.locales[0]
-        } else {
-            config.locale
-        }
+        return config.locales[0]
     }
 
-    @Suppress("DEPRECATION")
     private fun setSystemLocaleLegacy(config: Configuration, locale: Locale) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            config.setLocale(locale)
-        } else {
-            config.locale = locale
-        }
+        config.setLocale(locale)
     }
 
     fun updateActivityContext(base: Context, isChatActivity: Boolean = false): Context {
@@ -1625,13 +1550,11 @@ object Utils {
         return true
     }
 
-
     fun checkEditInfo(info: String?, original: String?): String? {
         return if (info.isNullOrEmpty() || info == original) {
             null
         } else info
     }
-
 
     fun checkEditInfo(info: Int?, original: Int?): Int? {
         return if (info == null || info == original) {
@@ -1654,7 +1577,6 @@ object Utils {
         }
     }
 
-
     fun generateQR(url: String, context: Context): Bitmap? {
         return CustomQRCodeWriter().encode(
             url,
@@ -1665,7 +1587,7 @@ object Utils {
     }
 
     fun makeMutablePendingIntent(flags: Int): Int {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && BuildConfig.TARGET_SDK >= Build.VERSION_CODES.S) {
             if (flags == 0) {
                 PendingIntent.FLAG_MUTABLE
             } else {
@@ -1713,5 +1635,12 @@ object Utils {
 
             else -> String.format(Locale.getDefault(), "%d Bytes", Bytes)
         }
+    }
+
+    fun getSingleElementsLayoutManager(activity: Activity): RecyclerView.LayoutManager {
+        if (activity.resources.configuration.orientation == ORIENTATION_LANDSCAPE) {
+            return StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        }
+        return LinearLayoutManager(activity, RecyclerView.VERTICAL, false)
     }
 }

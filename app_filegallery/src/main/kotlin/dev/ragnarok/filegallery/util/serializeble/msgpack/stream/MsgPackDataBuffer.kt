@@ -124,7 +124,7 @@ class MsgPackDataInputOkio(private val bufferedSource: BufferedSource) : MsgPack
     override fun peekSafely(): Byte? {
         return try {
             peek()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }

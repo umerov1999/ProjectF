@@ -51,7 +51,7 @@ object ViewUtils {
             override fun get(view: TextView): Int {
                 return try {
                     view.tag as Int
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     0
                 }
             }
@@ -62,7 +62,6 @@ object ViewUtils {
             }
         }
     }
-
 
     fun getOnlineIcon(online: Boolean, onlineMobile: Boolean, platform: Int, app: Int): Int? {
         if (!online) {
@@ -96,7 +95,6 @@ object ViewUtils {
         }
     }
 
-
     @JvmOverloads
     fun setupSwipeRefreshLayoutWithCurrentTheme(
         activity: Activity,
@@ -119,7 +117,6 @@ object ViewUtils {
             )
         }
     }
-
 
     @JvmOverloads
     fun displayAvatar(
@@ -170,7 +167,7 @@ object ViewUtils {
                 (context as Activity).window.decorView.rootView.windowToken,
                 InputMethodManager.HIDE_NOT_ALWAYS
             )
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
     }
 

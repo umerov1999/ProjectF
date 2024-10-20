@@ -19,7 +19,6 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowCompat
@@ -47,7 +46,7 @@ import dev.ragnarok.filegallery.settings.theme.ThemesController.currentStyle
 import dev.ragnarok.filegallery.toColor
 import dev.ragnarok.filegallery.util.Logger
 import dev.ragnarok.filegallery.util.Utils
-import dev.ragnarok.filegallery.util.Utils.hasVanillaIceCream
+import dev.ragnarok.filegallery.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.filegallery.util.toast.CustomToast
 import dev.ragnarok.filegallery.view.ExpandableSurfaceView
 import dev.ragnarok.filegallery.view.VideoControllerView
@@ -147,18 +146,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
                             var tmp = 1f - percent
                             tmp *= 4
                             tmp = Utils.clamp(1f - tmp, 0f, 1f)
-                            if (Utils.hasOreo()) {
-                                surfaceContainer?.setBackgroundColor(Color.argb(tmp, 0f, 0f, 0f))
-                            } else {
-                                surfaceContainer?.setBackgroundColor(
-                                    Color.argb(
-                                        (tmp * 255).toInt(),
-                                        0,
-                                        0,
-                                        0
-                                    )
-                                )
-                            }
+                            surfaceContainer?.setBackgroundColor(Color.argb(tmp, 0f, 0f, 0f))
                             mControllerView?.alpha = tmp
                             toolbar?.alpha = tmp
                             mSurfaceView?.alpha = Utils.clamp(percent, 0f, 1f)
@@ -205,7 +193,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
             mControllerView?.setAnchorView(findViewById(R.id.panel), false)
         }
         mControllerView?.updatePip(
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && packageManager.hasSystemFeature(
+            packageManager.hasSystemFeature(
                 PackageManager.FEATURE_PICTURE_IN_PICTURE
             ) && hasPipPermission()
         )
@@ -288,7 +276,6 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onPictureInPictureModeChanged(
         isInPictureInPictureMode: Boolean,
         newConfig: Configuration
@@ -309,9 +296,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
     }
 
     private fun canVideoPause(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            !isInPictureInPictureMode
-        } else true
+        return !isInPictureInPictureMode
     }
 
     override fun onPause() {
@@ -370,7 +355,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         try {
             requestedOrientation =
                 if (isLandscape) ActivityInfo.SCREEN_ORIENTATION_PORTRAIT else ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             CustomToast.createCustomToast(this, mSurfaceView)?.setDuration(Toast.LENGTH_LONG)
                 ?.showToastError(R.string.not_supported)
         }
@@ -388,31 +373,25 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
                 ) == AppOpsManager.MODE_ALLOWED
             }
 
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
+            else -> {
                 appsOps?.checkOpNoThrow(
                     AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
                     Process.myUid(),
                     packageName
                 ) == AppOpsManager.MODE_ALLOWED
             }
-
-            else -> {
-                false
-            }
         }
     }
 
     override fun toPIPScreen() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
-                && hasPipPermission()
-            ) if (!isInPictureInPictureMode) {
-                mSurfaceView?.let {
-                    val aspectRatio = Rational(it.width, it.height)
-                    enterPictureInPictureMode(
-                        PictureInPictureParams.Builder().setAspectRatio(aspectRatio).build()
-                    )
-                }
+        if (packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+            && hasPipPermission()
+        ) if (!isInPictureInPictureMode) {
+            mSurfaceView?.let {
+                val aspectRatio = Rational(it.width, it.height)
+                enterPictureInPictureMode(
+                    PictureInPictureParams.Builder().setAspectRatio(aspectRatio).build()
+                )
             }
         }
     }
@@ -451,7 +430,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val w = window
-        if (!hasVanillaIceCream()) {
+        if (!hasVanillaIceCreamTarget()) {
             w.statusBarColor =
                 if (colored) getStatusBarColor(this) else getStatusBarNonColored(
                     this
@@ -462,11 +441,6 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons
-
-        if (!Utils.hasMarshmallow()) {
-            w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        }
     }
 
     companion object {

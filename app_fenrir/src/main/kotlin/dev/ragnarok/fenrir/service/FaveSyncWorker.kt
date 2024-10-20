@@ -1,13 +1,11 @@
 package dev.ragnarok.fenrir.service
 
 import android.annotation.SuppressLint
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -40,7 +38,6 @@ import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.inMainThread
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingle
 import dev.ragnarok.fenrir.util.toast.CustomToast
@@ -66,31 +63,23 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
     private val docsInteractor: IDocsInteractor = InteractorFactory.createDocsInteractor()
     private fun createNotificationManager(context: Context): NotificationManagerCompat {
         val mNotifyManager = NotificationManagerCompat.from(context)
-        if (hasOreo()) {
-            mNotifyManager.createNotificationChannel(
-                AppNotificationChannels.getDownloadChannel(
-                    context
-                )
+        mNotifyManager.createNotificationChannel(
+            AppNotificationChannels.getDownloadChannel(
+                context
             )
-        }
+        )
         return mNotifyManager
     }
 
     @Suppress("DEPRECATION")
     private fun createForeground() {
-        val builder: NotificationCompat.Builder =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val channel = NotificationChannel(
-                    "worker_channel",
-                    applicationContext.getString(R.string.channel_keep_work_manager),
-                    NotificationManager.IMPORTANCE_NONE
-                )
-                mNotifyManager.createNotificationChannel(channel)
-                NotificationCompat.Builder(applicationContext, channel.id)
-            } else {
-                NotificationCompat.Builder(applicationContext, "worker_channel")
-                    .setPriority(Notification.PRIORITY_MIN)
-            }
+        val channel = NotificationChannel(
+            "worker_channel",
+            applicationContext.getString(R.string.channel_keep_work_manager),
+            NotificationManager.IMPORTANCE_NONE
+        )
+        mNotifyManager.createNotificationChannel(channel)
+        val builder = NotificationCompat.Builder(applicationContext, channel.id)
         builder.setContentTitle(applicationContext.getString(R.string.work_manager))
             .setContentText(applicationContext.getString(R.string.foreground_downloader))
             .setSmallIcon(R.drawable.web)
@@ -381,9 +370,6 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
 
     @SuppressLint("MissingPermission")
     private fun createGroupNotification() {
-        if (!Utils.hasNougat()) {
-            return
-        }
         val notificationManager =
             applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
                 ?: return
@@ -586,7 +572,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
                     Uri.fromFile(file)
                 )
             )
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
 
         return Result.success()

@@ -24,7 +24,9 @@ import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.LocalImageAlbum
 import dev.ragnarok.fenrir.model.LocalPhoto
 import dev.ragnarok.fenrir.place.PlaceFactory.getSingleURLPhotoPlace
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.util.toast.CustomToast
 
@@ -59,7 +61,10 @@ class LocalPhotosFragment : BaseMvpFragment<LocalPhotosPresenter, ILocalPhotosVi
         mSwipeRefreshLayout?.setOnRefreshListener(this)
         setupSwipeRefreshLayoutWithCurrentTheme(requireActivity(), mSwipeRefreshLayout)
         val columnCount = resources.getInteger(R.integer.local_gallery_column_count)
-        val manager: RecyclerView.LayoutManager = GridLayoutManager(requireActivity(), columnCount)
+        val manager =
+            if (Settings.get().main().single_line_photos) Utils.getSingleElementsLayoutManager(
+                requireActivity()
+            ) else GridLayoutManager(requireActivity(), columnCount)
         mRecyclerView = view.findViewById(R.id.list)
         mRecyclerView?.layoutManager = manager
         PicassoPauseOnScrollListener.addListener(mRecyclerView, LocalPhotosAdapter.TAG)

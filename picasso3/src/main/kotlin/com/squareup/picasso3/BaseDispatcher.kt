@@ -22,8 +22,6 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import android.os.Build
-import android.os.Handler
 import androidx.annotation.CallSuper
 import androidx.annotation.MainThread
 import com.squareup.picasso3.BitmapHunter.Companion.forRequest
@@ -46,7 +44,6 @@ import java.util.WeakHashMap
 
 internal abstract class BaseDispatcher internal constructor(
     context: Context,
-    private val mainThreadHandler: Handler,
     private val cache: PlatformLruCache
 ) : Dispatcher {
     @get:JvmName("-hunterMap")
@@ -94,15 +91,11 @@ internal abstract class BaseDispatcher internal constructor(
 
     @Suppress("DEPRECATION")
     private fun isNetworkAvailable(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val nw = connectivityManager?.activeNetwork ?: return false
-            val actNw = connectivityManager.getNetworkCapabilities(nw)
-            actNw != null && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || actNw.hasTransport(
-                NetworkCapabilities.TRANSPORT_CELLULAR
-            ) || actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET))
-        } else {
-            connectivityManager?.activeNetworkInfo?.isConnected == true
-        }
+        val nw = connectivityManager?.activeNetwork ?: return false
+        val actNw = connectivityManager.getNetworkCapabilities(nw)
+        return actNw != null && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || actNw.hasTransport(
+            NetworkCapabilities.TRANSPORT_CELLULAR
+        ) || actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET))
     }
 
     @CallSuper

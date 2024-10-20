@@ -22,7 +22,6 @@ import dev.ragnarok.filegallery.model.tags.TagOwner
 import dev.ragnarok.filegallery.place.PlaceFactory
 import dev.ragnarok.filegallery.util.toast.CustomToast
 
-
 class TagOwnerFragment : BaseMvpFragment<TagOwnerPresenter, ITagOwnerView>(), ITagOwnerView,
     TagOwnerAdapter.ClickListener {
     private var mAdapter: TagOwnerAdapter? = null
@@ -51,7 +50,8 @@ class TagOwnerFragment : BaseMvpFragment<TagOwnerPresenter, ITagOwnerView>(), IT
                 .setPositiveButton(R.string.button_ok) { _, _ ->
                     presenter?.addOwner(
                         view.findViewById<TextInputEditText>(R.id.edit_name).text.toString()
-                            .trim { it <= ' ' })
+                            .trim()
+                    )
                 }
                 .setNegativeButton(R.string.button_cancel, null)
                 .show()
@@ -116,7 +116,7 @@ class TagOwnerFragment : BaseMvpFragment<TagOwnerPresenter, ITagOwnerView>(), IT
             .setPositiveButton(R.string.button_ok) { _, _ ->
                 presenter?.renameTagOwner(
                     view.findViewById<TextInputEditText>(R.id.edit_name).text.toString()
-                        .trim { it <= ' ' }, owner
+                        .trim(), owner
                 )
             }
             .setNegativeButton(R.string.button_cancel, null)

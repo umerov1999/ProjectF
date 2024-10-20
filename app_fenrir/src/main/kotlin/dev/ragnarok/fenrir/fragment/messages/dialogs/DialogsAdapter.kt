@@ -250,7 +250,7 @@ class DialogsAdapter(private val mContext: Context, private var mDialogs: List<D
         holder.ivUnreadTicks.visibility = if (dialog.isLastMessageOut) View.VISIBLE else View.GONE
         holder.ivUnreadTicks.setImageResource(if (lastMessageRead) R.drawable.check_all else R.drawable.check)
         holder.silent.visibility = if (Settings.get().notifications()
-                .isSilentChat(accountId, dialog.getOwnerObjectId())
+                .isSilentPeer(accountId, dialog.getOwnerObjectId())
         ) View.VISIBLE else View.GONE
         holder.ivOnline.visibility =
             if (online && !dialog.isChat && !dialog.isContact) View.VISIBLE else View.GONE

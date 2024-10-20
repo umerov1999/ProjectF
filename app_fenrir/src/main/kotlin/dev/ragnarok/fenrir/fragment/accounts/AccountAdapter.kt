@@ -96,7 +96,7 @@ class AccountAdapter(
             .accounts()
             .current
         holder.active.visibility = if (isCurrent) View.VISIBLE else View.INVISIBLE
-        if (Utils.hasMarshmallow() && FenrirNative.isNativeLoaded) {
+        if (FenrirNative.isNativeLoaded) {
             if (isCurrent) {
                 holder.active.fromRes(
                     dev.ragnarok.fenrir_common.R.raw.select_check_box,

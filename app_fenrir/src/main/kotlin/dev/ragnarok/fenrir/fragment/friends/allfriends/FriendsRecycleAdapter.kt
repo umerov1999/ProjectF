@@ -20,6 +20,7 @@ import dev.ragnarok.fenrir.util.UserInfoResolveUtil
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.util.ViewUtils.getOnlineIcon
+import kotlin.String
 
 class FriendsRecycleAdapter(private var data: List<UsersPart>, private val context: Context) :
     RecyclerView.Adapter<FriendsRecycleAdapter.Holder>() {
@@ -38,7 +39,8 @@ class FriendsRecycleAdapter(private var data: List<UsersPart>, private val conte
         val headerVisible = group && itemInfo.first
         holder.header.visibility = if (headerVisible) View.VISIBLE else View.GONE
         if (headerVisible) {
-            holder.headerCount.text = itemInfo.fullSectionCount.toString()
+            holder.headerCount.text =
+                String.format(Utils.appLocale, "%d", itemInfo.fullSectionCount)
             holder.headerTitle.setText(itemInfo.sectionTitleRes)
         }
         holder.name.text = user.fullName

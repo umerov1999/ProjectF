@@ -18,7 +18,7 @@ class LocalPhotoAlbumsPresenter(savedInstanceState: Bundle?) :
     private var mLoadingNow = false
     private var q: String? = null
     fun fireSearchRequestChanged(q: String?, force: Boolean) {
-        val query = q?.trim { it <= ' ' }
+        val query = q?.trim()
         if (!force && safeEquals(query, this.q)) {
             return
         }

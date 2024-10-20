@@ -311,7 +311,8 @@ class AudioLocalServerRecyclerAdapter(
                                     audioListDisposable += mAudioInteractor.update_file_name(
                                         hash2,
                                         root.findViewById<TextInputEditText>(R.id.edit_file_name).text.toString()
-                                            .trim { it <= ' ' })
+                                            .trim()
+                                    )
                                         .fromIOToMain({
                                             createCustomToast(mContext).showToast(
                                                 R.string.success

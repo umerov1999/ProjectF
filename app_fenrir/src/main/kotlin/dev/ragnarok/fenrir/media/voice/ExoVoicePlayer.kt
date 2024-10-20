@@ -147,7 +147,6 @@ class ExoVoicePlayer(context: Context, config: ProxyConfig?) : IVoicePlayer {
             }
         }
 
-
     override fun setCallback(listener: IPlayerStatusListener?) {
         statusListener = listener
     }

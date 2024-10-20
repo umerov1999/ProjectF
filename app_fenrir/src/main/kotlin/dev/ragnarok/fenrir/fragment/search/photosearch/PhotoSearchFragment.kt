@@ -13,6 +13,8 @@ import dev.ragnarok.fenrir.fragment.search.criteria.PhotoSearchCriteria
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.place.PlaceFactory.getSimpleGalleryPlace
+import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.util.Utils
 
 class PhotoSearchFragment :
     AbsSearchFragment<PhotoSearchPresenter, IPhotoSearchView, Photo, SearchPhotosAdapter>(),
@@ -44,6 +46,11 @@ class PhotoSearchFragment :
     }
 
     override fun createLayoutManager(): RecyclerView.LayoutManager {
+        if (Settings.get().main().single_line_photos) {
+            return Utils.getSingleElementsLayoutManager(
+                requireActivity()
+            )
+        }
         val columnCount = resources.getInteger(R.integer.local_gallery_column_count)
         return GridLayoutManager(requireActivity(), columnCount)
     }

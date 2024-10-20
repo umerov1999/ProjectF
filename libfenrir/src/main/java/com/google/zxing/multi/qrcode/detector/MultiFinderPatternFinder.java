@@ -27,7 +27,6 @@ import com.google.zxing.qrcode.detector.FinderPatternInfo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -118,7 +117,7 @@ public final class MultiFinderPatternFinder extends FinderPatternFinder {
     }
 
     // Sort by estimated module size to speed up the upcoming checks
-    Collections.sort(possibleCenters, new ModuleSizeComparator());
+    possibleCenters.sort(new ModuleSizeComparator());
 
     /*
      * Now lets start: build a list of tuples of three finder locations that

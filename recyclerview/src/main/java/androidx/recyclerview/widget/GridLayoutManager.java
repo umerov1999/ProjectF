@@ -56,11 +56,7 @@ public class GridLayoutManager extends LinearLayoutManager {
     private static final int INVALID_POSITION = -1;
 
     private static final Set<Integer> sSupportedDirectionsForActionScrollInDirection =
-            Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
-                    View.FOCUS_LEFT,
-                    View.FOCUS_RIGHT,
-                    View.FOCUS_UP,
-                    View.FOCUS_DOWN)));
+            Set.of(View.FOCUS_LEFT, View.FOCUS_RIGHT, View.FOCUS_UP, View.FOCUS_DOWN);
 
     /**
      * Span size have been changed but we've not done a new layout calculation.
@@ -126,7 +122,7 @@ public class GridLayoutManager extends LinearLayoutManager {
      * Constructor used when layout manager is set in XML by RecyclerView attribute
      * "layoutManager". If spanCount is not specified in the XML, it defaults to a
      * single column.
-     *
+     * <p>
      * {@link androidx.recyclerview.R.attr#spanCount}
      */
     public GridLayoutManager(Context context, AttributeSet attrs, int defStyleAttr,
@@ -206,11 +202,10 @@ public class GridLayoutManager extends LinearLayoutManager {
     public void onInitializeAccessibilityNodeInfoForItem(RecyclerView.Recycler recycler,
             RecyclerView.State state, View host, AccessibilityNodeInfoCompat info) {
         ViewGroup.LayoutParams lp = host.getLayoutParams();
-        if (!(lp instanceof LayoutParams)) {
+        if (!(lp instanceof LayoutParams glp)) {
             super.onInitializeAccessibilityNodeInfoForItem(host, info);
             return;
         }
-        LayoutParams glp = (LayoutParams) lp;
         int spanGroupIndex = getSpanGroupIndex(recycler, state, glp.getViewLayoutPosition());
         if (mOrientation == HORIZONTAL) {
             info.setCollectionItemInfo(AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(
@@ -817,7 +812,7 @@ public class GridLayoutManager extends LinearLayoutManager {
      * Returns true if the values stored in {@link #mRowWithAccessibilityFocus} and
      * {@link #mColumnWithAccessibilityFocus} are not correct for the view at
      * {@code adapterPosition}.
-     *
+     * <p>
      * Note that for cells that span multiple rows or multiple columns, {@link
      * #mRowWithAccessibilityFocus} and {@link #mColumnWithAccessibilityFocus} can be set to more
      * than one of several values. Accessibility focus is considered unchanged if any of the

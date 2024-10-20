@@ -129,7 +129,7 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
                 val blockSize = statFs.blockSizeLong
                 val available = blockCount * blockSize
                 size = available / 50L
-            } catch (ignored: IllegalArgumentException) {
+            } catch (_: IllegalArgumentException) {
             }
             return size.coerceAtMost(52428800L).coerceAtLeast(5242880L)
         }

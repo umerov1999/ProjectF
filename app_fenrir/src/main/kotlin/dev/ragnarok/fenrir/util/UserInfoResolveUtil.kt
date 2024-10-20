@@ -553,8 +553,6 @@ object UserInfoResolveUtil {
         return null;
     }
 
-
-
     public static String getUserActivityLine(Context context, VKApiUser apiUser){
         return getUserActivityLine(context, apiUser.last_seen, apiUser.online, apiUser.sex);
     }
@@ -563,7 +561,6 @@ object UserInfoResolveUtil {
     fun getUserActivityLine(context: Context, user: User, force_last_seen: Boolean): String {
         return getUserActivityLine(context, user.lastSeen, user.isOnline, user.sex, force_last_seen)
     }
-
 
     fun getUserActivityLine(
         context: Context,

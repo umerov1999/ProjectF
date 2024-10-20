@@ -142,7 +142,7 @@ class ValidateActivity : AppCompatActivity() {
                                     Settings.get().accounts().storeAccessToken(it, accessToken)
                                 }
                         }
-                    } catch (ignored: Exception) {
+                    } catch (_: Exception) {
                     }
                     setResult(RESULT_OK, intent)
                 }

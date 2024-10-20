@@ -217,14 +217,14 @@ inline fun <reified T : CharSequence> T?.trimmedIsNullOrEmpty(): Boolean {
     contract {
         returns(false) implies (this@trimmedIsNullOrEmpty != null)
     }
-    return this == null || this.trim { it <= ' ' }.isEmpty()
+    return this == null || this.trim().isEmpty()
 }
 
 inline fun <reified T : CharSequence> T?.trimmedNonNullNoEmpty(): Boolean {
     contract {
         returns(true) implies (this@trimmedNonNullNoEmpty != null)
     }
-    return this != null && this.trim { it <= ' ' }.isNotEmpty()
+    return this != null && this.trim().isNotEmpty()
 }
 
 inline fun <reified T : CharSequence> T?.nonNullNoEmpty(block: (T) -> Unit) {
@@ -272,7 +272,7 @@ inline fun <reified T, reified E : Collection<*>> E?.nonNullNoEmptyOr(
 
 inline fun <reified T : CharSequence> T?.trimmedNonNullNoEmpty(block: (T) -> Unit) {
     this?.let {
-        if (trim { it <= ' ' }.isNotEmpty()) {
+        if (trim().isNotEmpty()) {
             apply(block)
         }
     }

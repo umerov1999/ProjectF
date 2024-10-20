@@ -239,8 +239,7 @@ final class ScrollEventAdapter extends RecyclerView.OnScrollListener {
         int bottomDecorations = mLayoutManager.getBottomDecorationHeight(firstVisibleView);
 
         LayoutParams params = firstVisibleView.getLayoutParams();
-        if (params instanceof MarginLayoutParams) {
-            MarginLayoutParams margin = (MarginLayoutParams) params;
+        if (params instanceof MarginLayoutParams margin) {
             leftDecorations += margin.leftMargin;
             rightDecorations += margin.rightMargin;
             topDecorations += margin.topMargin;

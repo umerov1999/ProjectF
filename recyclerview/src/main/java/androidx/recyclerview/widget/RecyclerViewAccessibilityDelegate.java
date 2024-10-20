@@ -88,8 +88,7 @@ public class RecyclerViewAccessibilityDelegate extends AccessibilityDelegateComp
             @SuppressLint("InvalidNullabilityOverride") @NonNull AccessibilityEvent event
     ) {
         super.onInitializeAccessibilityEvent(host, event);
-        if (host instanceof RecyclerView && !shouldIgnore()) {
-            RecyclerView rv = (RecyclerView) host;
+        if (host instanceof RecyclerView rv && !shouldIgnore()) {
             if (rv.getLayoutManager() != null) {
                 rv.getLayoutManager().onInitializeAccessibilityEvent(event);
             }

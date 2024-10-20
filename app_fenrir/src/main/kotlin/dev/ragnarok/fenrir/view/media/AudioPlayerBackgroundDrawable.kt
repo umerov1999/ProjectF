@@ -22,7 +22,6 @@ import dev.ragnarok.fenrir.settings.Settings
 import kotlin.math.abs
 import kotlin.math.cos
 
-
 class AudioPlayerBackgroundDrawable(
     private val bitmap: Bitmap,
     @ColorInt private val surface: Int

@@ -225,7 +225,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         }
         if (user.blacklisted) {
             mHeaderHolder?.blacklisted?.visibility = View.VISIBLE
-            if (Utils.hasMarshmallow() && FenrirNative.isNativeLoaded) {
+            if (FenrirNative.isNativeLoaded) {
                 mHeaderHolder?.blacklisted?.fromRes(
                     dev.ragnarok.fenrir_common.R.raw.skull,
                     dp(48f),

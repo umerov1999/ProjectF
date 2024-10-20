@@ -51,17 +51,18 @@ struct Shape::Impl
 
     bool render(RenderMethod* renderer)
     {
-        Compositor* cmp = nullptr;
-        bool ret;
+        if (!rd) return false;
 
-        renderer->blend(shape->blend());
+        RenderCompositor* cmp = nullptr;
+
+        renderer->blend(PP(shape)->blendMethod);
 
         if (needComp) {
             cmp = renderer->target(bounds(renderer), renderer->colorSpace());
             renderer->beginComposite(cmp, CompositeMethod::None, opacity);
         }
 
-        ret = renderer->renderShape(rd);
+        auto ret = renderer->renderShape(rd);
         if (cmp) renderer->endComposite(cmp);
         return ret;
     }
@@ -117,6 +118,7 @@ struct Shape::Impl
 
     RenderRegion bounds(RenderMethod* renderer)
     {
+        if (!rd) return {0, 0, 0, 0};
         return renderer->region(rd);
     }
 
@@ -260,7 +262,7 @@ struct Shape::Impl
         flag |= RenderUpdateFlag::Stroke;
     }
 
-    void strokeFill(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+    void strokeColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
     {
         if (!rs.stroke) rs.stroke = new RenderStroke();
         if (rs.stroke->fill) {

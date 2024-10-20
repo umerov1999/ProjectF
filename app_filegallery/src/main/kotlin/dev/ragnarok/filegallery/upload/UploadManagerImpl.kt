@@ -1,10 +1,8 @@
 package dev.ragnarok.filegallery.upload
 
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import dev.ragnarok.filegallery.Extra
@@ -109,23 +107,17 @@ class UploadManagerImpl(
             val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
                     ?: return
-            val builder: NotificationCompat.Builder
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                if (needCreateChannel) {
-                    val channel = NotificationChannel(
-                        NOTIFICATION_CHANNEL_ID,
-                        context.getString(R.string.files_uploading_notification_title),
-                        NotificationManager.IMPORTANCE_LOW
-                    )
-                    notificationManager.createNotificationChannel(channel)
-                    needCreateChannel = false
-                }
-                builder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-            } else {
-                builder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID).setPriority(
-                    Notification.PRIORITY_LOW
+            if (needCreateChannel) {
+                val channel = NotificationChannel(
+                    NOTIFICATION_CHANNEL_ID,
+                    context.getString(R.string.files_uploading_notification_title),
+                    NotificationManager.IMPORTANCE_LOW
                 )
+                notificationManager.createNotificationChannel(channel)
+                needCreateChannel = false
             }
+            val builder: NotificationCompat.Builder =
+                NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             builder.setContentTitle(context.getString(R.string.files_uploading_notification_title))
                 .setSmallIcon(R.drawable.ic_notification_upload)
                 .setOngoing(true)

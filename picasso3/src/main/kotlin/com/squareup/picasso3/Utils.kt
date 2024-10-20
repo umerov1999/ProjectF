@@ -140,7 +140,7 @@ internal object Utils {
             val available = blockCount * blockSize
             // Target 2% of the total space.
             size = available / 50
-        } catch (ignored: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
         }
 
         // Bound inside min/max size for disk cache.
@@ -179,7 +179,7 @@ internal object Utils {
             1 -> {
                 try {
                     segments[0].toInt()
-                } catch (e: NumberFormatException) {
+                } catch (_: NumberFormatException) {
                     throw FileNotFoundException("Last path segment is not a resource ID: " + data.uri)
                 }
             }
@@ -207,7 +207,7 @@ internal object Utils {
                 data.uri.authority
                     ?: throw FileNotFoundException("No package provided: " + data.uri)
             context.packageManager.getResourcesForApplication(pkg)
-        } catch (e: NameNotFoundException) {
+        } catch (_: NameNotFoundException) {
             throw FileNotFoundException("Unable to obtain resources for package: " + data.uri)
         }
     }

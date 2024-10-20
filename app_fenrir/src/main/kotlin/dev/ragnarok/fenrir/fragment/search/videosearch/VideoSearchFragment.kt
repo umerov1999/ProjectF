@@ -13,6 +13,7 @@ import dev.ragnarok.fenrir.fragment.search.criteria.VideoSearchCriteria
 import dev.ragnarok.fenrir.fragment.videos.VideosAdapter
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Video
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
 
 class VideoSearchFragment :
@@ -30,6 +31,11 @@ class VideoSearchFragment :
     }
 
     override fun createLayoutManager(): RecyclerView.LayoutManager {
+        if (Settings.get().main().single_line_videos) {
+            return Utils.getSingleElementsLayoutManager(
+                requireActivity()
+            )
+        }
         val columns = resources.getInteger(R.integer.videos_column_count)
         return StaggeredGridLayoutManager(columns, StaggeredGridLayoutManager.VERTICAL)
     }

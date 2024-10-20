@@ -115,7 +115,7 @@ class FeedAdapter(
         viewHolder.bottomActionsContainer.visibility =
             if (item.type == "post") View.VISIBLE else View.GONE
         viewHolder.tvShowMore.visibility =
-            if (Utils.safeLenghtOf(item.text) > 400) View.VISIBLE else View.GONE
+            if (Utils.safeLengthOf(item.text) > 400) View.VISIBLE else View.GONE
 
         /*
         if (item.getSource() != null){

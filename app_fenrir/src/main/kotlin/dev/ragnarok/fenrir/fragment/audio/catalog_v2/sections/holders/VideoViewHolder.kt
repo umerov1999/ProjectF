@@ -12,7 +12,9 @@ import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.place.PlaceFactory.getVideoPreviewPlace
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppTextUtils
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.view.VideoServiceIcons.getIconByType
+import kotlin.String
 
 class VideoViewHolder(itemView: View) : IViewHolder(itemView) {
     val card: View = itemView.findViewById(R.id.card_view)
@@ -24,7 +26,7 @@ class VideoViewHolder(itemView: View) : IViewHolder(itemView) {
 
     override fun bind(position: Int, itemDataHolder: AbsModel) {
         val video = itemDataHolder as Video
-        viewsCount.text = video.views.toString()
+        viewsCount.text = String.format(Utils.appLocale, "%d", video.views)
         title.text = video.title
         videoLenght.text = AppTextUtils.getDurationString(video.duration)
         val photoUrl = video.image

@@ -518,7 +518,6 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
             )
         }
 
-
         fun appendOwnersInsertOperations(
             operations: MutableList<ContentProviderOperation>,
             accountId: Long,
@@ -528,7 +527,6 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
             appendUsersInsertOperation(operations, accountId, ownerEntities.userEntities)
             appendCommunitiesInsertOperation(operations, accountId, ownerEntities.communityEntities)
         }
-
 
         fun appendUsersInsertOperation(
             operations: MutableList<ContentProviderOperation>,
@@ -541,7 +539,6 @@ internal class OwnersStorage(context: AppStorages) : AbsStorage(context), IOwner
                 appendUserInsertOperation(operations, uri, dbo)
             }
         }
-
 
         fun appendCommunitiesInsertOperation(
             operations: MutableList<ContentProviderOperation>,

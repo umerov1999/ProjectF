@@ -195,7 +195,7 @@ class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
         }
         mCallbacks = try {
             context as NavigationDrawerCallbacks
-        } catch (ignored: ClassCastException) {
+        } catch (_: ClassCastException) {
             throw ClassCastException("Activity must implement NavigationDrawerCallbacks.")
         }
     }

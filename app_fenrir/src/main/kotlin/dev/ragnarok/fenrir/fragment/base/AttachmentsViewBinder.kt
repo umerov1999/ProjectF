@@ -442,7 +442,7 @@ class AttachmentsViewBinder(
                 copy.authorPhoto,
                 Constants.PICASSO_TAG
             )
-            check.tvShowMore.visibility = if (reduce && Utils.safeLenghtOf(
+            check.tvShowMore.visibility = if (reduce && Utils.safeLengthOf(
                     copy.text
                 ) > 400
             ) View.VISIBLE else View.GONE

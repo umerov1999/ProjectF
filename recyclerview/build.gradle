@@ -4,7 +4,7 @@ plugins {
     id("kotlinx-serialization")
 }
 
-//recyclerview 1.4.0-beta01
+//recyclerview 1.4.0-rc01
 //viewpager 1.1.0
 
 android {
@@ -18,12 +18,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
         encoding = "utf-8"
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "21"
     }
     sourceSets {
         main.res.srcDirs "res", "res-public"

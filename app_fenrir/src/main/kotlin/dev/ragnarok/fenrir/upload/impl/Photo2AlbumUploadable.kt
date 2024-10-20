@@ -86,7 +86,7 @@ class Photo2AlbumUploadable(
                                         longitude = it.longitude
                                     }
                                 }
-                            } catch (ignored: Exception) {
+                            } catch (_: Exception) {
                             }
                             if (dto.photos_list.isNullOrEmpty()) {
                                 toFlowThrowable(NotFoundException("VK doesn't upload this file"))

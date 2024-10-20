@@ -31,9 +31,6 @@
 
     <bool name="is_tablet">false</bool>
 
-    <dimen name="message_author_avatar_size">38dp</dimen>
-    <dimen name="message_bubble_corner_radius">10dp</dimen>
-
     <!-- Audio player -->
     <dimen name="audio_player_controls_end_button_width">50dp</dimen>
     <dimen name="audio_player_controls_end_button_height">50dp</dimen>

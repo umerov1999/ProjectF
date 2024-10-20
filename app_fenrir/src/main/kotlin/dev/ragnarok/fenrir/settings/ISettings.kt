@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.settings
 
 import android.content.Context
-import android.net.Uri
 import androidx.appcompat.app.AppCompatDelegate
 import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.api.model.LocalServerSettings
@@ -96,6 +95,8 @@ interface ISettings {
         val start_newsMode: Int
         fun setPrefDisplayImageSize(@PhotoSize size: Int)
         val isWebview_night_mode: Boolean
+        val single_line_videos: Boolean
+        val single_line_photos: Boolean
         val isSnow_mode: Boolean
         val photoRoundMode: Int
         val fontSize: Int
@@ -224,6 +225,7 @@ interface ISettings {
         fun isOwnerInChangesMonitor(ownerId: Long): Boolean
         fun putOwnerInChangesMonitor(ownerId: Long)
         fun removeOwnerInChangesMonitor(ownerId: Long)
+        fun resetAllChangesMonitor()
         val isAudio_catalog_v2: Boolean
 
         val picassoDispatcher: Int
@@ -240,7 +242,7 @@ interface ISettings {
         fun setUserNameChanges(userId: Long, name: String?)
         fun reloadUserNameChangesSettings(onlyRoot: Boolean)
         val userNameChangesMap: Map<String, String>
-        val userNameChangesKeys: Set<String>
+        fun resetAllUserNameChanges()
         val customChannelNotif: Int
         fun nextCustomChannelNotif()
         val currentParser: Int
@@ -248,42 +250,15 @@ interface ISettings {
     }
 
     interface INotificationSettings {
-        fun getNotifPref(aid: Long, peerid: Long): Int
-        fun setDefault(aid: Long, peerId: Long)
         fun resetAccount(aid: Long)
-        fun forceDisable(aid: Long, peerId: Long)
-        fun setNotifPref(aid: Long, peerid: Long, flag: Int)
-        val otherNotificationMask: Int
-        val isCommentsNotificationsEnabled: Boolean
-        val isFriendRequestAcceptationNotifEnabled: Boolean
-        val isNewFollowerNotifEnabled: Boolean
-        val isWallPublishNotifEnabled: Boolean
-        val isGroupInvitedNotifEnabled: Boolean
-        val isReplyNotifEnabled: Boolean
-        val isNewPostOnOwnWallNotifEnabled: Boolean
-        val isNewPostsNotificationEnabled: Boolean
-        val isLikeNotificationEnable: Boolean
-        val feedbackRingtoneUri: Uri
-        val newPostRingtoneUri: Uri
-        val defNotificationRingtone: String
-        val notificationRingtone: String
-        fun setNotificationRingtoneUri(path: String?)
-        val vibrationLength: LongArray?
-        val isQuickReplyImmediately: Boolean
-        val isBirthdayNotifyEnabled: Boolean
-        val isMentionNotifyEnabled: Boolean
-        fun isSilentChat(aid: Long, peerId: Long): Boolean
-        val chatsNotif: Map<String, Int>
-        val chatsNotifKeys: Set<String>
-        fun reloadNotifSettings(onlyRoot: Boolean)
+        fun resetAll()
 
-        companion object {
-            const val FLAG_SOUND = 1
-            const val FLAG_VIBRO = 2
-            const val FLAG_LED = 4
-            const val FLAG_SHOW_NOTIF = 8
-            const val FLAG_HIGH_PRIORITY = 16
-        }
+        fun setSilentPeer(aid: Long, peerId: Long, silent: Boolean)
+        fun isSilentPeer(aid: Long, peerId: Long): Boolean
+
+        val silentPeersMap: Map<String, Boolean>
+
+        fun reloadSilentSettings(onlyRoot: Boolean)
     }
 
     interface IRecentChats {

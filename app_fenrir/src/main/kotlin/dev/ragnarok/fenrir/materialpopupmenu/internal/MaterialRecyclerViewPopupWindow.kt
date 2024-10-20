@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.materialpopupmenu.internal
 
 import android.content.Context
 import android.graphics.Rect
-import android.os.Build
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -163,8 +162,7 @@ internal class MaterialRecyclerViewPopupWindow(
             // use outside touchable to dismiss drop down when touching outside of it, so
             // only set this if the dropdown is not always visible
             popup.isOutsideTouchable = true
-            PopupWindowCompat.showAsDropDown(
-                popup,
+            popup.showAsDropDown(
                 view,
                 dropDownHorizontalOffset,
                 dropDownVerticalOffset,
@@ -257,9 +255,7 @@ internal class MaterialRecyclerViewPopupWindow(
         dropDownList.background = background
         // Remove background from popup itself to avoid overdraw.
         // This causes issues on Lollipop so we do it on M+ only (see issue #66 on GitHub).
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            popup.setBackgroundDrawable(null)
-        }
+        popup.setBackgroundDrawable(null)
 
         popup.contentView = dropDownList
 
@@ -382,10 +378,7 @@ internal class MaterialRecyclerViewPopupWindow(
         anchor: View,
         yOffset: Int,
         ignoreBottomDecorations: Boolean
-    ) =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-            popup.getMaxAvailableHeight(anchor, yOffset, ignoreBottomDecorations)
-        else popup.getMaxAvailableHeight(anchor, yOffset)
+    ) = popup.getMaxAvailableHeight(anchor, yOffset, ignoreBottomDecorations)
 
     /**
      * @see androidx.appcompat.view.menu.MenuPopup.measureIndividualMenuWidth

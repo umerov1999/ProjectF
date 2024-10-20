@@ -21,8 +21,6 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ChatActivityBubbles.Companion.forStart
 import dev.ragnarok.fenrir.activity.MainActivity
-import dev.ragnarok.fenrir.activity.QuickAnswerActivity
-import dev.ragnarok.fenrir.activity.QuickAnswerActivity.Companion.forStart
 import dev.ragnarok.fenrir.api.model.VKApiMessage
 import dev.ragnarok.fenrir.domain.Repository.messages
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory.withSpans
@@ -43,16 +41,12 @@ import dev.ragnarok.fenrir.push.ChatEntryFetcher.DialogInfo
 import dev.ragnarok.fenrir.push.NotificationScheduler
 import dev.ragnarok.fenrir.service.QuickReplyService.Companion.intentForAddMessage
 import dev.ragnarok.fenrir.service.QuickReplyService.Companion.intentForReadMessage
-import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.theme.ThemesController.toastColor
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.ShortcutUtils.chatOpenIntent
 import dev.ragnarok.fenrir.util.Utils.createOkHttp
 import dev.ragnarok.fenrir.util.Utils.declOfNum
-import dev.ragnarok.fenrir.util.Utils.hasFlag
-import dev.ragnarok.fenrir.util.Utils.hasNougat
-import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 import okhttp3.OkHttpClient
@@ -328,10 +322,8 @@ object NotificationHelper {
         val nManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
                 ?: return
-        if (hasOreo()) {
-            nManager.createNotificationChannel(getChatMessageChannel(context))
-            nManager.createNotificationChannel(getGroupChatMessageChannel(context))
-        }
+        nManager.createNotificationChannel(getChatMessageChannel(context))
+        nManager.createNotificationChannel(getGroupChatMessageChannel(context))
         val channelId =
             if (Peer.isGroupChat(message.peerId)) groupChatMessageChannelId else chatMessageChannelId
         val msgs = NotificationCompat.MessagingStyle(
@@ -365,7 +357,7 @@ object NotificationHelper {
         msgs.addMessage(inbox)
         if (message.peerId > VKApiMessage.CHAT_PEER) {
             msgs.conversationTitle = peer.getTitle()
-            msgs.isGroupConversation = Build.VERSION.SDK_INT >= 28
+            msgs.isGroupConversation = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
         }
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.client_round)
@@ -378,27 +370,6 @@ object NotificationHelper {
             .setSortKey("" + (Long.MAX_VALUE - message.date * 1000))
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setAutoCancel(true)
-
-        //Our quickreply
-        val intentQuick = forStart(
-            context,
-            accountId,
-            message,
-            text?.toString() ?: context.getString(R.string.error),
-            peer.avaUrl,
-            peer.getTitle()
-        )
-        val quickPendingIntent = PendingIntent.getActivity(
-            context,
-            message.getObjectId(),
-            intentQuick,
-            makeMutablePendingIntent(PendingIntent.FLAG_UPDATE_CURRENT)
-        )
-        val actionCustomReply = NotificationCompat.Action(
-            R.drawable.reply,
-            context.getString(R.string.quick_answer_title),
-            quickPendingIntent
-        )
 
         //System reply. Works only on Wear (20 Api) and N+
         val remoteInput = RemoteInput.Builder(Extra.BODY)
@@ -441,11 +412,7 @@ object NotificationHelper {
             makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
         )
         builder.setContentIntent(contentIntent)
-        if (!hasNougat()) {
-            builder.addAction(actionCustomReply)
-        } else {
-            builder.addAction(actionDirectReply)
-        }
+        builder.addAction(actionDirectReply)
         builder.addAction(actionRead)
 
         //Для часов игнорирует все остальные action, тем самым убирает QuickReply
@@ -454,27 +421,6 @@ object NotificationHelper {
         War.addAction(actionRead)
         War.startScrollBottom = true
         builder.extend(War)
-        if (!hasOreo()) {
-            val notificationMask = Settings.get()
-                .notifications()
-                .getNotifPref(accountId, message.peerId)
-            if (hasFlag(notificationMask, ISettings.INotificationSettings.FLAG_HIGH_PRIORITY)) {
-                builder.priority = NotificationCompat.PRIORITY_HIGH
-            }
-            if (hasFlag(notificationMask, ISettings.INotificationSettings.FLAG_LED)) {
-                builder.setLights(-0xffff01, 100, 1000)
-            }
-            if (hasFlag(notificationMask, ISettings.INotificationSettings.FLAG_VIBRO)) {
-                builder.setVibrate(
-                    Settings.get()
-                        .notifications()
-                        .vibrationLength
-                )
-            }
-            if (hasFlag(notificationMask, ISettings.INotificationSettings.FLAG_SOUND)) {
-                builder.setSound(findNotificationSound())
-            }
-        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Peer.isGroupChat(peer.id) && Settings.get()
                 .main().isNotification_bubbles_enabled
         ) {
@@ -492,20 +438,6 @@ object NotificationHelper {
                 builder.build()
             )
         }
-        if (Settings.get().notifications().isQuickReplyImmediately) {
-            val startQuickReply = forStart(
-                context,
-                accountId,
-                message,
-                text?.toString() ?: context.getString(R.string.error),
-                peer.avaUrl,
-                peer.getTitle()
-            )
-            startQuickReply.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            startQuickReply.putExtra(QuickAnswerActivity.EXTRA_FOCUS_TO_FIELD, false)
-            startQuickReply.putExtra(QuickAnswerActivity.EXTRA_LIVE_DELAY, true)
-            context.startActivity(startQuickReply)
-        }
     }
 
     fun showSimpleNotification(
@@ -521,10 +453,8 @@ object NotificationHelper {
         val text =
             if (hideBody) context.getString(R.string.message_text_is_not_available) else body
         val nManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        if (hasOreo()) {
-            nManager.createNotificationChannel(getChatMessageChannel(context))
-            nManager.createNotificationChannel(getGroupChatMessageChannel(context))
-        }
+        nManager.createNotificationChannel(getChatMessageChannel(context))
+        nManager.createNotificationChannel(getGroupChatMessageChannel(context))
         val builder = NotificationCompat.Builder(context, chatMessageChannelId)
             .setSmallIcon(R.drawable.client_round)
             .setContentText(text)
@@ -562,26 +492,9 @@ object NotificationHelper {
         return aid.toString() + "_" + peerId
     }
 
-    fun findNotificationSound(): Uri {
-        return try {
-            Uri.parse(
-                Settings.get()
-                    .notifications()
-                    .notificationRingtone
-            )
-        } catch (ignored: Exception) {
-            Uri.parse(
-                Settings.get()
-                    .notifications()
-                    .defNotificationRingtone
-            )
-        }
-    }
-
     private fun getService(context: Context): NotificationManager {
         return context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     }
-
 
     fun tryCancelNotificationForPeer(context: Context, accountId: Long, peerId: Long) {
         //int mask = Settings.get()
@@ -663,7 +576,7 @@ object NotificationHelper {
                 if (person.name != null) person.name.toString() else context.getString(R.string.error)
             val id = "fenrir_peer_" + peer.id + "_aid_" + accountId
             val shortcutBuilder = ShortcutInfoCompat.Builder(context, id)
-                .setShortLabel(person_name.trim { it <= ' ' })
+                .setShortLabel(person_name.trim())
                 .setLongLabel(person_name)
                 .setIntent(
                     chatOpenIntent(
@@ -700,7 +613,7 @@ object NotificationHelper {
             bubbleBuilder.setAutoExpandBubble(false)
             bubbleBuilder.setDesiredHeight(640)
             builder.bubbleMetadata = bubbleBuilder.build()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             //FileLog.e(e);
         }
     }

@@ -38,6 +38,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import androidx.annotation.AttrRes;
 import androidx.annotation.DimenRes;
@@ -207,7 +208,7 @@ public abstract class NavigationBarView extends FrameLayout {
     // Create the menu view.
     menuView = createNavigationBarMenuView(context);
     menuView.setMinimumHeight(getSuggestedMinimumHeight());
-    menuView.setCollapsedMaxItemCount(getMaxItemCount());
+    menuView.setCollapsedMaxItemCount(getCollapsedMaxItemCount());
 
     presenter.setMenuView(menuView);
     presenter.setId(MENU_PRESENTER_ID);
@@ -400,7 +401,9 @@ public abstract class NavigationBarView extends FrameLayout {
 
     attributes.recycle();
 
-    addView(menuView);
+    if (!shouldAddMenuView()) {
+      addView(menuView);
+    }
 
     this.menu.setCallback(
         new MenuBuilder.Callback() {
@@ -416,6 +419,18 @@ public abstract class NavigationBarView extends FrameLayout {
           @Override
           public void onMenuModeChange(MenuBuilder menu) {}
         });
+  }
+
+  /**
+   * Whether or not to add the menu view; if true, the menu view is added to the NavigationBarView
+   * in the constructor. Otherwise, the menu view should be added to the NavigationBarView as a
+   * descendant view somewhere else.
+   *
+   * @hide
+   */
+  @RestrictTo(LIBRARY_GROUP)
+  public boolean shouldAddMenuView() {
+    return false;
   }
 
   @Override
@@ -473,6 +488,14 @@ public abstract class NavigationBarView extends FrameLayout {
   @RestrictTo(LIBRARY_GROUP)
   @NonNull
   public MenuView getMenuView() {
+    return menuView;
+  }
+
+  /**
+   * Returns the {@link android.view.ViewGroup} associated with the navigation bar menu.
+   */
+  @NonNull
+  public ViewGroup getMenuViewGroup() {
     return menuView;
   }
 
@@ -1151,8 +1174,19 @@ public abstract class NavigationBarView extends FrameLayout {
 
   /** Returns whether or not submenus are supported. */
   protected boolean isSubMenuSupported() {
-    // TODO: b/352634230 - NavigationRail should support submenus once ready
     return false;
+  }
+
+  // TODO: b/361189184 - Make public once expanded state is public
+  /**
+   * Returns the maximum number of items that can be shown in the collapsed state in
+   * NavigationBarView.
+   *
+   * @hide
+   */
+  @RestrictTo(LIBRARY_GROUP)
+  public int getCollapsedMaxItemCount() {
+    return getMaxItemCount();
   }
 
   /**

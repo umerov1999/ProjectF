@@ -32,7 +32,7 @@ class InputTextDialog internal constructor(val context: Context) {
         builder.setView(view)
         builder.setPositiveButton(R.string.button_ok) { dialog, _ ->
             input.error = null
-            val newValue = input.text.toString().trim { it <= ' ' }
+            val newValue = input.text.toString().trim()
             if (newValue.isEmpty() && !allowEmpty) {
                 input.error = context.getString(R.string.field_is_required)
                 input.requestFocus()

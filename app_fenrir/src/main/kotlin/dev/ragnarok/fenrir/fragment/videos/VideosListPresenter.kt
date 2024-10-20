@@ -73,7 +73,7 @@ class VideosListPresenter(
     }
 
     fun fireSearchRequestChanged(q: String?) {
-        sleep_search(q?.trim { it <= ' ' })
+        sleep_search(q?.trim())
     }
 
     private fun onUploadsDataReceived(data: List<Upload>) {

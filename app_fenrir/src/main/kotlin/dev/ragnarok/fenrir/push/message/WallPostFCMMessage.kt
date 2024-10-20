@@ -18,11 +18,9 @@ import dev.ragnarok.fenrir.longpoll.NotificationHelper
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.place.PlaceFactory.getPostPreviewPlace
 import dev.ragnarok.fenrir.push.NotificationScheduler.INSTANCE
-import dev.ragnarok.fenrir.push.NotificationUtils.configOtherPushNotification
 import dev.ragnarok.fenrir.push.OwnerInfo.Companion.getRx
 import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.AppPerms
-import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 import kotlinx.serialization.SerialName
@@ -52,12 +50,6 @@ class WallPostFCMMessage {
 
     @SuppressLint("CheckResult")
     private fun notifyWallPost(context: Context, accountId: Long) {
-        if (!get()
-                .notifications()
-                .isNewPostOnOwnWallNotifEnabled
-        ) {
-            return
-        }
         val app = context.applicationContext
         getRx(app, accountId, from_id)
             .fromScopeToMain(INSTANCE) { ownerInfo ->
@@ -71,20 +63,12 @@ class WallPostFCMMessage {
 
     @SuppressLint("CheckResult")
     private fun notifyNewPost(context: Context, accountId: Long) {
-        if (!get()
-                .notifications()
-                .isNewPostsNotificationEnabled
-        ) {
-            return
-        }
         val app = context.applicationContext
         getRx(app, accountId, owner_id)
             .fromScopeToMain(INSTANCE) { info ->
                 val manager =
                     app.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
-                if (hasOreo()) {
-                    manager?.createNotificationChannel(getNewPostChannel(app))
-                }
+                manager?.createNotificationChannel(getNewPostChannel(app))
                 val builder = NotificationCompat.Builder(app, newPostChannelId)
                     .setSmallIcon(R.drawable.client_round)
                     .setContentTitle(title)
@@ -105,7 +89,6 @@ class WallPostFCMMessage {
                 )
                 builder.setContentIntent(contentIntent)
                 val notification = builder.build()
-                configOtherPushNotification(notification)
                 if (AppPerms.hasNotificationPermissionSimple(context)) {
                     manager?.notify(
                         "new_post" + owner_id + "_" + post_id,
@@ -119,9 +102,7 @@ class WallPostFCMMessage {
     private fun notifyImpl(context: Context, owner: Owner, avatar: Bitmap?) {
         val nManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
-        if (hasOreo()) {
-            nManager?.createNotificationChannel(getNewPostChannel(context))
-        }
+        nManager?.createNotificationChannel(getNewPostChannel(context))
         val builder = NotificationCompat.Builder(context, newPostChannelId)
             .setSmallIcon(R.drawable.pencil)
             .setLargeIcon(avatar)
@@ -145,7 +126,6 @@ class WallPostFCMMessage {
         )
         builder.setContentIntent(contentIntent)
         val notification = builder.build()
-        configOtherPushNotification(notification)
         if (AppPerms.hasNotificationPermissionSimple(context)) {
             nManager?.notify(place, NotificationHelper.NOTIFICATION_WALL_POST_ID, notification)
         }

@@ -128,7 +128,6 @@ internal class JsonPath {
         }
     }
 
-
     @OptIn(ExperimentalSerializationApi::class)
     private fun prettyString(it: Any?) = (it as? SerialDescriptor)?.serialName ?: it.toString()
 

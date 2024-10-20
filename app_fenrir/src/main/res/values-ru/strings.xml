@@ -140,7 +140,6 @@
     <string name="ask_account_cache_cleaner">Очистить кэш и базу данных?</string>
     <string name="cache_cleaner">Очистить кэш</string>
     <!-- Quick Reply-->
-    <string name="go_to_dialog">К диалогу</string>
     <string name="send">Отправить</string>
 
     <string name="text_hint">Сообщение</string>
@@ -178,19 +177,6 @@
 
     <string name="notif_setting_title">Уведомления</string>
     <string name="notifications_sync">Синхронизировать из ВК</string>
-    <string name="messages_in_dialogs_tite">Сообщения в диалогах</string>
-    <string name="enable_dialogs_notif_title">Включить оповещения</string>
-    <string name="enable_dialogs_sound_title">Звук</string>
-    <string name="enable_dialogs_vibro_title">Вибро</string>
-    <string name="enable_dialogs_led_title">Светодиод</string>
-
-    <string name="messages_in_groupchat_tite">Сообщения в групповых беседах</string>
-    <string name="enable_groupchat_notif_title">Включить оповещения</string>
-    <string name="enable_groupchat_sound_title">Звук</string>
-    <string name="enable_groupchat_vibro_title">Вибро</string>
-    <string name="enable_groupchat_led_title">Светодиод</string>
-
-    <string name="quick_answer_title">Быстрый ответ</string>
 
     <string name="here">Сюда</string>
     <string name="to_another_dialogue">В другой диалог</string>
@@ -260,8 +246,6 @@
         <item>Редактировать</item>
     </string-array>
 
-    <string name="high_notif_priority_title">Высокий приоритет уведомлений</string>
-    <string name="high_notif_priority_summary">Уведомления из приложения будут располагаться выше по отношению к другим уведомлениям. Для Android версии 5.0 и выше данная опция также включает всплывающие уведомления</string>
     <string name="night_mode_title">Ночной режим</string>
 
     <string name="photos">Фотографии</string>
@@ -407,11 +391,7 @@
     <string name="api_error_1151">Нет доступа к удалению документов</string>
     <string name="api_error_1170">Слишком много списков новостей (максимум 10)</string>
 
-    <string name="select_ringtone_title">Мелодия уведомления</string>
-    <string name="ringtone_not_selected">Мелодия не выбрана</string>
-    <string name="ringtone_custom">Еще</string>
     <string name="cancel">Отмена</string>
-    <string name="ringtone_vk">ВКонтакте</string>
     <string name="videos">Видеозаписи</string>
     <string name="articles">Статьи</string>
     <string name="products">Товары</string>
@@ -843,15 +823,6 @@
     <string name="invitation_has_been_declined">Приглашение было отклонено</string>
     <string name="request_canceled">Заявка отменена</string>
     <string name="restored">Восстановлено</string>
-    <string name="friend_request_accepted_notification">Принятие запроса в друзья</string>
-    <string name="group_invited_notification">Приглашение в группу</string>
-    <string name="new_comment_notification">Комментарии к записям/фотографиям/видеозаписям</string>
-    <string name="new_follower_notification">Запрос в друзья</string>
-    <string name="new_wall_post_notification">Новая запись на Вашей стене</string>
-    <string name="other_notifications_settings">Другие уведомления</string>
-    <string name="other_notifications_types">Типы уведомлений</string>
-    <string name="reply_notification">Ответы в комментариях</string>
-    <string name="wall_publish_notification">Опубликована предложенная Вами запись</string>
     <string name="delete_chats_photo">Удалить фон (фото)</string>
     <string name="set_default">Сбросить</string>
     <string name="sidebar_settings">Всплывающее меню</string>
@@ -874,7 +845,6 @@
     <string name="cancelling">Отмена</string>
     <string name="set_as_active">Сделать активным</string>
     <string name="account_switched_to">Текущий аккаунт</string>
-    <string name="peer_notification_settings">Настройки уведомлений</string>
     <string name="wall_post_is_not_yet_initialized">Информация о записи еще не получена, пожалуйста, подождите</string>
     <string name="post_is_pinned">Запись закреплена</string>
     <string name="will_be_posted_at">Будет опубликован %1$s</string>
@@ -923,7 +893,6 @@
     <string name="unable_to_play_file">Не удалось воспроизвести файл</string>
     <string name="viewing_messages">Просмотр сообщений</string>
     <string name="authorization">Авторизация</string>
-    <string name="pause_is_not_supported">Пауза не поддерживается</string>
     <string name="jump_to_comment">Перейти к комментарию</string>
     <string name="open_post">Показать запись</string>
     <string name="open_topic">Открыть обсуждение</string>
@@ -947,8 +916,6 @@
     <string name="you_have_successfully_exchanged_keys">Вы успешно обменялись ключами, теперь можете включить шифрование сообщений</string>
     <string name="encryption_status">Статус шифрования</string>
     <string name="no_encryption_keys">Нет ключей шифрования</string>
-    <string name="quick_reply">Быстрый ответ</string>
-    <string name="quick_reply_summary">Немедленно отображать окно быстрого ответа</string>
     <string name="you_dont_have_encryption_keys_stored_initiate_key_exchange">У Вас нет сохраненных ключей шифрования. Инициировать обмен ключами?</string>
     <string name="counter_documents">документы</string>
     <string name="ask_for_pin_on_application_start_title">PIN-код при старте</string>
@@ -1003,7 +970,6 @@
     <string name="store_on_disk">Сохранить на диск (рекомендуется)</string>
     <string name="store_on_disk_summary">Ключи шифрования будут сохранены в постоянной памяти устройства.</string>
     <string name="for_topic">В обсуждении</string>
-    <string name="new_posts_of_users_and_communities">Новые записи пользователей и сообществ</string>
     <string name="reached_maximum_count_of_attachments">Достигнуто максимальное количество вложений</string>
     <string name="select">Выберите вариант ответа</string>
     <string name="votes_count">%1$d голосов</string>
@@ -1030,15 +996,6 @@
     <string name="id">Ид</string>
     <string name="article">Статья</string>
     <string name="copied">Скопировано</string>
-
-    <string-array name="array_vibration_length_names">
-        <item>Короткая</item>
-        <item>Нормальная</item>
-        <item>Длинная</item>
-        <item>Короткая (дважды)</item>
-        <item>Нормальная (дважды)</item>
-        <item>Длинная (дважды)</item>
-    </string-array>
 
     <string name="vk_photos_tab_title">Фото ВК</string>
     <string name="local_photos_tab_title">Локальные фото</string>
@@ -1244,7 +1201,6 @@
     <string name="pause">пауза</string>
     <string name="previous">предыдущий</string>
     <string name="next">следующий</string>
-    <string name="vibration_length">Длительность вибрации</string>
     <string name="family">Семья</string>
     <string name="force_cache">Принудительно слушать из загрузок</string>
     <string name="activity_until_now">текущее время</string>
@@ -1619,7 +1575,6 @@
     <string name="revert_play_audio">Кнопка плей - меню</string>
     <string name="foreground_downloader">Менеджер загрузок</string>
     <string name="side_transition">Анимированный переход</string>
-    <string name="lollipop21">Данное приложение не расчитанно для работы на Android 5.0 sdk 21, ибо у этой прошивки есть баг в модуле Skia. Если будет вылетать, отключите нативную библиотеку в настройках, но тогда лишитесь стикеров, анимированных gif, qr</string>
     <string name="ad_block_story_news">Блокировка рекламы</string>
     <string name="block_news_by_words">Блокировка новостей по словам</string>
     <string name="block_news_by_words_message">Каждый паттерн на новой строке</string>
@@ -1737,4 +1692,7 @@
     <string name="account_type">Тип аккаунта:</string>
     <string name="ip">IP Адрес:</string>
     <string name="auth_by_code">Вход по коду</string>
+    <string name="single_line_elements">Однострочные элементы</string>
+    <string name="single_line_videos">Видео</string>
+    <string name="single_line_photos">Фото</string>
 </resources>

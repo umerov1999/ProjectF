@@ -558,7 +558,7 @@ class SliderPanel : FrameLayout {
         // Fix for pull request #13 and issue #12
         val interceptForDrag: Boolean = try {
             dragHelper?.shouldInterceptTouchEvent(ev) == true
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
         return interceptForDrag && !isLocked
@@ -571,7 +571,7 @@ class SliderPanel : FrameLayout {
         }
         try {
             dragHelper?.processTouchEvent(event)
-        } catch (e: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             return false
         }
         return true

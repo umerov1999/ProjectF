@@ -40,7 +40,7 @@ object TokenModOfficialVK {
             byteArrayOutputStream.write(bArr)
             byteArrayOutputStream.write(valueOf.toByteArray())
             Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.NO_WRAP)
-        } catch (unused: IOException) {
+        } catch (_: IOException) {
             null
         }
     }
@@ -55,7 +55,7 @@ object TokenModOfficialVK {
         try {
             encoded = encoded?.let { MessageDigest.getInstance("SHA1").digest(it) }
             str = null
-        } catch (unused: NoSuchAlgorithmException) {
+        } catch (_: NoSuchAlgorithmException) {
             str = ""
         }
         str2 = if (str == null) {
@@ -101,7 +101,7 @@ object TokenModOfficialVK {
             ret.add(sb3.split(Regex("\\|ID\\|$rid\\|:")).toTypedArray()[1])
             println("Token register OK")
             ret
-        } catch (unused: Exception) {
+        } catch (_: Exception) {
             null
         }
     }

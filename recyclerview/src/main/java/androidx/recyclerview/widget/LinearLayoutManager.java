@@ -183,7 +183,7 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
     /**
      * Constructor used when layout manager is set in XML by RecyclerView attribute
      * "layoutManager". Defaults to vertical orientation.
-     *
+     * <p>
      * {@link android.R.attr#orientation}
      * {@link androidx.recyclerview.R.attr#reverseLayout}
      * {@link androidx.recyclerview.R.attr#stackFromEnd}
@@ -453,12 +453,12 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
      * Used to reverse item traversal and layout order.
      * This behaves similar to the layout change for RTL views. When set to true, first item is
      * laid out at the end of the UI, second item is laid out before it etc.
-     *
+     * <p>
      * For horizontal layouts, it depends on the layout direction.
      * When set to true, If {@link RecyclerView} is LTR, than it will
      * layout from RTL, if {@link RecyclerView}} is RTL, it will layout
      * from LTR.
-     *
+     * <p>
      * If you are looking for the exact same behavior of
      * {@link android.widget.AbsListView#setStackFromBottom(boolean)}, use
      * {@link #setStackFromEnd(boolean)}
@@ -1289,7 +1289,7 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
      * If you use a list in which items have different dimensions, the scrollbar will change
      * appearance as the user scrolls through the list. To avoid this issue,  you need to disable
      * this property.
-     *
+     * <p>
      * When smooth scrollbar is disabled, the position and size of the scrollbar thumb is based
      * solely on the number of items in the adapter and the position of the visible items inside
      * the adapter. This provides a stable scrollbar as the user navigates through a list of items
@@ -2123,7 +2123,7 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
 
     View findOnePartiallyOrCompletelyInvisibleChild(int fromIndex, int toIndex) {
         ensureLayoutState();
-        final int next = toIndex > fromIndex ? 1 : (toIndex < fromIndex ? -1 : 0);
+        final int next = Integer.compare(toIndex, fromIndex);
         if (next == 0) {
             return getChildAt(fromIndex);
         }
@@ -2213,7 +2213,7 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
      * Used for debugging.
      * Validates that child views are laid out in correct order. This is important because rest of
      * the algorithm relies on this constraint.
-     *
+     * <p>
      * In default layout, child 0 should be closest to screen position 0 and last child should be
      * closest to position WIDTH or HEIGHT.
      * In reverse layout, last child should be closes to screen position 0 and first child should

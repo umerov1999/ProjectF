@@ -33,7 +33,7 @@ object Accounts {
             owners
                 .getBaseOwnerInfo(aid, aid, IOwnersRepository.MODE_CACHE)
                 .syncSingle()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // NotFountException
             return
         }
@@ -62,7 +62,6 @@ object Accounts {
         toast.setGravity(Gravity.FILL_HORIZONTAL or Gravity.TOP, 0, 0)
         toast.show()
     }
-
 
     fun fromArgs(bundle: Bundle?): Long {
         return bundle?.getLong(Extra.ACCOUNT_ID) ?: ISettings.IAccountsSettings.INVALID_ID

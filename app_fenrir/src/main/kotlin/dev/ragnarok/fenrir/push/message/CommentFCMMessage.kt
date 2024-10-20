@@ -18,12 +18,10 @@ import dev.ragnarok.fenrir.model.Commented
 import dev.ragnarok.fenrir.model.CommentedType
 import dev.ragnarok.fenrir.place.PlaceFactory.getCommentsPlace
 import dev.ragnarok.fenrir.push.NotificationScheduler.INSTANCE
-import dev.ragnarok.fenrir.push.NotificationUtils.configOtherPushNotification
 import dev.ragnarok.fenrir.push.OwnerInfo
 import dev.ragnarok.fenrir.push.OwnerInfo.Companion.getRx
 import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.AppPerms
-import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 import kotlinx.serialization.SerialName
@@ -49,12 +47,6 @@ class CommentFCMMessage {
 
     @SuppressLint("CheckResult")
     fun notify(context: Context, accountId: Long) {
-        if (!get()
-                .notifications()
-                .isCommentsNotificationsEnabled
-        ) {
-            return
-        }
         val app = context.applicationContext
         getRx(context, accountId, from_id)
             .fromScopeToMain(INSTANCE) { ownerInfo -> notifyImpl(app, ownerInfo) }
@@ -84,9 +76,7 @@ class CommentFCMMessage {
         }
         val nManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
-        if (hasOreo()) {
-            nManager?.createNotificationChannel(getCommentsChannel(context))
-        }
+        nManager?.createNotificationChannel(getCommentsChannel(context))
         val builder = NotificationCompat.Builder(context, commentsChannelId)
             .setSmallIcon(R.drawable.comment_thread)
             .setLargeIcon(ownerInfo.avatar)
@@ -110,7 +100,6 @@ class CommentFCMMessage {
         )
         builder.setContentIntent(contentIntent)
         val notification = builder.build()
-        configOtherPushNotification(notification)
         val tag = type + item_id + "_" + owner_id
         if (AppPerms.hasNotificationPermissionSimple(context)) {
             nManager?.notify(tag, NotificationHelper.NOTIFICATION_COMMENT_ID, notification)

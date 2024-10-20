@@ -7,8 +7,6 @@
 #include <utility>
 #include "fenrir_native.h"
 
-using namespace std;
-
 class Parcel {
 public:
     explicit Parcel(int pFlags) {
@@ -401,7 +399,7 @@ private:
         return entity;
     }
 
-    list<ParcelEntity> parcels;
+    std::list<ParcelEntity> parcels;
     int flags;
 };
 
@@ -505,7 +503,7 @@ Java_dev_ragnarok_fenrir_module_parcel_ParcelNative_putDouble(JNIEnv *, jobject,
 }
 
 extern "C" JNIEXPORT void
-Java_dev_ragnarok_fenrir_module_parcel_ParcelNative_putNullString(JNIEnv *env, jobject,
+Java_dev_ragnarok_fenrir_module_parcel_ParcelNative_putNullString(JNIEnv *, jobject,
                                                                   jlong parcel_native) {
     if (!parcel_native) {
         return;
@@ -548,7 +546,7 @@ Java_dev_ragnarok_fenrir_module_parcel_ParcelNative_putBinary(JNIEnv *env, jobje
 }
 
 extern "C" JNIEXPORT void
-Java_dev_ragnarok_fenrir_module_parcel_ParcelNative_putNullBinary(JNIEnv *env, jobject,
+Java_dev_ragnarok_fenrir_module_parcel_ParcelNative_putNullBinary(JNIEnv *, jobject,
                                                                   jlong parcel_native) {
     if (!parcel_native) {
         return;

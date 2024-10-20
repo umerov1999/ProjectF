@@ -11,7 +11,6 @@ import android.view.LayoutInflater
 import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -53,7 +52,7 @@ import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.HelperSimple
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCream
+import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.fenrir.util.ViewUtils
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
@@ -165,18 +164,7 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
                         var tmp = 1f - percent
                         tmp *= 4
                         tmp = Utils.clamp(1f - tmp, 0f, 1f)
-                        if (Utils.hasOreo()) {
-                            mContentRoot?.setBackgroundColor(Color.argb(tmp, 0f, 0f, 0f))
-                        } else {
-                            mContentRoot?.setBackgroundColor(
-                                Color.argb(
-                                    (tmp * 255).toInt(),
-                                    0,
-                                    0,
-                                    0
-                                )
-                            )
-                        }
+                        mContentRoot?.setBackgroundColor(Color.argb(tmp, 0f, 0f, 0f))
                         mButtonsRoot.alpha = tmp
                         mToolbar?.alpha = tmp
                         mViewPager?.alpha = Utils.clamp(percent, 0f, 1f)
@@ -303,7 +291,7 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val w = window
-        if (!hasVanillaIceCream()) {
+        if (!hasVanillaIceCreamTarget()) {
             w.statusBarColor =
                 if (colored) getStatusBarColor(this) else getStatusBarNonColored(
                     this
@@ -314,11 +302,6 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons
-
-        if (!Utils.hasMarshmallow()) {
-            w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        }
     }
 
     private val requestWritePermission = requestPermissionsAbs(

@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.service
 
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -20,7 +19,6 @@ import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.AppPerms
-import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CompositeJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
@@ -88,23 +86,16 @@ class KeepLongpollService : Service() {
         notificationIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         val pendingIntent =
             PendingIntent.getService(this, 0, notificationIntent, makeMutablePendingIntent(0))
-        val builder: NotificationCompat.Builder =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val channel = NotificationChannel(
-                    KEEP_LONGPOLL_CHANNEL,
-                    getString(R.string.channel_keep_longpoll),
-                    NotificationManager.IMPORTANCE_NONE
-                )
-                val nManager =
-                    NotificationManagerCompat.from(this)
-                nManager.createNotificationChannel(channel)
-                NotificationCompat.Builder(this, channel.id)
-            } else {
-                NotificationCompat.Builder(
-                    this,
-                    KEEP_LONGPOLL_CHANNEL
-                ).setPriority(Notification.PRIORITY_MIN)
-            }
+
+        val channel = NotificationChannel(
+            KEEP_LONGPOLL_CHANNEL,
+            getString(R.string.channel_keep_longpoll),
+            NotificationManager.IMPORTANCE_NONE
+        )
+        val nManager =
+            NotificationManagerCompat.from(this)
+        nManager.createNotificationChannel(channel)
+        val builder = NotificationCompat.Builder(this, channel.id)
         val action_stop = NotificationCompat.Action.Builder(
             R.drawable.ic_arrow_down,
             getString(R.string.stop_action), pendingIntent
@@ -121,7 +112,7 @@ class KeepLongpollService : Service() {
         War.addAction(action_stop)
         War.startScrollBottom = true
         builder.extend(War)
-        if (Utils.hasUpsideDownCake()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             startForeground(
                 FOREGROUND_SERVICE,
                 builder.build(),

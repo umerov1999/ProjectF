@@ -1,6 +1,5 @@
 package dev.ragnarok.fenrir.push
 
-import android.app.Notification
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -11,11 +10,7 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.picasso.transforms.ImageHelper.getRoundedBitmap
 import dev.ragnarok.fenrir.settings.CurrentTheme
-import dev.ragnarok.fenrir.settings.ISettings
-import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils.dpToPx
-import dev.ragnarok.fenrir.util.Utils.hasFlag
-import dev.ragnarok.fenrir.util.Utils.hasOreo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.IOException
@@ -46,7 +41,7 @@ object NotificationUtils {
                     .centerCrop()
                     .transform(transformation)
                     .get()!!
-            } catch (e: IOException) {
+            } catch (_: IOException) {
                 loadRoundedImageFromResources(app, ifErrorOrEmpty, transformation, size)
             }
         } else {
@@ -79,31 +74,8 @@ object NotificationUtils {
         val value = extras.getString(name)
         return try {
             if (value.isNullOrEmpty()) defaultValue else value.toInt()
-        } catch (e: NumberFormatException) {
+        } catch (_: NumberFormatException) {
             defaultValue
-        }
-    }
-
-    @Suppress("DEPRECATION")
-    fun configOtherPushNotification(notification: Notification) {
-        if (hasOreo()) {
-            return
-        }
-        val mask = Settings.get()
-            .notifications()
-            .otherNotificationMask
-        if (hasFlag(mask, ISettings.INotificationSettings.FLAG_LED)) {
-            notification.ledARGB = -0xffff01
-            notification.flags = notification.flags or Notification.FLAG_SHOW_LIGHTS
-            notification.ledOnMS = 100
-            notification.ledOffMS = 1000
-        }
-        if (hasFlag(mask, ISettings.INotificationSettings.FLAG_VIBRO)) notification.defaults =
-            notification.defaults or Notification.DEFAULT_VIBRATE
-        if (hasFlag(mask, ISettings.INotificationSettings.FLAG_SOUND)) {
-            notification.sound = Settings.get()
-                .notifications()
-                .feedbackRingtoneUri
         }
     }
 }

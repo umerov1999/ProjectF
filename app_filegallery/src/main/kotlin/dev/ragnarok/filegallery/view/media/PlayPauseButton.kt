@@ -6,7 +6,6 @@ import android.view.View
 import android.view.animation.DecelerateInterpolator
 import dev.ragnarok.filegallery.media.music.MusicPlaybackController
 
-
 class PlayPauseButton(context: Context, attrs: AttributeSet?) : MaterialPlayPauseFab(
     context, attrs
 ), View.OnClickListener {

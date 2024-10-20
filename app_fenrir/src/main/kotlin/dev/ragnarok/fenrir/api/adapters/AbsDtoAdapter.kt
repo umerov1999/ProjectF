@@ -59,7 +59,6 @@ abstract class AbsDtoAdapter<T>(name: String) : KSerializer<T> {
             return element is JsonArray && element.size > 0
         }
 
-
         fun hasPrimitive(obj: JsonObject?, name: String): Boolean {
             contract {
                 returns(true) implies (obj != null)
@@ -70,7 +69,6 @@ abstract class AbsDtoAdapter<T>(name: String) : KSerializer<T> {
             }
             return false
         }
-
 
         fun hasObject(obj: JsonObject?, name: String): Boolean {
             contract {
@@ -83,7 +81,6 @@ abstract class AbsDtoAdapter<T>(name: String) : KSerializer<T> {
             return false
         }
 
-
         fun hasArray(obj: JsonObject?, name: String): Boolean {
             contract {
                 returns(true) implies (obj != null)
@@ -94,7 +91,6 @@ abstract class AbsDtoAdapter<T>(name: String) : KSerializer<T> {
             }
             return false
         }
-
 
         @JvmOverloads
         fun optString(json: JsonObject?, name: String, fallback: String? = null): String? {
@@ -280,7 +276,6 @@ abstract class AbsDtoAdapter<T>(name: String) : KSerializer<T> {
             }
         }
 
-
         @JvmOverloads
         fun optInt(array: JsonArray?, index: Int, fallback: Int = 0): Int {
             contract {
@@ -298,7 +293,6 @@ abstract class AbsDtoAdapter<T>(name: String) : KSerializer<T> {
             }
         }
 
-
         fun opt(array: JsonArray?, index: Int): JsonElement? {
             contract {
                 returns(true) implies (array != null)
@@ -308,7 +302,6 @@ abstract class AbsDtoAdapter<T>(name: String) : KSerializer<T> {
                 null
             } else array[index]
         }
-
 
         @JvmOverloads
         fun optString(array: JsonArray?, index: Int, fallback: String? = null): String? {

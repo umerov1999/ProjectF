@@ -108,7 +108,6 @@ internal class FeedbackStorage(context: AppStorages) : AbsStorage(context), IFee
         return MsgPack.decodeFromByteArrayEx(FeedbackEntity.serializer(), data)
     }
 
-
     override fun insertOfficial(
         accountId: Long,
         dbos: List<FeedbackVKOfficial>,

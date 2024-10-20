@@ -19,7 +19,6 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils.dp
-import dev.ragnarok.fenrir.util.Utils.hasMarshmallow
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 
 class SpotsDialog internal constructor(
@@ -37,7 +36,7 @@ class SpotsDialog internal constructor(
         super.onCreate(savedInstanceState)
         try {
             window?.setBackgroundDrawableResource(android.R.color.transparent)
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
         setContentView(R.layout.dmax_spots_dialog)
         setCanceledOnTouchOutside(false)
@@ -140,7 +139,7 @@ class SpotsDialog internal constructor(
 
         fun build(): AlertDialog {
             if (!Settings.get()
-                    .main().isNew_loading_dialog || !hasMarshmallow() || !FenrirNative.isNativeLoaded
+                    .main().isNew_loading_dialog || !FenrirNative.isNativeLoaded
             ) {
                 return SpotsDialog(
                     context,

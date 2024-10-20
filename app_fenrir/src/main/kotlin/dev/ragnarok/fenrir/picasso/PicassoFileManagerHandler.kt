@@ -245,7 +245,7 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
                         )
                     }
                     s.close()
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     dir.createNewFile()
                     callback.onError(Throwable("Thumb work error"))
                     return
@@ -305,7 +305,7 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
             if (!direct.isDirectory) {
                 return false
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return false
         }
 

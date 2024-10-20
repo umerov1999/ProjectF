@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.feedback.feedbackvkofficial
 
 import android.content.Context
-import android.os.Build
 import android.text.Html
 import android.text.SpannableStringBuilder
 import android.text.method.LinkMovementMethod
@@ -146,11 +145,7 @@ class FeedbackVKOfficialAdapter(
 
     @Suppress("DEPRECATION")
     private fun fromHtml(source: String): CharSequence {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Html.fromHtml(source, Html.FROM_HTML_MODE_LEGACY)
-        } else {
-            Html.fromHtml(source)
-        }
+        return Html.fromHtml(source, Html.FROM_HTML_MODE_LEGACY)
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {

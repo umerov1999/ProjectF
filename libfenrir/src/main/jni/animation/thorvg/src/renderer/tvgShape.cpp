@@ -312,7 +312,7 @@ Result Shape::order(bool strokeFirst) noexcept
 }
 
 
-Result Shape::strokeWidth(float width) noexcept
+Result Shape::stroke(float width) noexcept
 {
     pImpl->strokeWidth(width);
     return Result::Success;
@@ -325,22 +325,22 @@ float Shape::strokeWidth() const noexcept
 }
 
 
-Result Shape::strokeFill(uint8_t r, uint8_t g, uint8_t b, uint8_t a) noexcept
+Result Shape::stroke(uint8_t r, uint8_t g, uint8_t b, uint8_t a) noexcept
 {
-    pImpl->strokeFill(r, g, b, a);
+    pImpl->strokeColor(r, g, b, a);
     return Result::Success;
 }
 
 
-Result Shape::strokeFill(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const noexcept
+Result Shape::strokeColor(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const noexcept
 {
-    if (!pImpl->rs.strokeFill(r, g, b, a)) return Result::InsufficientCondition;
+    if (!pImpl->rs.strokeColor(r, g, b, a)) return Result::InsufficientCondition;
 
     return Result::Success;
 }
 
 
-Result Shape::strokeFill(unique_ptr<Fill> f) noexcept
+Result Shape::stroke(unique_ptr<Fill> f) noexcept
 {
     return pImpl->strokeFill(std::move(f));
 }
@@ -352,26 +352,26 @@ const Fill* Shape::strokeFill() const noexcept
 }
 
 
-Result Shape::strokeDash(const float* dashPattern, uint32_t cnt, float offset) noexcept
+Result Shape::stroke(const float* dashPattern, uint32_t cnt) noexcept
 {
-    return pImpl->strokeDash(dashPattern, cnt, offset);
+    return pImpl->strokeDash(dashPattern, cnt, 0);
 }
 
 
-uint32_t Shape::strokeDash(const float** dashPattern, float* offset) const noexcept
+uint32_t Shape::strokeDash(const float** dashPattern) const noexcept
 {
-    return pImpl->rs.strokeDash(dashPattern, offset);
+    return pImpl->rs.strokeDash(dashPattern, nullptr);
 }
 
 
-Result Shape::strokeCap(StrokeCap cap) noexcept
+Result Shape::stroke(StrokeCap cap) noexcept
 {
     pImpl->strokeCap(cap);
     return Result::Success;
 }
 
 
-Result Shape::strokeJoin(StrokeJoin join) noexcept
+Result Shape::stroke(StrokeJoin join) noexcept
 {
     pImpl->strokeJoin(join);
     return Result::Success;
@@ -411,12 +411,6 @@ Result Shape::strokeTrim(float begin, float end, bool simultaneous) noexcept
 {
     pImpl->strokeTrim(begin, end, simultaneous);
     return Result::Success;
-}
-
-
-bool Shape::strokeTrim(float* begin, float* end) const noexcept
-{
-    return pImpl->strokeTrim(begin, end);
 }
 
 

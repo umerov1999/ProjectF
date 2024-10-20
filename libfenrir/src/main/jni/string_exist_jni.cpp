@@ -13,8 +13,6 @@
 #include "hash/crc32.hpp"
 #include "fenrir_native.h"
 
-using namespace std;
-
 class StringExist {
 public:
     explicit StringExist(bool useMutex) {
@@ -38,24 +36,24 @@ public:
         toggleMutex(false);
     }
 
-    void insert(const string &name) {
+    void insert(const std::string &name) {
         toggleMutex(true);
         content.push_back(name);
         toggleMutex(false);
     }
 
-    void remove(const string &name) {
+    void remove(const std::string &name) {
         toggleMutex(true);
         content.remove(name);
         toggleMutex(false);
     }
 
-    bool has(const string &name, bool contains) {
+    bool has(const std::string &name, bool contains) {
         bool ret = false;
         toggleMutex(true);
 
         for (auto &i: content) {
-            if (contains ? i.find(name) != string::npos : i == name) {
+            if (contains ? i.find(name) != std::string::npos : i == name) {
                 ret = true;
                 break;
             }
@@ -71,7 +69,7 @@ public:
     }
 
 private:
-    list<string> content;
+    std::list<std::string> content;
     bool mutexCreated;
     pthread_mutex_t lock{};
 };
@@ -127,7 +125,7 @@ Java_dev_ragnarok_fenrir_module_StringExist_insert(JNIEnv *env, jobject, jlong p
     if (!textString) {
         return;
     }
-    string v = textString;
+    std::string v = textString;
     env->ReleaseStringUTFChars(value, textString);
     auto *content = (StringExist *) (intptr_t) pointer;
     content->insert(v);
@@ -143,7 +141,7 @@ Java_dev_ragnarok_fenrir_module_StringExist_delete(JNIEnv *env, jobject, jlong p
     if (!textString) {
         return;
     }
-    string v = textString;
+    std::string v = textString;
     env->ReleaseStringUTFChars(value, textString);
     auto *content = (StringExist *) (intptr_t) pointer;
     content->remove(v);
@@ -159,7 +157,7 @@ Java_dev_ragnarok_fenrir_module_StringExist_has(JNIEnv *env, jobject, jlong poin
     if (!textString) {
         return false;
     }
-    string v = textString;
+    std::string v = textString;
     env->ReleaseStringUTFChars(value, textString);
     auto *content = (StringExist *) (intptr_t) pointer;
     return content->has(v, contains);
@@ -314,7 +312,7 @@ Java_dev_ragnarok_fenrir_module_StringHash_getSha1(JNIEnv *env, jobject, jstring
     if (!textString) {
         return env->NewStringUTF("error");
     }
-    string v = textString;
+    std::string v = textString;
     env->ReleaseStringUTFChars(value, textString);
     return env->NewStringUTF(SHA1::from_string(v).c_str());
 }
@@ -329,7 +327,7 @@ Java_dev_ragnarok_fenrir_module_StringHash_getSha1ByteArray(JNIEnv *env, jobject
     if (!buf) {
         return env->NewStringUTF("error");
     }
-    string v;
+    std::string v;
     v.resize(length);
     memcpy((char *) v.data(), buf, length);
     env->ReleaseByteArrayElements(value, buf, JNI_ABORT);
@@ -343,7 +341,7 @@ Java_dev_ragnarok_fenrir_module_StringHash_getCRC32(JNIEnv *env, jobject,
     if (!textString) {
         return 0;
     }
-    string v = textString;
+    std::string v = textString;
     env->ReleaseStringUTFChars(value, textString);
     return CRC32::crc32(v);
 }

@@ -1,7 +1,6 @@
 package dev.ragnarok.filegallery.media.music
 
 import android.annotation.SuppressLint
-import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.ComponentName
@@ -28,13 +27,11 @@ class NotificationHelper(private val mService: MusicPlaybackService) {
         context: Context, artistName: String?, trackName: String?,
         isPlaying: Boolean, cover: Bitmap?, mediaSessionToken: MediaSessionCompat.Token?
     ) {
-        if (Utils.hasOreo()) {
-            mNotificationManager?.createNotificationChannel(
-                AppNotificationChannels.getAudioChannel(
-                    context
-                )
+        mNotificationManager?.createNotificationChannel(
+            AppNotificationChannels.getAudioChannel(
+                context
             )
-        }
+        )
 
         // Notification Builder
         mNotificationBuilder =
@@ -81,10 +78,7 @@ class NotificationHelper(private val mService: MusicPlaybackService) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             mNotificationBuilder?.setDeleteIntent(retrievePlaybackActions(SWIPE_DISMISS_ACTION))
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-            mNotificationBuilder?.priority = NotificationManager.IMPORTANCE_HIGH
-        else
-            mNotificationBuilder?.priority = Notification.PRIORITY_MAX
+        mNotificationBuilder?.priority = NotificationManager.IMPORTANCE_HIGH
         if (isPlaying) {
             mService.goForeground(
                 FILE_GALLERY_MUSIC_SERVICE,

@@ -19,7 +19,7 @@ class IMGAssetFileDecoder(private val mContext: Context, uri: Uri) : IMGDecoder(
         try {
             val iStream = mContext.assets.open(path)
             return BitmapFactory.decodeStream(iStream, null, options)
-        } catch (ignore: IOException) {
+        } catch (_: IOException) {
         }
         return null
     }

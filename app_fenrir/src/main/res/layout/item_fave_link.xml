@@ -18,7 +18,7 @@
         android:layout_margin="2dp"
         app:cardBackgroundColor="?message_bubble_color">
 
-        <com.google.android.material.imageview.ShapeableImageView
+        <dev.ragnarok.fenrir.view.LinkCoverView
             android:id="@+id/item_fave_link_image"
             android:layout_width="@dimen/avatar_size_big"
             android:layout_height="wrap_content"

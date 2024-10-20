@@ -1916,7 +1916,7 @@ public class ItemTouchHelper extends RecyclerView.ItemDecoration
          * This method is responsible to give necessary hint to the LayoutManager so that it will
          * keep the View in visible area. For example, for LinearLayoutManager, this is as simple
          * as calling {@link LinearLayoutManager#scrollToPositionWithOffset(int, int)}.
-         *
+         * <p>
          * Default implementation calls {@link RecyclerView#scrollToPosition(int)} if the View's
          * new position is likely to be out of bounds.
          * <p>
@@ -2300,7 +2300,7 @@ public class ItemTouchHelper extends RecyclerView.ItemDecoration
         /**
          * Whether to execute code in response to the the invoking of
          * {@link ItemTouchHelperGestureListener#onLongPress(MotionEvent)}.
-         *
+         * <p>
          * It is necessary to control this here because
          * {@link GestureDetector.SimpleOnGestureListener} can only be set on a
          * {@link GestureDetector} in a GestureDetector's constructor, a GestureDetector will call

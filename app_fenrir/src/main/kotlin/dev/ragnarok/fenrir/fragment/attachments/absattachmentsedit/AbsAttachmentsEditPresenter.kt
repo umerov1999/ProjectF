@@ -403,7 +403,6 @@ abstract class AbsAttachmentsEditPresenter<V : IBaseAttachmentsEditView> interna
             return data
         }
 
-
         fun createFrom(
             pairs: List<Pair<Int, AbsModel>>,
             canDelete: Boolean

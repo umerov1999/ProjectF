@@ -40,7 +40,7 @@ object TokenModKate {
         try {
             encoded = encoded?.let { MessageDigest.getInstance("SHA1").digest(it) }
             str = null
-        } catch (unused: NoSuchAlgorithmException) {
+        } catch (_: NoSuchAlgorithmException) {
             str = ""
         }
         str2 = if (str == null) {
@@ -77,7 +77,7 @@ object TokenModKate {
             }
             println("Token register OK")
             sb3.split(Regex("\\|ID\\|$rid\\|:")).toTypedArray()[1]
-        } catch (unused: Exception) {
+        } catch (_: Exception) {
             null
         }
     }

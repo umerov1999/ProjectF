@@ -190,7 +190,6 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
         }
     }
 
-
     private fun createRootScreen() = screen(requireActivity()) {
         collapseIcon = true
         collapse("security_preferences") {

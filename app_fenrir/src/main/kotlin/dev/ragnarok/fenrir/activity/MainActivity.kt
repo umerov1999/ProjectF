@@ -10,14 +10,12 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Color
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.view.animation.LinearInterpolator
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
@@ -55,7 +53,6 @@ import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.impl.CountersInteractor
 import dev.ragnarok.fenrir.fragment.BrowserFragment
 import dev.ragnarok.fenrir.fragment.DocPreviewFragment
-import dev.ragnarok.fenrir.fragment.NotificationPreferencesFragment
 import dev.ragnarok.fenrir.fragment.PreferencesFragment
 import dev.ragnarok.fenrir.fragment.PreferencesFragment.Companion.cleanCache
 import dev.ragnarok.fenrir.fragment.SecurityPreferencesFragment
@@ -191,14 +188,12 @@ import dev.ragnarok.fenrir.settings.theme.ThemesController.nextRandom
 import dev.ragnarok.fenrir.upload.UploadUtils
 import dev.ragnarok.fenrir.util.Accounts
 import dev.ragnarok.fenrir.util.Action
-import dev.ragnarok.fenrir.util.HelperSimple
-import dev.ragnarok.fenrir.util.HelperSimple.needHelp
 import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.MainActivityTransforms
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCream
+import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.fenrir.util.coroutines.CompositeJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.andThen
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayedFlow
@@ -254,7 +249,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                                 return@registerForActivityResult
                             }
                     }
-                } catch (ignored: NumberFormatException) {
+                } catch (_: NumberFormatException) {
                 }
 
                 MaterialAlertDialogBuilder(this)
@@ -331,22 +326,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             Settings.get().ui().getDefaultPage(mAccountId).tryOpenWith(this)
             checkFCMRegistration(true)
 
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP && needHelp(
-                    HelperSimple.LOLLIPOP_21,
-                    1
-                )
-            ) {
-                MaterialAlertDialogBuilder(this)
-                    .setTitle(R.string.info)
-                    .setMessage(R.string.lollipop21)
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.button_ok) { _, _ ->
-                        if (!Settings.get().security().isUsePinForSecurity) {
-                            startCreatePinActivity()
-                        }
-                    }
-                    .show()
-            } else if (!Settings.get().security().isUsePinForSecurity) {
+            if (!Settings.get().security().isUsePinForSecurity) {
                 startCreatePinActivity()
             }
         }
@@ -452,12 +432,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         }
         navigationView?.setStatesCallback(object : AbsNavigationView.NavigationStatesCallbacks {
             override fun onMove(slideOffset: Float) {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
-                    anim.currentPlayTime =
-                        (slideOffset * anim.duration).toLong().coerceAtMost(anim.duration)
-                } else {
-                    anim.setCurrentFraction(slideOffset)
-                }
+                anim.setCurrentFraction(slideOffset)
             }
 
             override fun onOpened() {
@@ -1230,7 +1205,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 window.decorView.rootView.windowToken,
                 InputMethodManager.HIDE_NOT_ALWAYS
             )
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
     }
 
@@ -1321,7 +1296,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val w = window
-        if (!hasVanillaIceCream()) {
+        if (!hasVanillaIceCreamTarget()) {
             w.statusBarColor =
                 if (colored) getStatusBarColor(this) else getStatusBarNonColored(
                     this
@@ -1332,11 +1307,6 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons
-
-        if (!Utils.hasMarshmallow()) {
-            w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        }
     }
 
     override fun hideMenu(hide: Boolean) {
@@ -1566,7 +1536,6 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 startActivity(intent)
             }
 
-            Place.NOTIFICATION_SETTINGS -> attachToFront(NotificationPreferencesFragment())
             Place.LIKES_AND_COPIES -> attachToFront(LikesFragment.newInstance(args))
             Place.STORIES_VIEWS -> attachToFront(StoriesViewFragment.newInstance(args))
             Place.CREATE_PHOTO_ALBUM, Place.EDIT_PHOTO_ALBUM -> {

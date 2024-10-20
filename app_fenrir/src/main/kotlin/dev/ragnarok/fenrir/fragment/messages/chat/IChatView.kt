@@ -76,7 +76,7 @@ interface IChatView : IBasicMessageListView, IErrorView, IToastView {
     fun forwardMessagesToAnotherConversation(messages: ArrayList<Message>, accountId: Long)
     fun displayForwardTypeSelectDialog(messages: ArrayList<Message>)
     fun setEmptyTextVisible(visible: Boolean)
-    fun setupRecordPauseButton(available: Boolean, isPlaying: Boolean)
+    fun setupRecordPauseButton(isRecording: Boolean)
     fun displayInitiateKeyExchangeQuestion(@KeyLocationPolicy keyStoragePolicy: Int)
     fun showEncryptionKeysPolicyChooseDialog(requestCode: Int)
     fun showEncryptionDisclaimerDialog(requestCode: Int)

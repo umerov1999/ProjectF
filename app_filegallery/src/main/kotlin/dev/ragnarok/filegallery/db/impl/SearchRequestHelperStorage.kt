@@ -56,7 +56,7 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
             if (query == null) {
                 emit(false)
             } else {
-                val queryClean = query.trim { it <= ' ' }
+                val queryClean = query.trim()
                 emit(
                     if (queryClean.isEmpty()) {
                         false
@@ -229,7 +229,7 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
             if (name.trimmedIsNullOrEmpty()) {
                 throw Throwable("require name not null!!!")
             } else {
-                val nameClean = name.trim { it <= ' ' }
+                val nameClean = name.trim()
                 val db = helper.writableDatabase
                 db.beginTransaction()
                 if (!isActive()) {
@@ -273,7 +273,7 @@ class SearchRequestHelperStorage internal constructor(context: Context) :
             if (name.trimmedIsNullOrEmpty()) {
                 throw Throwable("require name not null!!!")
             } else {
-                val nameClean = name.trim { it <= ' ' }
+                val nameClean = name.trim()
                 val db = helper.writableDatabase
                 db.beginTransaction()
                 if (!isActive()) {

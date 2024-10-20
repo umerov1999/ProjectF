@@ -117,7 +117,7 @@ Saver::~Saver()
 }
 
 
-Result Saver::save(unique_ptr<Paint> paint, const string& path, uint32_t quality) noexcept
+Result Saver::save(std::unique_ptr<Paint> paint, const string& path, bool compress) noexcept
 {
     auto p = paint.release();
     if (!p) return Result::MemoryCorruption;
@@ -129,7 +129,7 @@ Result Saver::save(unique_ptr<Paint> paint, const string& path, uint32_t quality
     }
 
     if (auto saveModule = _find(path)) {
-        if (saveModule->save(p, pImpl->bg, path, quality)) {
+        if (saveModule->save(p, path, compress)) {
             pImpl->saveModule = saveModule;
             return Result::Success;
         } else {

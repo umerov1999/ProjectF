@@ -162,7 +162,8 @@ class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
                 actualDisposable.add(faveInteractor.addLink(
                     accountId,
                     root.findViewById<TextInputEditText>(R.id.edit_link).text.toString()
-                        .trim { it <= ' ' })
+                        .trim()
+                )
                     .fromIOToMain({ fireRefresh() }) { t ->
                         showError(getCauseIfRuntime(t))
                     })

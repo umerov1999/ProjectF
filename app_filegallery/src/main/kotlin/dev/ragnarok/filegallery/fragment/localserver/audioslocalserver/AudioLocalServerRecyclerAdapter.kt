@@ -293,7 +293,8 @@ class AudioLocalServerRecyclerAdapter(
                                         audioListDisposable.set(mAudioInteractor.update_file_name(
                                             hash2,
                                             root.findViewById<TextInputEditText>(R.id.edit_file_name).text.toString()
-                                                .trim { it <= ' ' })
+                                                .trim()
+                                        )
                                             .fromIOToMain({
                                                 createCustomToast(
                                                     mContext, view
@@ -554,7 +555,7 @@ class AudioLocalServerRecyclerAdapter(
                 if (matcher.find()) {
                     return matcher.group(1)
                 }
-            } catch (ignored: NumberFormatException) {
+            } catch (_: NumberFormatException) {
             }
             return null
         }

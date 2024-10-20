@@ -111,7 +111,7 @@ class MusicPlaybackService : Service() {
                 mManager.notify(id, notification)
                 return
             }
-            if (Utils.hasQ()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 startForeground(
                     id,
                     notification,
@@ -121,7 +121,7 @@ class MusicPlaybackService : Service() {
                 startForeground(id, notification)
             }
             inForeground = true
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
     }
 
@@ -132,11 +132,7 @@ class MusicPlaybackService : Service() {
             return
         }
         inForeground = false
-        if (Utils.hasNougat()) {
-            stopForeground(if (removeNotification) STOP_FOREGROUND_REMOVE else 0)
-        } else {
-            stopForeground(removeNotification)
-        }
+        stopForeground(if (removeNotification) STOP_FOREGROUND_REMOVE else 0)
     }
 
     override fun onUnbind(intent: Intent): Boolean {

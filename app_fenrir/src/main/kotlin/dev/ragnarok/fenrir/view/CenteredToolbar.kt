@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.view
 
 import android.content.Context
-import android.os.Build
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.Gravity
@@ -62,14 +61,7 @@ class CenteredToolbar : MaterialToolbar {
         tvSubtitle = MaterialTextView(context)
         tvSubtitle?.setSingleLine()
         tvSubtitle?.ellipsize = TextUtils.TruncateAt.END
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            tvSubtitle?.setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodySmall)
-        } else {
-            tvSubtitle?.setTextAppearance(
-                context,
-                com.google.android.material.R.style.TextAppearance_Material3_BodySmall
-            )
-        }
+        tvSubtitle?.setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodySmall)
         val linear = LinearLayout(context)
         linear.gravity = Gravity.CENTER
         linear.orientation = LinearLayout.VERTICAL

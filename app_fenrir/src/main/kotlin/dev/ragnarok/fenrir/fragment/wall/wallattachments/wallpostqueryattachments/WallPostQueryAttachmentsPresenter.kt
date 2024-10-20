@@ -63,7 +63,7 @@ class WallPostQueryAttachmentsPresenter(
     }
 
     fun fireSearchRequestChanged(q: String?, only_insert: Boolean) {
-        Query = q?.trim { it <= ' ' }
+        Query = q?.trim()
         if (only_insert) {
             return
         }
@@ -238,14 +238,14 @@ class WallPostQueryAttachmentsPresenter(
         )
         val str = (Query ?: return).split(Regex("\\|")).toTypedArray()
         for (i in str.indices) {
-            str[i] = str[i].trim { it <= ' ' }.lowercase(Locale.getDefault())
+            str[i] = str[i].trim().lowercase(Locale.getDefault())
         }
         val ids: MutableList<Long> = ArrayList()
         for (cc in str) {
             if (cc.contains("*id")) {
                 try {
                     ids.add(cc.replace("*id", "").toLong())
-                } catch (ignored: NumberFormatException) {
+                } catch (_: NumberFormatException) {
                 }
             }
         }

@@ -36,9 +36,9 @@ internal class MainSettings(context: Context) : IMainSettings {
     @get:ThemeOverlay
     override val themeOverlay: Int
         get() = try {
-            getPreferences(app).getString("theme_overlay", "0")?.trim { it <= ' ' }?.toInt()
+            getPreferences(app).getString("theme_overlay", "0")?.trim()?.toInt()
                 ?: ThemeOverlay.OFF
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             ThemeOverlay.OFF
         }
 
@@ -69,9 +69,9 @@ internal class MainSettings(context: Context) : IMainSettings {
         get() = try {
             getPreferences(app)
                 .getString("night_switch", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM.toString())!!
-                .trim { it <= ' ' }
+                .trim()
                 .toInt()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         }
 
@@ -182,13 +182,13 @@ internal class MainSettings(context: Context) : IMainSettings {
             var v = getPreferences(app).getString(
                 "lifecycle_music_service", Constants.AUDIO_PLAYER_SERVICE_IDLE.toString()
             )!!
-                .trim { it <= ' ' }.toInt()
+                .trim().toInt()
             if (v < 60000) {
                 getPreferences(app).edit().putString("lifecycle_music_service", "60000").apply()
                 v = 60000
             }
             v
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Constants.AUDIO_PLAYER_SERVICE_IDLE
         }
 
@@ -196,7 +196,7 @@ internal class MainSettings(context: Context) : IMainSettings {
         get() = try {
             getPreferences(app).getString("max_bitmap_resolution", "4000")!!.trim()
                 .toInt()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             4000
         }
 
@@ -204,14 +204,14 @@ internal class MainSettings(context: Context) : IMainSettings {
         get() = try {
             getPreferences(app).getString("max_thumb_resolution", "384")!!.trim()
                 .toInt()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             384
         }
 
     override val rendering_mode: Int
         get() = try {
             getPreferences(app).getString("rendering_bitmap_mode", "0")!!.trim().toInt()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             0
         }
 
@@ -219,7 +219,7 @@ internal class MainSettings(context: Context) : IMainSettings {
         get() = try {
             getPreferences(app).getString("ffmpeg_audio_codecs", "1")!!.trim()
                 .toInt()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             1
         }
 
@@ -286,8 +286,8 @@ internal class MainSettings(context: Context) : IMainSettings {
     override val currentParser: Int
         get() = try {
             getPreferences(app).getString("current_parser", "0")!!
-                .trim { it <= ' ' }.toInt()
-        } catch (e: Exception) {
+                .trim().toInt()
+        } catch (_: Exception) {
             ParserType.JSON
         }
 
@@ -301,8 +301,8 @@ internal class MainSettings(context: Context) : IMainSettings {
                 "viewpager_page_transform",
                 Transformers_Types.OFF.toString()
             )!!
-                .trim { it <= ' ' }.toInt()
-        } catch (e: Exception) {
+                .trim().toInt()
+        } catch (_: Exception) {
             Transformers_Types.OFF
         }
 
@@ -313,16 +313,16 @@ internal class MainSettings(context: Context) : IMainSettings {
                 "player_cover_transform",
                 Transformers_Types.DEPTH_TRANSFORMER.toString()
             )!!
-                .trim { it <= ' ' }.toInt()
-        } catch (e: Exception) {
+                .trim().toInt()
+        } catch (_: Exception) {
             Transformers_Types.DEPTH_TRANSFORMER
         }
 
     override val isLimitImage_cache: Int
         get() = try {
             getPreferences(app).getString("limit_cache_images", "2")!!
-                .trim { it <= ' ' }.toInt()
-        } catch (e: Exception) {
+                .trim().toInt()
+        } catch (_: Exception) {
             2
         }
 
@@ -338,8 +338,8 @@ internal class MainSettings(context: Context) : IMainSettings {
                 ).apply()
             }
             getPreferences(app).getString("picasso_dispatcher", "0")!!
-                .trim { it <= ' ' }.toInt()
-        } catch (e: Exception) {
+                .trim().toInt()
+        } catch (_: Exception) {
             0
         }
 
@@ -347,8 +347,8 @@ internal class MainSettings(context: Context) : IMainSettings {
     override val language: Int
         get() = try {
             getPreferences(app).getString("language_ui", "0")!!
-                .trim { it <= ' ' }.toInt()
-        } catch (e: Exception) {
+                .trim().toInt()
+        } catch (_: Exception) {
             Lang.DEFAULT
         }
 }

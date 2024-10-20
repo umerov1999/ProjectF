@@ -10,6 +10,7 @@ import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION
@@ -28,7 +29,6 @@ import dev.ragnarok.filegallery.settings.CurrentTheme.getColorPrimary
 import dev.ragnarok.filegallery.settings.CurrentTheme.getColorSecondary
 import dev.ragnarok.filegallery.settings.Settings.get
 import dev.ragnarok.filegallery.util.AssertUtils
-import dev.ragnarok.filegallery.util.Utils
 import java.io.File
 import java.util.Calendar
 
@@ -144,16 +144,17 @@ open class PhotoPagerPresenter internal constructor(
     private fun getCustomTabsPackages(context: Context): ArrayList<ResolveInfo> {
         val pm = context.packageManager
         val activityIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com"))
-        val resolvedActivityList = if (Utils.hasTiramisu()) pm.queryIntentActivities(
-            activityIntent,
-            PackageManager.ResolveInfoFlags.of(0)
-        ) else pm.queryIntentActivities(activityIntent, 0)
+        val resolvedActivityList =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) pm.queryIntentActivities(
+                activityIntent,
+                PackageManager.ResolveInfoFlags.of(0)
+            ) else pm.queryIntentActivities(activityIntent, 0)
         val packagesSupportingCustomTabs = ArrayList<ResolveInfo>()
         for (info in resolvedActivityList) {
             val serviceIntent = Intent()
             serviceIntent.action = ACTION_CUSTOM_TABS_CONNECTION
             serviceIntent.setPackage(info.activityInfo.packageName)
-            if ((if (Utils.hasTiramisu()) pm.resolveService(
+            if ((if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) pm.resolveService(
                     serviceIntent,
                     PackageManager.ResolveInfoFlags.of(0)
                 ) else pm.resolveService(serviceIntent, 0)) != null
@@ -181,7 +182,7 @@ open class PhotoPagerPresenter internal constructor(
         }
         try {
             customTabsIntent.launchUrl(context, Uri.parse(url))
-        } catch (e: java.lang.Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }

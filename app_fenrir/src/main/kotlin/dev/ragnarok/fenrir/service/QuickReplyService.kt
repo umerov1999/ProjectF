@@ -80,7 +80,6 @@ class QuickReplyService : IntentService(QuickReplyService::class.java.name) {
             return intent
         }
 
-
         fun intentForReadMessage(
             context: Context,
             accountId: Long,

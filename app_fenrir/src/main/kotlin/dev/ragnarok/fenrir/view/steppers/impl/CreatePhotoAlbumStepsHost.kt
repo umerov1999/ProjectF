@@ -36,7 +36,7 @@ class CreatePhotoAlbumStepsHost : AbsStepsHost<PhotoAlbumState>(PhotoAlbumState(
 
     override fun canMoveNext(index: Int, state: PhotoAlbumState): Boolean {
         return when (index) {
-            STEP_TITLE_AND_DESCRIPTION -> !state.title.isNullOrEmpty() && (state.title?.trim { it <= ' ' }?.length
+            STEP_TITLE_AND_DESCRIPTION -> !state.title.isNullOrEmpty() && (state.title?.trim()?.length
                 ?: 0) > 1
 
             STEP_UPLOAD_AND_COMMENTS, STEP_PRIVACY_VIEW, STEP_PRIVACY_COMMENT -> true

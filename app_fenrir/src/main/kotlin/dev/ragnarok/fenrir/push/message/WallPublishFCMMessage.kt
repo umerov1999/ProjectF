@@ -19,12 +19,10 @@ import dev.ragnarok.fenrir.longpoll.NotificationHelper
 import dev.ragnarok.fenrir.model.Community
 import dev.ragnarok.fenrir.place.PlaceFactory.getPostPreviewPlace
 import dev.ragnarok.fenrir.push.NotificationScheduler.INSTANCE
-import dev.ragnarok.fenrir.push.NotificationUtils.configOtherPushNotification
 import dev.ragnarok.fenrir.push.OwnerInfo.Companion.getRx
 import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.PersistentLogger.logThrowable
-import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 import kotlin.math.abs
@@ -43,12 +41,6 @@ class WallPublishFCMMessage {
 
     @SuppressLint("CheckResult")
     fun notify(context: Context, accountId: Long) {
-        if (!get()
-                .notifications()
-                .isWallPublishNotifEnabled
-        ) {
-            return
-        }
         val app = context.applicationContext
         getRx(app, accountId, -abs(group_id))
             .fromScopeToMain(INSTANCE) { ownerInfo ->
@@ -69,9 +61,7 @@ class WallPublishFCMMessage {
         }
         val nManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
-        if (hasOreo()) {
-            nManager?.createNotificationChannel(getNewPostChannel(context))
-        }
+        nManager?.createNotificationChannel(getNewPostChannel(context))
         val builder = NotificationCompat.Builder(context, newPostChannelId)
             .setSmallIcon(R.drawable.pencil)
             .setLargeIcon(bitmap)
@@ -98,7 +88,6 @@ class WallPublishFCMMessage {
         )
         builder.setContentIntent(contentIntent)
         val notification = builder.build()
-        configOtherPushNotification(notification)
         if (AppPerms.hasNotificationPermissionSimple(context)) {
             nManager?.notify(place, NotificationHelper.NOTIFICATION_WALL_PUBLISH_ID, notification)
         }

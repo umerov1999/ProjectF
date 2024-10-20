@@ -38,18 +38,18 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
         encoding = "utf-8"
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "21"
         freeCompilerArgs = ["-opt-in=kotlin.contracts.ExperimentalContracts"]
     }
 
     externalNativeBuild {
         cmake {
-            version = "3.22.1"
+            version = "3.30.5"
             path = file("src/main/jni/CMakeLists.txt")
         }
     }

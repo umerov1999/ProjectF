@@ -113,7 +113,7 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
         internal fun calculateHash(value: String): String {
             return try {
                 StringHash.calculateSha1(value)
-            } catch (e: NoSuchAlgorithmException) {
+            } catch (_: NoSuchAlgorithmException) {
                 throw IllegalStateException()
             }
         }

@@ -18,11 +18,9 @@ import dev.ragnarok.fenrir.model.Community
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.push.NotificationScheduler.INSTANCE
-import dev.ragnarok.fenrir.push.NotificationUtils.configOtherPushNotification
 import dev.ragnarok.fenrir.push.OwnerInfo.Companion.getRx
 import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.AppPerms
-import dev.ragnarok.fenrir.util.Utils.hasOreo
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 import kotlinx.coroutines.flow.zip
@@ -40,12 +38,6 @@ class GroupInviteFCMMessage {
 
     @SuppressLint("CheckResult")
     fun notify(context: Context, accountId: Long) {
-        if (!get()
-                .notifications()
-                .isGroupInvitedNotifEnabled
-        ) {
-            return
-        }
         val app = context.applicationContext
         val group = getRx(app, accountId, -abs(group_id))
         val user = getRx(app, accountId, from_id)
@@ -73,9 +65,7 @@ class GroupInviteFCMMessage {
         val contentText = context.getString(R.string.invites_you_to_join_community, user.fullName)
         val nManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
-        if (hasOreo()) {
-            nManager?.createNotificationChannel(getGroupInvitesChannel(context))
-        }
+        nManager?.createNotificationChannel(getGroupInvitesChannel(context))
         val builder = NotificationCompat.Builder(context, groupInvitesChannelId)
             .setSmallIcon(R.drawable.groups)
             .setLargeIcon(groupBitmap)
@@ -99,7 +89,6 @@ class GroupInviteFCMMessage {
         )
         builder.setContentIntent(contentIntent)
         val notification = builder.build()
-        configOtherPushNotification(notification)
         if (AppPerms.hasNotificationPermissionSimple(context)) {
             nManager?.notify(
                 group_id.toString(),

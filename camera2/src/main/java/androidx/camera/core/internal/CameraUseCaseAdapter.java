@@ -422,7 +422,7 @@ public final class CameraUseCaseAdapter implements Camera {
             }
 
             // Update properties.
-            updateViewPort(primaryStreamSpecMap, cameraUseCases);
+            updateViewPortAndSensorToBufferMatrix(primaryStreamSpecMap, cameraUseCases);
             updateEffects(mEffects, cameraUseCases, appUseCases);
 
             // Detach unused UseCases.
@@ -906,7 +906,8 @@ public final class CameraUseCaseAdapter implements Camera {
         return unusedEffects;
     }
 
-    private void updateViewPort(@NonNull Map<UseCase, StreamSpec> suggestedStreamSpecMap,
+    private void updateViewPortAndSensorToBufferMatrix(
+            @NonNull Map<UseCase, StreamSpec> suggestedStreamSpecMap,
             @NonNull Collection<UseCase> useCases) {
         synchronized (mLock) {
             if (mViewPort != null && !useCases.isEmpty()) {
@@ -934,12 +935,17 @@ public final class CameraUseCaseAdapter implements Camera {
                 for (UseCase useCase : useCases) {
                     useCase.setViewPortCropRect(
                             Preconditions.checkNotNull(cropRectMap.get(useCase)));
-                    useCase.setSensorToBufferTransformMatrix(
-                            calculateSensorToBufferTransformMatrix(
-                                    mCameraInternal.getCameraControlInternal().getSensorRect(),
-                                    Preconditions.checkNotNull(
-                                            suggestedStreamSpecMap.get(useCase)).getResolution()));
                 }
+            }
+
+            // Regardless of having ViewPort, SensorToBufferTransformMatrix must be set correctly
+            // in order for get the correct meteringPoint coordinates.
+            for (UseCase useCase : useCases) {
+                useCase.setSensorToBufferTransformMatrix(
+                        calculateSensorToBufferTransformMatrix(
+                                mCameraInternal.getCameraControlInternal().getSensorRect(),
+                                Preconditions.checkNotNull(
+                                        suggestedStreamSpecMap.get(useCase)).getResolution()));
             }
         }
     }
@@ -1019,9 +1025,16 @@ public final class CameraUseCaseAdapter implements Camera {
         // TODO(b/309900490): since there are other places (e.g. SupportedSurfaceCombination in
         //  camera2) that feature combination constraints are enforced, it would be nice if they
         //  followed a similar pattern for checking constraints.
-        if (hasExtension() && hasNonSdrConfig(useCases)) {
-            throw new IllegalArgumentException("Extensions are only supported for use with "
-                    + "standard dynamic range.");
+        if (hasExtension()) {
+            if (hasNonSdrConfig(useCases)) {
+                throw new IllegalArgumentException("Extensions are only supported for use with "
+                        + "standard dynamic range.");
+            }
+
+            if (hasUltraHdrImageCapture(useCases)) {
+                throw new IllegalArgumentException("Extensions are not supported for use with "
+                        + "Ultra HDR image capture.");
+            }
         }
 
         // TODO(b/322311893): throw exception to block feature combination of effect with Ultra

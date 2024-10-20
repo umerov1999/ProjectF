@@ -9,7 +9,6 @@ import android.os.Process
 import android.util.Log
 import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.activity.MainActivity
-import dev.ragnarok.filegallery.util.Utils
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.text.DateFormat
@@ -125,12 +124,13 @@ object CrashUtils {
 
     private fun getVersionName(context: Context): String {
         return try {
-            val packageInfo = if (Utils.hasTiramisu()) context.packageManager.getPackageInfo(
-                context.packageName,
-                PackageManager.PackageInfoFlags.of(0)
-            ) else context.packageManager.getPackageInfo(context.packageName, 0)
+            val packageInfo =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) context.packageManager.getPackageInfo(
+                    context.packageName,
+                    PackageManager.PackageInfoFlags.of(0)
+                ) else context.packageManager.getPackageInfo(context.packageName, 0)
             packageInfo.versionName ?: "Unknown"
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             "Unknown"
         }
     }

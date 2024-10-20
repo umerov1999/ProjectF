@@ -143,7 +143,6 @@ object Dto2Model {
             .setPrivacyComment(dto.privacy_comment?.let { transform(it) })
     }
 
-
     fun transform(chat: VKApiChat): Chat {
         return Chat(chat.id)
             .setPhoto50(chat.photo_50)
@@ -230,7 +229,6 @@ object Dto2Model {
             .setPrivacy(dto.privacy)
     }
 
-
     fun transformCommunities(dtos: List<VKApiCommunity>?): List<Community> {
         return mapAll(
             dtos
@@ -238,7 +236,6 @@ object Dto2Model {
             transformCommunity(it)
         }
     }
-
 
     fun transformGroupChats(dtos: List<VKApiGroupChats>?): List<GroupChats> {
         return mapAll(
@@ -248,13 +245,11 @@ object Dto2Model {
         }
     }
 
-
     fun transformGifts(dtos: List<VKApiGift>?): List<Gift> {
         return mapAll(
             dtos
         ) { transform(it) }
     }
-
 
     fun transformMarketAlbums(dtos: List<VKApiMarketAlbum>?): List<MarketAlbum> {
         return mapAll(
@@ -269,7 +264,6 @@ object Dto2Model {
             dtos
         ) { transform(it) }
     }
-
 
     fun transformUsers(dtos: List<VKApiUser>?): List<User> {
         return mapAll(
@@ -401,7 +395,6 @@ object Dto2Model {
         } else null
     }
 
-
     fun transform(
         accountId: Long,
         dto: VKApiConversation,
@@ -447,7 +440,6 @@ object Dto2Model {
         entity.setCurrentKeyboard(mapKeyboard(dto.current_keyboard))
         return entity
     }
-
 
     fun transform(
         accountId: Long,
@@ -495,7 +487,6 @@ object Dto2Model {
         }
         return dialog
     }
-
 
     fun transformMessages(
         aid: Long,
@@ -601,7 +592,7 @@ object Dto2Model {
         message.random_id.nonNullNoEmpty {
             try {
                 appMessage.setRandomId(it.toLong())
-            } catch (ignored: NumberFormatException) {
+            } catch (_: NumberFormatException) {
             }
         }
         return appMessage
@@ -637,7 +628,6 @@ object Dto2Model {
         return PhotoSizes.Size(dto.width, dto.height, Utils.firstNonEmptyString(dto.url, dto.src))
     }
 
-
     fun transform(dtos: List<PhotoSizeDto>?): PhotoSizes {
         val sizes = PhotoSizes()
         if (dtos != null) {
@@ -668,7 +658,6 @@ object Dto2Model {
         }
         return SimplePrivacy(orig.category, entries)
     }
-
 
     fun transform(
         simplePrivacy: SimplePrivacy,
@@ -748,7 +737,6 @@ object Dto2Model {
         }
         return o
     }
-
 
     fun transform(dto: VKApiTopic, owners: IOwnersBundle): Topic {
         val topic = Topic(dto.id, dto.owner_id)
@@ -842,7 +830,6 @@ object Dto2Model {
             .setBackground(buildPollBackgroundGradient(dto.background))
     }
 
-
     fun transformStory(dto: VKApiStory, owners: IOwnersBundle): Story {
         return Story().setId(dto.id)
             .setOwnerId(dto.owner_id)
@@ -895,7 +882,6 @@ object Dto2Model {
             .setSubject(owners.getById(if (dto.id >= 0) -dto.id else dto.id))
     }
 
-
     fun transform(dto: VKApiMarket): Market {
         return Market(dto.id, dto.owner_id)
             .setAccess_key(dto.access_key)
@@ -930,7 +916,6 @@ object Dto2Model {
             .setUrl(dto.url)
     }
 
-
     fun transform(dto: VKApiShortLink): ShortLink {
         return ShortLink().setKey(dto.key)
             .setShort_url(dto.short_url)
@@ -939,7 +924,6 @@ object Dto2Model {
             .setViews(dto.views)
             .setTimestamp(dto.timestamp)
     }
-
 
     fun transform(dto: VKApiPhoto): Photo {
         return Photo()
@@ -960,7 +944,6 @@ object Dto2Model {
             .setPostId(dto.post_id)
             .setSizes(if (dto.sizes == null) null else transform(dto.sizes))
     }
-
 
     fun transform(dto: VKApiAudio): Audio {
         return Audio()
@@ -985,7 +968,6 @@ object Dto2Model {
             .setIsHq(dto.isHq)
             .setMain_artists(dto.main_artists).updateDownloadIndicator()
     }
-
 
     fun transform(dto: VKApiAudioPlaylist): AudioPlaylist {
         return AudioPlaylist()
@@ -1017,7 +999,6 @@ object Dto2Model {
             .setPhoto(link.photo?.let { transform(it) })
     }
 
-
     fun transform(article: VKApiArticle): Article {
         return Article(article.id, article.owner_id)
             .setAccessKey(article.access_key)
@@ -1029,11 +1010,9 @@ object Dto2Model {
             .setIsFavorite(article.is_favorite)
     }
 
-
     fun map(dto: VKApiAudioArtist.Image): AudioArtistImage {
         return AudioArtistImage(dto.url, dto.width, dto.height)
     }
-
 
     fun transform(dto: VKApiAudioArtist): AudioArtist {
         return AudioArtist(dto.id)
@@ -1046,7 +1025,6 @@ object Dto2Model {
                 }
             )
     }
-
 
     fun map(dto: VKApiSticker.Image): Sticker.Image {
         return Sticker.Image(dto.url, dto.width, dto.height)
@@ -1089,7 +1067,6 @@ object Dto2Model {
             .setTranscript(dto.transcript)
             .setWasListened(dto.was_listened)
     }
-
 
     fun transform(dto: VKApiDoc): Document {
         val document = Document(dto.id, dto.ownerId)
@@ -1324,7 +1301,6 @@ object Dto2Model {
         return attachments
     }
 
-
     fun transformPosts(dtos: Collection<VKApiPost>, bundle: IOwnersBundle): List<Post> {
         val posts: MutableList<Post> = ArrayList(safeCountOf(dtos))
         for (dto in dtos) {
@@ -1335,7 +1311,6 @@ object Dto2Model {
         }
         return posts
     }
-
 
     fun transformAttachmentsPosts(
         dtos: Collection<VKApiAttachments.Entry>,
@@ -1352,7 +1327,6 @@ object Dto2Model {
         }
         return posts
     }
-
 
     fun transform(dto: VKApiPost, owners: IOwnersBundle): Post {
         val post = Post()
@@ -1411,7 +1385,6 @@ object Dto2Model {
         return post
     }
 
-
     fun buildNews(original: VKApiNews, owners: IOwnersBundle): News {
         val news = News()
             .setType(original.type)
@@ -1451,7 +1424,6 @@ object Dto2Model {
         }
         return news
     }
-
 
     fun fillPostOwners(post: Post, owners: IOwnersBundle) {
         if (post.authorId != 0L) {

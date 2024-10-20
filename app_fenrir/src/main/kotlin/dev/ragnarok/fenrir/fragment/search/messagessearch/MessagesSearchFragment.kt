@@ -121,7 +121,6 @@ class MessagesSearchFragment :
         mAdapter?.disableVoiceMessagePlaying()
     }
 
-
     override fun onVoiceHolderBinded(voiceMessageId: Int, voiceHolderId: Int) {
         presenter?.fireVoiceHolderCreated(
             voiceMessageId,

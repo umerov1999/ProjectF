@@ -364,7 +364,8 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                                 .update_file_name(
                                                     hash2,
                                                     root.findViewById<TextInputEditText>(R.id.edit_file_name).text.toString()
-                                                        .trim { it <= ' ' })
+                                                        .trim()
+                                                )
                                                 .fromIOToMain({
                                                     CustomToast.createCustomToast(
                                                         context, view
@@ -578,7 +579,8 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                                                 .update_file_name(
                                                     hash2,
                                                     root.findViewById<TextInputEditText>(R.id.edit_file_name).text.toString()
-                                                        .trim { it <= ' ' })
+                                                        .trim()
+                                                )
                                                 .fromIOToMain({
                                                     CustomToast.createCustomToast(
                                                         context, view

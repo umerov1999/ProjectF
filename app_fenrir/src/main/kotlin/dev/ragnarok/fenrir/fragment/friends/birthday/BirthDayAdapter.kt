@@ -74,7 +74,7 @@ class BirthDayAdapter(private val mContext: Context, private var mData: List<Bir
                 holder.month.text =
                     mContext.resources.getTextArray(R.array.array_month_items)[opMonth]
             } else {
-                holder.month.text = bth.month.toString()
+                holder.month.text = String.format(Utils.appLocale, "%d", bth.month)
             }
         } else {
             holder.month.visibility = View.GONE

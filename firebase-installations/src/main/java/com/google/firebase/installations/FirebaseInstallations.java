@@ -554,21 +554,18 @@ public class FirebaseInstallations implements FirebaseInstallationsApi {
                         /*appId= */ getApplicationId(),
                         /* migration-header= */ iidToken);
 
-        switch (response.getResponseCode()) {
-            case OK:
-                return prefs.withRegisteredFid(
-                        response.getFid(),
-                        response.getRefreshToken(),
-                        utils.currentTimeInSecs(),
-                        response.getAuthToken().getToken(),
-                        response.getAuthToken().getTokenExpirationTimestamp());
-            case BAD_CONFIG:
-                return prefs.withFisError("BAD CONFIG");
-            default:
-                throw new FirebaseInstallationsException(
-                        "Firebase Installations Service is unavailable. Please try again later.",
-                        Status.UNAVAILABLE);
-        }
+        return switch (response.getResponseCode()) {
+            case OK -> prefs.withRegisteredFid(
+                    response.getFid(),
+                    response.getRefreshToken(),
+                    utils.currentTimeInSecs(),
+                    response.getAuthToken().getToken(),
+                    response.getAuthToken().getTokenExpirationTimestamp());
+            case BAD_CONFIG -> prefs.withFisError("BAD CONFIG");
+            default -> throw new FirebaseInstallationsException(
+                    "Firebase Installations Service is unavailable. Please try again later.",
+                    Status.UNAVAILABLE);
+        };
     }
 
     /**
@@ -586,24 +583,22 @@ public class FirebaseInstallations implements FirebaseInstallationsApi {
                         /*projectID= */ getProjectIdentifier(),
                         /*refreshToken= */ prefs.getRefreshToken());
 
-        switch (tokenResult.getResponseCode()) {
-            case OK:
-                return prefs.withAuthToken(
-                        tokenResult.getToken(),
-                        tokenResult.getTokenExpirationTimestamp(),
-                        utils.currentTimeInSecs());
-            case BAD_CONFIG:
-                return prefs.withFisError("BAD CONFIG");
-            case AUTH_ERROR:
+        return switch (tokenResult.getResponseCode()) {
+            case OK -> prefs.withAuthToken(
+                    tokenResult.getToken(),
+                    tokenResult.getTokenExpirationTimestamp(),
+                    utils.currentTimeInSecs());
+            case BAD_CONFIG -> prefs.withFisError("BAD CONFIG");
+            case AUTH_ERROR -> {
                 // The the server refused to generate a new auth token due to bad credentials, clear the
                 // FID to force the generation of a new one.
                 updateCacheFid(null);
-                return prefs.withNoGeneratedFid();
-            default:
-                throw new FirebaseInstallationsException(
-                        "Firebase Installations Service is unavailable. Please try again later.",
-                        Status.UNAVAILABLE);
-        }
+                yield prefs.withNoGeneratedFid();
+            }
+            default -> throw new FirebaseInstallationsException(
+                    "Firebase Installations Service is unavailable. Please try again later.",
+                    Status.UNAVAILABLE);
+        };
     }
 
     /**

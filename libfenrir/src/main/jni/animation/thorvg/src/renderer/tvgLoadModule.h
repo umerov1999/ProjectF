@@ -49,7 +49,7 @@ struct LoadModule
     }
 
     virtual bool open(const string& path) { return false; }
-    virtual bool open(const char* data, uint32_t size, const string& rpath, bool copy) { return false; }
+    virtual bool open(const char* data, uint32_t size, bool copy) { return false; }
     virtual bool resize(Paint* paint, float w, float h) { return false; }
     virtual void sync() {};  //finish immediately if any async update jobs.
 
@@ -80,14 +80,14 @@ struct ImageLoader : LoadModule
     static ColorSpace cs;                           //desired value
 
     float w = 0, h = 0;                             //default image size
-    Surface surface;
+    RenderSurface surface;
 
     ImageLoader(FileType type) : LoadModule(type) {}
 
     virtual bool animatable() { return false; }  //true if this loader supports animation.
     virtual Paint* paint() { return nullptr; }
 
-    virtual Surface* bitmap()
+    virtual RenderSurface* bitmap()
     {
         if (surface.data) return &surface;
         return nullptr;

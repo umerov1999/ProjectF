@@ -24,7 +24,7 @@ class DispatchQueue @JvmOverloads constructor(threadName: String, start: Boolean
             } else {
                 handler?.sendMessageDelayed(msg, delay.toLong())
             }
-        } catch (ignore: Exception) {
+        } catch (_: Exception) {
         }
     }
 

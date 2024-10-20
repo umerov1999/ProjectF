@@ -41,7 +41,7 @@ class GroupSettingsDtoAdapter : AbsDtoAdapter<GroupSettingsDto>("GroupSettingsDt
         if (checkPrimitive(publicCategoryJson)) {
             try {
                 dto.public_category = publicCategoryJson.jsonPrimitive.int.toString()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 dto.public_category = publicCategoryJson.jsonPrimitive.content
             }
         }
@@ -49,7 +49,7 @@ class GroupSettingsDtoAdapter : AbsDtoAdapter<GroupSettingsDto>("GroupSettingsDt
         if (checkPrimitive(publicSubCategoryJson)) {
             try {
                 dto.public_subcategory = publicSubCategoryJson.jsonPrimitive.int.toString()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 dto.public_subcategory = publicSubCategoryJson.jsonPrimitive.content
             }
         }

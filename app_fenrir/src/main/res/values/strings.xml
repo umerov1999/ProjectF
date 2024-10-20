@@ -303,7 +303,6 @@
     <string name="ask_account_cache_cleaner">Do clear cache and sql?</string>
     <string name="cache_cleaner">Clear cache</string>
     <!-- Quick Reply-->
-    <string name="go_to_dialog">To dialog</string>
     <string name="send">Send</string>
 
     <string name="text_hint">Message</string>
@@ -341,19 +340,6 @@
 
     <string name="notif_setting_title">Notifications</string>
     <string name="notifications_sync">Sync from VK</string>
-    <string name="messages_in_dialogs_tite">Messages in dialogs</string>
-    <string name="enable_dialogs_notif_title">Enable notifications</string>
-    <string name="enable_dialogs_sound_title">Sound</string>
-    <string name="enable_dialogs_vibro_title">Vibration</string>
-    <string name="enable_dialogs_led_title">LED</string>
-
-    <string name="messages_in_groupchat_tite">Messages in group chat</string>
-    <string name="enable_groupchat_notif_title">Enable notifications</string>
-    <string name="enable_groupchat_sound_title">Sound</string>
-    <string name="enable_groupchat_vibro_title">Vibration</string>
-    <string name="enable_groupchat_led_title">LED</string>
-
-    <string name="quick_answer_title">Quick answer</string>
 
     <string name="here">Here</string>
     <string name="to_another_dialogue">Into another dialog</string>
@@ -454,8 +440,6 @@
         <item>2</item>
     </string-array>
 
-    <string name="high_notif_priority_title">High priority notifications</string>
-    <string name="high_notif_priority_summary">In-app notifications will appear higher in relation to other notifications. For Android version 5.0 and higher, this option also enables pop-up notifications.</string>
     <string name="night_mode_title">Night mode</string>
     <string name="theme_overlay" translatable="false">Amoled/Material 1</string>
 
@@ -602,11 +586,7 @@
     <string name="api_error_1151">No access to delete documents</string>
     <string name="api_error_1170">Too many news lists (maximum 10)</string>
 
-    <string name="select_ringtone_title">Ringtone notification</string>
-    <string name="ringtone_not_selected">No ringtone selected</string>
-    <string name="ringtone_custom">More</string>
     <string name="cancel">Cancellation</string>
-    <string name="ringtone_vk">VKontakte</string>
     <string name="videos">Videos</string>
     <string name="articles">Articles</string>
     <string name="products">Products</string>
@@ -1053,15 +1033,6 @@
     <string name="invitation_has_been_declined">The invitation was declined</string>
     <string name="request_canceled">Request canceled</string>
     <string name="restored">Restored</string>
-    <string name="friend_request_accepted_notification">Accepting a friend request</string>
-    <string name="group_invited_notification">Group invitation</string>
-    <string name="new_comment_notification">Comments on posts/photos/videos</string>
-    <string name="new_follower_notification">Friend request</string>
-    <string name="new_wall_post_notification">New post on your wall</string>
-    <string name="other_notifications_settings">Other notifications</string>
-    <string name="other_notifications_types">Types notifications</string>
-    <string name="reply_notification">Answers in comments</string>
-    <string name="wall_publish_notification">The post you proposed has been published</string>
     <string name="delete_chats_photo">Delete background (photo)</string>
     <string name="set_default">Reset</string>
     <string name="sidebar_settings">Pop-up menu</string>
@@ -1084,7 +1055,6 @@
     <string name="cancelling">Cancel</string>
     <string name="set_as_active">Make active</string>
     <string name="account_switched_to">Current account</string>
-    <string name="peer_notification_settings">Notifications\' settings</string>
     <string name="wall_post_is_not_yet_initialized">Post information has not been received yet, please wait</string>
     <string name="post_is_pinned">Pinned post</string>
     <string name="will_be_posted_at">Will be published %1$s</string>
@@ -1133,7 +1103,6 @@
     <string name="unable_to_play_file">Failed to play file</string>
     <string name="viewing_messages">Viewing messages</string>
     <string name="authorization">Authorization</string>
-    <string name="pause_is_not_supported">Pause not supported</string>
     <string name="jump_to_comment">Go to comment</string>
     <string name="open_post">Show post</string>
     <string name="open_topic">Open discussion</string>
@@ -1167,8 +1136,6 @@
     <string name="you_have_successfully_exchanged_keys">You have successfully exchanged keys, now you can enable message encryption</string>
     <string name="encryption_status">Encryption status</string>
     <string name="no_encryption_keys">No encryption keys</string>
-    <string name="quick_reply">Quick response</string>
-    <string name="quick_reply_summary">Immediately display the quick reply window</string>
     <string name="you_dont_have_encryption_keys_stored_initiate_key_exchange">You do not have any encryption keys stored. Initiate a key exchange?</string>
     <string name="counter_documents">documents</string>
     <string name="ask_for_pin_on_application_start_title">PIN-code at start</string>
@@ -1223,7 +1190,6 @@
     <string name="store_on_disk">Save on disk (recommended)</string>
     <string name="store_on_disk_summary">The encryption keys will be saved in the permanent memory of the device.</string>
     <string name="for_topic">In discussion</string>
-    <string name="new_posts_of_users_and_communities">New posts from users and communities</string>
     <string name="reached_maximum_count_of_attachments">Maximum number of attachments reached</string>
     <string name="select">Choose answer option</string>
     <string name="votes_count">%1$d of votes</string>
@@ -1250,24 +1216,6 @@
     <string name="id">Id</string>
     <string name="article">Article</string>
     <string name="copied">Copied</string>
-
-    <string-array name="array_vibration_length_names">
-        <item>Short</item>
-        <item>Normal</item>
-        <item>Long</item>
-        <item>Short (twice)</item>
-        <item>Normal (twice)</item>
-        <item>Long (twice)</item>
-    </string-array>
-
-    <string-array name="array_vibration_length_value" translatable="false">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-    </string-array>
 
     <string name="vk_photos_tab_title">Photo VK</string>
     <string name="local_photos_tab_title">Local photos</string>
@@ -1479,7 +1427,6 @@
     <string name="pause">paused</string>
     <string name="previous">previous</string>
     <string name="next">next</string>
-    <string name="vibration_length">Vibration duration</string>
     <string name="skype" translatable="false">Skype</string>
     <string name="family">Family</string>
     <string name="instagram" translatable="false">Instagram</string>
@@ -1865,7 +1812,6 @@
     <string name="revert_play_audio">Play button - menu</string>
     <string name="foreground_downloader">Foreground Downloader</string>
     <string name="side_transition">Side animated transition</string>
-    <string name="lollipop21">This application is not designed to work on Android 5.0 sdk 21, because this firmware has a bug in the Skia module. If it crashes, disable the native library in the settings, but then you will lose stickers, animated gif, qr</string>
     <string name="ad_block_story_news">Blocking ads</string>
     <string name="block_news_by_words">Block news by words</string>
     <string name="block_news_by_words_message">Each pattern on a new line</string>
@@ -1984,4 +1930,7 @@
     <string name="account_type">Account Type:</string>
     <string name="ip">IP Address:</string>
     <string name="auth_by_code">Auth By Code</string>
+    <string name="single_line_elements">Single line elements</string>
+    <string name="single_line_videos">Videos</string>
+    <string name="single_line_photos">Photos</string>
 </resources>

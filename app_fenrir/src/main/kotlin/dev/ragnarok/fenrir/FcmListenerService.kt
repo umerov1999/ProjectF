@@ -95,10 +95,10 @@ class FcmListenerService : FirebaseMessagingService() {
                     ?.notify(context, accountId)
 
                 PushType.NEW_POST -> NewPostPushMessage.fromRemoteMessage(accountId, message)
-                    .notifyIfNeed(context)
+                    .notify(context)
 
                 PushType.LIKE -> LikeFCMMessage.fromRemoteMessage(accountId, message)
-                    ?.notifyIfNeed(context)
+                    ?.notify(context)
 
                 PushType.REPLY -> ReplyFCMMessage.fromRemoteMessage(message)
                     ?.notify(context, accountId)

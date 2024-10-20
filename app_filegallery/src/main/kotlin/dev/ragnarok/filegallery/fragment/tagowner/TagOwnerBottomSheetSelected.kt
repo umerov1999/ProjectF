@@ -48,7 +48,8 @@ class TagOwnerBottomSheetSelected :
                 .setPositiveButton(R.string.button_ok) { _, _ ->
                     presenter?.addOwner(
                         view.findViewById<TextInputEditText>(R.id.edit_name).text.toString()
-                            .trim { it <= ' ' })
+                            .trim()
+                    )
                 }
                 .setNegativeButton(R.string.button_cancel, null)
                 .show()
@@ -114,7 +115,7 @@ class TagOwnerBottomSheetSelected :
             .setPositiveButton(R.string.button_ok) { _, _ ->
                 presenter?.renameTagOwner(
                     view.findViewById<TextInputEditText>(R.id.edit_name).text.toString()
-                        .trim { it <= ' ' }, owner
+                        .trim(), owner
                 )
             }
             .setNegativeButton(R.string.button_cancel, null)

@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.materialpopupmenu.internal
 
 import android.content.Context
-import android.os.Build
 import android.view.View
 import android.widget.PopupWindow
 import androidx.core.view.doOnLayout
@@ -53,9 +52,7 @@ internal class MaterialPopupWindow(
     private fun disableAnimations() {
         animationStyle = 0
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            enterTransition = null
-            exitTransition = null
-        }
+        enterTransition = null
+        exitTransition = null
     }
 }

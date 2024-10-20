@@ -31,11 +31,9 @@ object AppTextUtils {
         FULL_LITTLE_DATE = SimpleDateFormat("dd.MM.yy HH:mm", locale)
     }
 
-
     fun safeTrim(text: String?, ifNull: String?): String? {
-        return text?.trim { it <= ' ' } ?: ifNull
+        return text?.trim() ?: ifNull
     }
-
 
     fun reduceStringForPost(input: String?): String? {
         val pp = OwnerLinkSpanFactory.findPatterns(input, owners = true, topics = false)
@@ -51,7 +49,6 @@ object AppTextUtils {
         }
         return reduceText(input, l)
     }
-
 
     fun reduceText(text: String?, maxLength: Int): String? {
         return if (text == null || text.length < maxLength) {
@@ -214,7 +211,6 @@ object AppTextUtils {
             num.toString() + K
         } else counter.toString()
     }
-
 
     fun getDateWithZeros(date: String?): String {
         if (date.isNullOrEmpty() || date == ZERO) {

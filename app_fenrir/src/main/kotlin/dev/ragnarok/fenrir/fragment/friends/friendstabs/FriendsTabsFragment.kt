@@ -84,7 +84,7 @@ class FriendsTabsFragment : BaseMvpFragment<FriendsTabsPresenter, IFriendsTabsVi
     private fun setupTabCounterView(id: Int, count: Int) {
         try {
             adapter?.updateCount(id, count)
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
     }
 

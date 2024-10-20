@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 #include <jni.h>
-#include <cstdlib>
 #include "fenrir_native.h"
 
 extern "C" {
-#ifdef __cplusplus
-#define __STDC_CONSTANT_MACROS
-#ifdef _STDINT_H
-#undef _STDINT_H
-#endif
-#include <cstdint>
-#endif
 #include <libavcodec/avcodec.h>
 #include <libavutil/channel_layout.h>
 #include <libavutil/error.h>
@@ -287,7 +279,7 @@ int decodePacket(AVCodecContext *context, AVPacket *packet,
         int sampleRate = context->sample_rate;
         int sampleCount = frame->nb_samples;
         //int dataSize = av_samples_get_buffer_size(nullptr, channelCount, sampleCount, sampleFormat, 1);
-        SwrContext *resampleContext = static_cast<SwrContext *>(context->opaque);
+        auto *resampleContext = static_cast<SwrContext *>(context->opaque);
         if (!resampleContext) {
             result =
                     swr_alloc_set_opts2(&resampleContext,             // ps
@@ -298,7 +290,7 @@ int decodePacket(AVCodecContext *context, AVPacket *packet,
                                         sampleFormat,                 // in_sample_fmt
                                         sampleRate,                   // in_sample_rate
                                         0,                            // log_offset
-                                        NULL                          // log_ctx
+                                        nullptr                          // log_ctx
                     );
             if (result < 0) {
                 logError("swr_alloc_set_opts2", result);

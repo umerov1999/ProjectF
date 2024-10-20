@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -49,7 +48,7 @@ import dev.ragnarok.fenrir.settings.theme.ThemesController
 import dev.ragnarok.fenrir.util.AppTextUtils.getDateFromUnixTime
 import dev.ragnarok.fenrir.util.DownloadWorkUtils
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCream
+import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.serializeble.json.Json
@@ -182,7 +181,7 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
                         EmptyAvatar.visibility = View.VISIBLE
                         var name: String = owner.owner.fullName.orEmpty()
                         if (name.length > 2) name = name.substring(0, 2)
-                        name = name.trim { it <= ' ' }
+                        name = name.trim()
                         EmptyAvatar.text = name
                     } else {
                         EmptyAvatar.visibility = View.GONE
@@ -216,13 +215,8 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
             tab.text = adapter.DeltaOwner.content[position].name
         }.attach()
 
-        if (!hasVanillaIceCream()) {
+        if (!hasVanillaIceCreamTarget()) {
             val w = window
-            if (!Utils.hasMarshmallow()) {
-                w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            }
-
             w.statusBarColor = getStatusBarColor(this)
             w.navigationBarColor = getNavigationBarColor(this)
         }
@@ -291,7 +285,7 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
     @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val w = window
-        if (!hasVanillaIceCream()) {
+        if (!hasVanillaIceCreamTarget()) {
             w.statusBarColor =
                 if (colored) getStatusBarColor(this) else getStatusBarNonColored(
                     this
@@ -302,11 +296,6 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons
-
-        if (!Utils.hasMarshmallow()) {
-            w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        }
     }
 
     companion object {

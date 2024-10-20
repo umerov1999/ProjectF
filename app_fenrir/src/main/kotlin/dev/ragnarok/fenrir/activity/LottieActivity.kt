@@ -7,7 +7,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Environment
-import android.view.WindowManager
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -26,7 +25,7 @@ import dev.ragnarok.fenrir.settings.theme.ThemesController.currentStyle
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCream
+import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
 import java.io.File
 
@@ -99,7 +98,7 @@ class LottieActivity : AppCompatActivity() {
     private var lottie: RLottieImageView? = null
     private var lg: TextView? = null
     internal fun log(log: String?) {
-        lg?.post { lg?.text = log?.trim { it <= ' ' } }
+        lg?.post { lg?.text = log?.trim() }
     }
 
     override fun attachBaseContext(newBase: Context) {
@@ -135,13 +134,8 @@ class LottieActivity : AppCompatActivity() {
             }
             startExportGif()
         }
-        if (!hasVanillaIceCream()) {
+        if (!hasVanillaIceCreamTarget()) {
             val w = window
-            if (!Utils.hasMarshmallow()) {
-                w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            }
-
             w.statusBarColor = CurrentTheme.getStatusBarColor(this)
             w.navigationBarColor = CurrentTheme.getNavigationBarColor(this)
         }

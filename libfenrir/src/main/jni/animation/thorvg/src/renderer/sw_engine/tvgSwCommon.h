@@ -178,12 +178,16 @@ struct SwStroke
     SwFixed subPathLineLength;
     SwFixed width;
     SwFixed miterlimit;
-    SwFill* fill = nullptr;
-    SwStrokeBorder borders[2];
-    float sx, sy;
+
     StrokeCap cap;
     StrokeJoin join;
     StrokeJoin joinSaved;
+    SwFill* fill = nullptr;
+
+    SwStrokeBorder borders[2];
+
+    float sx, sy;
+
     bool firstPt;
     bool closedSubPath;
     bool handleWideStrokes;
@@ -240,13 +244,13 @@ typedef uint8_t(*SwAlpha)(uint8_t*);                                        //bl
 
 struct SwCompositor;
 
-struct SwSurface : Surface
+struct SwSurface : RenderSurface
 {
     SwJoin  join;
     SwAlpha alphas[4];                    //Alpha:2, InvAlpha:3, Luma:4, InvLuma:5
     SwBlender blender = nullptr;          //blender (optional)
     SwCompositor* compositor = nullptr;   //compositor (optional)
-    BlendMethod blendMethod;              //blending method (uint8_t)
+    BlendMethod blendMethod = BlendMethod::Normal;
 
     SwAlpha alpha(CompositeMethod method)
     {
@@ -258,7 +262,7 @@ struct SwSurface : Surface
     {
     }
 
-    SwSurface(const SwSurface* rhs) : Surface(rhs)
+    SwSurface(const SwSurface* rhs) : RenderSurface(rhs)
     {
         join = rhs->join;
         memcpy(alphas, rhs->alphas, sizeof(alphas));
@@ -268,7 +272,7 @@ struct SwSurface : Surface
      }
 };
 
-struct SwCompositor : Compositor
+struct SwCompositor : RenderCompositor
 {
     SwSurface* recoverSfc;                  //Recover surface when composition is started
     SwCompositor* recoverCmp;               //Recover compositor when composition is done
@@ -486,7 +490,7 @@ SwFixed mathSin(SwFixed angle);
 void mathSplitCubic(SwPoint* base);
 SwFixed mathDiff(SwFixed angle1, SwFixed angle2);
 SwFixed mathLength(const SwPoint& pt);
-bool mathSmallCubic(const SwPoint* base, SwFixed& angleIn, SwFixed& angleMid, SwFixed& angleOut);
+int mathCubicAngle(const SwPoint* base, SwFixed& angleIn, SwFixed& angleMid, SwFixed& angleOut);
 SwFixed mathMean(SwFixed angle1, SwFixed angle2);
 SwPoint mathTransform(const Point* to, const Matrix& transform);
 bool mathUpdateOutlineBBox(const SwOutline* outline, const SwBBox& clipRegion, SwBBox& renderRegion, bool fastTrack);
@@ -542,8 +546,8 @@ SwRle* rleRender(const SwBBox* bbox);
 void rleFree(SwRle* rle);
 void rleReset(SwRle* rle);
 void rleMerge(SwRle* rle, SwRle* clip1, SwRle* clip2);
-void rleClipPath(SwRle* rle, const SwRle* clip);
-void rleClipRect(SwRle* rle, const SwBBox* clip);
+void rleClip(SwRle* rle, const SwRle* clip);
+void rleClip(SwRle* rle, const SwBBox* clip);
 
 SwMpool* mpoolInit(uint32_t threads);
 bool mpoolTerm(SwMpool* mpool);
@@ -564,8 +568,12 @@ bool rasterGradientStroke(SwSurface* surface, SwShape* shape, const Fill* fdata,
 bool rasterClear(SwSurface* surface, uint32_t x, uint32_t y, uint32_t w, uint32_t h, pixel_t val = 0);
 void rasterPixel32(uint32_t *dst, uint32_t val, uint32_t offset, int32_t len);
 void rasterGrayscale8(uint8_t *dst, uint8_t val, uint32_t offset, int32_t len);
-void rasterUnpremultiply(Surface* surface);
-void rasterPremultiply(Surface* surface);
-bool rasterConvertCS(Surface* surface, ColorSpace to);
+void rasterXYFlip(uint32_t* src, uint32_t* dst, int32_t stride, int32_t w, int32_t h, const SwBBox& bbox, bool flipped);
+void rasterUnpremultiply(RenderSurface* surface);
+void rasterPremultiply(RenderSurface* surface);
+bool rasterConvertCS(RenderSurface* surface, ColorSpace to);
+
+bool effectGaussianBlur(SwImage& image, SwImage& buffer, const SwBBox& bbox, const RenderEffectGaussian* params);
+bool effectGaussianPrepare(RenderEffectGaussian* effect);
 
 #endif /* _TVG_SW_COMMON_H_ */

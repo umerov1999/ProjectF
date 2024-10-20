@@ -209,7 +209,7 @@ public class AsyncListUtil<T> {
     }
 
     private final ThreadUtil.MainThreadCallback<T>
-            mMainThreadCallback = new ThreadUtil.MainThreadCallback<T>() {
+            mMainThreadCallback = new ThreadUtil.MainThreadCallback<>() {
         @Override
         public void updateItemCount(int generation, int itemCount) {
             if (DEBUG) {
@@ -291,7 +291,7 @@ public class AsyncListUtil<T> {
     };
 
     private final ThreadUtil.BackgroundCallback<T>
-            mBackgroundCallback = new ThreadUtil.BackgroundCallback<T>() {
+            mBackgroundCallback = new ThreadUtil.BackgroundCallback<>() {
 
         private TileList.Tile<T> mRecycledRoot;
 
@@ -313,7 +313,7 @@ public class AsyncListUtil<T> {
 
         @Override
         public void updateRange(int rangeStart, int rangeEnd, int extRangeStart, int extRangeEnd,
-                int scrollHint) {
+                                int scrollHint) {
             if (DEBUG) {
                 log("updateRange: %d..%d extended to %d..%d, scroll hint: %d",
                         rangeStart, rangeEnd, extRangeStart, extRangeEnd, scrollHint);
@@ -428,7 +428,7 @@ public class AsyncListUtil<T> {
                         (scrollHint == ViewCallback.HINT_SCROLL_ASC))) {
                     removeTile(firstLoadedTileStart);
                 } else if (endMargin > 0 && (startMargin < endMargin ||
-                        (scrollHint == ViewCallback.HINT_SCROLL_DESC))){
+                        (scrollHint == ViewCallback.HINT_SCROLL_DESC))) {
                     removeTile(lastLoadedTileStart);
                 } else {
                     // Could not flush on either side, bail out.

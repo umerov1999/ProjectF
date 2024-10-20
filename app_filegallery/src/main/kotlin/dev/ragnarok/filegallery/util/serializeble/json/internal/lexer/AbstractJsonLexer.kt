@@ -212,7 +212,6 @@ internal abstract class AbstractJsonLexer {
         return token
     }
 
-
     abstract fun consumeNextToken(expected: Char)
 
     protected fun unexpectedToken(expected: Char) {
@@ -372,7 +371,6 @@ internal abstract class AbstractJsonLexer {
             consumeChunk(substring(fromIndex, toIndex))
         }
     }
-
 
     fun consumeString(): String {
         if (peekedString != null) {
@@ -699,7 +697,6 @@ internal abstract class AbstractJsonLexer {
             else -> fail("Numeric value overflow")
         }
     }
-
 
     fun consumeBoolean(): Boolean {
         return consumeBoolean(skipWhitespaces())

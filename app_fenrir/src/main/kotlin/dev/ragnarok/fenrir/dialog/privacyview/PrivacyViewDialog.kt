@@ -147,7 +147,7 @@ class PrivacyViewDialog : AccountDependencyDialogFragment(), PrivacyAdapter.Acti
             ?: throw IllegalArgumentException("Args do not contain Privacy extra")
         return try {
             privacy.clone()
-        } catch (e: CloneNotSupportedException) {
+        } catch (_: CloneNotSupportedException) {
             privacy
         }
     }

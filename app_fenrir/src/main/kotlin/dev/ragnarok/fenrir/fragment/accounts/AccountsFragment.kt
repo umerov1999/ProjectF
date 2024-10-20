@@ -616,7 +616,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
                     try {
                         val access_token =
                             root.findViewById<TextInputEditText>(R.id.edit_access_token).text.toString()
-                                .trim { it <= ' ' }
+                                .trim()
                         val types = intArrayOf(
                             AccountType.VK_ANDROID,
                             AccountType.KATE,

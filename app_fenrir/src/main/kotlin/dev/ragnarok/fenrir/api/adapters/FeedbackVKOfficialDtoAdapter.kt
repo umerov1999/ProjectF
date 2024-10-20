@@ -106,7 +106,7 @@ class FeedbackVKOfficialDtoAdapter :
                         }
                     }
                 }
-            } catch (ignored: Exception) {
+            } catch (_: Exception) {
             }
             dto.iconType = optString(root_item, "icon_type")
             dto.header = optString(root_item, "header")

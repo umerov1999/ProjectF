@@ -830,7 +830,7 @@ class Attachments : Parcelable, Cloneable {
         if (audioArtists != null) {
             line = line + " audioArtists=" + safeCountOf(audioArtists)
         }
-        return line.trim { it <= ' ' }
+        return line.trim()
     }
 
     fun setPosts(posts: ArrayList<Post>?) {

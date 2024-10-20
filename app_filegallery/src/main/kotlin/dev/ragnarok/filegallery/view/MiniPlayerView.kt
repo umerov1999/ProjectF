@@ -221,7 +221,7 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
                 mProgress.updateFullState(-1, -1, -1)
                 return
             }
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
     }
 
