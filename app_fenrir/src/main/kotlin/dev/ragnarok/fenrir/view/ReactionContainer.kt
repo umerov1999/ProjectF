@@ -12,7 +12,7 @@ import dev.ragnarok.fenrir.model.ReactionWithAsset
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 
 class ReactionContainer : RowLayout {
     private var colorPrimary = 0
@@ -67,7 +67,7 @@ class ReactionContainer : RowLayout {
         }
         visibility = VISIBLE
         val i = reactionsData.size - childCount
-        for (j in 0 until i) {
+        (0 until i).forEach { j ->
             val itemView =
                 LayoutInflater.from(context).inflate(R.layout.item_reaction, this, false)
             val holder = ReactionHolder(itemView)
@@ -95,8 +95,7 @@ class ReactionContainer : RowLayout {
                 reactionHolder.ivReaction.fromNet(
                     reaction.small_animation,
                     Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
-                    Utils.dp(28f),
-                    Utils.dp(28f)
+                    !isEdit
                 )
             }
             root.setOnClickListener {
@@ -115,6 +114,6 @@ class ReactionContainer : RowLayout {
 
     private inner class ReactionHolder(root: View) {
         val tvCount: TextView = root.findViewById(R.id.count)
-        val ivReaction: RLottieImageView = root.findViewById(R.id.reaction)
+        val ivReaction: ThorVGLottieView = root.findViewById(R.id.reaction)
     }
 }

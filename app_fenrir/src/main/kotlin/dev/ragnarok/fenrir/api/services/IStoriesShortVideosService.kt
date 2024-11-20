@@ -175,4 +175,14 @@ class IStoriesShortVideosService : IServiceRest() {
             ), base(ShortVideosResponse.serializer())
         )
     }
+
+    //is_subscribed_stories
+
+    fun subscribe(owner_id: Long?): Flow<BaseResponse<Int>> {
+        return rest.request("stories.subscribe", form("owner_id" to owner_id), baseInt)
+    }
+
+    fun unsubscribe(owner_id: Long?): Flow<BaseResponse<Int>> {
+        return rest.request("stories.unsubscribe", form("owner_id" to owner_id), baseInt)
+    }
 }

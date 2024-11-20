@@ -37,7 +37,7 @@ class MarketDboEntity : DboEntity() {
     var photos: List<PhotoDboEntity>? = null
         private set
 
-    operator fun set(id: Int, owner_id: Long): MarketDboEntity {
+    fun set(id: Int, owner_id: Long): MarketDboEntity {
         this.id = id
         this.owner_id = owner_id
         return this

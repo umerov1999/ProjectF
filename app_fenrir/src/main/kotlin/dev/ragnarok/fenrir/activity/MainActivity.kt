@@ -551,6 +551,10 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     }
 
     private fun updateNotificationCount(account: Long) {
+        if (account == ISettings.IAccountsSettings.INVALID_ID) {
+            removeNotificationsBadge()
+            return
+        }
         mCompositeJob.add(CountersInteractor(networkInterfaces).getApiCounters(account)
             .fromIOToMain({ counters -> updateNotificationsBadge(counters) }) { removeNotificationsBadge() })
     }

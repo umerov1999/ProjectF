@@ -42,7 +42,7 @@ class FlowerColorWheelRenderer : AbsColorWheelRenderer() {
                 )
                 if (currentCount >= setSize) {
                     colorCircleList.add(ColorCircle(x, y, hsv))
-                } else colorCircleList[currentCount][x, y] = hsv
+                } else colorCircleList[currentCount].set(x, y, hsv)
                 currentCount++
             }
         }

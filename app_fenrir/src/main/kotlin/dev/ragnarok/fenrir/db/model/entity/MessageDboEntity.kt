@@ -74,7 +74,7 @@ class MessageDboEntity : DboEntity() {
     var updateTime: Long = 0
         private set
 
-    operator fun set(id: Int, peerId: Long, fromId: Long): MessageDboEntity {
+    fun set(id: Int, peerId: Long, fromId: Long): MessageDboEntity {
         this.id = id
         this.peerId = peerId
         this.fromId = fromId

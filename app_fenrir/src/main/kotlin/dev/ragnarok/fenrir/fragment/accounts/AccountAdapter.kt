@@ -19,11 +19,10 @@ import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.UserInfoResolveUtil
-import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.util.ViewUtils.getOnlineIcon
 import dev.ragnarok.fenrir.view.OnlineView
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import kotlin.math.abs
 
 class AccountAdapter(
@@ -100,17 +99,18 @@ class AccountAdapter(
             if (isCurrent) {
                 holder.active.fromRes(
                     dev.ragnarok.fenrir_common.R.raw.select_check_box,
-                    Utils.dp(40f),
-                    Utils.dp(40f),
                     intArrayOf(
                         0x333333, CurrentTheme.getColorPrimary(
                             context
                         ), 0x777777, CurrentTheme.getColorSecondary(context)
                     )
                 )
-                holder.active.playAnimation()
+                holder.active.startAnimation()
             } else {
-                holder.active.clearAnimationDrawable()
+                holder.active.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
             }
         } else {
             if (isCurrent) {
@@ -134,7 +134,7 @@ class AccountAdapter(
         val vOnline: OnlineView = itemView.findViewById(R.id.item_user_online)
         val tvLastTime: TextView = itemView.findViewById(R.id.last_time)
         val avatar: ImageView = itemView.findViewById(R.id.avatar)
-        val active: RLottieImageView = itemView.findViewById(R.id.active)
+        val active: ThorVGLottieView = itemView.findViewById(R.id.active)
         val account: View = itemView.findViewById(R.id.account_select)
     }
 

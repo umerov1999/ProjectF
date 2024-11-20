@@ -207,7 +207,7 @@ static bool _updateColorTable(SwFill* fill, const Fill* fdata, const SwSurface* 
 }
 
 
-bool _prepareLinear(SwFill* fill, const LinearGradient* linear, const Matrix& transform)
+bool _prepareLinear(SwFill* fill, const LinearGradient* linear, const Matrix& pTransform)
 {
     float x1, x2, y1, y2;
     if (linear->linear(&x1, &y1, &x2, &y2) != Result::Success) return false;
@@ -227,32 +227,22 @@ bool _prepareLinear(SwFill* fill, const LinearGradient* linear, const Matrix& tr
     fill->linear.dy /= len;
     fill->linear.offset = -fill->linear.dx * x1 - fill->linear.dy * y1;
 
-    auto gradTransform = linear->transform();
-    bool isTransformation = !tvg::identity((const Matrix*)(&gradTransform));
+    auto transform = pTransform * linear->transform();
 
-    if (isTransformation) {
-        gradTransform = transform * gradTransform;
-    } else {
-        gradTransform = transform;
-        isTransformation = true;
-    }
+    Matrix itransform;
+    if (!inverse(&transform, &itransform)) return false;
 
-    if (isTransformation) {
-        Matrix invTransform;
-        if (!inverse(&gradTransform, &invTransform)) return false;
+    fill->linear.offset += fill->linear.dx * itransform.e13 + fill->linear.dy * itransform.e23;
 
-        fill->linear.offset += fill->linear.dx * invTransform.e13 + fill->linear.dy * invTransform.e23;
-
-        auto dx = fill->linear.dx;
-        fill->linear.dx = dx * invTransform.e11 + fill->linear.dy * invTransform.e21;
-        fill->linear.dy = dx * invTransform.e12 + fill->linear.dy * invTransform.e22;
-    }
+    auto dx = fill->linear.dx;
+    fill->linear.dx = dx * itransform.e11 + fill->linear.dy * itransform.e21;
+    fill->linear.dy = dx * itransform.e12 + fill->linear.dy * itransform.e22;
 
     return true;
 }
 
 
-bool _prepareRadial(SwFill* fill, const RadialGradient* radial, const Matrix& transform)
+bool _prepareRadial(SwFill* fill, const RadialGradient* radial, const Matrix& pTransform)
 {
     auto cx = P(radial)->cx;
     auto cy = P(radial)->cy;
@@ -294,29 +284,18 @@ bool _prepareRadial(SwFill* fill, const RadialGradient* radial, const Matrix& tr
 
     if (fill->radial.a > 0) fill->radial.invA = 1.0f / fill->radial.a;
 
-    auto gradTransform = radial->transform();
-    bool isTransformation = !tvg::identity((const Matrix*)(&gradTransform));
+    auto transform = pTransform * radial->transform();
 
-    if (isTransformation) gradTransform = transform * gradTransform;
-    else {
-        gradTransform = transform;
-        isTransformation = true;
-    }
+    Matrix itransform;
+    if (!inverse(&transform, &itransform)) return false;
 
-    if (isTransformation) {
-        Matrix invTransform;
-        if (!inverse(&gradTransform, &invTransform)) return false;
-        fill->radial.a11 = invTransform.e11;
-        fill->radial.a12 = invTransform.e12;
-        fill->radial.a13 = invTransform.e13;
-        fill->radial.a21 = invTransform.e21;
-        fill->radial.a22 = invTransform.e22;
-        fill->radial.a23 = invTransform.e23;
-    } else {
-        fill->radial.a11 = fill->radial.a22 = 1.0f;
-        fill->radial.a12 = fill->radial.a13 = 0.0f;
-        fill->radial.a21 = fill->radial.a23 = 0.0f;
-    }
+    fill->radial.a11 = itransform.e11;
+    fill->radial.a12 = itransform.e12;
+    fill->radial.a13 = itransform.e13;
+    fill->radial.a21 = itransform.e21;
+    fill->radial.a22 = itransform.e22;
+    fill->radial.a23 = itransform.e23;
+
     return true;
 }
 
@@ -643,7 +622,7 @@ void fillLinear(const SwFill* fill, uint8_t* dst, uint32_t y, uint32_t x, uint32
         auto t2 = static_cast<int32_t>(t * FIXPT_SIZE);
         auto inc2 = static_cast<int32_t>(inc * FIXPT_SIZE);
         for (uint32_t j = 0; j < len; ++j, ++dst) {
-            auto src = MULTIPLY(_fixedPixel(fill, t2), a);
+            auto src = MULTIPLY(A(_fixedPixel(fill, t2)), a);
             *dst = maskOp(src, *dst, ~src);
             t2 += inc2;
         }
@@ -651,7 +630,7 @@ void fillLinear(const SwFill* fill, uint8_t* dst, uint32_t y, uint32_t x, uint32
     } else {
         uint32_t counter = 0;
         while (counter++ < len) {
-            auto src = MULTIPLY(_pixel(fill, t / GRADIENT_STOP_SIZE), a);
+            auto src = MULTIPLY(A(_pixel(fill, t / GRADIENT_STOP_SIZE)), a);
             *dst = maskOp(src, *dst, ~src);
             ++dst;
             t += inc;

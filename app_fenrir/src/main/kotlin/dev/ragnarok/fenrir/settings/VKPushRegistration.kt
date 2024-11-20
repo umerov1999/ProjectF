@@ -21,7 +21,7 @@ class VKPushRegistration {
     lateinit var fcmToken: String
         private set
 
-    operator fun set(
+    fun set(
         userId: Long,
         deviceId: String,
         vkAccessToken: String,

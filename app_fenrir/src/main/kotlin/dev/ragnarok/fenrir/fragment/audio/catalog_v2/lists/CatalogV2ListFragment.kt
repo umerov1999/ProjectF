@@ -43,13 +43,13 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 
 class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2ListView>(),
     ICatalogV2ListView, MenuProvider {
     private var viewPager: ViewPager2? = null
     private var mAdapter: Adapter? = null
-    private var loading: RLottieImageView? = null
+    private var loading: ThorVGLottieView? = null
     private var animLoad: ObjectAnimator? = null
     private var animationDispose = CancelableJob()
     private var mAnimationLoaded = false
@@ -161,13 +161,19 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
         animLoad = ObjectAnimator.ofFloat(loading, View.ALPHA, 0.0f).setDuration(1000)
         animLoad?.addListener(object : StubAnimatorListener() {
             override fun onAnimationEnd(animation: Animator) {
-                loading?.clearAnimationDrawable()
+                loading?.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
                 loading?.visibility = View.GONE
                 loading?.alpha = 1f
             }
 
             override fun onAnimationCancel(animation: Animator) {
-                loading?.clearAnimationDrawable()
+                loading?.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
                 loading?.visibility = View.GONE
                 loading?.alpha = 1f
             }
@@ -208,8 +214,6 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                 loading?.alpha = 1f
                 loading?.fromRes(
                     dev.ragnarok.fenrir_common.R.raw.s_loading,
-                    Utils.dp(180f),
-                    Utils.dp(180f),
                     intArrayOf(
                         0x333333,
                         CurrentTheme.getColorPrimary(requireActivity()),
@@ -217,7 +221,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                         CurrentTheme.getColorSecondary(requireActivity())
                     )
                 )
-                loading?.playAnimation()
+                loading?.startAnimation()
             }
         }
     }

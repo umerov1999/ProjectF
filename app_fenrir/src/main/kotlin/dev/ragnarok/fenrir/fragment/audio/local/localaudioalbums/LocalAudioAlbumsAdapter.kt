@@ -15,8 +15,7 @@ import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.buildUriForPicasso
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 
 class LocalAudioAlbumsAdapter(
     context: Context,
@@ -87,8 +86,6 @@ class LocalAudioAlbumsAdapter(
             if (isSelected) {
                 holder.selected.fromRes(
                     dev.ragnarok.fenrir_common.R.raw.theme_selected,
-                    Utils.dp(120f),
-                    Utils.dp(120f),
                     intArrayOf(
                         0x333333,
                         CurrentTheme.getColorWhiteContrastFix(holder.selected.context),
@@ -98,9 +95,12 @@ class LocalAudioAlbumsAdapter(
                         CurrentTheme.getColorSecondary(holder.selected.context)
                     )
                 )
-                holder.selected.playAnimation()
+                holder.selected.startAnimation()
             } else {
-                holder.selected.clearAnimationDrawable()
+                holder.selected.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
             }
         } else {
             if (isSelected) {
@@ -125,7 +125,7 @@ class LocalAudioAlbumsAdapter(
         val image: ImageView = itemView.findViewById(R.id.item_local_album_cover)
         val title: TextView = itemView.findViewById(R.id.item_local_album_name)
         val subtitle: TextView = itemView.findViewById(R.id.counter)
-        val selected: RLottieImageView = itemView.findViewById(R.id.selected)
+        val selected: ThorVGLottieView = itemView.findViewById(R.id.selected)
     }
 
     companion object {

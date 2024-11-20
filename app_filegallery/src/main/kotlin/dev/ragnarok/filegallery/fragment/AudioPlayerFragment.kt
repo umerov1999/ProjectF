@@ -59,7 +59,7 @@ import dev.ragnarok.filegallery.view.media.PlayPauseButton
 import dev.ragnarok.filegallery.view.media.RepeatButton
 import dev.ragnarok.filegallery.view.media.RepeatingImageButton
 import dev.ragnarok.filegallery.view.media.ShuffleButton
-import dev.ragnarok.filegallery.view.natives.rlottie.RLottieShapeableImageView
+import dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieShapeableView
 import kotlinx.coroutines.Job
 import kotlin.math.min
 
@@ -94,7 +94,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
     private var ivBackground: View? = null
 
     // Handler used to update the current time
-    private var mRefreshDisposable = CancelableJob()
+    private var mRefreshJob = CancelableJob()
     private var mStartSeekPos: Long = 0
     private var mLastSeekEventTime: Long = 0
     private var coverAdapter: CoverAdapter? = null
@@ -259,10 +259,9 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                 super.onPageSelected(position)
                 if (currentPage != position) {
                     currentPage = position
-                    playDispose.set(
-                        delayTaskFlow(400)
-                            .toMain { MusicPlaybackController.skip(position) }
-                    )
+                    playDispose.cancel()
+                    playDispose += delayTaskFlow(400)
+                        .toMain { MusicPlaybackController.skip(position) }
                     ivCoverPager?.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                 }
             }
@@ -363,7 +362,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
     override fun onDestroy() {
         playDispose.cancel()
         mCompositeJob.cancel()
-        mRefreshDisposable.cancel()
+        mRefreshJob.cancel()
         PicassoInstance.with().cancelTag(PLAYER_TAG)
         super.onDestroy()
     }
@@ -520,10 +519,11 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
      * @param delay When to update
      */
     private fun queueNextRefresh(delay: Long) {
-        mRefreshDisposable.cancel()
-        mRefreshDisposable.set(delayTaskFlow(delay)
-            .toMain { queueNextRefresh(refreshCurrentTime()) }
-        )
+        mRefreshJob.cancel()
+        mRefreshJob += delayTaskFlow(delay)
+            .toMain {
+                queueNextRefresh(refreshCurrentTime())
+            }
     }
 
     private fun resolveControlViews() {
@@ -677,7 +677,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
     }
 
     private inner class CoverViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val ivCover: RLottieShapeableImageView = view.findViewById(R.id.cover)
+        val ivCover: ThorVGLottieShapeableView = view.findViewById(R.id.cover)
 
         val holderTarget = object : BitmapTarget {
             override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
@@ -696,8 +696,6 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                     if (FenrirNative.isNativeLoaded) {
                         ivCover.fromRes(
                             R.raw.auidio_no_cover,
-                            450,
-                            450,
                             intArrayOf(
                                 0x333333,
                                 CurrentTheme.getColorSurface(requireActivity()),
@@ -705,7 +703,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                                 CurrentTheme.getColorOnSurface(requireActivity())
                             )
                         )
-                        ivCover.playAnimation()
+                        ivCover.startAnimation()
                     } else {
                         ivCover.setImageResource(R.drawable.itunes)
                         ivCover.drawable?.setTint(
@@ -731,8 +729,6 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                 if (FenrirNative.isNativeLoaded) {
                     ivCover.fromRes(
                         R.raw.auidio_no_cover,
-                        450,
-                        450,
                         intArrayOf(
                             0x333333,
                             CurrentTheme.getColorSurface(requireActivity()),
@@ -740,7 +736,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                             CurrentTheme.getColorOnSurface(requireActivity())
                         )
                     )
-                    ivCover.playAnimation()
+                    ivCover.startAnimation()
                 } else {
                     ivCover.setImageResource(R.drawable.itunes)
                     ivCover.drawable.setTint(CurrentTheme.getColorOnSurface(requireActivity()))
@@ -772,16 +768,6 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         override fun onViewDetachedFromWindow(holder: CoverViewHolder) {
             super.onViewDetachedFromWindow(holder)
             PicassoInstance.with().cancelRequest(holder.ivCover)
-            if (holder.ivCover.drawable is Animatable) {
-                (holder.ivCover.drawable as Animatable).stop()
-            }
-        }
-
-        override fun onViewAttachedToWindow(holder: CoverViewHolder) {
-            super.onViewAttachedToWindow(holder)
-            if (holder.ivCover.drawable is Animatable) {
-                (holder.ivCover.drawable as Animatable).start()
-            }
         }
 
         override fun onBindViewHolder(holder: CoverViewHolder, position: Int) {

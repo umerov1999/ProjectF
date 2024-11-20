@@ -18,8 +18,7 @@ import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.util.Utils.dp
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 
 class SpotsDialog internal constructor(
     context: Context,
@@ -151,11 +150,9 @@ class SpotsDialog internal constructor(
             val root = View.inflate(context, R.layout.dialog_progress, null)
             root.findViewById<MaterialTextView>(R.id.item_progress_text).text =
                 if (messageId != 0) context.getString(messageId) else message
-            val anim: RLottieImageView = root.findViewById(R.id.lottie_animation)
+            val anim: ThorVGLottieView = root.findViewById(R.id.lottie_animation)
             anim.fromRes(
                 dev.ragnarok.fenrir_common.R.raw.s_loading,
-                dp(180f),
-                dp(180f),
                 intArrayOf(
                     0x333333,
                     CurrentTheme.getColorPrimary(context),
@@ -163,7 +160,7 @@ class SpotsDialog internal constructor(
                     CurrentTheme.getColorSecondary(context)
                 )
             )
-            anim.playAnimation()
+            anim.startAnimation()
             return MaterialAlertDialogBuilder(context).setView(root)
                 .setCancelable(cancelable)
                 .setOnCancelListener(cancelListener).create()

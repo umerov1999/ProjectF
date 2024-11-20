@@ -1,9 +1,11 @@
 package dev.ragnarok.fenrir.api.services
 
-import dev.ragnarok.fenrir.api.model.AnonymToken
 import dev.ragnarok.fenrir.api.model.LoginResponse
 import dev.ragnarok.fenrir.api.model.VKApiValidationResponse
+import dev.ragnarok.fenrir.api.model.response.AnonymTokenResponse
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
+import dev.ragnarok.fenrir.api.model.response.GetAuthCodeStatusResponse
+import dev.ragnarok.fenrir.api.model.response.SetAuthCodeStatusResponse
 import dev.ragnarok.fenrir.api.model.response.VKUrlResponse
 import dev.ragnarok.fenrir.api.rest.IServiceRest
 import kotlinx.coroutines.flow.Flow
@@ -120,7 +122,7 @@ class IAuthService : IServiceRest() {
         v: String?,
         device_id: String?,
         lang: String?
-    ): Flow<AnonymToken> {
+    ): Flow<AnonymTokenResponse> {
         return rest.request(
             "get_anonym_token",
             form(
@@ -131,7 +133,51 @@ class IAuthService : IServiceRest() {
                 "device_id" to device_id,
                 "lang" to lang,
                 "https" to 1
-            ), AnonymToken.serializer()
+            ), AnonymTokenResponse.serializer()
+        )
+    }
+
+    fun setAuthCodeStatus(
+        auth_code: String?,
+        apiId: Int,
+        device_id: String?,
+        accessToken: String?,
+        lang: String?,
+        v: String?
+    ): Flow<BaseResponse<SetAuthCodeStatusResponse>> {
+        return rest.request(
+            "auth.setAuthCodeStatus",
+            form(
+                "api_id" to apiId,
+                "auth_code" to auth_code,
+                "device_id" to device_id,
+                "access_token" to accessToken,
+                "lang" to lang,
+                "https" to 1,
+                "v" to v
+            ), base(SetAuthCodeStatusResponse.serializer())
+        )
+    }
+
+    fun getAuthCodeStatus(
+        auth_code: String?,
+        apiId: Int,
+        device_id: String?,
+        accessToken: String?,
+        lang: String?,
+        v: String?
+    ): Flow<BaseResponse<GetAuthCodeStatusResponse>> {
+        return rest.request(
+            "auth.getAuthCodeStatus",
+            form(
+                "api_id" to apiId,
+                "auth_code" to auth_code,
+                "device_id" to device_id,
+                "access_token" to accessToken,
+                "lang" to lang,
+                "https" to 1,
+                "v" to v
+            ), base(GetAuthCodeStatusResponse.serializer())
         )
     }
 

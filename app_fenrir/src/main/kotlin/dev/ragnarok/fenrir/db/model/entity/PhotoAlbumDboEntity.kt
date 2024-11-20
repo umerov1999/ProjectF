@@ -35,7 +35,7 @@ class PhotoAlbumDboEntity : DboEntity() {
     var privacyComment: PrivacyEntity? = null
         private set
 
-    operator fun set(id: Int, ownerId: Long): PhotoAlbumDboEntity {
+    fun set(id: Int, ownerId: Long): PhotoAlbumDboEntity {
         this.id = id
         this.ownerId = ownerId
         return this

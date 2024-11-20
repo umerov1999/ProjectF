@@ -61,7 +61,7 @@ struct Text::Impl
 
     Result font(const char* name, float size, const char* style)
     {
-        auto loader = LoaderMgr::loader(name);
+        auto loader = LoaderMgr::loader(name, nullptr);
         if (!loader) return Result::InsufficientCondition;
 
         if (style && strstr(style, "italic")) italic = true;

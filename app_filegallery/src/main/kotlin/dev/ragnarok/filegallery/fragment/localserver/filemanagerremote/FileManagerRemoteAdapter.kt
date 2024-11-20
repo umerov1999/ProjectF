@@ -40,7 +40,7 @@ import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.filegallery.util.toast.CustomSnackbars
 import dev.ragnarok.filegallery.util.toast.CustomToast
-import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieView
 
 class FileManagerRemoteAdapter(private var context: Context, private var data: List<FileRemote>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -410,15 +410,16 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                 holder.current.visibility = View.VISIBLE
                 holder.current.fromRes(
                     R.raw.select_fire,
-                    Utils.dp(100f),
-                    Utils.dp(100f),
                     intArrayOf(0xFF812E, colorPrimary),
                     true
                 )
-                holder.current.playAnimation()
+                holder.current.startAnimation()
             } else {
                 holder.current.visibility = View.GONE
-                holder.current.clearAnimationDrawable()
+                holder.current.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
             }
         }
         holder.fileInfo.setBackgroundColor(messageBubbleColor)
@@ -619,15 +620,16 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
                 holder.current.visibility = View.VISIBLE
                 holder.current.fromRes(
                     R.raw.select_fire,
-                    Utils.dp(100f),
-                    Utils.dp(100f),
                     intArrayOf(0xFF812E, colorPrimary),
                     true
                 )
-                holder.current.playAnimation()
+                holder.current.startAnimation()
             } else {
                 holder.current.visibility = View.GONE
-                holder.current.clearAnimationDrawable()
+                holder.current.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
             }
         }
         holder.fileInfo.setBackgroundColor(messageBubbleColor)
@@ -671,7 +673,7 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
         val fileName: TextView = itemView.findViewById(R.id.item_file_name)
         val fileDetails: TextView = itemView.findViewById(R.id.item_file_details)
         val icon: ImageView = itemView.findViewById(R.id.item_file_icon)
-        val current: RLottieImageView = itemView.findViewById(R.id.current)
+        val current: ThorVGLottieView = itemView.findViewById(R.id.current)
         val tagged: ImageView = itemView.findViewById(R.id.item_tagged)
         val fileInfo: LinearLayout = itemView.findViewById(R.id.item_file_info)
     }
@@ -680,8 +682,8 @@ class FileManagerRemoteAdapter(private var context: Context, private var data: L
         val fileName: TextView = itemView.findViewById(R.id.item_file_name)
         val fileDetails: TextView = itemView.findViewById(R.id.item_file_details)
         val icon: ImageView = itemView.findViewById(R.id.item_file_icon)
-        val current: RLottieImageView = itemView.findViewById(R.id.current)
-        val visual: RLottieImageView = itemView.findViewById(R.id.item_audio_visual)
+        val current: ThorVGLottieView = itemView.findViewById(R.id.current)
+        val visual: ThorVGLottieView = itemView.findViewById(R.id.item_audio_visual)
         val tagged: ImageView = itemView.findViewById(R.id.item_tagged)
         val fileInfo: LinearLayout = itemView.findViewById(R.id.item_file_info)
     }

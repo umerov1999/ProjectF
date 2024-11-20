@@ -26,7 +26,7 @@ class ColorCircle(x: Float, y: Float, hsv: FloatArray) {
         return hsvClone
     }
 
-    operator fun set(x: Float, y: Float, hsv: FloatArray) {
+    fun set(x: Float, y: Float, hsv: FloatArray) {
         this.x = x
         this.y = y
         this.hsv[0] = hsv[0]

@@ -158,7 +158,7 @@ class UserDetails : Parcelable {
         facebook = parcel.readString()
         relatives = parcel.createTypedArrayList(Relative)
         relation = parcel.readInt()
-        relationPartner = parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!.owner
+        relationPartner = ParcelableOwnerWrapper.readOwner(parcel)
         languages = parcel.createStringArray()
         political = parcel.readInt()
         peopleMain = parcel.readInt()
@@ -619,7 +619,7 @@ class UserDetails : Parcelable {
         parcel.writeString(facebook)
         parcel.writeTypedList(relatives)
         parcel.writeInt(relation)
-        parcel.writeTypedObjectCompat(ParcelableOwnerWrapper(relationPartner), flags)
+        ParcelableOwnerWrapper.writeOwner(parcel, flags, relationPartner)
         parcel.writeStringArray(languages)
         parcel.writeInt(political)
         parcel.writeInt(peopleMain)

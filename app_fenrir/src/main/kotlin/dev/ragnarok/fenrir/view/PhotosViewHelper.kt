@@ -97,7 +97,8 @@ class PhotosViewHelper internal constructor(
                     holder.vgVideo.fromNet(
                         (video.ownerId.toString() + "_" + image.attachment.id.toString()),
                         video.trailer,
-                        Utils.createOkHttp(Constants.GIF_TIMEOUT, true)
+                        Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
+                        true
                     )
                 } else if (url.nonNullNoEmpty()) {
                     PicassoInstance.with()
@@ -259,7 +260,8 @@ class PhotosViewHelper internal constructor(
                 holder.vgPhoto.fromNet(
                     ((image.attachment as Document).ownerId.toString() + "_" + image.attachment.id.toString()),
                     image.attachment.videoPreview?.src,
-                    Utils.createOkHttp(Constants.GIF_TIMEOUT, true)
+                    Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
+                    true
                 )
             } else if (url.nonNullNoEmpty()) {
                 PicassoInstance.with()

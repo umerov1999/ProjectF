@@ -26,13 +26,12 @@ import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.listener.UpdatableNavigation
 import dev.ragnarok.fenrir.model.FileItem
 import dev.ragnarok.fenrir.settings.CurrentTheme
-import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.view.MySearchView
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import java.io.File
 
 class FileManagerSelectFragment :
@@ -41,7 +40,7 @@ class FileManagerSelectFragment :
     private var mRecyclerView: RecyclerView? = null
     private var mLayoutManager: GridLayoutManager? = null
     private var empty: TextView? = null
-    private var loading: RLottieImageView? = null
+    private var loading: ThorVGLottieView? = null
     private var tvCurrentDir: TextView? = null
     private var mAdapter: FileManagerSelectAdapter? = null
     private var mSelected: FloatingActionButton? = null
@@ -113,13 +112,19 @@ class FileManagerSelectFragment :
         animLoad = ObjectAnimator.ofFloat(loading, View.ALPHA, 0.0f).setDuration(1000)
         animLoad?.addListener(object : StubAnimatorListener() {
             override fun onAnimationEnd(animation: Animator) {
-                loading?.clearAnimationDrawable()
+                loading?.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
                 loading?.visibility = View.GONE
                 loading?.alpha = 1f
             }
 
             override fun onAnimationCancel(animation: Animator) {
-                loading?.clearAnimationDrawable()
+                loading?.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
                 loading?.visibility = View.GONE
                 loading?.alpha = 1f
             }
@@ -189,8 +194,6 @@ class FileManagerSelectFragment :
                 loading?.alpha = 1f
                 loading?.fromRes(
                     dev.ragnarok.fenrir_common.R.raw.s_loading,
-                    Utils.dp(180f),
-                    Utils.dp(180f),
                     intArrayOf(
                         0x333333,
                         CurrentTheme.getColorPrimary(requireActivity()),
@@ -198,7 +201,7 @@ class FileManagerSelectFragment :
                         CurrentTheme.getColorSecondary(requireActivity())
                     )
                 )
-                loading?.playAnimation()
+                loading?.startAnimation()
             }
         }
     }

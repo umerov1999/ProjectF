@@ -204,7 +204,7 @@ class CommunityDetailsEntity {
         var width = 0
             private set
 
-        operator fun set(url: String?, height: Int, width: Int): CoverImage {
+        fun set(url: String?, height: Int, width: Int): CoverImage {
             this.url = url
             this.height = height
             this.width = width
@@ -226,7 +226,7 @@ class CommunityDetailsEntity {
         var cover: String? = null
             private set
 
-        operator fun set(
+        fun set(
             id: Int,
             url: String?,
             title: String?,

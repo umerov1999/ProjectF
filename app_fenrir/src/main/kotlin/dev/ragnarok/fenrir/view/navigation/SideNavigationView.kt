@@ -32,14 +32,13 @@ import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.toColor
-import dev.ragnarok.fenrir.util.Utils.dp
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
 import dev.ragnarok.fenrir.util.Utils.getVerifiedColor
 import dev.ragnarok.fenrir.util.Utils.setBackgroundTint
 import dev.ragnarok.fenrir.util.coroutines.CompositeJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 
 class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
     private val mCompositeJob = CompositeJob()
@@ -47,7 +46,7 @@ class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
     private var mDrawerLayout: DrawerLayout? = null
     private var ivHeaderAvatar: ImageView? = null
     private var ivVerified: ImageView? = null
-    private var bDonate: RLottieImageView? = null
+    private var bDonate: ThorVGLottieView? = null
     private var tvUserName: TextView? = null
     private var tvDomain: TextView? = null
     private var mRecentChats: MutableList<RecentChat>? = null
@@ -345,27 +344,20 @@ class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
         val donate_anim = Settings.get().main().donate_anim_set
         if (donate_anim > 0 && user.isDonated) {
             bDonate?.visibility = VISIBLE
-            bDonate?.setAutoRepeat(true)
+            bDonate?.setRepeat(true)
             if (donate_anim == 2) {
                 val cur = Settings.get().ui().mainThemeKey
                 if ("fire" == cur || "orange" == cur || "orange_gray" == cur || "yellow_violet" == cur) {
                     tvUserName?.setTextColor("#df9d00".toColor())
                     tvDomain?.setTextColor("#df9d00".toColor())
                     setBackgroundTint(ivVerified, "#df9d00".toColor())
-                    bDonate?.fromRes(
-                        dev.ragnarok.fenrir_common.R.raw.donater_fire,
-                        dp(100f),
-                        dp(100f),
-                        null
-                    )
+                    bDonate?.fromRes(dev.ragnarok.fenrir_common.R.raw.donater_fire)
                 } else {
                     tvUserName?.setTextColor(CurrentTheme.getColorPrimary(context))
                     tvDomain?.setTextColor(CurrentTheme.getColorPrimary(context))
                     setBackgroundTint(ivVerified, CurrentTheme.getColorPrimary(context))
                     bDonate?.fromRes(
                         dev.ragnarok.fenrir_common.R.raw.donater_fire,
-                        dp(100f),
-                        dp(100f),
                         intArrayOf(0xFF812E, CurrentTheme.getColorPrimary(context)),
                         true
                     )
@@ -373,8 +365,6 @@ class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
             } else {
                 bDonate?.fromRes(
                     dev.ragnarok.fenrir_common.R.raw.donater,
-                    dp(100f),
-                    dp(100f),
                     intArrayOf(
                         0xffffff,
                         CurrentTheme.getColorPrimary(context),
@@ -383,7 +373,7 @@ class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
                     )
                 )
             }
-            bDonate?.playAnimation()
+            bDonate?.startAnimation()
         } else {
             bDonate?.setImageDrawable(null)
             bDonate?.visibility = GONE

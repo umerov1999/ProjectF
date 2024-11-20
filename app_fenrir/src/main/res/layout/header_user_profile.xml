@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+    <dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
         android:id="@+id/pagan_symbol"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -56,7 +56,7 @@
                         android:contentDescription="@string/open_avatar"
                         android:padding="1.5dp" />
 
-                    <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+                    <dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
                         android:id="@+id/donated_anim"
                         android:layout_width="@dimen/avatar_size_big"
                         android:layout_height="@dimen/avatar_size_big"
@@ -78,7 +78,7 @@
                         android:visibility="gone"
                         app:tint="?white_color_contrast_fix" />
 
-                    <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+                    <dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
                         android:id="@+id/item_blacklisted"
                         android:layout_width="48dp"
                         android:layout_height="48dp"

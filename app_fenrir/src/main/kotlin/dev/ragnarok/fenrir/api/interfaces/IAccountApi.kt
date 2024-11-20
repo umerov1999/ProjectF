@@ -24,9 +24,11 @@ interface IAccountApi {
 
     @CheckResult
     fun registerDevice(
+        api_id: Int?,
+        app_id: Int?,
         token: String?,
         pushes_granted: Int?,
-        app_version: String?,
+        app_version: Int?,
         push_provider: String?,
         companion_apps: String?,
         type: Int?,

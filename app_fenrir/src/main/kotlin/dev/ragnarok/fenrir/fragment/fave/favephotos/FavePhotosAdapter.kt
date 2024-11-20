@@ -16,7 +16,7 @@ import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 
 class FavePhotosAdapter(context: Context, private var data: List<Photo>) :
     RecyclerView.Adapter<FavePhotosAdapter.ViewHolder>() {
@@ -54,15 +54,16 @@ class FavePhotosAdapter(context: Context, private var data: List<Photo>) :
                 viewHolder.current.visibility = View.VISIBLE
                 viewHolder.current.fromRes(
                     dev.ragnarok.fenrir_common.R.raw.donater_fire,
-                    Utils.dp(100f),
-                    Utils.dp(100f),
                     intArrayOf(0xFF812E, colorPrimary),
                     true
                 )
-                viewHolder.current.playAnimation()
+                viewHolder.current.startAnimation()
             } else {
                 viewHolder.current.visibility = View.GONE
-                viewHolder.current.clearAnimationDrawable()
+                viewHolder.current.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
             }
         }
         with()
@@ -125,6 +126,6 @@ class FavePhotosAdapter(context: Context, private var data: List<Photo>) :
         val tvComment: TextView = itemView.findViewById(R.id.vk_photo_item_comment_counter)
         val ivLike: ImageView = itemView.findViewById(R.id.vk_photo_item_like)
         val ivComment: ImageView = itemView.findViewById(R.id.vk_photo_item_comment)
-        val current: RLottieImageView = itemView.findViewById(R.id.current)
+        val current: ThorVGLottieView = itemView.findViewById(R.id.current)
     }
 }

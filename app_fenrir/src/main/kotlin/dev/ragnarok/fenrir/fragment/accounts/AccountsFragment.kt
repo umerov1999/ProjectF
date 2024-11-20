@@ -43,6 +43,7 @@ import dev.ragnarok.fenrir.activity.EnterPinActivity
 import dev.ragnarok.fenrir.activity.FileManagerSelectActivity
 import dev.ragnarok.fenrir.activity.LoginActivity.Companion.createIntent
 import dev.ragnarok.fenrir.activity.ProxyManagerActivity
+import dev.ragnarok.fenrir.activity.qr.CameraScanActivity
 import dev.ragnarok.fenrir.api.Auth.scope
 import dev.ragnarok.fenrir.dialog.directauth.DirectAuthDialog
 import dev.ragnarok.fenrir.dialog.directauth.DirectAuthDialog.Companion.newInstance
@@ -52,6 +53,7 @@ import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialog
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.Account
 import dev.ragnarok.fenrir.model.SaveAccount
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.place.PlaceFactory.getPreferencesPlace
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.hasReadStoragePermission
@@ -63,6 +65,8 @@ import dev.ragnarok.fenrir.util.Utils.isHiddenAccount
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
+import java.util.Calendar
+import java.util.regex.Pattern
 
 class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IAccountsView,
     AccountAdapter.Callback,
@@ -641,6 +645,30 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
         }
     }
 
+    private val requestQRScan = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val scanner = result.data?.extras?.getString(Extra.URL)
+            if (scanner.nonNullNoEmpty()) {
+                val PATTERN: Pattern = Pattern.compile("qr\\.vk\\.com/w2a[?]q=(\\w+)")
+                val matcher = PATTERN.matcher(scanner)
+                try {
+                    if (matcher.find()) {
+                        matcher.group(1)
+                            ?.let {
+                                presenter?.fireAuthByQR(it)
+                                return@registerForActivityResult
+                            }
+                    }
+                    showError(R.string.auth_by_qr_error)
+                } catch (e: Exception) {
+                    showThrowable(e)
+                }
+            }
+        }
+    }
+
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId) {
             R.id.action_proxy -> {
@@ -696,6 +724,22 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
                     return true
                 }
                 startImportByExchangeToken()
+                return true
+            }
+
+            R.id.auth_by_qr -> {
+                if (Utils.isOfficialVKCurrent && Settings.get()
+                        .accounts().anonymToken.expired_at <= Calendar.getInstance().time.time / 1000
+                ) {
+                    showError(R.string.auth_by_qr_error)
+                    return false
+                }
+                val intent =
+                    Intent(
+                        requireActivity(),
+                        CameraScanActivity::class.java
+                    )
+                requestQRScan.launch(intent)
                 return true
             }
 

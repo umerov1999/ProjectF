@@ -31,7 +31,7 @@ class PageDboEntity : DboEntity() {
     var viewUrl: String? = null
         private set
 
-    operator fun set(id: Int, ownerId: Long): PageDboEntity {
+    fun set(id: Int, ownerId: Long): PageDboEntity {
         this.id = id
         this.ownerId = ownerId
         return this

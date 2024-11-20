@@ -154,14 +154,14 @@ static inline bool _blending(const SwSurface* surface)
    This would help to enhance the performance by avoiding the unnecessary matting from the composition */
 static inline bool _compositing(const SwSurface* surface)
 {
-    if (!surface->compositor || (int)surface->compositor->method <= (int)CompositeMethod::ClipPath) return false;
+    if (!surface->compositor || surface->compositor->method == MaskMethod::None) return false;
     return true;
 }
 
 
 static inline bool _matting(const SwSurface* surface)
 {
-    if ((int)surface->compositor->method < (int)CompositeMethod::AddMask) return true;
+    if ((int)surface->compositor->method < (int)MaskMethod::Add) return true;
     else return false;
 }
 
@@ -206,22 +206,22 @@ static inline uint8_t _opMaskDarken(uint8_t s, uint8_t d, uint8_t a)
 }
 
 
-static inline bool _direct(CompositeMethod method)
+static inline bool _direct(MaskMethod method)
 {
-    if (method == CompositeMethod::SubtractMask || method == CompositeMethod::IntersectMask || method == CompositeMethod::DarkenMask) return true;
+    if (method == MaskMethod::Subtract || method == MaskMethod::Intersect || method == MaskMethod::Darken) return true;
     return false;
 }
 
 
-static inline SwMask _getMaskOp(CompositeMethod method)
+static inline SwMask _getMaskOp(MaskMethod method)
 {
     switch (method) {
-        case CompositeMethod::AddMask: return _opMaskAdd;
-        case CompositeMethod::SubtractMask: return _opMaskSubtract;
-        case CompositeMethod::DifferenceMask: return _opMaskDifference;
-        case CompositeMethod::IntersectMask: return _opMaskIntersect;
-        case CompositeMethod::LightenMask: return _opMaskLighten;
-        case CompositeMethod::DarkenMask: return _opMaskDarken;
+        case MaskMethod::Add: return _opMaskAdd;
+        case MaskMethod::Subtract: return _opMaskSubtract;
+        case MaskMethod::Difference: return _opMaskDifference;
+        case MaskMethod::Intersect: return _opMaskIntersect;
+        case MaskMethod::Lighten: return _opMaskLighten;
+        case MaskMethod::Darken: return _opMaskDarken;
         default: return nullptr;
     }
 }
@@ -869,16 +869,7 @@ static bool _rasterDirectRleImage(SwSurface* surface, const SwImage* image, uint
         auto dst = &surface->buf32[span->y * surface->stride + span->x];
         auto img = image->buf32 + (span->y + image->oy) * image->stride + (span->x + image->ox);
         auto alpha = MULTIPLY(span->coverage, opacity);
-        if (alpha == 255) {
-            for (uint32_t x = 0; x < span->len; ++x, ++dst, ++img) {
-                *dst = *img + ALPHA_BLEND(*dst, IA(*img));
-            }
-        } else {
-            for (uint32_t x = 0; x < span->len; ++x, ++dst, ++img) {
-                auto src = ALPHA_BLEND(*img, alpha);
-                *dst = src + ALPHA_BLEND(*dst, IA(src));
-            }
-        }
+        rasterTranslucentPixel32(dst, img, span->len, alpha);
     }
     return true;
 }
@@ -1144,37 +1135,24 @@ static bool _rasterDirectImage(SwSurface* surface, const SwImage* image, const S
     //32bits channels
     if (surface->channelSize == sizeof(uint32_t)) {
         auto dbuffer = &surface->buf32[region.min.y * surface->stride + region.min.x];
-
         for (auto y = region.min.y; y < region.max.y; ++y) {
-            auto dst = dbuffer;
-            auto src = sbuffer;
-            if (opacity == 255) {
-                for (auto x = region.min.x; x < region.max.x; x++, dst++, src++) {
-                    *dst = *src + ALPHA_BLEND(*dst, IA(*src));
-                }
-            } else {
-                for (auto x = region.min.x; x < region.max.x; ++x, ++dst, ++src) {
-                    auto tmp = ALPHA_BLEND(*src, opacity);
-                    *dst = tmp + ALPHA_BLEND(*dst, IA(tmp));
-                }
-            }
+            rasterTranslucentPixel32(dbuffer, sbuffer, region.max.x - region.min.x, opacity);
             dbuffer += surface->stride;
             sbuffer += image->stride;
         }
     //8bits grayscale
     } else if (surface->channelSize == sizeof(uint8_t)) {
         auto dbuffer = &surface->buf8[region.min.y * surface->stride + region.min.x];
-
         for (auto y = region.min.y; y < region.max.y; ++y, dbuffer += surface->stride, sbuffer += image->stride) {
             auto dst = dbuffer;
             auto src = sbuffer;
             if (opacity == 255) {
                 for (auto x = region.min.x; x < region.max.x; ++x, ++dst, ++src) {
-                    *dst = *src + MULTIPLY(*dst, ~*src);
+                    *dst = *src + MULTIPLY(*dst, IA(*src));
                 }
             } else {
                 for (auto x = region.min.x; x < region.max.x; ++x, ++dst, ++src) {
-                    *dst = INTERPOLATE8(*src, *dst, opacity);
+                    *dst = INTERPOLATE8(A(*src), *dst, opacity);
                 }
             }
         }
@@ -1528,8 +1506,7 @@ static bool _rasterTranslucentGradientRle(SwSurface* surface, const SwRle* rle, 
     } else if (surface->channelSize == sizeof(uint8_t)) {
         for (uint32_t i = 0; i < rle->size; ++i, ++span) {
             auto dst = &surface->buf8[span->y * surface->stride + span->x];
-            if (span->coverage == 255) fillMethod()(fill, dst, span->y, span->x, span->len, _opMaskNone, 255);
-            else fillMethod()(fill, dst, span->y, span->x, span->len, _opMaskAdd, span->coverage);
+            fillMethod()(fill, dst, span->y, span->x, span->len, _opMaskAdd, span->coverage);
         }
     }
     return true;
@@ -1586,9 +1563,9 @@ static bool _rasterRadialGradientRle(SwSurface* surface, const SwRle* rle, const
         if (_matting(surface)) return _rasterGradientMattedRle<FillRadial>(surface, rle, fill);
         else return _rasterGradientMaskedRle<FillRadial>(surface, rle, fill);
     } else if (_blending(surface)) {
-        _rasterBlendingGradientRle<FillRadial>(surface, rle, fill);
+        return _rasterBlendingGradientRle<FillRadial>(surface, rle, fill);
     } else {
-        if (fill->translucent) _rasterTranslucentGradientRle<FillRadial>(surface, rle, fill);
+        if (fill->translucent) return _rasterTranslucentGradientRle<FillRadial>(surface, rle, fill);
         else return _rasterSolidGradientRle<FillRadial>(surface, rle, fill);
     }
     return false;
@@ -1598,6 +1575,19 @@ static bool _rasterRadialGradientRle(SwSurface* surface, const SwRle* rle, const
 /************************************************************************/
 /* External Class Implementation                                        */
 /************************************************************************/
+
+void rasterTranslucentPixel32(uint32_t* dst, uint32_t* src, uint32_t len, uint8_t opacity)
+{
+    //TODO: Support SIMD accelerations
+    cRasterTranslucentPixels(dst, src, len, opacity);
+}
+
+
+void rasterPixel32(uint32_t* dst, uint32_t* src, uint32_t len, uint8_t opacity)
+{
+    //TODO: Support SIMD accelerations
+    cRasterPixels(dst, src, len, opacity);
+}
 
 
 void rasterGrayscale8(uint8_t *dst, uint8_t val, uint32_t offset, int32_t len)
@@ -1626,7 +1616,7 @@ void rasterPixel32(uint32_t *dst, uint32_t val, uint32_t offset, int32_t len)
 
 bool rasterCompositor(SwSurface* surface)
 {
-    //See CompositeMethod, Alpha:3, InvAlpha:4, Luma:5, InvLuma:6
+    //See MaskMethod, Alpha:1, InvAlpha:2, Luma:3, InvLuma:4
     surface->alphas[0] = _alpha;
     surface->alphas[1] = _ialpha;
 
@@ -1639,7 +1629,7 @@ bool rasterCompositor(SwSurface* surface)
         surface->alphas[2] = _argbLuma;
         surface->alphas[3] = _argbInvLuma;
     } else {
-        TVGERR("SW_ENGINE", "Unsupported Colorspace(%d) is expected!", surface->cs);
+        TVGERR("SW_ENGINE", "Unsupported Colorspace(%d) is expected!", (int)surface->cs);
         return false;
     }
     return true;

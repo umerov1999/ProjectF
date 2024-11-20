@@ -33,7 +33,7 @@ class DocumentDboEntity : DboEntity() {
     var video: VideoPreviewDbo? = null
         private set
 
-    operator fun set(id: Int, ownerId: Long): DocumentDboEntity {
+    fun set(id: Int, ownerId: Long): DocumentDboEntity {
         this.id = id
         this.ownerId = ownerId
         return this
@@ -104,7 +104,7 @@ class DocumentDboEntity : DboEntity() {
         var fileSize: Long = 0
             private set
 
-        operator fun set(src: String?, width: Int, height: Int, fileSize: Long): VideoPreviewDbo {
+        fun set(src: String?, width: Int, height: Int, fileSize: Long): VideoPreviewDbo {
             this.src = src
             this.width = width
             this.height = height
@@ -123,7 +123,7 @@ class DocumentDboEntity : DboEntity() {
         var height = 0
             private set
 
-        operator fun set(src: String?, width: Int, height: Int): GraffitiDbo {
+        fun set(src: String?, width: Int, height: Int): GraffitiDbo {
             this.src = src
             this.width = width
             this.height = height

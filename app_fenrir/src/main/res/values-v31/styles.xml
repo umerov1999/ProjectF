@@ -57,5 +57,6 @@
 
         <item name="buttonAddPhotoBackground">@drawable/background_rectangle_dash_inverse</item>
         <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
+        <item name="colorSecondaryContainer">@color/m3_ref_palette_dynamic_secondary90</item>
     </style>
 </resources>

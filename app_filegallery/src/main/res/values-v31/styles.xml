@@ -41,5 +41,6 @@
         <item name="toolbar_left_icon_color">?attr/colorPrimary</item>
 
         <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
+        <item name="colorSecondaryContainer">@color/m3_ref_palette_dynamic_secondary90</item>
     </style>
 </resources>

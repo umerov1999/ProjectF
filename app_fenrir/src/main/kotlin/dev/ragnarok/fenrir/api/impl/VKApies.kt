@@ -31,7 +31,9 @@ import dev.ragnarok.fenrir.api.interfaces.IVideoApi
 import dev.ragnarok.fenrir.api.interfaces.IWallApi
 import dev.ragnarok.fenrir.api.rest.IServiceRest
 import dev.ragnarok.fenrir.api.rest.SimplePostHttp
+import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlowThrowable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -196,8 +198,13 @@ internal class VKApies private constructor(
             }
 
             fun provideRest(aid: Long, vararg tokenPolicy: Int): Flow<SimplePostHttp> {
+                if (aid == ISettings.IAccountsSettings.INVALID_ID) {
+                    return toFlowThrowable(UnsupportedOperationException("Please select account!"))
+                }
                 if (useCustomToken) {
-                    return provider.provideCustomRest(aid, customAccessToken!!)
+                    customAccessToken?.let {
+                        return provider.provideCustomRest(aid, it)
+                    }
                 }
                 val isCommunity = aid < 0
                 return if (isCommunity) {
@@ -211,7 +218,7 @@ internal class VKApies private constructor(
                         }
 
                         else -> {
-                            throw UnsupportedOperationException("Unsupported account_id: $aid with token_policy: " + tokenPolicy.contentToString())
+                            toFlowThrowable(UnsupportedOperationException("Unsupported account_id: $aid with token_policy: " + tokenPolicy.contentToString()))
                         }
                     }
                 } else {
@@ -225,8 +232,10 @@ internal class VKApies private constructor(
                         }
 
                         else -> {
-                            throw UnsupportedOperationException(
-                                "Unsupported account_id: " + aid + " with token_policy: " + tokenPolicy.contentToString()
+                            toFlowThrowable(
+                                UnsupportedOperationException(
+                                    "Unsupported account_id: " + aid + " with token_policy: " + tokenPolicy.contentToString()
+                                )
                             )
                         }
                     }

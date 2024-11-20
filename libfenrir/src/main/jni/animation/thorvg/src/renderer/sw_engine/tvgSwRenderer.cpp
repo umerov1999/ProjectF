@@ -41,7 +41,7 @@ struct SwTask : Task
 {
     SwSurface* surface = nullptr;
     SwMpool* mpool = nullptr;
-    SwBBox bbox = {{0, 0}, {0, 0}};       //Whole Rendering Region
+    SwBBox bbox;                          //Rendering Region
     Matrix transform;
     Array<RenderData> clips;
     RenderUpdateFlag flags = RenderUpdateFlag::None;
@@ -112,11 +112,15 @@ struct SwShapeTask : SwTask
 
     void run(unsigned tid) override
     {
-        if (opacity == 0 && !clipper) return;  //Invisible
+        //Invisible
+        if (opacity == 0 && !clipper) {
+            bbox.reset();
+            return;
+        }
 
         auto strokeWidth = validStrokeWidth();
-        bool visibleFill = false;
-        auto clipRegion = bbox;
+        SwBBox renderRegion{};
+        auto visibleFill = false;
 
         //This checks also for the case, if the invisible shape turned to visible by alpha.
         auto prepareShape = false;
@@ -128,10 +132,11 @@ struct SwShapeTask : SwTask
             rshape->fillColor(nullptr, nullptr, nullptr, &alpha);
             alpha = MULTIPLY(alpha, opacity);
             visibleFill = (alpha > 0 || rshape->fill);
+            shapeReset(&shape);
             if (visibleFill || clipper) {
-                shapeReset(&shape);
-                if (!shapePrepare(&shape, rshape, transform, clipRegion, bbox, mpool, tid, clips.count > 0 ? true : false)) {
+                if (!shapePrepare(&shape, rshape, transform, bbox, renderRegion, mpool, tid, clips.count > 0 ? true : false)) {
                     visibleFill = false;
+                    renderRegion.reset();
                 }
             }
         }
@@ -152,8 +157,8 @@ struct SwShapeTask : SwTask
         if (flags & (RenderUpdateFlag::Path | RenderUpdateFlag::Stroke | RenderUpdateFlag::Transform)) {
             if (strokeWidth > 0.0f) {
                 shapeResetStroke(&shape, rshape, transform);
-                if (!shapeGenStrokeRle(&shape, rshape, transform, clipRegion, bbox, mpool, tid)) goto err;
 
+                if (!shapeGenStrokeRle(&shape, rshape, transform, bbox, renderRegion, mpool, tid)) goto err;
                 if (auto fill = rshape->strokeFill()) {
                     auto ctable = (flags & RenderUpdateFlag::GradientStroke) ? true : false;
                     if (ctable) shapeResetStrokeFill(&shape);
@@ -177,9 +182,13 @@ struct SwShapeTask : SwTask
             //Clip stroke rle
             if (shape.strokeRle && !clipper->clip(shape.strokeRle)) goto err;
         }
+
+        bbox = renderRegion; //sync
+
         return;
 
     err:
+        bbox.reset();
         shapeReset(&shape);
         shapeDelOutline(&shape, mpool, tid);
     }
@@ -277,7 +286,7 @@ static void _renderStroke(SwShapeTask* task, SwSurface* surface, uint8_t opacity
     if (auto strokeFill = task->rshape->strokeFill()) {
         rasterGradientStroke(surface, &task->shape, strokeFill, opacity);
     } else {
-        if (task->rshape->strokeColor(&r, &g, &b, &a)) {
+        if (task->rshape->strokeFill(&r, &g, &b, &a)) {
             a = MULTIPLY(opacity, a);
             if (a > 0) rasterStroke(surface, &task->shape, r, g, b, a);
         }
@@ -304,6 +313,13 @@ SwRenderer::~SwRenderer()
 
 bool SwRenderer::clear()
 {
+    if (surface) return rasterClear(surface, 0, 0, surface->w, surface->h);
+    return false;
+}
+
+
+bool SwRenderer::sync()
+{
     for (auto task = tasks.begin(); task < tasks.end(); ++task) {
         if ((*task)->disposed) {
             delete(*task);
@@ -316,18 +332,6 @@ bool SwRenderer::clear()
 
     if (!sharedMpool) mpoolClear(mpool);
 
-    if (surface) {
-        vport.x = vport.y = 0;
-        vport.w = surface->w;
-        vport.h = surface->h;
-    }
-
-    return true;
-}
-
-
-bool SwRenderer::sync()
-{
     return true;
 }
 
@@ -367,7 +371,7 @@ bool SwRenderer::target(pixel_t* data, uint32_t stride, uint32_t w, uint32_t h, 
 
 bool SwRenderer::preRender()
 {
-    return rasterClear(surface, 0, 0, surface->w, surface->h);
+    return true;
 }
 
 
@@ -493,7 +497,7 @@ RenderRegion SwRenderer::region(RenderData data)
 }
 
 
-bool SwRenderer::beginComposite(RenderCompositor* cmp, CompositeMethod method, uint8_t opacity)
+bool SwRenderer::beginComposite(RenderCompositor* cmp, MaskMethod method, uint8_t opacity)
 {
     if (!cmp) return false;
     auto p = static_cast<SwCompositor*>(cmp);
@@ -502,7 +506,7 @@ bool SwRenderer::beginComposite(RenderCompositor* cmp, CompositeMethod method, u
     p->opacity = opacity;
 
     //Current Context?
-    if (p->method != CompositeMethod::None) {
+    if (p->method != MaskMethod::None) {
         surface = p->recoverSfc;
         surface->compositor = p;
     }
@@ -626,7 +630,7 @@ bool SwRenderer::endComposite(RenderCompositor* cmp)
     surface->compositor = p->recoverCmp;
 
     //Default is alpha blending
-    if (p->method == CompositeMethod::None) {
+    if (p->method == MaskMethod::None) {
         Matrix m = {1, 0, 0, 0, 1, 0, 0, 0, 1};
         return rasterImage(surface, &p->image, m, p->bbox, p->opacity);
     }
@@ -638,19 +642,32 @@ bool SwRenderer::endComposite(RenderCompositor* cmp)
 bool SwRenderer::prepare(RenderEffect* effect)
 {
     switch (effect->type) {
-        case SceneEffect::GaussianBlur: return effectGaussianPrepare(static_cast<RenderEffectGaussian*>(effect));
+        case SceneEffect::GaussianBlur: return effectGaussianBlurPrepare(static_cast<RenderEffectGaussianBlur*>(effect));
+        case SceneEffect::DropShadow: return effectDropShadowPrepare(static_cast<RenderEffectDropShadow*>(effect));
         default: return false;
     }
 }
 
 
-bool SwRenderer::effect(RenderCompositor* cmp, const RenderEffect* effect)
+bool SwRenderer::effect(RenderCompositor* cmp, const RenderEffect* effect, bool direct)
 {
+    if (effect->invalid) return false;
+
     auto p = static_cast<SwCompositor*>(cmp);
-    auto& buffer = request(surface->channelSize)->compositor->image;
 
     switch (effect->type) {
-        case SceneEffect::GaussianBlur: return effectGaussianBlur(p->image, buffer, p->bbox, static_cast<const RenderEffectGaussian*>(effect));
+        case SceneEffect::GaussianBlur: {
+            return effectGaussianBlur(p, request(surface->channelSize), static_cast<const RenderEffectGaussianBlur*>(effect), direct);
+        }
+        case SceneEffect::DropShadow: {
+            auto cmp1 = request(surface->channelSize);
+            cmp1->compositor->valid = false;
+            auto cmp2 = request(surface->channelSize);
+            SwSurface* surfaces[] = {cmp1, cmp2};
+            auto ret = effectDropShadow(p, surfaces, static_cast<const RenderEffectDropShadow*>(effect), direct);
+            cmp1->compositor->valid = true;
+            return ret;
+        }
         default: return false;
     }
 }
@@ -659,7 +676,7 @@ bool SwRenderer::effect(RenderCompositor* cmp, const RenderEffect* effect)
 ColorSpace SwRenderer::colorSpace()
 {
     if (surface) return surface->cs;
-    else return ColorSpace::Unsupported;
+    else return ColorSpace::Unknown;
 }
 
 

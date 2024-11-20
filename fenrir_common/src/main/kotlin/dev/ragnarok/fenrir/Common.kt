@@ -59,7 +59,7 @@ object Common {
             8 -> PaganSymbolWall(R.raw.svg_pagan_celtic_flower, 180f, 180f)
             9 -> PaganSymbolWall(R.raw.svg_pagan_slepnir, 108f, 108f)
             10 -> PaganSymbolWall(
-                R.raw.fenrir, 140f, intArrayOf(
+                R.raw.fenrir, intArrayOf(
                     0x333333,
                     getColorPrimary(context),
                     0x777777,
@@ -78,7 +78,7 @@ object Common {
             19 -> PaganSymbolWall(R.raw.svg_pagan_chur, 150f, 150f)
             20 -> PaganSymbolWall(R.raw.svg_pagan_fire, 180f, 180f)
             21 -> PaganSymbolWall(
-                R.raw.flame, 140f, intArrayOf(
+                R.raw.flame, intArrayOf(
                     0xFF812E,
                     getColorPrimary(context)
                 ), true
@@ -115,7 +115,6 @@ object Common {
     fun getAboutUsAnimation(paganSymbol: Int, context: Context): PaganSymbolWall {
         return PaganSymbolWall(
             R.raw.fenrir,
-            140f,
             intArrayOf(
                 0x333333,
                 getColorPrimary(context),
@@ -131,7 +130,6 @@ object Common {
             iconRes = icon
             lottieRes = R.raw.fenrir
             this.lottie_replacement = null
-            lottie_widthHeight = 140f
             icon_width = width
             icon_height = height
             lottie_useMoveColor = false
@@ -139,7 +137,6 @@ object Common {
 
         constructor(
             @RawRes animation: Int,
-            widthHeight: Float,
             replacement: IntArray? = null,
             useMoveColor: Boolean = false
         ) {
@@ -147,7 +144,6 @@ object Common {
             iconRes = R.raw.svg_pagan_cat
             lottieRes = animation
             this.lottie_replacement = replacement
-            this.lottie_widthHeight = widthHeight
             this.lottie_useMoveColor = useMoveColor
             icon_width = 160f
             icon_height = 160f
@@ -169,7 +165,6 @@ object Common {
         @RawRes
         val lottieRes: Int
         val lottie_replacement: IntArray?
-        val lottie_widthHeight: Float
         val lottie_useMoveColor: Boolean
 
         var icon_width: Float

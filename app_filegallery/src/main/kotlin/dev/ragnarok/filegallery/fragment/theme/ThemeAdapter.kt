@@ -16,8 +16,7 @@ import dev.ragnarok.filegallery.settings.CurrentTheme.getColorSecondary
 import dev.ragnarok.filegallery.settings.CurrentTheme.getColorWhiteContrastFix
 import dev.ragnarok.filegallery.settings.Settings.get
 import dev.ragnarok.filegallery.settings.theme.ThemeValue
-import dev.ragnarok.filegallery.util.Utils
-import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieView
 
 class ThemeAdapter(private var data: List<ThemeValue>, context: Context) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -75,8 +74,6 @@ class ThemeAdapter(private var data: List<ThemeValue>, context: Context) :
             if (isSelected) {
                 holder.selected.fromRes(
                     R.raw.theme_selected,
-                    Utils.dp(120f),
-                    Utils.dp(120f),
                     intArrayOf(
                         0x333333,
                         getColorWhiteContrastFix(holder.selected.context),
@@ -86,9 +83,12 @@ class ThemeAdapter(private var data: List<ThemeValue>, context: Context) :
                         getColorSecondary(holder.selected.context)
                     )
                 )
-                holder.selected.playAnimation()
+                holder.selected.startAnimation()
             } else {
-                holder.selected.clearAnimationDrawable()
+                holder.selected.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
             }
         } else {
             if (isSelected) {
@@ -113,8 +113,6 @@ class ThemeAdapter(private var data: List<ThemeValue>, context: Context) :
             if (isSelected) {
                 holder.selected.fromRes(
                     R.raw.theme_selected,
-                    Utils.dp(120f),
-                    Utils.dp(120f),
                     intArrayOf(
                         0x333333,
                         getColorWhiteContrastFix(holder.selected.context),
@@ -124,9 +122,12 @@ class ThemeAdapter(private var data: List<ThemeValue>, context: Context) :
                         getColorSecondary(holder.selected.context)
                     )
                 )
-                holder.selected.playAnimation()
+                holder.selected.startAnimation()
             } else {
-                holder.selected.clearAnimationDrawable()
+                holder.selected.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
             }
         } else {
             if (isSelected) {
@@ -169,7 +170,7 @@ class ThemeAdapter(private var data: List<ThemeValue>, context: Context) :
     internal class ThemeHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val primary: ImageView = itemView.findViewById(R.id.theme_icon_primary)
         val secondary: ImageView = itemView.findViewById(R.id.theme_icon_secondary)
-        val selected: RLottieImageView = itemView.findViewById(R.id.selected)
+        val selected: ThorVGLottieView = itemView.findViewById(R.id.selected)
         val gradient: ImageView = itemView.findViewById(R.id.theme_icon_gradient)
         val clicked: ViewGroup = itemView.findViewById(R.id.theme_type)
         val title: TextView = itemView.findViewById(R.id.item_title)
@@ -177,7 +178,7 @@ class ThemeAdapter(private var data: List<ThemeValue>, context: Context) :
     }
 
     internal class SpecialThemeHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val selected: RLottieImageView = itemView.findViewById(R.id.selected)
+        val selected: ThorVGLottieView = itemView.findViewById(R.id.selected)
         val clicked: ViewGroup = itemView.findViewById(R.id.theme_type)
         val title: TextView = itemView.findViewById(R.id.item_title)
         val special_title: TextView = itemView.findViewById(R.id.special_text)

@@ -94,6 +94,7 @@ public abstract class NavigationBarItemView extends FrameLayout
   private int itemPaddingTop;
   private int itemPaddingBottom;
   private int activeIndicatorLabelPadding;
+  private int iconLabelHorizontalSpacing;
   private float shiftAmountY;
   private float scaleUpFactor;
   private float scaleDownFactor;
@@ -187,6 +188,7 @@ public abstract class NavigationBarItemView extends FrameLayout
     itemPaddingTop = getResources().getDimensionPixelSize(getItemDefaultMarginResId());
     itemPaddingBottom = labelGroup.getPaddingBottom();
     activeIndicatorLabelPadding = 0;
+    iconLabelHorizontalSpacing = 0;
 
 
     // The labels used aren't always visible, so they are unreliable for accessibility. Instead,
@@ -208,11 +210,11 @@ public abstract class NavigationBarItemView extends FrameLayout
           }
           // If item icon gravity is start, we want to update the active indicator width in a layout
           // change listener to keep the active indicator size up to date with the content width.
+          LayoutParams lp = (LayoutParams) innerContentContainer.getLayoutParams();
+          int newWidth = right - left + lp.rightMargin + lp.leftMargin;
           if (itemIconGravity == ITEM_ICON_GRAVITY_START
               && activeIndicatorExpandedDesiredWidth == ACTIVE_INDICATOR_WIDTH_WRAP_CONTENT
-              && (right - left) != (oldRight - oldLeft)) {
-            LayoutParams lp = (LayoutParams) innerContentContainer.getLayoutParams();
-            int newWidth = right - left + lp.rightMargin + lp.leftMargin;
+              && newWidth != activeIndicatorView.getMeasuredWidth()) {
             LayoutParams indicatorParams = (LayoutParams) activeIndicatorView.getLayoutParams();
             int minWidth =
                 min(
@@ -306,6 +308,16 @@ public abstract class NavigationBarItemView extends FrameLayout
     return itemPosition;
   }
 
+  @NonNull
+  public BaselineLayout getLabelGroup() {
+    return labelGroup;
+  }
+
+  @NonNull
+  public BaselineLayout getExpandedLabelGroup() {
+    return expandedLabelGroup;
+  }
+
   public void setShifting(boolean shifting) {
     if (isShifting != shifting) {
       isShifting = shifting;
@@ -356,11 +368,8 @@ public abstract class NavigationBarItemView extends FrameLayout
     LinearLayout.LayoutParams expandedLabelGroupLp = new LinearLayout.LayoutParams(
         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     expandedLabelGroupLp.gravity = Gravity.CENTER;
-    expandedLabelGroupLp.rightMargin =
-        getLayoutDirection() == LAYOUT_DIRECTION_RTL ? activeIndicatorLabelPadding : 0;
-    expandedLabelGroupLp.leftMargin =
-        getLayoutDirection() == LAYOUT_DIRECTION_RTL ? 0 : activeIndicatorLabelPadding;
     innerContentContainer.addView(expandedLabelGroup, expandedLabelGroupLp);
+    setExpandedLabelGroupMargins();
   }
 
   private void updateItemIconGravity() {
@@ -785,6 +794,17 @@ public abstract class NavigationBarItemView extends FrameLayout
     iconParams.width = iconSize;
     iconParams.height = iconSize;
     icon.setLayoutParams(iconParams);
+    // Reset expanded label group margins, in case the icon width is now 0
+    setExpandedLabelGroupMargins();
+  }
+
+  private void setExpandedLabelGroupMargins() {
+    int margin = icon.getLayoutParams().width > 0 ? iconLabelHorizontalSpacing : 0;
+    LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) expandedLabelGroup.getLayoutParams();
+    if (lp != null) {
+      lp.rightMargin = getLayoutDirection() == LAYOUT_DIRECTION_RTL ? margin : 0;
+      lp.leftMargin = getLayoutDirection() == LAYOUT_DIRECTION_RTL ? 0 : margin;
+    }
   }
 
   // TODO(b/338647654): We can remove this once navigation rail is updated
@@ -1020,6 +1040,18 @@ public abstract class NavigationBarItemView extends FrameLayout
     }
   }
 
+  /**
+   * Set the horizontal distance between the icon and the item label which shows when the item is in
+   * the {@link NavigationBarView#ITEM_ICON_GRAVITY_START} configuration.
+   */
+  public void setIconLabelHorizontalSpacing(int iconLabelHorizontalSpacing) {
+    if (this.iconLabelHorizontalSpacing != iconLabelHorizontalSpacing) {
+      this.iconLabelHorizontalSpacing = iconLabelHorizontalSpacing;
+      setExpandedLabelGroupMargins();
+      requestLayout();
+    }
+  }
+
   /** Set whether or not this item should show an active indicator when checked. */
   public void setActiveIndicatorEnabled(boolean enabled) {
     this.activeIndicatorEnabled = enabled;
@@ -1081,7 +1113,11 @@ public abstract class NavigationBarItemView extends FrameLayout
   private void updateActiveIndicatorLayoutParams(int availableWidth) {
     // Set width to the min of either the desired indicator width or the available width minus
     // a horizontal margin.
-    if (availableWidth <= 0) {
+    if (availableWidth <= 0 && getVisibility() == VISIBLE) {
+      // Return early if there's not yet an available width and the view is visible; this will be
+      // called again when there is an available width. Otherwise if the available width is 0 due to
+      // the view being gone, we still want to set layout params so that when the view appears,
+      // there is no jump in animation from turning visible and then adjusting the height/width.
       return;
     }
 
@@ -1103,7 +1139,7 @@ public abstract class NavigationBarItemView extends FrameLayout
     // If the label visibility is unlabeled, make the active indicator's height equal to its
     // width.
     indicatorParams.height = isActiveIndicatorResizeableAndUnlabeled() ? newWidth : newHeight;
-    indicatorParams.width = newWidth;
+    indicatorParams.width = max(0, newWidth);
     activeIndicatorView.setLayoutParams(indicatorParams);
   }
 

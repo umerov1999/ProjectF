@@ -35,7 +35,7 @@ class TopicDboEntity : DboEntity() {
     var poll: PollDboEntity? = null
         private set
 
-    operator fun set(id: Int, ownerId: Long): TopicDboEntity {
+    fun set(id: Int, ownerId: Long): TopicDboEntity {
         this.id = id
         this.ownerId = ownerId
         return this

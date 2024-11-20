@@ -24,7 +24,7 @@
         android:layout_gravity="center"
         android:indeterminate="true" />
 
-    <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+    <dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
         android:id="@+id/footer_load_more_end_of_list"
         android:layout_width="40dp"
         android:layout_height="40dp"

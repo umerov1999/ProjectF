@@ -44,7 +44,6 @@ struct Canvas::Impl
     {
         //make it sure any deferred jobs
         renderer->sync();
-        renderer->clear();
 
         clearPaints();
 
@@ -72,15 +71,16 @@ struct Canvas::Impl
         return update(p, true);
     }
 
-    Result clear(bool free)
+    Result clear(bool paints, bool buffer)
     {
-        //Clear render target before drawing
-        if (!renderer->clear()) return Result::InsufficientCondition;
+        if (status == Status::Drawing) return Result::InsufficientCondition;
 
-        //Free paints
-        if (free) clearPaints();
+        //Clear render target
+        if (buffer) {
+            if (!renderer->clear()) return Result::InsufficientCondition;
+        }
 
-        status = Status::Synced;
+        if (paints) clearPaints();
 
         return Result::Success;
     }

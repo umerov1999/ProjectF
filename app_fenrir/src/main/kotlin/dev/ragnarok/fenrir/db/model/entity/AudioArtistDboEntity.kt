@@ -40,7 +40,7 @@ class AudioArtistDboEntity : DboEntity() {
         var height = 0
             private set
 
-        operator fun set(url: String?, width: Int, height: Int): AudioArtistImageEntity {
+        fun set(url: String?, width: Int, height: Int): AudioArtistImageEntity {
             this.url = url
             this.width = width
             this.height = height

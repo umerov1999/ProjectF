@@ -58,9 +58,11 @@ internal class AccountApi(accountId: Long, provider: IServiceProvider) :
     }
 
     override fun registerDevice(
+        api_id: Int?,
+        app_id: Int?,
         token: String?,
         pushes_granted: Int?,
-        app_version: String?,
+        app_version: Int?,
         push_provider: String?,
         companion_apps: String?,
         type: Int?,
@@ -72,6 +74,8 @@ internal class AccountApi(accountId: Long, provider: IServiceProvider) :
         return provideService(IAccountService(), TokenType.USER)
             .flatMapConcat {
                 it.registerDevice(
+                    api_id,
+                    app_id,
                     token,
                     pushes_granted,
                     app_version,

@@ -4,8 +4,6 @@ import android.os.Parcel
 import android.os.Parcelable
 import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.putBoolean
-import dev.ragnarok.fenrir.readTypedObjectCompat
-import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class Topic : AbsModel {
     val id: Int
@@ -53,8 +51,8 @@ class Topic : AbsModel {
         commentsCount = parcel.readInt()
         firstCommentText = parcel.readString()
         lastCommentText = parcel.readString()
-        creator = parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)?.owner
-        updater = parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)?.owner
+        creator = ParcelableOwnerWrapper.readOwner(parcel)
+        updater = ParcelableOwnerWrapper.readOwner(parcel)
     }
 
     @AbsModelType
@@ -135,8 +133,8 @@ class Topic : AbsModel {
         parcel.writeInt(commentsCount)
         parcel.writeString(firstCommentText)
         parcel.writeString(lastCommentText)
-        parcel.writeTypedObjectCompat(ParcelableOwnerWrapper(creator), flags)
-        parcel.writeTypedObjectCompat(ParcelableOwnerWrapper(updater), flags)
+        ParcelableOwnerWrapper.writeOwner(parcel, flags, creator)
+        ParcelableOwnerWrapper.writeOwner(parcel, flags, updater)
     }
 
     override fun describeContents(): Int {

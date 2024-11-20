@@ -242,6 +242,15 @@ void mathSplitCubic(SwPoint* base)
 }
 
 
+void mathSplitLine(SwPoint* base)
+{
+    base[2] = base[1];
+
+    base[1].x = (base[0].x + base[1].x) >> 1;
+    base[1].y = (base[0].y + base[1].y) >> 1;
+}
+
+
 SwFixed mathDiff(SwFixed angle1, SwFixed angle2)
 {
     auto delta = angle2 - angle1;
@@ -303,9 +312,7 @@ bool mathUpdateOutlineBBox(const SwOutline* outline, const SwBBox& clipRegion, S
         if (yMin > pt->y) yMin = pt->y;
         if (yMax < pt->y) yMax = pt->y;
     }
-    //Since no antialiasing is applied in the Fast Track case,
-    //the rasterization region has to be rearranged.
-    //https://github.com/Samsung/thorvg/issues/916
+
     if (fastTrack) {
         renderRegion.min.x = static_cast<SwCoord>(nearbyint(xMin / 64.0f));
         renderRegion.max.x = static_cast<SwCoord>(nearbyint(xMax / 64.0f));

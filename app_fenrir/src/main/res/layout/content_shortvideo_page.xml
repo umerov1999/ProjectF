@@ -11,7 +11,7 @@
         android:layout_centerInParent="true" />
 
 
-    <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+    <dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
         android:id="@+id/preparing_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

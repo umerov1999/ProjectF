@@ -14,7 +14,7 @@ import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnStickerClickedListener
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 
 class StickersAdapter(private val context: Context, private val stickers: StickerSet) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -70,8 +70,7 @@ class StickersAdapter(private val context: Context, private val stickers: Sticke
                 animatedHolder.animation.fromNet(
                     item?.getAnimationByType(if (isNightSticker) "dark" else "light"),
                     Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
-                    Utils.dp(128f),
-                    Utils.dp(128f)
+                    false
                 )
                 animatedHolder.root.setOnClickListener {
                     if (item != null) {
@@ -81,7 +80,7 @@ class StickersAdapter(private val context: Context, private val stickers: Sticke
                     }
                 }
                 animatedHolder.root.setOnLongClickListener {
-                    animatedHolder.animation.playAnimation()
+                    animatedHolder.animation.startAnimation()
                     true
                 }
             }
@@ -111,8 +110,7 @@ class StickersAdapter(private val context: Context, private val stickers: Sticke
                 animatedHolder.animation.fromNet(
                     item?.getAnimationByType(if (isNightSticker) "dark" else "light"),
                     Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
-                    Utils.dp(128f),
-                    Utils.dp(128f)
+                    false
                 )
                 animatedHolder.root.setOnClickListener {
                     if (item != null) {
@@ -122,7 +120,7 @@ class StickersAdapter(private val context: Context, private val stickers: Sticke
                     }
                 }
                 animatedHolder.root.setOnLongClickListener {
-                    animatedHolder.animation.playAnimation()
+                    animatedHolder.animation.startAnimation()
                     true
                 }
             }
@@ -132,7 +130,10 @@ class StickersAdapter(private val context: Context, private val stickers: Sticke
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         super.onViewRecycled(holder)
         if (holder is StickerAnimatedHolder) {
-            holder.animation.clearAnimationDrawable()
+            holder.animation.clearAnimationDrawable(
+                callSuper = true, clearState = true,
+                cancelTask = true
+            )
         }
     }
 
@@ -147,7 +148,7 @@ class StickersAdapter(private val context: Context, private val stickers: Sticke
 
     internal class StickerAnimatedHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val root: View = itemView.rootView
-        val animation: RLottieImageView = itemView.findViewById(R.id.sticker_animated)
+        val animation: ThorVGLottieView = itemView.findViewById(R.id.sticker_animated)
     }
 
     companion object {

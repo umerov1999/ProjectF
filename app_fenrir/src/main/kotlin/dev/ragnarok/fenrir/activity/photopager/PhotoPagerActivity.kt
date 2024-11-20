@@ -83,7 +83,7 @@ import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.CircleCounterButton
 import dev.ragnarok.fenrir.view.TouchImageView
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import dev.ragnarok.fenrir.view.pager.WeakPicassoLoadCallback
 
 class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>(), IPhotoPagerView,
@@ -252,7 +252,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
     private var mButtonLike: CircleCounterButton? = null
     private var mButtonComments: CircleCounterButton? = null
     private var buttonShare: CircleCounterButton? = null
-    private var mLoadingProgressBar: RLottieImageView? = null
+    private var mLoadingProgressBar: ThorVGLottieView? = null
     private var mLoadingProgressBarDispose = CancelableJob()
     private var mLoadingProgressBarLoaded = false
     private var mToolbar: Toolbar? = null
@@ -748,8 +748,6 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 mLoadingProgressBar?.visibility = View.VISIBLE
                 mLoadingProgressBar?.fromRes(
                     dev.ragnarok.fenrir_common.R.raw.loading,
-                    Utils.dp(100F),
-                    Utils.dp(100F),
                     intArrayOf(
                         0x000000,
                         Color.WHITE,
@@ -757,12 +755,15 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                         Color.WHITE
                     )
                 )
-                mLoadingProgressBar?.playAnimation()
+                mLoadingProgressBar?.startAnimation()
             }
         } else if (mLoadingProgressBarLoaded) {
             mLoadingProgressBarLoaded = false
             mLoadingProgressBar?.visibility = View.GONE
-            mLoadingProgressBar?.clearAnimationDrawable()
+            mLoadingProgressBar?.clearAnimationDrawable(
+                callSuper = true, clearState = true,
+                cancelTask = true
+            )
         }
     }
 
@@ -851,7 +852,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         private val mPicassoLoadCallback: WeakPicassoLoadCallback
         val photo: TouchImageView
         val tagsPlaceholder: FrameLayout
-        val progress: RLottieImageView
+        val progress: ThorVGLottieView
         var animationDispose = CancelableJob()
         private var mAnimationLoaded = false
         private var mLoadingNow = false
@@ -961,13 +962,19 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 val k = ObjectAnimator.ofFloat(progress, View.ALPHA, 0.0f).setDuration(1000)
                 k.addListener(object : StubAnimatorListener() {
                     override fun onAnimationEnd(animation: Animator) {
-                        progress.clearAnimationDrawable()
+                        progress.clearAnimationDrawable(
+                            callSuper = true, clearState = true,
+                            cancelTask = true
+                        )
                         progress.visibility = View.GONE
                         progress.alpha = 1f
                     }
 
                     override fun onAnimationCancel(animation: Animator) {
-                        progress.clearAnimationDrawable()
+                        progress.clearAnimationDrawable(
+                            callSuper = true, clearState = true,
+                            cancelTask = true
+                        )
                         progress.visibility = View.GONE
                         progress.alpha = 1f
                     }
@@ -975,7 +982,10 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 k.start()
             } else if (mAnimationLoaded && !mLoadingNow) {
                 mAnimationLoaded = false
-                progress.clearAnimationDrawable()
+                progress.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
                 progress.visibility = View.GONE
             } else if (mLoadingNow) {
                 animationDispose += delayTaskFlow(300).toMain {
@@ -983,8 +993,6 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                     progress.visibility = View.VISIBLE
                     progress.fromRes(
                         dev.ragnarok.fenrir_common.R.raw.loading,
-                        Utils.dp(100F),
-                        Utils.dp(100F),
                         intArrayOf(
                             0x000000,
                             CurrentTheme.getColorPrimary(this@PhotoPagerActivity),
@@ -992,7 +1000,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                             CurrentTheme.getColorSecondary(this@PhotoPagerActivity)
                         )
                     )
-                    progress.playAnimation()
+                    progress.startAnimation()
                 }
             }
         }

@@ -134,30 +134,20 @@ FillSpread Fill::spread() const noexcept
 
 Result Fill::transform(const Matrix& m) noexcept
 {
-    if (!pImpl->transform) {
-        pImpl->transform = static_cast<Matrix*>(malloc(sizeof(Matrix)));
-    }
-    *pImpl->transform = m;
+    pImpl->transform = m;
     return Result::Success;
 }
 
 
-Matrix Fill::transform() const noexcept
+Matrix& Fill::transform() const noexcept
 {
-    if (pImpl->transform) return *pImpl->transform;
-    return {1, 0, 0, 0, 1, 0, 0, 0, 1};
+    return pImpl->transform;
 }
 
 
 Fill* Fill::duplicate() const noexcept
 {
     return pImpl->duplicate();
-}
-
-
-TVG_DEPRECATED uint32_t Fill::identifier() const noexcept
-{
-    return (uint32_t) type();
 }
 
 
@@ -173,17 +163,20 @@ RadialGradient::~RadialGradient()
 }
 
 
-Result RadialGradient::radial(float cx, float cy, float r) noexcept
+Result RadialGradient::radial(float cx, float cy, float r, float fx, float fy, float fr) noexcept
 {
-    return pImpl->radial(cx, cy, r, cx, cy, 0.0f);
+    return pImpl->radial(cx, cy, r, fx, fy, fr);
 }
 
 
-Result RadialGradient::radial(float* cx, float* cy, float* r) const noexcept
+Result RadialGradient::radial(float* cx, float* cy, float* r, float* fx, float* fy, float* fr) const noexcept
 {
     if (cx) *cx = pImpl->cx;
     if (cy) *cy = pImpl->cy;
     if (r) *r = pImpl->r;
+    if (fx) *fx = pImpl->fx;
+    if (fy) *fy = pImpl->fy;
+    if (fr) *fr = pImpl->fr;
 
     return Result::Success;
 }
@@ -192,12 +185,6 @@ Result RadialGradient::radial(float* cx, float* cy, float* r) const noexcept
 unique_ptr<RadialGradient> RadialGradient::gen() noexcept
 {
     return unique_ptr<RadialGradient>(new RadialGradient);
-}
-
-
-TVG_DEPRECATED uint32_t RadialGradient::identifier() noexcept
-{
-    return (uint32_t) Type::RadialGradient;
 }
 
 
@@ -244,12 +231,6 @@ Result LinearGradient::linear(float* x1, float* y1, float* x2, float* y2) const 
 unique_ptr<LinearGradient> LinearGradient::gen() noexcept
 {
     return unique_ptr<LinearGradient>(new LinearGradient);
-}
-
-
-TVG_DEPRECATED uint32_t LinearGradient::identifier() noexcept
-{
-    return (uint32_t) Type::LinearGradient;
 }
 
 

@@ -194,7 +194,7 @@
             android:orientation="vertical"
             android:visibility="gone">
 
-            <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+            <dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
                 android:id="@+id/loading"
                 android:layout_width="120dp"
                 android:layout_height="120dp"

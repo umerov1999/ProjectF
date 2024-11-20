@@ -11,7 +11,7 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnMyStickerClickedListener
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import java.io.File
 
 class MyStickersAdapter(private val context: Context) :
@@ -48,14 +48,14 @@ class MyStickersAdapter(private val context: Context) :
         when (getItemViewType(position)) {
             TYPE_ANIMATED -> {
                 val animatedHolder = holder as StickerAnimatedHolder
-                animatedHolder.animation.fromFile(File(item.path), Utils.dp(128f), Utils.dp(128f))
+                animatedHolder.animation.fromFile(File(item.path), true)
                 animatedHolder.root.setOnClickListener {
                     myStickerClickedListener?.onMyStickerClick(
                         item
                     )
                 }
                 animatedHolder.root.setOnLongClickListener {
-                    animatedHolder.animation.playAnimation()
+                    animatedHolder.animation.startAnimation()
                     true
                 }
             }
@@ -82,14 +82,14 @@ class MyStickersAdapter(private val context: Context) :
 
             else -> {
                 val animatedHolder = holder as StickerAnimatedHolder
-                animatedHolder.animation.fromFile(File(item.path), Utils.dp(128f), Utils.dp(128f))
+                animatedHolder.animation.fromFile(File(item.path), true)
                 animatedHolder.root.setOnClickListener {
                     myStickerClickedListener?.onMyStickerClick(
                         item
                     )
                 }
                 animatedHolder.root.setOnLongClickListener {
-                    animatedHolder.animation.playAnimation()
+                    animatedHolder.animation.startAnimation()
                     true
                 }
             }
@@ -107,7 +107,7 @@ class MyStickersAdapter(private val context: Context) :
 
     internal class StickerAnimatedHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val root: View = itemView.rootView
-        val animation: RLottieImageView = itemView.findViewById(R.id.sticker_animated)
+        val animation: ThorVGLottieView = itemView.findViewById(R.id.sticker_animated)
     }
 
     companion object {

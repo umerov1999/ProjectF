@@ -7,13 +7,13 @@ import android.widget.FrameLayout
 import com.google.android.material.button.MaterialButton
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.module.FenrirNative
-import dev.ragnarok.fenrir.module.rlottie.RLottieDrawable
+import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGLottieDrawable
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.util.Utils
 
 class ProgressButton : FrameLayout {
     private var mButton: MaterialButton? = null
-    private var animatedDrawable: RLottieDrawable? = null
+    private var animatedDrawable: ThorVGLottieDrawable? = null
     private var mProgressNow = true
 
     constructor(context: Context) : super(context) {
@@ -59,16 +59,25 @@ class ProgressButton : FrameLayout {
         mButton?.text = charSequence
     }
 
+    private fun clearAnimationDrawable() {
+        if (mButton?.icon is ThorVGLottieDrawable) {
+            (mButton?.icon as ThorVGLottieDrawable).release()
+        }
+        mButton?.icon = null
+        if (animatedDrawable != null) {
+            animatedDrawable?.release()
+            animatedDrawable = null
+        }
+    }
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        animatedDrawable?.setCurrentParentView(this)
-        animatedDrawable?.start()
+        resolveViews()
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        animatedDrawable?.stop()
-        animatedDrawable?.setCurrentParentView(null)
+        clearAnimationDrawable()
     }
 
     fun onButtonClick(listener: OnClickListener) {
@@ -79,20 +88,13 @@ class ProgressButton : FrameLayout {
         mButton?.setOnLongClickListener(listener)
     }
 
-    private fun setAnimation(rLottieDrawable: RLottieDrawable) {
-        mButton?.icon = null
-        animatedDrawable?.let {
-            it.stop()
-            it.callback = null
-            it.recycle()
-            animatedDrawable = null
-        }
-        rLottieDrawable.setAutoRepeat(1)
-        rLottieDrawable.setAllowDecodeSingleFrame(true)
-        rLottieDrawable.setCurrentParentView(this)
-        rLottieDrawable.start()
-        animatedDrawable = rLottieDrawable
-        mButton?.icon = rLottieDrawable
+    private fun setAnimation(thorVGLottieDrawable: ThorVGLottieDrawable) {
+        clearAnimationDrawable()
+        thorVGLottieDrawable.setRepeatCount(Int.MAX_VALUE)
+        thorVGLottieDrawable.setSize(Utils.dp(24f), Utils.dp(24f))
+        thorVGLottieDrawable.start()
+        animatedDrawable = thorVGLottieDrawable
+        mButton?.icon = thorVGLottieDrawable
     }
 
     private fun resolveViews() {
@@ -101,11 +103,8 @@ class ProgressButton : FrameLayout {
                 mButton?.setIconResource(R.drawable.ic_progress_button_icon_vector)
             } else {
                 setAnimation(
-                    RLottieDrawable(
+                    ThorVGLottieDrawable(
                         dev.ragnarok.fenrir_common.R.raw.loading,
-                        Utils.dp(40f),
-                        Utils.dp(40f),
-                        false,
                         intArrayOf(
                             0x000000,
                             CurrentTheme.getColorPrimary(context),
@@ -117,13 +116,7 @@ class ProgressButton : FrameLayout {
                 )
             }
         } else {
-            mButton?.icon = null
-            animatedDrawable?.let {
-                it.stop()
-                it.callback = null
-                it.recycle()
-                animatedDrawable = null
-            }
+            clearAnimationDrawable()
         }
     }
 

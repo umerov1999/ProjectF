@@ -49,7 +49,7 @@ import dev.ragnarok.fenrir.view.ReactionContainer
 import dev.ragnarok.fenrir.view.emoji.BotKeyboardView
 import dev.ragnarok.fenrir.view.emoji.BotKeyboardView.BotKeyboardViewDelegate
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -127,8 +127,7 @@ class MessagesAdapter(
             holder.sticker.fromNet(
                 sticker.getAnimationByType(if (isNightSticker) "dark" else "light"),
                 Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
-                Utils.dp(128f),
-                Utils.dp(128f)
+                true
             )
         } else {
             val image = sticker?.getImage(256, isNightSticker)
@@ -639,7 +638,7 @@ class MessagesAdapter(
 
     private class StickerMessageHolder(itemView: View) :
         BaseMessageHolder(itemView) {
-        val sticker: RLottieImageView = itemView.findViewById(R.id.sticker)
+        val sticker: ThorVGLottieView = itemView.findViewById(R.id.sticker)
         val attachmentsRoot: View = itemView.findViewById(R.id.item_message_attachment_container)
         val attachmentsHolder: AttachmentsHolder = AttachmentsHolder()
         val forwardMessagesRoot: ViewGroup = itemView.findViewById(R.id.forward_messages)

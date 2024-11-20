@@ -60,7 +60,7 @@ import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.view.CircleCounterButton
 import dev.ragnarok.fenrir.view.ExpandableSurfaceView
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import java.lang.ref.WeakReference
 
 class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShortVideoPagerView>(),
@@ -81,7 +81,7 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
     private var mAdapter: Adapter? = null
     private var mLoadingProgressBarDispose = CancelableJob()
     private var mLoadingProgressBarLoaded = false
-    private var mLoadingProgressBar: RLottieImageView? = null
+    private var mLoadingProgressBar: ThorVGLottieView? = null
     private var shortVideoDuration: TextView? = null
     private var playDispose = CancelableJob()
 
@@ -126,18 +126,19 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
                 Settings.get().main().viewpager_page_transform
             )
         )
-        val mHelper = findViewById<RLottieImageView?>(R.id.swipe_helper)
+        val mHelper = findViewById<ThorVGLottieView?>(R.id.swipe_helper)
         if (HelperSimple.needHelp(HelperSimple.SHORT_VIDEO_HELPER, 2)) {
             mHelper?.visibility = View.VISIBLE
             mHelper?.fromRes(
                 dev.ragnarok.fenrir_common.R.raw.story_guide_hand_swipe,
-                Utils.dp(500F),
-                Utils.dp(500F),
                 intArrayOf(0x333333, CurrentTheme.getColorSecondary(this))
             )
-            mHelper?.playAnimation()
+            mHelper?.startAnimation()
             helpDisposable += delayTaskFlow(5000).toMain {
-                mHelper?.clearAnimationDrawable()
+                mHelper?.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
                 mHelper?.visibility = View.GONE
             }
         } else {
@@ -220,8 +221,6 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
                 mLoadingProgressBar?.visibility = View.VISIBLE
                 mLoadingProgressBar?.fromRes(
                     dev.ragnarok.fenrir_common.R.raw.loading,
-                    Utils.dp(100F),
-                    Utils.dp(100F),
                     intArrayOf(
                         0x000000,
                         Color.WHITE,
@@ -229,12 +228,15 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
                         Color.WHITE
                     )
                 )
-                mLoadingProgressBar?.playAnimation()
+                mLoadingProgressBar?.startAnimation()
             }
         } else if (mLoadingProgressBarLoaded) {
             mLoadingProgressBarLoaded = false
             mLoadingProgressBar?.visibility = View.GONE
-            mLoadingProgressBar?.clearAnimationDrawable()
+            mLoadingProgressBar?.clearAnimationDrawable(
+                callSuper = true, clearState = true,
+                cancelTask = true
+            )
         }
     }
 
@@ -472,7 +474,7 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
     inner class Holder(rootView: View) : RecyclerView.ViewHolder(rootView), SurfaceHolder.Callback {
         val mSurfaceView: ExpandableSurfaceView = rootView.findViewById(R.id.videoSurface)
         val mSurfaceHolder: SurfaceHolder = mSurfaceView.holder
-        val mProgressBar: RLottieImageView
+        val mProgressBar: ThorVGLottieView
         var isSurfaceReady = false
         override fun surfaceCreated(holder: SurfaceHolder) {
             isSurfaceReady = true
@@ -489,8 +491,6 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
             if (visible) {
                 mProgressBar.fromRes(
                     dev.ragnarok.fenrir_common.R.raw.loading,
-                    Utils.dp(100F),
-                    Utils.dp(100F),
                     intArrayOf(
                         0x000000,
                         CurrentTheme.getColorPrimary(this@ShortVideoPagerActivity),
@@ -498,9 +498,12 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
                         CurrentTheme.getColorSecondary(this@ShortVideoPagerActivity)
                     )
                 )
-                mProgressBar.playAnimation()
+                mProgressBar.startAnimation()
             } else {
-                mProgressBar.clearAnimationDrawable()
+                mProgressBar.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
             }
         }
 

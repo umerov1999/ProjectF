@@ -87,6 +87,7 @@ import dev.ragnarok.fenrir.settings.backup.SettingsBackup
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CompositeJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
@@ -97,7 +98,7 @@ import dev.ragnarok.fenrir.util.serializeble.prefs.Preferences
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.MySearchView
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
 import java.io.File
 import java.io.FileOutputStream
@@ -109,7 +110,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
     private var layoutManager: LinearLayoutManager? = null
     private var searchView: MySearchView? = null
     private val disposables = CompositeJob()
-    private var sleepDataDisposable = CompositeJob()
+    private var sleepDataDisposable = CancelableJob()
     private val SEARCH_DELAY = 2000
     override val keyInstanceState: String = "root_preferences"
 
@@ -1954,7 +1955,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 summary = Utils.getAppVersionName(requireActivity())
                 onClick {
                     val view = View.inflate(requireActivity(), R.layout.dialog_about_us, null)
-                    val anim: RLottieImageView = view.findViewById(R.id.lottie_animation)
+                    val anim: ThorVGLottieView = view.findViewById(R.id.lottie_animation)
                     val txt: TextView =
                         view.findViewById(dev.ragnarok.fenrir_common.R.id.sub_header)
                     txt.setText(Common.getAboutUsHeader(Settings.get().main().paganSymbol))
@@ -1966,11 +1967,9 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         anim.visibility = View.VISIBLE
                         anim.fromRes(
                             cbc.lottieRes,
-                            Utils.dp(cbc.lottie_widthHeight),
-                            Utils.dp(cbc.lottie_widthHeight),
                             cbc.lottie_replacement
                         )
-                        anim.playAnimation()
+                        anim.startAnimation()
                     } else {
                         anim.visibility = View.GONE
                     }

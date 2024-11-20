@@ -64,7 +64,7 @@ import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.CustomSeekBar
 import dev.ragnarok.fenrir.view.media.*
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieShapeableImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieShapeableView
 import kotlinx.coroutines.Job
 import java.io.File
 import java.io.FileOutputStream
@@ -706,7 +706,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         }
         if (tvAlbum != null) {
             var album = ""
-            if (audioTrack?.album_title.nonNullNoEmpty()) album += requireActivity().getString(R.string.album) + " " + audioTrack?.album_title
+            if (audioTrack?.album_title.nonNullNoEmpty()) album += requireActivity().getString(R.string.album) + " " + audioTrack.album_title
             tvAlbum?.text = album
         }
         tvTitle?.text = audioTrack?.artist
@@ -1019,7 +1019,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
     }
 
     private inner class CoverViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val ivCover: RLottieShapeableImageView = view.findViewById(R.id.cover)
+        val ivCover: ThorVGLottieShapeableView = view.findViewById(R.id.cover)
 
         val holderTarget = object : BitmapTarget {
             override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
@@ -1038,8 +1038,6 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                     if (FenrirNative.isNativeLoaded) {
                         ivCover.fromRes(
                             Common.getPlayerNullArtAnimation(Settings.get().main().paganSymbol),
-                            450,
-                            450,
                             intArrayOf(
                                 0x333333,
                                 CurrentTheme.getColorSurface(requireActivity()),
@@ -1047,7 +1045,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                                 CurrentTheme.getColorOnSurface(requireActivity())
                             )
                         )
-                        ivCover.playAnimation()
+                        ivCover.startAnimation()
                     } else {
                         ivCover.setImageResource(R.drawable.itunes)
                         ivCover.drawable?.setTint(
@@ -1077,8 +1075,6 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                 if (FenrirNative.isNativeLoaded) {
                     ivCover.fromRes(
                         Common.getPlayerNullArtAnimation(Settings.get().main().paganSymbol),
-                        450,
-                        450,
                         intArrayOf(
                             0x333333,
                             CurrentTheme.getColorSurface(requireActivity()),
@@ -1086,7 +1082,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                             CurrentTheme.getColorOnSurface(requireActivity())
                         )
                     )
-                    ivCover.playAnimation()
+                    ivCover.startAnimation()
                 } else {
                     ivCover.setImageResource(R.drawable.itunes)
                     ivCover.drawable.setTint(CurrentTheme.getColorOnSurface(requireActivity()))
@@ -1118,16 +1114,6 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         override fun onViewDetachedFromWindow(holder: CoverViewHolder) {
             super.onViewDetachedFromWindow(holder)
             PicassoInstance.with().cancelRequest(holder.ivCover)
-            if (holder.ivCover.drawable is Animatable) {
-                (holder.ivCover.drawable as Animatable).stop()
-            }
-        }
-
-        override fun onViewAttachedToWindow(holder: CoverViewHolder) {
-            super.onViewAttachedToWindow(holder)
-            if (holder.ivCover.drawable is Animatable) {
-                (holder.ivCover.drawable as Animatable).start()
-            }
         }
 
         override fun onBindViewHolder(holder: CoverViewHolder, position: Int) {

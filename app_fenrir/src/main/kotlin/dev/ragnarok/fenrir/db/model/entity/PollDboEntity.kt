@@ -40,7 +40,7 @@ class PollDboEntity : DboEntity() {
     var background: BackgroundEntity? = null
         private set
 
-    operator fun set(id: Int, ownerId: Long): PollDboEntity {
+    fun set(id: Int, ownerId: Long): PollDboEntity {
         this.id = id
         this.ownerId = ownerId
         return this
@@ -156,7 +156,7 @@ class PollDboEntity : DboEntity() {
         var rate = 0.0
             private set
 
-        operator fun set(id: Long, text: String?, voteCount: Int, rate: Double): Answer {
+        fun set(id: Long, text: String?, voteCount: Int, rate: Double): Answer {
             this.id = id
             this.text = text
             this.voteCount = voteCount

@@ -66,7 +66,7 @@ import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.fenrir.util.hls.M3U8
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 
 class AudioContainer : LinearLayout {
     private val mAudioInteractor: IAudioInteractor by lazy {
@@ -781,7 +781,7 @@ class AudioContainer : LinearLayout {
         val selectionView: MaterialCardView = root.findViewById(R.id.item_audio_selection)
         private val isSelectedView: MaterialCardView = root.findViewById(R.id.item_audio_select_add)
         private val animationAdapter: Animator.AnimatorListener
-        val visual: RLottieImageView
+        val visual: ThorVGLottieView
         var animator: ObjectAnimator? = null
         fun startSomeAnimation() {
             selectionView.setCardBackgroundColor(CurrentTheme.getColorSecondary(context))

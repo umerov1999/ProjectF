@@ -44,7 +44,6 @@ import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppTextUtils.getDateFromUnixTime
 import dev.ragnarok.fenrir.util.PostDownload
-import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
@@ -52,7 +51,7 @@ import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.CircleCounterButton
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 
 class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostView>(),
     EmojiconTextView.OnHashTagClickListener, IWallPostView, MenuProvider {
@@ -68,7 +67,7 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
     private var root: ViewGroup? = null
     private var mAttachmentsViews: AttachmentsHolder? = null
     private var mTextSelectionAllowed = false
-    private var loading: RLottieImageView? = null
+    private var loading: ThorVGLottieView? = null
     private var animationDispose = CancelableJob()
     private var mAnimationLoaded = false
     private var animLoad: ObjectAnimator? = null
@@ -117,13 +116,19 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
         animLoad = ObjectAnimator.ofFloat(loading, View.ALPHA, 0.0f).setDuration(1000)
         animLoad?.addListener(object : StubAnimatorListener() {
             override fun onAnimationEnd(animation: Animator) {
-                loading?.clearAnimationDrawable()
+                loading?.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
                 loading?.visibility = View.GONE
                 loading?.alpha = 1f
             }
 
             override fun onAnimationCancel(animation: Animator) {
-                loading?.clearAnimationDrawable()
+                loading?.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
                 loading?.visibility = View.GONE
                 loading?.alpha = 1f
             }
@@ -444,8 +449,6 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
                 loading?.alpha = 1f
                 loading?.fromRes(
                     dev.ragnarok.fenrir_common.R.raw.s_loading,
-                    Utils.dp(180f),
-                    Utils.dp(180f),
                     intArrayOf(
                         0x333333,
                         CurrentTheme.getColorPrimary(requireActivity()),
@@ -453,7 +456,7 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
                         CurrentTheme.getColorSecondary(requireActivity())
                     )
                 )
-                loading?.playAnimation()
+                loading?.startAnimation()
             }
         }
     }
@@ -542,7 +545,7 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
     }
 
     override fun onHashTagClicked(hashTag: String) {
-        presenter?.fireHasgTagClick(
+        presenter?.fireHashTagClick(
             hashTag
         )
     }

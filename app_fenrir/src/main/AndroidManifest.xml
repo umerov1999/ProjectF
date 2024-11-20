@@ -462,7 +462,6 @@
             android:configChanges="keyboardHidden|orientation"
             android:exported="true"
             android:label="@string/lottie_preview"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateHidden"
             tools:ignore="DiscouragedApi,LockedOrientationActivity">
 

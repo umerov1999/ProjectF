@@ -64,7 +64,7 @@
             app:stroke_color="?android:colorBackground" />
     </FrameLayout>
 
-    <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+    <dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
         android:id="@+id/active"
         android:layout_width="40dp"
         android:layout_height="40dp"

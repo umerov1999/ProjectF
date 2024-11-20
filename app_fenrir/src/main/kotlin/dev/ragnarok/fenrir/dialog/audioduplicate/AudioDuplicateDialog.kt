@@ -42,7 +42,7 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 
 class AudioDuplicateDialog :
     BaseMvpDialogFragment<AudioDuplicatePresenter, IAudioDuplicateView>(), IAudioDuplicateView {
@@ -210,7 +210,7 @@ class AudioDuplicateDialog :
         val play: View = itemView.findViewById(R.id.item_audio_play)
         val play_cover: ImageView = itemView.findViewById(R.id.item_audio_play_cover)
         val selectionView: MaterialCardView = itemView.findViewById(R.id.item_audio_selection)
-        val visual: RLottieImageView = itemView.findViewById(R.id.item_audio_visual)
+        val visual: ThorVGLottieView = itemView.findViewById(R.id.item_audio_visual)
         val time: TextView = itemView.findViewById(R.id.item_audio_time)
 
     }

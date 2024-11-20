@@ -3,7 +3,7 @@ plugins {
     id("kotlin-android")
 }
 
-//1.4.0-rc04
+//1.4.0
 
 android {
     namespace "androidx.camera"

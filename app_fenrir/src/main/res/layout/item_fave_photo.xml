@@ -27,7 +27,7 @@
             app:aspectRatioW="1"
             app:dominantMeasurement="width" />
 
-        <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+        <dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
             android:id="@+id/current"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

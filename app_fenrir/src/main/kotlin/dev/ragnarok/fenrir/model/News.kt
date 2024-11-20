@@ -166,7 +166,7 @@ class News : AbsModel {
     internal constructor(parcel: Parcel) {
         type = parcel.readString()
         sourceId = parcel.readLong()
-        source = Owner.readOwnerFromParcel(sourceId, parcel)
+        source = ParcelableOwnerWrapper.readOwner(parcel)
         postType = parcel.readString()
         isFinalPost = parcel.getBoolean()
         copyOwnerId = parcel.readLong()
@@ -370,7 +370,7 @@ class News : AbsModel {
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(type)
         parcel.writeLong(sourceId)
-        parcel.writeTypedObjectCompat(source, flags)
+        ParcelableOwnerWrapper.writeOwner(parcel, flags, source)
         parcel.writeString(postType)
         parcel.putBoolean(isFinalPost)
         parcel.writeLong(copyOwnerId)

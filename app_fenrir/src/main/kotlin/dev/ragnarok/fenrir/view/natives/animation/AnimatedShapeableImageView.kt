@@ -3,6 +3,8 @@ package dev.ragnarok.fenrir.view.natives.animation
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Parcelable
 import android.util.AttributeSet
 import androidx.annotation.RawRes
 import com.google.android.material.imageview.ShapeableImageView
@@ -10,6 +12,8 @@ import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.animation.AnimatedFileDrawable
+import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGLottieDrawable.LoadedFrom
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.view.natives.animation.AnimationNetworkCache.Companion.filenameForRes
@@ -32,77 +36,91 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
     private val defaultHeight: Int
     private var animatedDrawable: AnimatedFileDrawable? = null
     private var attachedToWindow = false
-    private var playing = false
     private var decoderCallback: OnDecoderInit? = null
     private var mDisposable = CancelableJob()
+
+    @LoadedFrom
+    private var loadedFrom = LoadedFrom.NO
+    private var filePathTmp: String? = null
+    private var keyTmp: String? = null
+
+    @RawRes
+    private var rawResTmp: Int? = null
+    private var isPlaying: Boolean? = null
+    private var tmpFade: Boolean? = null
+
     fun setDecoderCallback(decoderCallback: OnDecoderInit?) {
         this.decoderCallback = decoderCallback
     }
 
-    private fun setAnimationByUrlCache(url: String, fade: Boolean) {
+    private fun setAnimationByUrlCache(key: String, autoPlay: Boolean, fade: Boolean) {
         if (!FenrirNative.isNativeLoaded) {
             decoderCallback?.onLoaded(false)
             return
         }
-        val ch = cache.fetch(url)
+        val ch = cache.fetch(key)
         if (ch == null) {
-            setImageDrawable(null)
             decoderCallback?.onLoaded(false)
             return
         }
-        setAnimation(
-            AnimatedFileDrawable(
-                ch,
-                0,
-                defaultWidth,
-                defaultHeight,
-                fade,
-                object : AnimatedFileDrawable.DecoderListener {
-                    override fun onError() {
-                        decoderCallback?.onLoaded(false)
-                    }
+        if (filePathTmp == ch.absolutePath && loadedFrom == LoadedFrom.FILE) {
+            return
+        }
+        clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = false)
+        loadedFrom = LoadedFrom.FILE
+        filePathTmp = ch.absolutePath
+        tmpFade = fade
+        isPlaying = autoPlay
 
-                })
-        )
-        playAnimation()
+        if (attachedToWindow) {
+            createAnimationDrawable()
+        }
     }
 
-    private fun setAnimationByResCache(@RawRes res: Int, fade: Boolean) {
+    private fun setAnimationByResCache(@RawRes res: Int, autoPlay: Boolean, fade: Boolean) {
         if (!FenrirNative.isNativeLoaded) {
             decoderCallback?.onLoaded(false)
             return
         }
         val ch = cache.fetch(res)
         if (ch == null) {
-            setImageDrawable(null)
             decoderCallback?.onLoaded(false)
             return
         }
-        setAnimation(
-            AnimatedFileDrawable(
-                ch,
-                0,
-                defaultWidth,
-                defaultHeight,
-                fade,
-                object : AnimatedFileDrawable.DecoderListener {
-                    override fun onError() {
-                        decoderCallback?.onLoaded(false)
-                    }
+        if (filePathTmp == ch.absolutePath && loadedFrom == LoadedFrom.FILE) {
+            return
+        }
+        clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = false)
+        loadedFrom = LoadedFrom.FILE
+        filePathTmp = ch.absolutePath
+        tmpFade = fade
+        isPlaying = autoPlay
 
-                })
-        )
-        playAnimation()
+        if (attachedToWindow) {
+            createAnimationDrawable()
+        }
     }
 
-    fun fromNet(key: String, url: String?, client: OkHttpClient.Builder) {
+    fun fromNet(key: String, url: String?, client: OkHttpClient.Builder, autoPlay: Boolean) {
         if (!FenrirNative.isNativeLoaded || url.isNullOrEmpty()) {
+            if (loadedFrom == LoadedFrom.NET) {
+                loadedFrom = LoadedFrom.NO
+            }
             decoderCallback?.onLoaded(false)
             return
         }
-        clearAnimationDrawable()
+        if (filePathTmp == url && keyTmp == key && loadedFrom == LoadedFrom.NET) {
+            return
+        }
+        clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+        loadedFrom = LoadedFrom.NET
+        filePathTmp = url
+        keyTmp = key
+        isPlaying = autoPlay
+        tmpFade = true
+
         if (cache.isCachedFile(key)) {
-            setAnimationByUrlCache(key, true)
+            setAnimationByUrlCache(key, autoPlay, true)
             return
         }
         mDisposable.set(flow {
@@ -127,7 +145,7 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
             }
         }.fromIOToMain({ u ->
             if (u) {
-                setAnimationByUrlCache(key, true)
+                setAnimationByUrlCache(key, autoPlay, true)
             } else {
                 decoderCallback?.onLoaded(false)
             }
@@ -136,23 +154,34 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
         }))
     }
 
-    fun fromRes(@RawRes res: Int) {
-        if (!FenrirNative.isNativeLoaded) {
+    fun fromRes(@RawRes resId: Int, autoPlay: Boolean) {
+        if (!FenrirNative.isNativeLoaded || resId == -1) {
+            if (loadedFrom == LoadedFrom.RES) {
+                loadedFrom = LoadedFrom.NO
+            }
             decoderCallback?.onLoaded(false)
             return
         }
-        clearAnimationDrawable()
-        if (cache.isCachedRes(res)) {
-            setAnimationByResCache(res, true)
+        if (rawResTmp == resId && loadedFrom == LoadedFrom.RES) {
+            return
+        }
+        clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+        loadedFrom = LoadedFrom.RES
+        rawResTmp = resId
+        tmpFade = true
+        isPlaying = autoPlay
+
+        if (cache.isCachedRes(resId)) {
+            setAnimationByResCache(resId, autoPlay, true)
             return
         }
         mDisposable.set(flow {
             try {
-                if (!copyRes(res)) {
+                if (!copyRes(resId)) {
                     emit(false)
                     return@flow
                 }
-                cache.renameTempFile(res)
+                cache.renameTempFile(resId)
             } catch (_: Exception) {
                 emit(false)
                 return@flow
@@ -160,69 +189,121 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
             emit(true)
         }.fromIOToMain {
             if (it) {
-                setAnimationByResCache(res, true)
+                setAnimationByResCache(resId, autoPlay, true)
             } else {
                 decoderCallback?.onLoaded(false)
             }
         })
     }
 
-    private fun setAnimation(videoDrawable: AnimatedFileDrawable) {
-        decoderCallback?.onLoaded(videoDrawable.isDecoded)
-        if (!videoDrawable.isDecoded) return
-        animatedDrawable = videoDrawable
-        animatedDrawable?.setAllowDecodeSingleFrame(true)
-        setImageDrawable(animatedDrawable)
-    }
-
-    fun fromFile(file: File) {
-        if (!FenrirNative.isNativeLoaded) {
-            decoderCallback?.onLoaded(false)
-            return
-        }
-        clearAnimationDrawable()
-        setAnimation(
-            AnimatedFileDrawable(
-                file,
+    private fun createAnimationDrawable() {
+        if (FenrirNative.isNativeLoaded && attachedToWindow && loadedFrom != LoadedFrom.NO && animatedDrawable == null && filePathTmp != null) {
+            animatedDrawable = AnimatedFileDrawable(
+                filePathTmp ?: "",
                 0,
                 defaultWidth,
                 defaultHeight,
-                false,
+                tmpFade == true,
                 object : AnimatedFileDrawable.DecoderListener {
                     override fun onError() {
                         decoderCallback?.onLoaded(false)
                     }
 
                 })
-        )
+            decoderCallback?.onLoaded(animatedDrawable?.isDecoded == true)
+            if (animatedDrawable?.isDecoded != true) {
+                clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+                return
+            }
+            tmpFade = false
+            animatedDrawable?.setAllowDecodeSingleFrame(true)
+            super.setImageDrawable(animatedDrawable)
+            if (isPlaying == true) {
+                playAnimation()
+            }
+        }
     }
 
-    fun clearAnimationDrawable() {
-        mDisposable.cancel()
-        animatedDrawable?.let {
-            it.stop()
-            it.callback = null
-            it.recycle()
+    fun fromFile(file: File) {
+        if (!FenrirNative.isNativeLoaded || !file.exists()) {
+            decoderCallback?.onLoaded(false)
+            return
+        }
+        if (filePathTmp == file.absolutePath && loadedFrom == LoadedFrom.FILE) {
+            return
+        }
+        clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+        loadedFrom = LoadedFrom.FILE
+        filePathTmp = file.absolutePath
+        tmpFade = false
+        if (attachedToWindow) {
+            createAnimationDrawable()
+        }
+    }
+
+    fun clearAnimationDrawable(callSuper: Boolean, clearState: Boolean, cancelTask: Boolean) {
+        if (cancelTask) {
+            mDisposable.cancel()
+        }
+        if (animatedDrawable != null) {
+            animatedDrawable?.callback = null
+            animatedDrawable?.recycle()
             animatedDrawable = null
         }
-        setImageDrawable(null)
+        if (callSuper) {
+            super.setImageDrawable(null)
+        }
+        if (clearState) {
+            isPlaying = false
+            loadedFrom = LoadedFrom.NO
+            filePathTmp = null
+            rawResTmp = null
+            tmpFade = null
+        }
     }
 
     override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
         attachedToWindow = true
-        animatedDrawable?.callback = this
-        if (playing) {
-            animatedDrawable?.start()
+        super.onAttachedToWindow()
+        when {
+            loadedFrom == LoadedFrom.NET -> {
+                filePathTmp?.let {
+                    keyTmp?.let { s ->
+                        fromNet(
+                            s,
+                            it,
+                            Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
+                            isPlaying == true,
+                        )
+                    }
+                    return
+                }
+                clearAnimationDrawable(callSuper = false, clearState = true, cancelTask = false)
+            }
+
+            loadedFrom == LoadedFrom.RES -> {
+                rawResTmp?.let {
+                    fromRes(
+                        it,
+                        isPlaying == true,
+                    )
+                    return
+                }
+                clearAnimationDrawable(callSuper = false, clearState = true, cancelTask = false)
+            }
+
+            loadedFrom != LoadedFrom.NO -> {
+                createAnimationDrawable()
+            }
         }
     }
 
     override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        mDisposable.cancel()
         attachedToWindow = false
-        animatedDrawable?.stop()
-        animatedDrawable?.callback = null
+        super.onDetachedFromWindow()
+        if (loadedFrom != LoadedFrom.NO) {
+            clearAnimationDrawable(callSuper = true, clearState = false, cancelTask = true)
+        }
     }
 
     fun isPlaying(): Boolean {
@@ -231,67 +312,46 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
 
     override fun setImageDrawable(dr: Drawable?) {
         super.setImageDrawable(dr)
-        if (dr !is AnimatedFileDrawable) {
-            mDisposable.cancel()
-            animatedDrawable?.let {
-                it.stop()
-                it.callback = null
-                it.recycle()
-                animatedDrawable = null
-            }
-        }
+        clearAnimationDrawable(callSuper = false, clearState = true, cancelTask = true)
     }
 
     override fun setImageBitmap(bm: Bitmap?) {
         super.setImageBitmap(bm)
-        mDisposable.cancel()
-        animatedDrawable?.let {
-            it.stop()
-            it.callback = null
-            it.recycle()
-            animatedDrawable = null
-        }
+        clearAnimationDrawable(callSuper = false, clearState = true, cancelTask = true)
     }
 
     override fun setImageResource(resId: Int) {
         super.setImageResource(resId)
-        mDisposable.cancel()
-        animatedDrawable?.let {
-            it.stop()
-            it.callback = null
-            it.recycle()
-            animatedDrawable = null
-        }
+        clearAnimationDrawable(callSuper = false, clearState = true, cancelTask = true)
+    }
+
+    override fun setImageURI(uri: Uri?) {
+        super.setImageURI(uri)
+        clearAnimationDrawable(callSuper = false, clearState = true, cancelTask = true)
     }
 
     fun playAnimation() {
-        if (animatedDrawable == null) {
-            return
-        }
-        playing = true
-        if (attachedToWindow) {
-            animatedDrawable?.start()
-        }
+        animatedDrawable?.start()
+        isPlaying = true
     }
 
     fun resetFrame() {
-        if (animatedDrawable == null) {
-            return
-        }
-        playing = true
-        if (attachedToWindow) {
-            animatedDrawable?.seekTo(0, true)
-        }
+        animatedDrawable?.seekTo(0, true)
     }
 
     fun stopAnimation() {
-        if (animatedDrawable == null) {
-            return
+        animatedDrawable?.let {
+            it.stop()
+            isPlaying = false
         }
-        playing = false
-        if (attachedToWindow) {
-            animatedDrawable?.stop()
-        }
+    }
+
+    protected override fun onSaveInstanceState(): Parcelable? {
+        return super.onSaveInstanceState()
+    }
+
+    protected override fun onRestoreInstanceState(state: Parcelable?) {
+        super.onRestoreInstanceState(state)
     }
 
     private fun copyRes(@RawRes rawRes: Int): Boolean {

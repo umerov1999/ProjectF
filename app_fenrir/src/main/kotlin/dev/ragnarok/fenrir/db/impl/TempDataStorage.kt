@@ -245,7 +245,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         return flow {
             val db = helper.writableDatabase
             db.beginTransaction()
-            if (isActive()) {
+            if (!isActive()) {
                 db.endTransaction()
             } else {
                 try {

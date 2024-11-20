@@ -122,12 +122,12 @@ struct Picture::Impl
         return true;
     }
 
-    Result load(const string& path)
+    Result load(const char* filename, std::unique_ptr<ColorReplace> colorReplacement)
     {
         if (paint || surface) return Result::InsufficientCondition;
 
         bool invalid;  //Invalid Path
-        auto loader = static_cast<ImageLoader*>(LoaderMgr::loader(path, &invalid));
+        auto loader = static_cast<ImageLoader*>(LoaderMgr::loader(filename, &invalid, std::move(colorReplacement)));
         if (!loader) {
             if (invalid) return Result::InvalidArguments;
             return Result::NonSupport;
@@ -135,19 +135,19 @@ struct Picture::Impl
         return load(loader);
     }
 
-    Result load(const char* data, uint32_t size, const string& mimeType, bool copy)
+    Result load(const char* data, uint32_t size, const char* mimeType, const char* rpath, bool copy, std::unique_ptr<ColorReplace> colorReplacement)
     {
         if (paint || surface) return Result::InsufficientCondition;
-        auto loader = static_cast<ImageLoader*>(LoaderMgr::loader(data, size, mimeType, copy));
+        auto loader = static_cast<ImageLoader*>(LoaderMgr::loader(data, size, mimeType, rpath, copy, std::move(colorReplacement)));
         if (!loader) return Result::NonSupport;
         return load(loader);
     }
 
-    Result load(uint32_t* data, uint32_t w, uint32_t h, bool copy)
+    Result load(uint32_t* data, uint32_t w, uint32_t h, ColorSpace cs, bool copy)
     {
         if (paint || surface) return Result::InsufficientCondition;
 
-        auto loader = static_cast<ImageLoader*>(LoaderMgr::loader(data, w, h, copy));
+        auto loader = static_cast<ImageLoader*>(LoaderMgr::loader(data, w, h, cs, copy));
         if (!loader) return Result::FailedAllocation;
 
         return load(loader);

@@ -89,11 +89,8 @@ struct Scene::Impl
         //post effects requires composition
         if (effects) return true;
 
-        //Masking may require composition (even if opacity == 255)
-        auto compMethod = scene->composite(nullptr);
-        if (compMethod != CompositeMethod::None && compMethod != CompositeMethod::ClipPath) return true;
-
-        //Blending may require composition (even if opacity == 255)
+        //Masking / Blending may require composition (even if opacity == 255)
+        if (scene->mask(nullptr) != MaskMethod::None) return true;
         if (PP(scene)->blendMethod != BlendMethod::Normal) return true;
 
         //Half translucent requires intermediate composition.
@@ -133,7 +130,7 @@ struct Scene::Impl
 
         if (needComp) {
             cmp = renderer->target(bounds(renderer), renderer->colorSpace());
-            renderer->beginComposite(cmp, CompositeMethod::None, opacity);
+            renderer->beginComposite(cmp, MaskMethod::None, opacity);
         }
 
         for (auto paint : paints) {
@@ -143,8 +140,9 @@ struct Scene::Impl
         if (cmp) {
             //Apply post effects if any.
             if (effects) {
+                auto direct = effects->count == 1 ? true : false;
                 for (auto e = effects->begin(); e < effects->end(); ++e) {
-                    renderer->effect(cmp, *e);
+                    renderer->effect(cmp, *e, direct);
                 }
             }
             renderer->endComposite(cmp);

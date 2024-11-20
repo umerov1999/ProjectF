@@ -480,10 +480,16 @@ class UserWallPresenter(
     fun fireSubscribe() {
         appendJob(wallsRepository.subscribe(accountId, ownerId)
             .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
+
+        appendJob(storiesInteractor.subscribe(accountId, ownerId)
+            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     fun fireUnSubscribe() {
         appendJob(wallsRepository.unsubscribe(accountId, ownerId)
+            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
+
+        appendJob(storiesInteractor.unsubscribe(accountId, ownerId)
             .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 

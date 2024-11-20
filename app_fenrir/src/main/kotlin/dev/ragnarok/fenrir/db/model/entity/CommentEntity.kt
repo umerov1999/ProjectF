@@ -67,7 +67,7 @@ class CommentEntity {
     var threads: List<CommentEntity>? = null
         private set
 
-    operator fun set(
+    fun set(
         sourceId: Int,
         sourceOwnerId: Long,
         @CommentedType sourceType: Int,

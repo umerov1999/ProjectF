@@ -8,6 +8,7 @@ import android.widget.Toast
 import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Includes
+import dev.ragnarok.fenrir.Includes.provideApplicationContext
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.ApiException
 import dev.ragnarok.fenrir.api.Auth
@@ -19,6 +20,7 @@ import dev.ragnarok.fenrir.api.adapters.AbsDtoAdapter.Companion.hasPrimitive
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
+import dev.ragnarok.fenrir.api.model.response.SetAuthCodeStatusResponse
 import dev.ragnarok.fenrir.api.rest.HttpException
 import dev.ragnarok.fenrir.api.util.VKStringUtils
 import dev.ragnarok.fenrir.db.DBHelper
@@ -42,6 +44,7 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.nonNullNoEmptyOr
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.service.ErrorLocalizer
+import dev.ragnarok.fenrir.settings.AnonymToken
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.backup.SettingsBackup
 import dev.ragnarok.fenrir.toColor
@@ -50,6 +53,8 @@ import dev.ragnarok.fenrir.util.ShortcutUtils
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.inMainThread
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingle
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingleSafe
 import dev.ragnarok.fenrir.util.serializeble.json.Json
@@ -66,7 +71,9 @@ import dev.ragnarok.fenrir.util.serializeble.json.longOrNull
 import dev.ragnarok.fenrir.util.serializeble.json.put
 import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import dev.ragnarok.fenrir.util.toast.CustomToast
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -77,6 +84,7 @@ import okio.buffer
 import okio.source
 import java.io.File
 import java.io.FileOutputStream
+import java.util.Calendar
 import kotlin.coroutines.cancellation.CancellationException
 
 class AccountsPresenter(savedInstanceState: Bundle?) :
@@ -377,7 +385,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
             out.write(bom)
             out.write(bytes)
             out.flush()
-            Includes.provideApplicationContext().sendBroadcast(
+            provideApplicationContext().sendBroadcast(
                 Intent(
                     Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                     Uri.fromFile(file)
@@ -566,6 +574,112 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                 }) { saveAccounts(context, file, null) })
     }
 
+    private fun checkQRAuthState(
+        q: String,
+        token: String,
+        data: SetAuthCodeStatusResponse
+    ): Flow<Boolean> {
+        return flow {
+            delay((data.polling_delay * 1000).toLong())
+            if (isActive() && data.expires_in > Calendar.getInstance().time.time / 1000) {
+                networker.vkAuth().getAuthCodeStatus(
+                    q, Constants.API_ID, Utils.getDeviceId(
+                        Constants.DEFAULT_ACCOUNT_TYPE,
+                        provideApplicationContext()
+                    ), token, Constants.AUTH_API_VERSION
+                ).catch {
+                    if (Constants.IS_DEBUG) {
+                        it.printStackTrace()
+                    }
+                    inMainThread {
+                        view?.showThrowable(it)
+                    }
+                    emit(false)
+                }.collect {
+                    if (it.access_token.nonNullNoEmpty()) {
+                        inMainThread {
+                            processNewAccount(
+                                it.user_id,
+                                it.access_token,
+                                Constants.DEFAULT_ACCOUNT_TYPE,
+                                null,
+                                null,
+                                "fenrir_qr",
+                                isCurrent = true,
+                                needSave = false
+                            )
+                            view?.showColoredSnack(R.string.refreshing_token, "#AA48BE2D".toColor())
+                            appendJob(
+                                accountsInteractor.getExchangeToken(it.user_id).fromIOToMain { t ->
+                                    t.token.nonNullNoEmpty { st ->
+                                        appendJob(
+                                            networker.vkDirectAuth(Constants.DEFAULT_ACCOUNT_TYPE)
+                                                .authByExchangeToken(
+                                                    Constants.API_ID,
+                                                    Constants.API_ID,
+                                                    st,
+                                                    Auth.scope,
+                                                    "expired_token",
+                                                    Utils.getDeviceId(
+                                                        Constants.DEFAULT_ACCOUNT_TYPE,
+                                                        provideApplicationContext()
+                                                    ),
+                                                    "1.102",
+                                                    null,
+                                                    Constants.API_VERSION
+                                                ).fromIOToMain({ p ->
+                                                    val aToken = p.resultUrl?.let { it1 ->
+                                                        tryExtractAccessToken(it1)
+                                                    } ?: return@fromIOToMain
+                                                    Settings.get().accounts()
+                                                        .storeAccessToken(it.user_id, aToken)
+
+                                                    view?.showColoredSnack(
+                                                        R.string.success,
+                                                        "#AA48BE2D".toColor()
+                                                    )
+                                                }, {
+                                                    view?.showThrowable(it)
+                                                })
+                                        )
+                                    }
+                                }
+                            )
+                        }
+                        emit(true)
+                    } else {
+                        checkQRAuthState(q, token, data).collect {
+                            emit(it)
+                        }
+                    }
+                }
+            } else {
+                inMainThread {
+                    view?.showError(R.string.auth_by_qr_error)
+                }
+                emit(false)
+            }
+        }
+    }
+
+    fun fireAuthByQR(q: String) {
+        Settings.get().accounts().anonymToken.token?.let {
+            appendJob(
+                networker.vkAuth().setAuthCodeStatus(
+                    q, Constants.API_ID, Utils.getDeviceId(
+                        Constants.DEFAULT_ACCOUNT_TYPE,
+                        provideApplicationContext()
+                    ), it, Constants.AUTH_API_VERSION
+                )
+                    .fromIOToMain({ rt ->
+                        if (rt.status != 0 && rt.polling_delay > 0) {
+                            appendJob(checkQRAuthState(q, it, rt).hiddenIO())
+                        }
+                    }, { showError(it) })
+            )
+        }
+    }
+
     @Suppress("DEPRECATION")
     private fun saveAccounts(context: Context, file: File, Users: IOwnersBundle?) {
         var out: FileOutputStream? = null
@@ -636,7 +750,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
             out.write(bom)
             out.write(bytes)
             out.flush()
-            Includes.provideApplicationContext().sendBroadcast(
+            provideApplicationContext().sendBroadcast(
                 Intent(
                     Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                     Uri.fromFile(file)
@@ -673,7 +787,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                 .add("lang", Constants.DEVICE_COUNTRY_CODE)
                 .add("https", "1")
                 .add(
-                    "device_id", Utils.getDeviceId(type, Includes.provideApplicationContext())
+                    "device_id", Utils.getDeviceId(type, provideApplicationContext())
                 )
             return Includes.networkInterfaces.getVkRestProvider().provideRawHttpClient(type, null)
                 .flatMapConcat { client ->
@@ -722,5 +836,24 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
 
     init {
         fireLoad(false)
+
+        if (Utils.isOfficialVKCurrent && Settings.get()
+                .accounts().anonymToken.expired_at <= Calendar.getInstance().time.time / 1000
+        ) {
+            appendJob(networker.vkDirectAuth().get_anonym_token(
+                Constants.API_ID,
+                Constants.API_ID,
+                Constants.SECRET,
+                Constants.AUTH_API_VERSION,
+                Utils.getDeviceId(
+                    Constants.DEFAULT_ACCOUNT_TYPE,
+                    provideApplicationContext()
+                )
+            ).fromIOToMain {
+                if (it.token.nonNullNoEmpty() && it.expired_at > Calendar.getInstance().time.time / 1000) {
+                    Settings.get().accounts().anonymToken = AnonymToken().set(it)
+                }
+            })
+        }
     }
 }

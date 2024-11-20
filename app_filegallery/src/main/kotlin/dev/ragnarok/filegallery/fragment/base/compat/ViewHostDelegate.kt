@@ -86,9 +86,9 @@ class ViewHostDelegate<P : IPresenter<V>, V : IMvpView> {
     }
 
     fun onSaveInstanceState(outState: Bundle) {
-        presenter?.run {
+        presenter?.let {
             lastKnownPresenterState = Bundle()
-            saveState(lastKnownPresenterState ?: return@run)
+            it.saveState(lastKnownPresenterState ?: return@let)
         }
 
         outState.putBundle(SAVE_PRESENTER_STATE, lastKnownPresenterState)

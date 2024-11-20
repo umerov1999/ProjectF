@@ -6,17 +6,18 @@ import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
+import androidx.annotation.IntDef
 import androidx.annotation.Keep
+import androidx.annotation.RestrictTo
 import dev.ragnarok.fenrir.module.BuildConfig
 import dev.ragnarok.fenrir.module.DispatchQueue
-import java.io.File
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
 class AnimatedFileDrawable(
-    file: File,
+    filePath: String,
     seekTo: Long,
     private val defaultWidth: Int,
     private val defaultHeight: Int,
@@ -48,6 +49,17 @@ class AnimatedFileDrawable(
 
     private external fun prepareToSeek(ptr: Long)
 
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
+    @IntDef(LoadedFrom.NET, LoadedFrom.NO, LoadedFrom.FILE, LoadedFrom.RES)
+    @Retention(AnnotationRetention.SOURCE)
+    annotation class LoadedFrom {
+        companion object {
+            const val NET = -1
+            const val NO = 0
+            const val FILE = 1
+            const val RES = 3
+        }
+    }
 
     private val metaData = IntArray(5)
     private val decoderCreated: Boolean
@@ -585,7 +597,7 @@ class AnimatedFileDrawable(
     }
 
     init {
-        nativePtr = createDecoder(file.absolutePath, metaData)
+        nativePtr = createDecoder(filePath, metaData)
         if (nativePtr != 0L && (metaData[0] > 3840 || metaData[1] > 3840)) {
             destroyDecoder(nativePtr)
             nativePtr = 0

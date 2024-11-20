@@ -11,7 +11,7 @@ class CountryDboEntity {
     var title: String? = null
         private set
 
-    operator fun set(id: Int, title: String?): CountryDboEntity {
+    fun set(id: Int, title: String?): CountryDboEntity {
         this.id = id
         this.title = title
         return this

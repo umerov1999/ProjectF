@@ -1,12 +1,16 @@
 package dev.ragnarok.fenrir.api.interfaces
 
-import dev.ragnarok.fenrir.api.model.AnonymToken
+import androidx.annotation.CheckResult
 import dev.ragnarok.fenrir.api.model.LoginResponse
 import dev.ragnarok.fenrir.api.model.VKApiValidationResponse
+import dev.ragnarok.fenrir.api.model.response.AnonymTokenResponse
+import dev.ragnarok.fenrir.api.model.response.GetAuthCodeStatusResponse
+import dev.ragnarok.fenrir.api.model.response.SetAuthCodeStatusResponse
 import dev.ragnarok.fenrir.api.model.response.VKUrlResponse
 import kotlinx.coroutines.flow.Flow
 
 interface IAuthApi {
+    @CheckResult
     fun directLogin(
         grantType: String?,
         clientId: Int,
@@ -23,6 +27,7 @@ interface IAuthApi {
         libverify_support: Boolean
     ): Flow<LoginResponse>
 
+    @CheckResult
     fun validatePhone(
         phone: String?,
         apiId: Int,
@@ -34,6 +39,7 @@ interface IAuthApi {
         allow_callreset: Boolean
     ): Flow<VKApiValidationResponse>
 
+    @CheckResult
     fun authByExchangeToken(
         clientId: Int,
         apiId: Int,
@@ -46,11 +52,30 @@ interface IAuthApi {
         v: String?
     ): Flow<VKUrlResponse>
 
+    @CheckResult
     fun get_anonym_token(
         apiId: Int,
         clientId: Int,
         clientSecret: String?,
         v: String?,
         device_id: String?
-    ): Flow<AnonymToken>
+    ): Flow<AnonymTokenResponse>
+
+    @CheckResult
+    fun setAuthCodeStatus(
+        auth_code: String?,
+        apiId: Int,
+        device_id: String?,
+        accessToken: String?,
+        v: String?
+    ): Flow<SetAuthCodeStatusResponse>
+
+    @CheckResult
+    fun getAuthCodeStatus(
+        auth_code: String?,
+        apiId: Int,
+        device_id: String?,
+        accessToken: String?,
+        v: String?
+    ): Flow<GetAuthCodeStatusResponse>
 }

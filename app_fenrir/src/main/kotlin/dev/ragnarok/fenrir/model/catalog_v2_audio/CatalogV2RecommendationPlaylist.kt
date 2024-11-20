@@ -108,7 +108,7 @@ class CatalogV2RecommendationPlaylist : AbsModel {
         parcel.putBoolean(scrollToIt)
         parcel.writeTypedList(audios)
         parcel.writeTypedObjectCompat(playlist, flags)
-        parcel.writeTypedObjectCompat(ParcelableOwnerWrapper(owner), flags)
+        ParcelableOwnerWrapper.writeOwner(parcel, flags, owner)
     }
 
     @AbsModelType

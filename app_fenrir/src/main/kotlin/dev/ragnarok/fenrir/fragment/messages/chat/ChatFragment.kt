@@ -136,7 +136,7 @@ import dev.ragnarok.fenrir.view.emoji.BotKeyboardView
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup
 import dev.ragnarok.fenrir.view.emoji.StickersKeyWordsAdapter
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import me.minetsh.imaging.IMGEditActivity
 import java.io.File
 import java.lang.ref.WeakReference
@@ -162,7 +162,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
 
     private var inputViewController: InputViewController? = null
     private var emptyText: TextView? = null
-    private var emptyAnimation: RLottieImageView? = null
+    private var emptyAnimation: ThorVGLottieView? = null
 
     private var pinnedView: View? = null
     private var pinnedAvatar: ImageView? = null
@@ -1843,8 +1843,6 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         if (visible) {
             emptyAnimation?.fromRes(
                 dev.ragnarok.fenrir_common.R.raw.valknut,
-                Utils.dp(120f),
-                Utils.dp(120f),
                 intArrayOf(
                     0x333333,
                     CurrentTheme.getColorPrimary(requireActivity()),
@@ -1852,9 +1850,12 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                     CurrentTheme.getColorSecondary(requireActivity())
                 )
             )
-            emptyAnimation?.playAnimation()
+            emptyAnimation?.startAnimation()
         } else {
-            emptyAnimation?.clearAnimationDrawable()
+            emptyAnimation?.clearAnimationDrawable(
+                callSuper = true, clearState = true,
+                cancelTask = true
+            )
         }
     }
 

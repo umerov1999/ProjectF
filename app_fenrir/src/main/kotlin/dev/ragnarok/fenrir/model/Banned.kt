@@ -30,7 +30,7 @@ class Banned : Parcelable {
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeTypedObjectCompat(ParcelableOwnerWrapper(banned), flags)
+        ParcelableOwnerWrapper.writeOwner(dest, flags, banned)
         dest.writeTypedObjectCompat(admin, flags)
         dest.writeTypedObjectCompat(info, flags)
     }

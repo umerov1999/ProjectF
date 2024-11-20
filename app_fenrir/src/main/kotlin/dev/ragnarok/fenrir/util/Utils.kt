@@ -72,8 +72,7 @@ import dev.ragnarok.fenrir.model.ProxyConfig
 import dev.ragnarok.fenrir.model.ReactionAsset
 import dev.ragnarok.fenrir.model.Sticker.LocalSticker
 import dev.ragnarok.fenrir.module.FenrirNative
-import dev.ragnarok.fenrir.module.rlottie.RLottieDrawable
-import dev.ragnarok.fenrir.module.thorvg.ThorVGRender
+import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGSVGRender
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
@@ -84,7 +83,7 @@ import dev.ragnarok.fenrir.util.AppTextUtils.updateDateLang
 import dev.ragnarok.fenrir.util.FileUtil.updateDateLang
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import dev.ragnarok.fenrir.view.pager.BackgroundToForegroundTransformer
 import dev.ragnarok.fenrir.view.pager.ClockSpinTransformer
 import dev.ragnarok.fenrir.view.pager.CubeInDepthTransformer
@@ -179,7 +178,7 @@ object Utils {
         if (currentColorsReplacement != tmpMap) {
             currentColorsReplacement.clear()
             currentColorsReplacement.putAll(tmpMap)
-            ThorVGRender.registerColors(currentColorsReplacement)
+            ThorVGSVGRender.registerColors(currentColorsReplacement)
         }
     }
 
@@ -1092,28 +1091,26 @@ object Utils {
             .toInt()]]
     }
 
-    fun doWavesLottie(visual: RLottieImageView?, Play: Boolean) {
-        visual?.clearAnimationDrawable()
+    fun doWavesLottie(visual: ThorVGLottieView?, Play: Boolean) {
         if (Play) {
-            visual?.setAutoRepeat(true)
-            visual?.fromRes(dev.ragnarok.fenrir_common.R.raw.waves, dp(28f), dp(28f))
+            visual?.setRepeat(true)
+            visual?.fromRes(dev.ragnarok.fenrir_common.R.raw.waves)
         } else {
-            visual?.setAutoRepeat(false)
-            visual?.fromRes(dev.ragnarok.fenrir_common.R.raw.waves_end, dp(28f), dp(28f))
+            visual?.setRepeat(false)
+            visual?.fromRes(dev.ragnarok.fenrir_common.R.raw.waves_end)
         }
-        visual?.playAnimation()
+        visual?.startAnimation()
     }
 
-    fun doWavesLottieBig(visual: RLottieImageView, Play: Boolean) {
-        visual.clearAnimationDrawable()
+    fun doWavesLottieBig(visual: ThorVGLottieView?, Play: Boolean) {
         if (Play) {
-            visual.setAutoRepeat(true)
-            visual.fromRes(dev.ragnarok.fenrir_common.R.raw.s_waves, dp(128f), dp(128f))
+            visual?.setRepeat(true)
+            visual?.fromRes(dev.ragnarok.fenrir_common.R.raw.s_waves)
         } else {
-            visual.setAutoRepeat(false)
-            visual.fromRes(dev.ragnarok.fenrir_common.R.raw.s_waves_end, dp(128f), dp(128f))
+            visual?.setRepeat(false)
+            visual?.fromRes(dev.ragnarok.fenrir_common.R.raw.s_waves_end)
         }
-        visual.playAnimation()
+        visual?.startAnimation()
     }
 
     fun createGradientChatImage(width: Int, height: Int, owner_id: Long): Bitmap {
@@ -1295,7 +1292,6 @@ object Utils {
             }
         }
         if (display != null) {
-            RLottieDrawable.updateScreenRefreshRate(display.refreshRate.toInt())
             val configuration = context.resources.configuration
             if (configuration.screenWidthDp != Configuration.SCREEN_WIDTH_DP_UNDEFINED) {
                 val newSize = ceil((configuration.screenWidthDp * density).toDouble())

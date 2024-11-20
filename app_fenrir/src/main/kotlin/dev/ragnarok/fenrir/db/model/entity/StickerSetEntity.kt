@@ -66,7 +66,7 @@ class StickerSetEntity(val id: Int) {
         var height = 0
             private set
 
-        operator fun set(url: String?, width: Int, height: Int): Img {
+        fun set(url: String?, width: Int, height: Int): Img {
             this.url = url
             this.width = width
             this.height = height

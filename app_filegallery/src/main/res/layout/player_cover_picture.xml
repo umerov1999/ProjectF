@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dev.ragnarok.filegallery.view.natives.rlottie.RLottieShapeableImageView xmlns:android="http://schemas.android.com/apk/res/android"
+<dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieShapeableView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cover"
     android:layout_width="match_parent"

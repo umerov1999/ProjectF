@@ -9,10 +9,12 @@ import dev.ragnarok.fenrir.api.CaptchaNeedException
 import dev.ragnarok.fenrir.api.IDirectLoginServiceProvider
 import dev.ragnarok.fenrir.api.NeedValidationException
 import dev.ragnarok.fenrir.api.interfaces.IAuthApi
-import dev.ragnarok.fenrir.api.model.AnonymToken
 import dev.ragnarok.fenrir.api.model.LoginResponse
 import dev.ragnarok.fenrir.api.model.VKApiValidationResponse
+import dev.ragnarok.fenrir.api.model.response.AnonymTokenResponse
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
+import dev.ragnarok.fenrir.api.model.response.GetAuthCodeStatusResponse
+import dev.ragnarok.fenrir.api.model.response.SetAuthCodeStatusResponse
 import dev.ragnarok.fenrir.api.model.response.VKUrlResponse
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.getDeviceId
@@ -162,7 +164,7 @@ class AuthApi(private val service: IDirectLoginServiceProvider) : IAuthApi {
         clientSecret: String?,
         v: String?,
         device_id: String?
-    ): Flow<AnonymToken> {
+    ): Flow<AnonymTokenResponse> {
         return service.provideAuthService()
             .flatMapConcat {
                 it.get_anonym_token(
@@ -173,13 +175,58 @@ class AuthApi(private val service: IDirectLoginServiceProvider) : IAuthApi {
                     device_id,
                     DEVICE_COUNTRY_CODE
                 )
-                    .map { s ->
-                        if (s.error != null) {
-                            throw AuthException(s.error.orEmpty(), s.errorDescription)
+                    .map {
+                        if (it.error != null) {
+                            throw AuthException(
+                                it.error.orEmpty(),
+                                it.errorDescription
+                            )
                         } else {
-                            s
+                            it
                         }
                     }
+            }
+    }
+
+    override fun setAuthCodeStatus(
+        auth_code: String?,
+        apiId: Int,
+        device_id: String?,
+        accessToken: String?,
+        v: String?
+    ): Flow<SetAuthCodeStatusResponse> {
+        return service.provideAuthService()
+            .flatMapConcat {
+                it.setAuthCodeStatus(
+                    auth_code,
+                    apiId,
+                    device_id,
+                    accessToken,
+                    DEVICE_COUNTRY_CODE,
+                    v
+                )
+                    .map(extractResponseWithErrorHandling())
+            }
+    }
+
+    override fun getAuthCodeStatus(
+        auth_code: String?,
+        apiId: Int,
+        device_id: String?,
+        accessToken: String?,
+        v: String?
+    ): Flow<GetAuthCodeStatusResponse> {
+        return service.provideAuthService()
+            .flatMapConcat {
+                it.getAuthCodeStatus(
+                    auth_code,
+                    apiId,
+                    device_id,
+                    accessToken,
+                    DEVICE_COUNTRY_CODE,
+                    v
+                )
+                    .map(extractResponseWithErrorHandling())
             }
     }
 

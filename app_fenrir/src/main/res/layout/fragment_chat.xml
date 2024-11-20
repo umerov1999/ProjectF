@@ -324,7 +324,7 @@
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:visibility="gone" />
 
-        <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+        <dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
             android:id="@+id/fragment_chat_empty_animation"
             android:layout_width="120dp"
             android:layout_height="120dp"

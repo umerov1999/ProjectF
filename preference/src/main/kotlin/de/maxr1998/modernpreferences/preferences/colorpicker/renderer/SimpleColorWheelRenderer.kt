@@ -41,7 +41,7 @@ class SimpleColorWheelRenderer : AbsColorWheelRenderer() {
                         y,
                         hsv
                     )
-                ) else colorCircleList[currentCount][x, y] = hsv
+                ) else colorCircleList[currentCount].set(x, y, hsv)
                 currentCount++
             }
         }

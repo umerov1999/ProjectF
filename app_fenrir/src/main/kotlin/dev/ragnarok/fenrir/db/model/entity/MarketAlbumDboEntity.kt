@@ -23,7 +23,7 @@ class MarketAlbumDboEntity : DboEntity() {
     var updated_time: Long = 0
         private set
 
-    operator fun set(id: Int, owner_id: Long): MarketAlbumDboEntity {
+    fun set(id: Int, owner_id: Long): MarketAlbumDboEntity {
         this.id = id
         this.owner_id = owner_id
         return this

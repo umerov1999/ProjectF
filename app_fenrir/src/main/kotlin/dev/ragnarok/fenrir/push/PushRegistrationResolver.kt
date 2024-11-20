@@ -138,6 +138,8 @@ class PushRegistrationResolver(
             networker.vkManual(registration.userId, registration.vkAccessToken)
                 .account()
                 .registerDevice(
+                    Constants.API_ID,
+                    Constants.API_ID,
                     registration.fcmToken,
                     null,
                     null,
@@ -154,6 +156,8 @@ class PushRegistrationResolver(
             networker.vkManual(registration.userId, registration.vkAccessToken)
                 .account()
                 .registerDevice(
+                    Constants.API_ID,
+                    Constants.API_ID,
                     registration.fcmToken,
                     1,
                     Constants.VK_ANDROID_APP_VERSION_CODE,

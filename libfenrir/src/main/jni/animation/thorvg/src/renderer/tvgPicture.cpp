@@ -63,10 +63,8 @@ bool Picture::Impl::needComposition(uint8_t opacity)
 
     //Composition test
     const Paint* target;
-    auto method = picture->composite(&target);
-    if (!target || method == tvg::CompositeMethod::ClipPath) return false;
-    if (target->pImpl->opacity == 255 || target->pImpl->opacity == 0) return false;
-
+    picture->mask(&target);
+    if (!target || target->pImpl->opacity == 255 || target->pImpl->opacity == 0) return false;
     return true;
 }
 
@@ -81,7 +79,7 @@ bool Picture::Impl::render(RenderMethod* renderer)
         RenderCompositor* cmp = nullptr;
         if (needComp) {
             cmp = renderer->target(bounds(renderer), renderer->colorSpace());
-            renderer->beginComposite(cmp, CompositeMethod::None, 255);
+            renderer->beginComposite(cmp, MaskMethod::None, 255);
         }
         ret = paint->pImpl->render(renderer);
         if (cmp) renderer->endComposite(cmp);
@@ -150,45 +148,33 @@ unique_ptr<Picture> Picture::gen() noexcept
 }
 
 
-TVG_DEPRECATED uint32_t Picture::identifier() noexcept
-{
-    return (uint32_t) Type::Picture;
-}
-
-
 Type Picture::type() const noexcept
 {
     return Type::Picture;
 }
 
 
-Result Picture::load(const std::string& path) noexcept
+Result Picture::load(const char* filename, std::unique_ptr<ColorReplace> colorReplacement) noexcept
 {
-    if (path.empty()) return Result::InvalidArguments;
+    if (!filename) return Result::InvalidArguments;
 
-    return pImpl->load(path);
+    return pImpl->load(filename, std::move(colorReplacement));
 }
 
 
-Result Picture::load(const char* data, uint32_t size, const string& mimeType, bool copy) noexcept
+Result Picture::load(const char* data, uint32_t size, const char* mimeType, const char* rpath, bool copy, std::unique_ptr<ColorReplace> colorReplacement) noexcept
 {
     if (!data || size <= 0) return Result::InvalidArguments;
 
-    return pImpl->load(data, size, mimeType, copy);
+    return pImpl->load(data, size, mimeType, rpath, copy, std::move(colorReplacement));
 }
 
 
-TVG_DEPRECATED Result Picture::load(const char* data, uint32_t size, bool copy) noexcept
+Result Picture::load(uint32_t* data, uint32_t w, uint32_t h, ColorSpace cs, bool copy) noexcept
 {
-    return load(data, size, "", copy);
-}
+    if (!data || w <= 0 || h <= 0 || cs == ColorSpace::Unknown)  return Result::InvalidArguments;
 
-
-Result Picture::load(uint32_t* data, uint32_t w, uint32_t h, bool copy) noexcept
-{
-    if (!data || w <= 0 || h <= 0) return Result::InvalidArguments;
-
-    return pImpl->load(data, w, h, copy);
+    return pImpl->load(data, w, h, cs, copy);
 }
 
 

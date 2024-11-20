@@ -96,7 +96,7 @@ abstract class RecyclerBindableAdapter<T, VH : RecyclerView.ViewHolder>(private 
         notifyItemRangeInserted(position + headersCount + size, items.size - position)
     }
 
-    operator fun set(position: Int, item: T) {
+    fun set(position: Int, item: T) {
         items[position] = item
         notifyItemChanged(position + headersCount)
     }

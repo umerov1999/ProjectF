@@ -69,7 +69,7 @@ import dev.ragnarok.fenrir.model.selection.LocalPhotosSelectableSource
 import dev.ragnarok.fenrir.model.selection.LocalVideosSelectableSource
 import dev.ragnarok.fenrir.model.selection.Sources
 import dev.ragnarok.fenrir.module.FenrirNative
-import dev.ragnarok.fenrir.module.thorvg.ThorVGRender
+import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGSVGRender
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.place.PlaceFactory.getAudiosPlace
@@ -100,7 +100,7 @@ import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.LoadMoreFooterHelper
 import dev.ragnarok.fenrir.view.LoadMoreFooterHelper.Companion.createFrom
 import dev.ragnarok.fenrir.view.UpEditFab
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import me.minetsh.imaging.IMGEditActivity
 import java.io.File
 
@@ -116,7 +116,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
 
     private var mUploadAdapter: DocsUploadAdapter? = null
     private var mUploadRoot: View? = null
-    protected fun setupPaganContent(Runes: View?, paganSymbol: RLottieImageView?) {
+    protected fun setupPaganContent(Runes: View?, paganSymbol: ThorVGLottieView?) {
         Runes?.visibility = if (Settings.get()
                 .main().isRunes_show
         ) View.VISIBLE else View.GONE
@@ -133,14 +133,12 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
         if (pic.isAnimation) {
             paganSymbol?.fromRes(
                 pic.lottieRes,
-                dp(pic.lottie_widthHeight),
-                dp(pic.lottie_widthHeight),
                 pic.lottie_replacement, pic.lottie_useMoveColor
             )
-            paganSymbol?.playAnimation()
+            paganSymbol?.startAnimation()
         } else {
             paganSymbol?.setImageBitmap(
-                ThorVGRender.createBitmap(
+                ThorVGSVGRender.createBitmap(
                     pic.iconRes,
                     dp(pic.icon_width),
                     dp(pic.icon_height)

@@ -72,7 +72,7 @@ class PostDboEntity : DboEntity() {
     var copyHierarchy: List<PostDboEntity>? = null
         private set
 
-    operator fun set(id: Int, ownerId: Long): PostDboEntity {
+    fun set(id: Int, ownerId: Long): PostDboEntity {
         this.id = id
         this.ownerId = ownerId
         return this
@@ -251,7 +251,7 @@ class PostDboEntity : DboEntity() {
         var url: String? = null
             private set
 
-        operator fun set(type: Int, platform: String?, data: Int, url: String?): SourceDbo {
+        fun set(type: Int, platform: String?, data: Int, url: String?): SourceDbo {
             this.type = type
             this.platform = platform
             this.data = data

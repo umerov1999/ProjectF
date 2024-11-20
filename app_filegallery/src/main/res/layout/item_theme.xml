@@ -53,7 +53,7 @@
             tools:text="Theme Name" />
     </LinearLayout>
 
-    <dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
+    <dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieView
         android:id="@+id/selected"
         android:layout_width="120dp"
         android:layout_height="120dp"

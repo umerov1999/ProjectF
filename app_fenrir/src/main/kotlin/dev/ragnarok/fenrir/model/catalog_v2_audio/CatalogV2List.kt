@@ -33,6 +33,11 @@ class CatalogV2List : Parcelable {
                 sections?.add(CatalogV2ListItem(i))
             }
         }
+        if (object_api.catalog?.sections?.size.orZero() <= 0) {
+            default_section?.let {
+                sections?.add(CatalogV2ListItem(it))
+            }
+        }
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -65,6 +70,10 @@ class CatalogV2List : Parcelable {
         constructor(@CatalogV2SortListCategory type: Int, title: String) {
             customType = type
             this.title = title
+        }
+
+        constructor(id: String) {
+            this.id = id
         }
 
         constructor(object_api: VKApiCatalogV2ListResponse.CatalogV2Sections.CatalogV2Section) {

@@ -54,7 +54,7 @@
             android:layout_toEndOf="@id/item_message_avatar"
             android:orientation="vertical">
 
-            <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+            <dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
                 android:id="@+id/sticker"
                 android:layout_width="128dp"
                 android:layout_height="128dp" />

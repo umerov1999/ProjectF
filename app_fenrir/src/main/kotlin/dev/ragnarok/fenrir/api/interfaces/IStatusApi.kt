@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface IStatusApi {
     @CheckResult
-    operator fun set(text: String?, groupId: Long?): Flow<Boolean>
+    fun set(text: String?, groupId: Long?): Flow<Boolean>
 }

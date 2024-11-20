@@ -2,7 +2,6 @@ package dev.ragnarok.fenrir.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class Event : AbsModel {
     val id: Long
@@ -18,12 +17,10 @@ class Event : AbsModel {
     }
 
     internal constructor(parcel: Parcel) {
-        Owner
         id = parcel.readLong()
         button_text = parcel.readString()
         text = parcel.readString()
-        subject =
-            Owner.readOwnerFromParcel(id, parcel)
+        subject = ParcelableOwnerWrapper.readOwner(parcel)
     }
 
     @AbsModelType
@@ -35,7 +32,7 @@ class Event : AbsModel {
         parcel.writeLong(id)
         parcel.writeString(button_text)
         parcel.writeString(text)
-        parcel.writeTypedObjectCompat(subject, flags)
+        ParcelableOwnerWrapper.writeOwner(parcel, flags, subject)
     }
 
     fun setText(text: String?): Event {

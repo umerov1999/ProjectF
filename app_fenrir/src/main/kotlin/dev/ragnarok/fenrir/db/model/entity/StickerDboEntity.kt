@@ -57,7 +57,7 @@ class StickerDboEntity : DboEntity() {
         var url: String? = null
             private set
 
-        operator fun set(url: String?, type: String?): AnimationEntity {
+        fun set(url: String?, type: String?): AnimationEntity {
             this.url = url
             this.type = type
             return this
@@ -76,7 +76,7 @@ class StickerDboEntity : DboEntity() {
         var height = 0
             private set
 
-        operator fun set(url: String?, width: Int, height: Int): Img {
+        fun set(url: String?, width: Int, height: Int): Img {
             this.url = url
             this.width = width
             this.height = height

@@ -46,12 +46,15 @@ import java.util.LinkedHashSet;
 /**
  * The {@link Behavior} for a View within a {@link CoordinatorLayout} to hide the view off the
  * bottom of the screen when scrolling down, and show it when scrolling up.
+ *
+ * @deprecated Use {@link HideViewOnScrollBehavior} instead.
+ *     <p>TODO(b/378132394): Migrate usages of this class to {@link HideViewOnScrollBehavior}.
  */
+@Deprecated
 public class HideBottomViewOnScrollBehavior<V extends View> extends CoordinatorLayout.Behavior<V> {
 
   /**
-   * Interface definition for a listener to be notified when the bottom view scroll state
-   * changes.
+   * Interface definition for a listener to be notified when the bottom view scroll state changes.
    */
   public interface OnScrollStateChangedListener {
 
@@ -82,9 +85,8 @@ public class HideBottomViewOnScrollBehavior<V extends View> extends CoordinatorL
 
   /** State of the bottom view when it's scrolled down. */
   public static final int STATE_SCROLLED_DOWN = 1;
-  /**
-   * State of the bottom view when it's scrolled up.
-   */
+
+  /** State of the bottom view when it's scrolled up. */
   public static final int STATE_SCROLLED_UP = 2;
 
   private int height = 0;
@@ -187,7 +189,7 @@ public class HideBottomViewOnScrollBehavior<V extends View> extends CoordinatorL
    * screen.
    */
   public void slideUp(@NonNull V child) {
-    slideUp(child, /*animate=*/ true);
+    slideUp(child, /* animate= */ true);
   }
 
   /**
@@ -224,7 +226,7 @@ public class HideBottomViewOnScrollBehavior<V extends View> extends CoordinatorL
    * the screen.
    */
   public void slideDown(@NonNull V child) {
-    slideDown(child, /*animate=*/ true);
+    slideDown(child, /* animate= */ true);
   }
 
   /**

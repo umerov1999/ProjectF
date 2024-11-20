@@ -1933,4 +1933,7 @@
     <string name="single_line_elements">Single line elements</string>
     <string name="single_line_videos">Videos</string>
     <string name="single_line_photos">Photos</string>
+    <string name="auth_by_qr">Auth by qr</string>
+    <string name="auth_by_qr_error">QR code entry is not possible!</string>
+    <string name="refreshing_token">Refreshing Token…</string>
 </resources>

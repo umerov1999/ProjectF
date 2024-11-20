@@ -20,7 +20,7 @@ object UserAgentTool {
 
     private val KATE_USER_AGENT = String.format(
         Locale.US,
-        "KateMobileAndroid/%s-%s (Android %s; SDK %d; %s; %s; %s; %s)",
+        "KateMobileAndroid/%s-%d (Android %s; SDK %d; %s; %s; %s; %s)",
         Constants.KATE_APP_VERSION_NAME,
         Constants.KATE_APP_VERSION_CODE,
         Build.VERSION.RELEASE,
@@ -33,7 +33,7 @@ object UserAgentTool {
 
     private val KATE_USER_AGENT_FAKE = String.format(
         Locale.US,
-        "KateMobileAndroid/%s-%s (Android %s; SDK %d; %s; %s; %s; %s)",
+        "KateMobileAndroid/%s-%d (Android %s; SDK %d; %s; %s; %s; %s)",
         Constants.KATE_APP_VERSION_NAME,
         Constants.KATE_APP_VERSION_CODE,
         Build.VERSION.RELEASE,
@@ -46,7 +46,7 @@ object UserAgentTool {
 
     private val VK_ANDROID_USER_AGENT = String.format(
         Locale.US,
-        "VKAndroidApp/%s-%s (Android %s; SDK %d; %s; %s; %s; %s)",
+        "VKAndroidApp/%s-%d (Android %s; SDK %d; %s; %s; %s; %s)",
         Constants.VK_ANDROID_APP_VERSION_NAME,
         Constants.VK_ANDROID_APP_VERSION_CODE,
         Build.VERSION.RELEASE,
@@ -59,7 +59,7 @@ object UserAgentTool {
 
     private val VK_ANDROID_USER_AGENT_FAKE = String.format(
         Locale.US,
-        "VKAndroidApp/%s-%s (Android %s; SDK %d; %s; %s; %s; %s)",
+        "VKAndroidApp/%s-%d (Android %s; SDK %d; %s; %s; %s; %s)",
         Constants.VK_ANDROID_APP_VERSION_NAME,
         Constants.VK_ANDROID_APP_VERSION_CODE,
         Build.VERSION.RELEASE,
@@ -72,7 +72,7 @@ object UserAgentTool {
 
     private val VK_iOS_USER_AGENT_FAKE = String.format(
         Locale.US,
-        "com.vk.vkclient/%s (iPhone, iOS 16.1, iPhone11,2, Scale/3.0)",
+        "com.vk.vkclient/%d (iPhone, iOS 16.1, iPhone11,2, Scale/3.0)",
         Constants.IOS_APP_VERSION_CODE
     )
 
@@ -82,7 +82,7 @@ object UserAgentTool {
                 return when (type) {
                     AccountType.KATE_HIDDEN -> String.format(
                         Locale.US,
-                        "KateMobileAndroid/%s-%s (Android %s; SDK %d; %s; %s; %s; %s)",
+                        "KateMobileAndroid/%s-%d (Android %s; SDK %d; %s; %s; %s; %s)",
                         Constants.KATE_APP_VERSION_NAME,
                         Constants.KATE_APP_VERSION_CODE,
                         Build.VERSION.RELEASE,
@@ -95,14 +95,14 @@ object UserAgentTool {
 
                     AccountType.IOS_HIDDEN -> String.format(
                         Locale.US,
-                        "com.vk.vkclient/%s (iPhone, iOS 16.1, %s, Scale/3.0)",
+                        "com.vk.vkclient/%d (iPhone, iOS 16.1, %s, Scale/3.0)",
                         Constants.IOS_APP_VERSION_CODE,
                         device
                     )
 
                     else -> String.format(
                         Locale.US,
-                        "VKAndroidApp/%s-%s (Android %s; SDK %d; %s; %s; %s; %s)",
+                        "VKAndroidApp/%s-%d (Android %s; SDK %d; %s; %s; %s; %s)",
                         Constants.VK_ANDROID_APP_VERSION_NAME,
                         Constants.VK_ANDROID_APP_VERSION_CODE,
                         Build.VERSION.RELEASE,

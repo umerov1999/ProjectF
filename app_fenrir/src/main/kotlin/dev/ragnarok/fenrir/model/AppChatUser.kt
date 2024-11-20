@@ -5,8 +5,6 @@ import android.os.Parcelable
 import dev.ragnarok.fenrir.api.model.interfaces.IdentificableOwner
 import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.putBoolean
-import dev.ragnarok.fenrir.readTypedObjectCompat
-import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class AppChatUser : Parcelable, IdentificableOwner {
     val member: Owner?
@@ -29,11 +27,9 @@ class AppChatUser : Parcelable, IdentificableOwner {
 
     internal constructor(parcel: Parcel) {
         inviter =
-            parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!
-                .owner
+            ParcelableOwnerWrapper.readOwner(parcel)
         member =
-            parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!
-                .owner
+            ParcelableOwnerWrapper.readOwner(parcel)
         invitedBy = parcel.readLong()
         canRemove = parcel.getBoolean()
         join_date = parcel.readLong()
@@ -42,8 +38,8 @@ class AppChatUser : Parcelable, IdentificableOwner {
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
-        dest.writeTypedObjectCompat(ParcelableOwnerWrapper(inviter), flags)
-        dest.writeTypedObjectCompat(ParcelableOwnerWrapper(member), flags)
+        ParcelableOwnerWrapper.writeOwner(dest, flags, inviter)
+        ParcelableOwnerWrapper.writeOwner(dest, flags, member)
         dest.writeLong(invitedBy)
         dest.putBoolean(canRemove)
         dest.writeLong(join_date)

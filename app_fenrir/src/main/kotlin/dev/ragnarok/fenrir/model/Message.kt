@@ -127,10 +127,8 @@ class Message : AbsModel, Identificable, ISelectable {
         photo50 = parcel.readString()
         photo100 = parcel.readString()
         photo200 = parcel.readString()
-        actionUser =
-            parcel.readTypedObjectCompat(ParcelableOwnerWrapper.CREATOR)!!
-                .owner
-        sender = Owner.readOwnerFromParcel(senderId, parcel)
+        actionUser = ParcelableOwnerWrapper.readOwner(parcel)
+        sender = ParcelableOwnerWrapper.readOwner(parcel)
         randomId = parcel.readLong()
         extras = readIntStringMap(parcel)
         forwardMessagesCount = parcel.readInt()
@@ -421,8 +419,8 @@ class Message : AbsModel, Identificable, ISelectable {
         parcel.writeString(photo50)
         parcel.writeString(photo100)
         parcel.writeString(photo200)
-        parcel.writeTypedObjectCompat(ParcelableOwnerWrapper(actionUser), flags)
-        parcel.writeTypedObjectCompat(sender, flags)
+        ParcelableOwnerWrapper.writeOwner(parcel, flags, actionUser)
+        ParcelableOwnerWrapper.writeOwner(parcel, flags, sender)
         parcel.writeLong(randomId)
         writeIntStringMap(parcel, extras)
         parcel.writeInt(forwardMessagesCount)

@@ -19,7 +19,7 @@ class IMGHomingEvaluator : TypeEvaluator<IMGHoming> {
         val scale = startValue.scale + fraction * (endValue.scale - startValue.scale)
         val rotate = startValue.rotate + fraction * (endValue.rotate - startValue.rotate)
         homing?.let {
-            it[x, y, scale] = rotate
+            it.set(x, y, scale, rotate)
             return it
         } ?: run {
             IMGHoming(x, y, scale, rotate).let {

@@ -56,5 +56,6 @@
         <item name="messages_background_color">#151515</item>
         <item name="message_bubble_color">#313131</item>
         <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
+        <item name="colorSecondaryContainer">@color/m3_ref_palette_dynamic_secondary30</item>
     </style>
 </resources>

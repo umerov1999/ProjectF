@@ -156,4 +156,20 @@ internal class StoriesShortVideosApi(accountId: Long, provider: IServiceProvider
                 }
         }
     }
+
+    override fun subscribe(owner_id: Long?): Flow<Int> {
+        return provideService(IStoriesShortVideosService(), TokenType.USER)
+            .flatMapConcat {
+                it.subscribe(owner_id)
+                    .map(extractResponseWithErrorHandling())
+            }
+    }
+
+    override fun unsubscribe(owner_id: Long?): Flow<Int> {
+        return provideService(IStoriesShortVideosService(), TokenType.USER)
+            .flatMapConcat {
+                it.unsubscribe(owner_id)
+                    .map(extractResponseWithErrorHandling())
+            }
+    }
 }

@@ -69,4 +69,10 @@ interface IStoriesShortVideosApi {
         extended: Int?,
         fields: String?
     ): Flow<ShortVideosResponse>
+
+    @CheckResult
+    fun subscribe(owner_id: Long?): Flow<Int>
+
+    @CheckResult
+    fun unsubscribe(owner_id: Long?): Flow<Int>
 }

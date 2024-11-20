@@ -25,7 +25,7 @@ import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.view.CircleRoadProgress
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 
 class BigVKPhotosAdapter(
     private val mContext: Context,
@@ -126,15 +126,16 @@ class BigVKPhotosAdapter(
                 holder.current.visibility = View.VISIBLE
                 holder.current.fromRes(
                     dev.ragnarok.fenrir_common.R.raw.donater_fire,
-                    Utils.dp(100f),
-                    Utils.dp(100f),
                     intArrayOf(0xFF812E, CurrentTheme.getColorPrimary(mContext)),
                     true
                 )
-                holder.current.playAnimation()
+                holder.current.startAnimation()
             } else {
                 holder.current.visibility = View.GONE
-                holder.current.clearAnimationDrawable()
+                holder.current.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
             }
         }
         holder.setSelected(photoWrapper.isSelected)
@@ -263,7 +264,7 @@ class BigVKPhotosAdapter(
         val ivLike: ImageView = itemView.findViewById(R.id.vk_photo_item_like)
         val ivComment: ImageView = itemView.findViewById(R.id.vk_photo_item_comment)
         val ivDownload: ImageView = itemView.findViewById(R.id.is_downloaded)
-        val current: RLottieImageView = itemView.findViewById(R.id.current)
+        val current: ThorVGLottieView = itemView.findViewById(R.id.current)
         fun setSelected(selected: Boolean) {
             index.visibility = if (selected) View.VISIBLE else View.GONE
             darkView.visibility = if (selected) View.VISIBLE else View.GONE

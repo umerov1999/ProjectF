@@ -70,7 +70,7 @@ import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.PhotosViewHelper
 import dev.ragnarok.fenrir.view.WaveFormView
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import java.lang.ref.WeakReference
 import kotlin.math.abs
 
@@ -344,10 +344,10 @@ class AttachmentsViewBinder(
         }
         stickersContainer.visibility = View.VISIBLE
         if (stickersContainer.childCount == 0) {
-            val localView = RLottieImageView(mContext)
+            val localView = ThorVGLottieView(mContext)
             stickersContainer.addView(localView)
         }
-        val imageView = stickersContainer.getChildAt(0) as RLottieImageView? ?: return
+        val imageView = stickersContainer.getChildAt(0) as ThorVGLottieView? ?: return
         val sticker = stickers[0]
         val prefferedStickerSize = Utils.dpToPx(PREFFERED_STICKER_SIZE.toFloat(), mContext)
             .toInt()
@@ -369,11 +369,10 @@ class AttachmentsViewBinder(
             imageView.fromNet(
                 sticker.getAnimationByType(if (isNightSticker) "dark" else "light"),
                 Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
-                finalWidth.toInt(),
-                finalHeihgt.toInt()
+                true
             )
             stickersContainer.setOnLongClickListener {
-                imageView.replayAnimation()
+                imageView.startAnimation()
                 true
             }
         } else {

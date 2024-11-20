@@ -267,11 +267,12 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
         }
 
         override fun onBindViewHolder(holder: Holder, position: Int) {
-            holder.mGifView.fromNet(
+            holder.mGifView.fromAnimationNet(
                 data[position].ownerId.toString() + "_" + data[position].id.toString(),
                 data[position].videoPreview?.src,
                 data[position].getPreviewWithSize(PhotoSize.W, false),
-                Utils.createOkHttp(Constants.GIF_TIMEOUT, true)
+                Utils.createOkHttp(Constants.GIF_TIMEOUT, true),
+                true
             )
         }
 

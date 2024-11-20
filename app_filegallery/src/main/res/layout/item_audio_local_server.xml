@@ -21,7 +21,7 @@
             android:layout_height="42dp"
             android:contentDescription="@null" />
 
-        <dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
+        <dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieView
             android:id="@+id/item_audio_visual"
             android:layout_width="28dp"
             android:layout_height="28dp"

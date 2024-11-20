@@ -27,7 +27,7 @@ class AudioMessageDboEntity : DboEntity() {
     var was_listened = false
         private set
 
-    operator fun set(id: Int, ownerId: Long): AudioMessageDboEntity {
+    fun set(id: Int, ownerId: Long): AudioMessageDboEntity {
         this.id = id
         this.ownerId = ownerId
         return this

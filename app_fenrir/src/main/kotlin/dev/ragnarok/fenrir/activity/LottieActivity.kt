@@ -14,10 +14,9 @@ import androidx.documentfile.provider.DocumentFile
 import com.google.android.material.button.MaterialButton
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.module.BufferWriteNative
 import dev.ragnarok.fenrir.module.FenrirNative
-import dev.ragnarok.fenrir.module.rlottie.RLottie2Gif
-import dev.ragnarok.fenrir.module.rlottie.RLottie2Gif.Lottie2GifListener
+import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGLottie2Gif
+import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGLottie2Gif.Lottie2GifListener
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
@@ -26,7 +25,11 @@ import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCreamTarget
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
+import okio.BufferedSource
+import okio.buffer
+import okio.sink
+import okio.source
 import java.io.File
 
 class LottieActivity : AppCompatActivity() {
@@ -56,46 +59,40 @@ class LottieActivity : AppCompatActivity() {
                 result.data?.getStringExtra(Extra.PATH), title
             )
             toGif?.isEnabled = false
-            RLottie2Gif.create(
-                BufferWriteNative.fromStreamEndlessNull(
-                    contentResolver.openInputStream(
-                        intent.data ?: return@registerForActivityResult
-                    ) ?: return@registerForActivityResult
-                )
-            ).setListener(object : Lottie2GifListener {
-                var start: Long = 0
-                var logs: String? = null
-                override fun onStarted() {
-                    start = System.currentTimeMillis()
-                    logs = "Wait a moment...\r\n"
-                    log(logs)
-                }
+            ThorVGLottie2Gif.create(File(parentDir(), "lottie_view.json"))
+                .setListener(object : Lottie2GifListener {
+                    var start: Long = 0
+                    var logs: String? = null
+                    override fun onStarted() {
+                        start = System.currentTimeMillis()
+                        logs = "Wait a moment...\r\n"
+                        log(logs)
+                    }
 
-                @SuppressLint("SetTextI18n")
-                override fun onProgress(frame: Int, totalFrame: Int) {
-                    log(logs + "progress : " + frame + "/" + totalFrame)
-                }
+                    @SuppressLint("SetTextI18n")
+                    override fun onProgress(frame: Int, totalFrame: Int) {
+                        log(logs + "progress : " + frame + "/" + totalFrame)
+                    }
 
-                override fun onFinished() {
-                    logs =
-                        "GIF created (" + (System.currentTimeMillis() - start) + "ms)\r\n" +
-                                "Resolution : " + 500 + "x" + 500 + "\r\n" +
-                                "Path : " + file + "\r\n" +
-                                "File Size : " + file.length() / 1024 + "kb"
-                    log(logs)
-                    toGif?.post { toGif?.isEnabled = true }
-                }
-            })
+                    override fun onFinished() {
+                        logs =
+                            "GIF created (" + (System.currentTimeMillis() - start) + "ms)\r\n" +
+                                    "Resolution : " + 500 + "x" + 500 + "\r\n" +
+                                    "Path : " + file + "\r\n" +
+                                    "File Size : " + file.length() / 1024 + "kb"
+                        log(logs)
+                        toGif?.post { toGif?.isEnabled = true }
+                    }
+                })
                 .setBackgroundColor(Color.TRANSPARENT)
                 .setOutputPath(file)
                 .setSize(500, 500)
                 .setBackgroundTask(true)
-                .setDithering(false)
                 .build()
         }
     }
 
-    private var lottie: RLottieImageView? = null
+    private var lottie: ThorVGLottieView? = null
     private var lg: TextView? = null
     internal fun log(log: String?) {
         lg?.post { lg?.text = log?.trim() }
@@ -141,7 +138,30 @@ class LottieActivity : AppCompatActivity() {
         }
         if (savedInstanceState == null) {
             handleIntent(intent)
+        } else {
+            lottie?.fromFile(File(parentDir(), "lottie_view.json"), true)
+            lottie?.startAnimation()
         }
+    }
+
+    private fun parentDir(): File {
+        val file = File(cacheDir, "lottie_cache")
+        if (file.isFile) {
+            file.delete()
+        }
+        if (!file.exists()) {
+            file.mkdirs()
+        }
+        return file
+    }
+
+    private fun writeTempCacheFile(source: BufferedSource): File {
+        val file = File(parentDir(), "lottie_view.json")
+
+        file.sink().buffer().use { output ->
+            output.writeAll(source)
+        }
+        return file
     }
 
     private fun handleIntent(intent: Intent?) {
@@ -157,15 +177,14 @@ class LottieActivity : AppCompatActivity() {
         val action = intent.action
         if (Intent.ACTION_VIEW == action) {
             try {
-                lottie?.setAutoRepeat(true)
-                lottie?.fromString(
-                    BufferWriteNative.fromStreamEndlessNull(
-                        contentResolver.openInputStream(
-                            getIntent().data ?: return
-                        ) ?: return
-                    ), Utils.dp(500f), Utils.dp(500f)
+                writeTempCacheFile(
+                    (contentResolver.openInputStream(
+                        getIntent().data ?: return
+                    ) ?: return).source().buffer()
                 )
-                lottie?.playAnimation()
+
+                lottie?.fromFile(File(parentDir(), "lottie_view.json"), true)
+                lottie?.startAnimation()
             } catch (e: Throwable) {
                 e.printStackTrace()
             }

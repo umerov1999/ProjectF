@@ -38,7 +38,7 @@
 
         <include layout="@layout/dialog_about_us_content" />
 
-        <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+        <dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
             android:id="@+id/lottie_animation"
             android:layout_width="140dp"
             android:layout_height="140dp"

@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+        <dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
             android:id="@+id/lottie_animation"
             android:layout_width="180dp"
             android:layout_height="180dp"

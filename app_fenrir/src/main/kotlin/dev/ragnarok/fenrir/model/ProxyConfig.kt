@@ -24,7 +24,7 @@ class ProxyConfig : Identificable {
 
     @SerialName("pass")
     private var pass: String? = null
-    operator fun set(id: Int, address: String?, port: Int): ProxyConfig {
+    fun set(id: Int, address: String?, port: Int): ProxyConfig {
         this.id = id
         this.address = address
         this.port = port

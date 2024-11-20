@@ -700,7 +700,7 @@
     <string name="add_to_bookmarks">Добавить в закладки</string>
     <string name="remove_from_bookmarks">Убрать из закладок</string>
     <string name="notify_wall_added">Уведомлять о записях</string>
-    <string name="unnotify_wall_added">Неуведомлять о записях</string>
+    <string name="unnotify_wall_added">Не уведомлять о записях</string>
     <string name="loading">Загрузка</string>
     <string name="all_friends">Все друзья</string>
     <string name="share_link">Поделиться ссылкой</string>
@@ -1695,4 +1695,7 @@
     <string name="single_line_elements">Однострочные элементы</string>
     <string name="single_line_videos">Видео</string>
     <string name="single_line_photos">Фото</string>
+    <string name="auth_by_qr">Вход по qr</string>
+    <string name="auth_by_qr_error">Вход по qr не возможен!</string>
+    <string name="refreshing_token">Перевыпуск токена…</string>
 </resources>

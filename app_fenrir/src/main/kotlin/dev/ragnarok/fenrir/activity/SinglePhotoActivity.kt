@@ -46,7 +46,7 @@ import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.CircleCounterButton
 import dev.ragnarok.fenrir.view.TouchImageView
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import dev.ragnarok.fenrir.view.pager.WeakPicassoLoadCallback
 import java.io.File
 import java.lang.ref.WeakReference
@@ -232,7 +232,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
         val reload: FloatingActionButton
         private val mPicassoLoadCallback: WeakPicassoLoadCallback
         val photo: TouchImageView
-        val progress: RLottieImageView
+        val progress: ThorVGLottieView
         var animationDispose = CancelableJob()
         private var mAnimationLoaded = false
         private var mLoadingNow = false
@@ -258,13 +258,19 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                 val k = ObjectAnimator.ofFloat(progress, View.ALPHA, 0.0f).setDuration(1000)
                 k.addListener(object : StubAnimatorListener() {
                     override fun onAnimationEnd(animation: Animator) {
-                        progress.clearAnimationDrawable()
+                        progress.clearAnimationDrawable(
+                            callSuper = true, clearState = true,
+                            cancelTask = true
+                        )
                         progress.visibility = View.GONE
                         progress.alpha = 1f
                     }
 
                     override fun onAnimationCancel(animation: Animator) {
-                        progress.clearAnimationDrawable()
+                        progress.clearAnimationDrawable(
+                            callSuper = true, clearState = true,
+                            cancelTask = true
+                        )
                         progress.visibility = View.GONE
                         progress.alpha = 1f
                     }
@@ -272,7 +278,10 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                 k.start()
             } else if (mAnimationLoaded && !mLoadingNow) {
                 mAnimationLoaded = false
-                progress.clearAnimationDrawable()
+                progress.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
                 progress.visibility = View.GONE
             } else if (mLoadingNow) {
                 animationDispose += delayTaskFlow(300).toMain {
@@ -280,8 +289,6 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                     progress.visibility = View.VISIBLE
                     progress.fromRes(
                         dev.ragnarok.fenrir_common.R.raw.loading,
-                        Utils.dp(100F),
-                        Utils.dp(100F),
                         intArrayOf(
                             0x000000,
                             CurrentTheme.getColorPrimary(ref.get()),
@@ -289,7 +296,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                             CurrentTheme.getColorSecondary(ref.get())
                         )
                     )
-                    progress.playAnimation()
+                    progress.startAnimation()
                 }
             }
         }

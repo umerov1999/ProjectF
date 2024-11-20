@@ -61,12 +61,6 @@ unique_ptr<Scene> Scene::gen() noexcept
 }
 
 
-TVG_DEPRECATED uint32_t Scene::identifier() noexcept
-{
-    return (uint32_t) Type::Scene;
-}
-
-
 Type Scene::type() const noexcept
 {
     return Type::Scene;
@@ -81,12 +75,6 @@ Result Scene::push(unique_ptr<Paint> paint) noexcept
     pImpl->paints.push_back(p);
 
     return Result::Success;
-}
-
-
-Result Scene::reserve(TVG_UNUSED uint32_t size) noexcept
-{
-    return Result::NonSupport;
 }
 
 
@@ -117,7 +105,11 @@ Result Scene::push(SceneEffect effect, ...) noexcept
 
     switch (effect) {
         case SceneEffect::GaussianBlur: {
-            re = RenderEffectGaussian::gen(args);
+            re = RenderEffectGaussianBlur::gen(args);
+            break;
+        }
+        case SceneEffect::DropShadow: {
+            re = RenderEffectDropShadow::gen(args);
             break;
         }
         default: break;

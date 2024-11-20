@@ -3,18 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_proxy"
-        android:title="@string/button_proxy"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/action_preferences"
-        android:title="@string/button_settings"
+        android:id="@+id/auth_by_qr"
+        android:icon="@drawable/qr_code"
+        android:title="@string/auth_by_qr"
+        app:iconTint="?colorOnSurface"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/import_accounts"
-        android:title="@string/import_accounts" />
+        android:title="@string/import_accounts"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_proxy"
+        android:title="@string/button_proxy" />
+
+    <item
+        android:id="@+id/action_preferences"
+        android:title="@string/button_settings" />
 
     <item
         android:id="@+id/export_accounts"

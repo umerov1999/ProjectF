@@ -47,7 +47,7 @@ class AudioDboEntity : DboEntity() {
     var isHq = false
         private set
 
-    operator fun set(id: Int, ownerId: Long): AudioDboEntity {
+    fun set(id: Int, ownerId: Long): AudioDboEntity {
         this.id = id
         this.ownerId = ownerId
         return this

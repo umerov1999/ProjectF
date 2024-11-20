@@ -10,7 +10,6 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.putBoolean
 import dev.ragnarok.fenrir.readTypedObjectCompat
-import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
 import dev.ragnarok.fenrir.writeTypedObjectCompat
@@ -52,10 +51,7 @@ class Dialog : IdentificableOwner, Parcelable {
         photo100 = parcel.readString()
         photo200 = parcel.readString()
         message = parcel.readTypedObjectCompat(Message.CREATOR)
-        val interlocutorIsNull = parcel.getBoolean()
-        if (!interlocutorIsNull) {
-            interlocutor = Owner.readOwnerFromParcel(parcel)
-        }
+        interlocutor = ParcelableOwnerWrapper.readOwner(parcel)
         lastMessageId = parcel.readInt()
         inRead = parcel.readInt()
         outRead = parcel.readInt()
@@ -268,10 +264,7 @@ class Dialog : IdentificableOwner, Parcelable {
         dest.writeString(photo100)
         dest.writeString(photo200)
         dest.writeTypedObjectCompat(message, flags)
-        dest.writeInt(if (interlocutor == null) 1 else 0)
-        interlocutor.requireNonNull {
-            Owner.writeOwnerToParcel(it, dest, flags)
-        }
+        ParcelableOwnerWrapper.writeOwner(dest, flags, interlocutor)
         dest.writeInt(lastMessageId)
         dest.writeInt(inRead)
         dest.writeInt(outRead)

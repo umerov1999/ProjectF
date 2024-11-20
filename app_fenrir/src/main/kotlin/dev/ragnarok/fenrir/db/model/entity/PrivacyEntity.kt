@@ -12,7 +12,7 @@ class PrivacyEntity {
     var entries: List<Entry>? = null
         private set
 
-    operator fun set(type: String?, entries: List<Entry>?): PrivacyEntity {
+    fun set(type: String?, entries: List<Entry>?): PrivacyEntity {
         this.type = type
         this.entries = entries
         return this
@@ -30,7 +30,7 @@ class PrivacyEntity {
         var isAllowed = false
             private set
 
-        operator fun set(type: Int, id: Long, allowed: Boolean): Entry {
+        fun set(type: Int, id: Long, allowed: Boolean): Entry {
             this.type = type
             this.id = id
             isAllowed = allowed

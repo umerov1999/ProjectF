@@ -66,7 +66,7 @@ import dev.ragnarok.fenrir.util.hls.M3U8
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.WeakViewAnimatorAdapter
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 
 class AudioRecyclerAdapter(
     context: Context,
@@ -843,7 +843,7 @@ class AudioRecyclerAdapter(
         val title: TextView = itemView.findViewById(R.id.dialog_message)
         val play: View = itemView.findViewById(R.id.item_audio_play)
         val play_cover: ImageView = itemView.findViewById(R.id.item_audio_play_cover)
-        val visual: RLottieImageView = itemView.findViewById(R.id.item_audio_visual)
+        val visual: ThorVGLottieView = itemView.findViewById(R.id.item_audio_visual)
         val time: TextView = itemView.findViewById(R.id.item_audio_time)
         val saved: ImageView = itemView.findViewById(R.id.saved)
         val lyric: ImageView = itemView.findViewById(R.id.lyric)

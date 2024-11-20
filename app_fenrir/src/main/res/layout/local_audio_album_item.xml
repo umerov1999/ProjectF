@@ -61,7 +61,7 @@
 
         </LinearLayout>
 
-        <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+        <dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
             android:id="@+id/selected"
             android:layout_width="120dp"
             android:layout_height="120dp"

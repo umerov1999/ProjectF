@@ -113,7 +113,7 @@
         android:padding="16dp"
         android:text="@string/list_is_empty" />
 
-    <dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+    <dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
         android:id="@+id/loading_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

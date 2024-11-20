@@ -17,7 +17,6 @@ import androidx.core.graphics.ColorUtils
 import androidx.media3.common.MediaItem
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import dev.ragnarok.fenrir.module.rlottie.RLottieDrawable
 import dev.ragnarok.filegallery.BuildConfig
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.R
@@ -25,7 +24,7 @@ import dev.ragnarok.filegallery.media.exo.OkHttpDataSource
 import dev.ragnarok.filegallery.model.Lang
 import dev.ragnarok.filegallery.settings.Settings.get
 import dev.ragnarok.filegallery.util.AppTextUtils.updateDateLang
-import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieView
 import dev.ragnarok.filegallery.view.pager.*
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -209,28 +208,26 @@ object Utils {
         }
     }
 
-    fun doWavesLottie(visual: RLottieImageView, Play: Boolean) {
-        visual.clearAnimationDrawable()
+    fun doWavesLottie(visual: ThorVGLottieView?, Play: Boolean) {
         if (Play) {
-            visual.setAutoRepeat(true)
-            visual.fromRes(R.raw.waves, dp(28f), dp(28f))
+            visual?.setRepeat(true)
+            visual?.fromRes(R.raw.waves)
         } else {
-            visual.setAutoRepeat(false)
-            visual.fromRes(R.raw.waves_end, dp(28f), dp(28f))
+            visual?.setRepeat(false)
+            visual?.fromRes(R.raw.waves_end)
         }
-        visual.playAnimation()
+        visual?.startAnimation()
     }
 
-    fun doWavesLottieBig(visual: RLottieImageView, Play: Boolean) {
-        visual.clearAnimationDrawable()
+    fun doWavesLottieBig(visual: ThorVGLottieView?, Play: Boolean) {
         if (Play) {
-            visual.setAutoRepeat(true)
-            visual.fromRes(R.raw.s_waves, dp(128f), dp(128f))
+            visual?.setRepeat(true)
+            visual?.fromRes(R.raw.s_waves)
         } else {
-            visual.setAutoRepeat(false)
-            visual.fromRes(R.raw.s_waves_end, dp(128f), dp(128f))
+            visual?.setRepeat(false)
+            visual?.fromRes(R.raw.s_waves_end)
         }
-        visual.playAnimation()
+        visual?.startAnimation()
     }
 
     fun isColorDark(color: Int): Boolean {
@@ -263,7 +260,6 @@ object Utils {
             }
         }
         if (display != null) {
-            RLottieDrawable.updateScreenRefreshRate(display.refreshRate.toInt())
             val configuration = context.resources.configuration
             if (configuration.screenWidthDp != Configuration.SCREEN_WIDTH_DP_UNDEFINED) {
                 val newSize = ceil((configuration.screenWidthDp * density).toDouble())

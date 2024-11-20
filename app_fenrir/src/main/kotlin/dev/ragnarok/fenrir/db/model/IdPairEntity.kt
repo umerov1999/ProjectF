@@ -12,7 +12,7 @@ class IdPairEntity {
     var ownerId = 0L
         private set
 
-    operator fun set(id: Int, ownerId: Long): IdPairEntity {
+    fun set(id: Int, ownerId: Long): IdPairEntity {
         this.id = id
         this.ownerId = ownerId
         return this

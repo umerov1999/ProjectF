@@ -56,6 +56,8 @@ interface ISettings {
 
         fun loadAccounts(refresh: Boolean)
 
+        var anonymToken: AnonymToken
+
         companion object {
             const val INVALID_ID = -1L
         }

@@ -65,11 +65,10 @@ import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.Utils.dp
 import dev.ragnarok.fenrir.util.Utils.getVerifiedColor
 import dev.ragnarok.fenrir.util.Utils.setBackgroundTint
 import dev.ragnarok.fenrir.view.ProfileCoverDrawable
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import kotlin.math.abs
 
 class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(), IGroupWallView {
@@ -136,7 +135,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         val donate_anim = Settings.get().main().donate_anim_set
         if (donate_anim > 0 && community.isDonated) {
             mHeaderHolder?.bDonate?.visibility = View.VISIBLE
-            mHeaderHolder?.bDonate?.setAutoRepeat(true)
+            mHeaderHolder?.bDonate?.setRepeat(true)
             if (donate_anim == 2) {
                 val cur = Settings.get().ui().mainThemeKey
                 if ("fire" == cur || "yellow_violet" == cur) {
@@ -145,8 +144,6 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
                     setBackgroundTint(mHeaderHolder?.ivVerified, "#df9d00".toColor())
                     mHeaderHolder?.bDonate?.fromRes(
                         dev.ragnarok.fenrir_common.R.raw.donater_fire,
-                        dp(100f),
-                        dp(100f)
                     )
                 } else {
                     mHeaderHolder?.tvName?.setTextColor(CurrentTheme.getColorPrimary(requireActivity()))
@@ -161,8 +158,6 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
                     )
                     mHeaderHolder?.bDonate?.fromRes(
                         dev.ragnarok.fenrir_common.R.raw.donater_fire,
-                        dp(100f),
-                        dp(100f),
                         intArrayOf(0xFF812E, CurrentTheme.getColorPrimary(requireActivity())),
                         true
                     )
@@ -170,8 +165,6 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
             } else {
                 mHeaderHolder?.bDonate?.fromRes(
                     dev.ragnarok.fenrir_common.R.raw.donater,
-                    dp(100f),
-                    dp(100f),
                     intArrayOf(
                         0xffffff,
                         CurrentTheme.getColorPrimary(requireActivity()),
@@ -180,7 +173,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
                     )
                 )
             }
-            mHeaderHolder?.bDonate?.playAnimation()
+            mHeaderHolder?.bDonate?.startAnimation()
         } else {
             mHeaderHolder?.bDonate?.setImageDrawable(null)
             mHeaderHolder?.bDonate?.visibility = View.GONE
@@ -212,20 +205,18 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         if (community.isBlacklisted) {
             mHeaderHolder?.blacklisted?.visibility = View.VISIBLE
             if (FenrirNative.isNativeLoaded) {
-                mHeaderHolder?.blacklisted?.fromRes(
-                    dev.ragnarok.fenrir_common.R.raw.skull,
-                    dp(48f),
-                    dp(48f),
-                    null
-                )
-                mHeaderHolder?.blacklisted?.playAnimation()
+                mHeaderHolder?.blacklisted?.fromRes(dev.ragnarok.fenrir_common.R.raw.skull)
+                mHeaderHolder?.blacklisted?.startAnimation()
             } else {
                 mHeaderHolder?.blacklisted?.setImageResource(R.drawable.audio_died)
                 mHeaderHolder?.blacklisted?.setColorFilter("#AAFF0000".toColor())
             }
         } else {
             mHeaderHolder?.blacklisted?.visibility = View.GONE
-            mHeaderHolder?.blacklisted?.clearAnimationDrawable()
+            mHeaderHolder?.blacklisted?.clearAnimationDrawable(
+                callSuper = true, clearState = true,
+                cancelTask = true
+            )
         }
         mHeaderHolder?.blacklisted?.visibility =
             if (community.isBlacklisted) View.VISIBLE else View.GONE
@@ -569,11 +560,11 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
     }
 
     private inner class GroupHeaderHolder(root: View) {
-        val blacklisted: RLottieImageView = root.findViewById(R.id.item_blacklisted)
+        val blacklisted: ThorVGLottieView = root.findViewById(R.id.item_blacklisted)
         val vgCover: ViewGroup = root.findViewById(R.id.cover)
         val ivAvatar: ImageView = root.findViewById(R.id.header_group_avatar)
         val ivVerified: ImageView = root.findViewById(R.id.item_verified)
-        val bDonate: RLottieImageView = root.findViewById(R.id.donated_anim)
+        val bDonate: ThorVGLottieView = root.findViewById(R.id.donated_anim)
         val tvName: TextView = root.findViewById(R.id.header_group_name)
         val tvStatus: TextView = root.findViewById(R.id.header_group_status)
         val tvAudioStatus: ImageView = root.findViewById(R.id.fragment_group_audio)
@@ -599,7 +590,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         val mFiltersAdapter: HorizontalOptionsAdapter<PostFilter>
         val mMenuAdapter: HorizontalMenuAdapter
         val menuList: RecyclerView = root.findViewById(R.id.menu_recyclerview)
-        val paganSymbol: RLottieImageView = root.findViewById(R.id.pagan_symbol)
+        val paganSymbol: ThorVGLottieView = root.findViewById(R.id.pagan_symbol)
         val Runes: View = root.findViewById(R.id.runes_container)
 
         init {

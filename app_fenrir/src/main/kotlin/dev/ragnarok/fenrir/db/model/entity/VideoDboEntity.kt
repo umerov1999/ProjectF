@@ -85,7 +85,7 @@ class VideoDboEntity : DboEntity() {
     var trailer: String? = null
         private set
 
-    operator fun set(id: Int, ownerId: Long): VideoDboEntity {
+    fun set(id: Int, ownerId: Long): VideoDboEntity {
         this.id = id
         this.ownerId = ownerId
         return this

@@ -4,7 +4,7 @@ import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.AccessIdPair
 import dev.ragnarok.fenrir.api.model.VKApiStory
-import dev.ragnarok.fenrir.api.model.response.StoryBlockResponce
+import dev.ragnarok.fenrir.api.model.response.StoryBlockResponse
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.IStoriesShortVideosInteractor
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model
@@ -64,7 +64,7 @@ class StoriesShortVideosInteractor(
         }
     }
 
-    private fun parseStoryBlock(resp: StoryBlockResponce, dtos: MutableList<VKApiStory>) {
+    private fun parseStoryBlock(resp: StoryBlockResponse, dtos: MutableList<VKApiStory>) {
         resp.stories.nonNullNoEmpty {
             parseParentStory(it, dtos)
             dtos.addAll(it)
@@ -221,5 +221,17 @@ class StoriesShortVideosInteractor(
                 }
                 Pair(dbos, nextFrom)
             }
+    }
+
+    override fun subscribe(accountId: Long, owner_id: Long): Flow<Int> {
+        return networker.vkDefault(accountId)
+            .stories()
+            .subscribe(owner_id)
+    }
+
+    override fun unsubscribe(accountId: Long, owner_id: Long): Flow<Int> {
+        return networker.vkDefault(accountId)
+            .stories()
+            .unsubscribe(owner_id)
     }
 }

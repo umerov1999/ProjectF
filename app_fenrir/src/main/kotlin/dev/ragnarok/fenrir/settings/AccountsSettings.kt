@@ -7,6 +7,7 @@ import de.maxr1998.modernpreferences.PreferenceScreen.Companion.getPreferences
 import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Includes.pushRegistrationResolver
+import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.ISettings.IAccountsSettings
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.createPublishSubject
@@ -259,6 +260,23 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
             }
         }
     }
+
+    override var anonymToken: AnonymToken
+        get() {
+            val ret = getPreferences(app).getString("anonym_token_json", null)
+            return if (ret == null) {
+                AnonymToken()
+            } else {
+                kJson.decodeFromString(AnonymToken.serializer(), ret)
+            }
+        }
+        set(settings) {
+            getPreferences(app).edit()
+                .putString(
+                    "anonym_token_json",
+                    kJson.encodeToString(AnonymToken.serializer(), settings)
+                ).apply()
+        }
 
     companion object {
         private const val KEY_ACCOUNT_UIDS = "account_uids"

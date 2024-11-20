@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.30.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.31.0 FATAL_ERROR)
 project(fenrir_jni C CXX ASM)
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
@@ -64,6 +64,15 @@ add_library(thorvg STATIC
         animation/thorvg/src/renderer/tvgTaskScheduler.cpp
         animation/thorvg/src/renderer/tvgText.cpp
         animation/thorvg/src/renderer/tvgWgCanvas.cpp
+        animation/thorvg/src/loaders/lottie/tvgLottieAnimation.cpp
+        animation/thorvg/src/loaders/lottie/tvgLottieBuilder.cpp
+        animation/thorvg/src/loaders/lottie/tvgLottieExpressions.cpp
+        animation/thorvg/src/loaders/lottie/tvgLottieInterpolator.cpp
+        animation/thorvg/src/loaders/lottie/tvgLottieLoader.cpp
+        animation/thorvg/src/loaders/lottie/tvgLottieModel.cpp
+        animation/thorvg/src/loaders/lottie/tvgLottieModifier.cpp
+        animation/thorvg/src/loaders/lottie/tvgLottieParser.cpp
+        animation/thorvg/src/loaders/lottie/tvgLottieParserHandler.cpp
         animation/thorvg/src/loaders/raw/tvgRawLoader.cpp
         animation/thorvg/src/loaders/svg/tvgSvgCssStyle.cpp
         animation/thorvg/src/loaders/svg/tvgSvgLoader.cpp
@@ -76,56 +85,15 @@ add_library(thorvg STATIC
         animation/thorvg/src/common/tvgStr.cpp)
 
 target_compile_options(thorvg PRIVATE
-        -DTVG_STATIC=1 -fno-exceptions -ffast-math ${OPTIMIZE_NORMAL} -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -Woverloaded-virtual -Wno-unused-parameter -Wno-nan-infinity-disabled ${SYM_VISIBILITY})
+        -DTVG_STATIC=1 -DBIG_ENDIAN_COLORS -fno-exceptions -ffast-math ${OPTIMIZE_NORMAL} -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -Woverloaded-virtual -Wno-unused-parameter -Wno-nan-infinity-disabled ${SYM_VISIBILITY})
 target_include_directories(thorvg PRIVATE
         animation/thorvg/inc
         animation/thorvg/src/renderer
         animation/thorvg/src/renderer/sw_engine
+        animation/thorvg/src/loaders/lottie
         animation/thorvg/src/loaders/raw
         animation/thorvg/src/loaders/svg
         animation/thorvg/src/common)
-
-add_library(rlottie STATIC
-        animation/rlottie/src/lottie/lottieanimation.cpp
-        animation/rlottie/src/lottie/lottieitem.cpp
-        animation/rlottie/src/lottie/lottiekeypath.cpp
-        animation/rlottie/src/lottie/lottieloader.cpp
-        animation/rlottie/src/lottie/lottiemodel.cpp
-        animation/rlottie/src/lottie/lottieparser.cpp
-        animation/rlottie/src/lottie/lottieitem_capi.cpp
-        animation/rlottie/src/vector/freetype/v_ft_math.cpp
-        animation/rlottie/src/vector/freetype/v_ft_raster.cpp
-        animation/rlottie/src/vector/freetype/v_ft_stroker.cpp
-        animation/rlottie/src/vector/stb/stb_image.cpp
-        animation/rlottie/src/vector/vbezier.cpp
-        animation/rlottie/src/vector/vbitmap.cpp
-        animation/rlottie/src/vector/vbrush.cpp
-        animation/rlottie/src/vector/varenaalloc.cpp
-        animation/rlottie/src/vector/vdasher.cpp
-        animation/rlottie/src/vector/vdebug.cpp
-        animation/rlottie/src/vector/vdrawable.cpp
-        animation/rlottie/src/vector/vdrawhelper.cpp
-        animation/rlottie/src/vector/vdrawhelper_sse2.cpp
-        animation/rlottie/src/vector/vdrawhelper_neon.cpp
-        animation/rlottie/src/vector/vdrawhelper_common.cpp
-        animation/rlottie/src/vector/velapsedtimer.cpp
-        animation/rlottie/src/vector/vimageloader.cpp
-        animation/rlottie/src/vector/vinterpolator.cpp
-        animation/rlottie/src/vector/vmatrix.cpp
-        animation/rlottie/src/vector/vpainter.cpp
-        animation/rlottie/src/vector/vpath.cpp
-        animation/rlottie/src/vector/vpathmesure.cpp
-        animation/rlottie/src/vector/vraster.cpp
-        animation/rlottie/src/vector/vrect.cpp
-        animation/rlottie/src/vector/vrle.cpp)
-target_compile_options(rlottie PRIVATE
-        -fno-exceptions -ffast-math ${OPTIMIZE_NORMAL} -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -Woverloaded-virtual -Wno-unused-parameter -Wno-nan-infinity-disabled ${SYM_VISIBILITY})
-target_include_directories(rlottie PRIVATE
-        animation/rlottie/inc
-        animation/rlottie/src/vector
-        animation/rlottie/src/vector/pixman
-        animation/rlottie/src/vector/freetype
-        animation/rlottie/src/vector/stb)
 
 add_library(libyuv STATIC
         animation/libyuv/source/compare.cc
@@ -164,6 +132,7 @@ add_library(libyuv STATIC
         animation/libyuv/source/row_neon64.cc
         animation/libyuv/source/row_neon.cc
         animation/libyuv/source/row_rvv.cc
+        animation/libyuv/source/row_sme.cc
         animation/libyuv/source/row_sve.cc
         animation/libyuv/source/scale_any.cc
         animation/libyuv/source/scale_argb.cc
@@ -176,6 +145,7 @@ add_library(libyuv STATIC
         animation/libyuv/source/scale_neon.cc
         animation/libyuv/source/scale_rgb.cc
         animation/libyuv/source/scale_rvv.cc
+        animation/libyuv/source/scale_sme.cc
         animation/libyuv/source/scale_uv.cc
         animation/libyuv/source/video_common.cc)
 target_compile_options(libyuv PRIVATE -ffast-math ${OPTIMIZE_NORMAL} -funroll-loops -fno-strict-aliasing -fno-math-errno ${SYM_VISIBILITY})
@@ -487,7 +457,6 @@ target_compile_options(common PRIVATE
 add_library(fenrir_jni
         SHARED
         jni_call.cpp
-        animation/lottie_jni.cpp
         animation/thorvg_jni.cpp
         animation/animation_jni.cpp
         animation/image_processing_util_jni.cpp
@@ -511,7 +480,6 @@ add_library(fenrir_jni
 target_include_directories(fenrir_jni
         PRIVATE
         ./
-        animation/rlottie/inc
         animation/thorvg/inc
         animation/libyuv/include
         compress/lz4
@@ -544,7 +512,6 @@ target_link_libraries(fenrir_jni
         PRIVATE swresample ${LTO_LINK}
         PRIVATE avutil ${LTO_LINK}
         PRIVATE common ${LTO_LINK}
-        PRIVATE rlottie ${LTO_LINK}
         PRIVATE thorvg ${LTO_LINK}
         PRIVATE libyuv ${LTO_LINK}
         PRIVATE opus ${LTO_LINK})

@@ -37,13 +37,13 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 
 class LocalJsonToChatFragment :
     PlaceSupportMvpFragment<LocalJsonToChatPresenter, ILocalJsonToChatView>(), ILocalJsonToChatView,
     OnMessageActionListener {
     private var mEmpty: TextView? = null
-    private var mLoadingProgressBar: RLottieImageView? = null
+    private var mLoadingProgressBar: ThorVGLottieView? = null
     private var mLoadingProgressBarDispose = CancelableJob()
     private var mLoadingProgressBarLoaded = false
     private var mAdapter: MessagesAdapter? = null
@@ -225,13 +225,19 @@ class LocalJsonToChatFragment :
             val k = ObjectAnimator.ofFloat(mLoadingProgressBar, View.ALPHA, 0.0f).setDuration(1000)
             k.addListener(object : StubAnimatorListener() {
                 override fun onAnimationEnd(animation: Animator) {
-                    mLoadingProgressBar?.clearAnimationDrawable()
+                    mLoadingProgressBar?.clearAnimationDrawable(
+                        callSuper = true, clearState = true,
+                        cancelTask = true
+                    )
                     mLoadingProgressBar?.visibility = View.GONE
                     mLoadingProgressBar?.alpha = 1f
                 }
 
                 override fun onAnimationCancel(animation: Animator) {
-                    mLoadingProgressBar?.clearAnimationDrawable()
+                    mLoadingProgressBar?.clearAnimationDrawable(
+                        callSuper = true, clearState = true,
+                        cancelTask = true
+                    )
                     mLoadingProgressBar?.visibility = View.GONE
                     mLoadingProgressBar?.alpha = 1f
                 }
@@ -243,8 +249,6 @@ class LocalJsonToChatFragment :
                 mLoadingProgressBar?.visibility = View.VISIBLE
                 mLoadingProgressBar?.fromRes(
                     dev.ragnarok.fenrir_common.R.raw.loading,
-                    Utils.dp(100F),
-                    Utils.dp(100F),
                     intArrayOf(
                         0x000000,
                         CurrentTheme.getColorPrimary(requireActivity()),
@@ -252,7 +256,7 @@ class LocalJsonToChatFragment :
                         CurrentTheme.getColorSecondary(requireActivity())
                     )
                 )
-                mLoadingProgressBar?.playAnimation()
+                mLoadingProgressBar?.startAnimation()
             }
         }
     }

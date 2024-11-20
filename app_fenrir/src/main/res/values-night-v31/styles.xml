@@ -73,5 +73,6 @@
         <item name="chat_background_runes">@drawable/runes_dark</item>
         <item name="buttonAddPhotoBackground">@drawable/background_rectangle_dash</item>
         <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
+        <item name="colorSecondaryContainer">@color/m3_ref_palette_dynamic_secondary30</item>
     </style>
 </resources>

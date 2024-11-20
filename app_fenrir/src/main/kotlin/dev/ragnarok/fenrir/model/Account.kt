@@ -4,7 +4,6 @@ import android.os.Parcel
 import android.os.Parcelable
 import dev.ragnarok.fenrir.api.model.interfaces.IdentificableOwner
 import dev.ragnarok.fenrir.readTypedObjectCompat
-import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class Account : Parcelable, IdentificableOwner {
     private val id: Long
@@ -29,7 +28,7 @@ class Account : Parcelable, IdentificableOwner {
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeLong(id)
-        dest.writeTypedObjectCompat(ParcelableOwnerWrapper(owner), flags)
+        ParcelableOwnerWrapper.writeOwner(dest, flags, owner)
     }
 
     override fun equals(other: Any?): Boolean {

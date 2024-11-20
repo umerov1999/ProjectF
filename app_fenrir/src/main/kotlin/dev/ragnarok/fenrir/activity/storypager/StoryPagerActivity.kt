@@ -74,7 +74,7 @@ import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.CircleCounterButton
 import dev.ragnarok.fenrir.view.ExpandableSurfaceView
 import dev.ragnarok.fenrir.view.TouchImageView
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import dev.ragnarok.fenrir.view.pager.WeakPicassoLoadCallback
 import java.lang.ref.WeakReference
 import java.util.Calendar
@@ -126,18 +126,19 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                 if (stateSpeed) CurrentTheme.getColorPrimary(this) else "#ffffff".toColor()
             )
         }
-        val mHelper = findViewById<RLottieImageView?>(R.id.swipe_helper)
+        val mHelper = findViewById<ThorVGLottieView?>(R.id.swipe_helper)
         if (HelperSimple.needHelp(HelperSimple.STORY_HELPER, 2)) {
             mHelper?.visibility = View.VISIBLE
             mHelper?.fromRes(
                 dev.ragnarok.fenrir_common.R.raw.story_guide_hand_swipe,
-                Utils.dp(500F),
-                Utils.dp(500F),
                 intArrayOf(0x333333, CurrentTheme.getColorSecondary(this))
             )
-            mHelper?.playAnimation()
+            mHelper?.startAnimation()
             helpDisposable += delayTaskFlow(5000).toMain {
-                mHelper?.clearAnimationDrawable()
+                mHelper?.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
                 mHelper?.visibility = View.GONE
             }
         } else {
@@ -452,7 +453,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
 
     private inner class Holder(rootView: View) : MultiHolder(rootView), SurfaceHolder.Callback {
         val mSurfaceView: ExpandableSurfaceView = rootView.findViewById(R.id.videoSurface)
-        val mProgressBar: RLottieImageView
+        val mProgressBar: ThorVGLottieView
         override var isSurfaceReady = false
         override fun surfaceCreated(holder: SurfaceHolder) {
             isSurfaceReady = true
@@ -469,8 +470,6 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
             if (visible) {
                 mProgressBar.fromRes(
                     dev.ragnarok.fenrir_common.R.raw.loading,
-                    Utils.dp(100F),
-                    Utils.dp(100F),
                     intArrayOf(
                         0x000000,
                         CurrentTheme.getColorPrimary(this@StoryPagerActivity),
@@ -478,9 +477,12 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                         CurrentTheme.getColorSecondary(this@StoryPagerActivity)
                     )
                 )
-                mProgressBar.playAnimation()
+                mProgressBar.startAnimation()
             } else {
-                mProgressBar.clearAnimationDrawable()
+                mProgressBar.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
             }
         }
 
@@ -504,7 +506,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         val reload: FloatingActionButton
         private val mPicassoLoadCallback: WeakPicassoLoadCallback
         val photo: TouchImageView
-        val progress: RLottieImageView
+        val progress: ThorVGLottieView
         var animationDispose = CancelableJob()
         private var mAnimationLoaded = false
         private var mLoadingNow = false
@@ -540,13 +542,19 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                 val k = ObjectAnimator.ofFloat(progress, View.ALPHA, 0.0f).setDuration(1000)
                 k.addListener(object : StubAnimatorListener() {
                     override fun onAnimationEnd(animation: Animator) {
-                        progress.clearAnimationDrawable()
+                        progress.clearAnimationDrawable(
+                            callSuper = true, clearState = true,
+                            cancelTask = true
+                        )
                         progress.visibility = View.GONE
                         progress.alpha = 1f
                     }
 
                     override fun onAnimationCancel(animation: Animator) {
-                        progress.clearAnimationDrawable()
+                        progress.clearAnimationDrawable(
+                            callSuper = true, clearState = true,
+                            cancelTask = true
+                        )
                         progress.visibility = View.GONE
                         progress.alpha = 1f
                     }
@@ -554,7 +562,10 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                 k.start()
             } else if (mAnimationLoaded && !mLoadingNow) {
                 mAnimationLoaded = false
-                progress.clearAnimationDrawable()
+                progress.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
                 progress.visibility = View.GONE
             } else if (mLoadingNow) {
                 animationDispose += delayTaskFlow(300).toMain {
@@ -562,8 +573,6 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                     progress.visibility = View.VISIBLE
                     progress.fromRes(
                         dev.ragnarok.fenrir_common.R.raw.loading,
-                        Utils.dp(100F),
-                        Utils.dp(100F),
                         intArrayOf(
                             0x000000,
                             CurrentTheme.getColorPrimary(this@StoryPagerActivity),
@@ -571,7 +580,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                             CurrentTheme.getColorSecondary(this@StoryPagerActivity)
                         )
                     )
-                    progress.playAnimation()
+                    progress.startAnimation()
                 }
             }
         }

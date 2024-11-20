@@ -66,7 +66,6 @@ import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.InputTextDialog
 import dev.ragnarok.fenrir.util.UserInfoResolveUtil
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.Utils.dp
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
 import dev.ragnarok.fenrir.util.Utils.getVerifiedColor
 import dev.ragnarok.fenrir.util.Utils.setBackgroundTint
@@ -74,7 +73,7 @@ import dev.ragnarok.fenrir.util.ViewUtils.getOnlineIcon
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.OnlineView
 import dev.ragnarok.fenrir.view.ProfileCoverDrawable
-import dev.ragnarok.fenrir.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import java.io.File
 
 class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IUserWallView {
@@ -156,18 +155,14 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         val donate_anim = Settings.get().main().donate_anim_set
         if (donate_anim > 0 && user.isDonated) {
             mHeaderHolder?.bDonate?.visibility = View.VISIBLE
-            mHeaderHolder?.bDonate?.setAutoRepeat(true)
+            mHeaderHolder?.bDonate?.setRepeat(true)
             if (donate_anim == 2) {
                 val cur = Settings.get().ui().mainThemeKey
                 if ("fire" == cur || "yellow_violet" == cur) {
                     mHeaderHolder?.tvName?.setTextColor("#df9d00".toColor())
                     mHeaderHolder?.tvScreenName?.setTextColor("#df9d00".toColor())
                     setBackgroundTint(mHeaderHolder?.ivVerified, "#df9d00".toColor())
-                    mHeaderHolder?.bDonate?.fromRes(
-                        dev.ragnarok.fenrir_common.R.raw.donater_fire,
-                        dp(100f),
-                        dp(100f)
-                    )
+                    mHeaderHolder?.bDonate?.fromRes(dev.ragnarok.fenrir_common.R.raw.donater_fire)
                 } else {
                     mHeaderHolder?.tvName?.setTextColor(CurrentTheme.getColorPrimary(requireActivity()))
                     mHeaderHolder?.tvScreenName?.setTextColor(
@@ -181,8 +176,6 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
                     )
                     mHeaderHolder?.bDonate?.fromRes(
                         dev.ragnarok.fenrir_common.R.raw.donater_fire,
-                        dp(100f),
-                        dp(100f),
                         intArrayOf(0xFF812E, CurrentTheme.getColorPrimary(requireActivity())),
                         true
                     )
@@ -190,8 +183,6 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
             } else {
                 mHeaderHolder?.bDonate?.fromRes(
                     dev.ragnarok.fenrir_common.R.raw.donater,
-                    dp(100f),
-                    dp(100f),
                     intArrayOf(
                         0xffffff,
                         CurrentTheme.getColorPrimary(requireActivity()),
@@ -200,7 +191,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
                     )
                 )
             }
-            mHeaderHolder?.bDonate?.playAnimation()
+            mHeaderHolder?.bDonate?.startAnimation()
         } else {
             mHeaderHolder?.bDonate?.setImageDrawable(null)
             mHeaderHolder?.bDonate?.visibility = View.GONE
@@ -226,20 +217,18 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         if (user.blacklisted) {
             mHeaderHolder?.blacklisted?.visibility = View.VISIBLE
             if (FenrirNative.isNativeLoaded) {
-                mHeaderHolder?.blacklisted?.fromRes(
-                    dev.ragnarok.fenrir_common.R.raw.skull,
-                    dp(48f),
-                    dp(48f),
-                    null
-                )
-                mHeaderHolder?.blacklisted?.playAnimation()
+                mHeaderHolder?.blacklisted?.fromRes(dev.ragnarok.fenrir_common.R.raw.skull)
+                mHeaderHolder?.blacklisted?.startAnimation()
             } else {
                 mHeaderHolder?.blacklisted?.setImageResource(R.drawable.audio_died)
                 mHeaderHolder?.blacklisted?.setColorFilter("#AAFF0000".toColor())
             }
         } else {
             mHeaderHolder?.blacklisted?.visibility = View.GONE
-            mHeaderHolder?.blacklisted?.clearAnimationDrawable()
+            mHeaderHolder?.blacklisted?.clearAnimationDrawable(
+                callSuper = true, clearState = true,
+                cancelTask = true
+            )
         }
         mHeaderHolder?.blacklisted?.visibility = if (user.blacklisted) View.VISIBLE else View.GONE
     }
@@ -700,7 +689,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         val tvAudioStatus: ImageView = root.findViewById(R.id.fragment_user_profile_audio)
         val tvLastSeen: TextView = root.findViewById(R.id.fragment_user_profile_activity)
         val ivOnline: OnlineView = root.findViewById(R.id.header_navi_menu_online)
-        val blacklisted: RLottieImageView = root.findViewById(R.id.item_blacklisted)
+        val blacklisted: ThorVGLottieView = root.findViewById(R.id.item_blacklisted)
         val bFriends: TextView = root.findViewById(R.id.fragment_user_profile_bfriends)
         val bGroups: TextView = root.findViewById(R.id.fragment_user_profile_bgroups)
         val bPhotos: TextView = root.findViewById(R.id.fragment_user_profile_bphotos)
@@ -714,8 +703,8 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
             root.findViewById(R.id.header_user_profile_fab_message)
         val fabMoreInfo: FloatingActionButton = root.findViewById(R.id.info_btn)
         val bPrimaryAction: MaterialButton = root.findViewById(R.id.subscribe_btn)
-        val bDonate: RLottieImageView = root.findViewById(R.id.donated_anim)
-        val paganSymbol: RLottieImageView = root.findViewById(R.id.pagan_symbol)
+        val bDonate: ThorVGLottieView = root.findViewById(R.id.donated_anim)
+        val paganSymbol: ThorVGLottieView = root.findViewById(R.id.pagan_symbol)
         val Runes: View = root.findViewById(R.id.runes_container)
         val mPostFilterAdapter: HorizontalOptionsAdapter<PostFilter>
 

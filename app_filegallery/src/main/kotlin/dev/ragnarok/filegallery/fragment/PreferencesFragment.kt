@@ -75,7 +75,7 @@ import dev.ragnarok.filegallery.util.serializeble.prefs.Preferences
 import dev.ragnarok.filegallery.util.toast.CustomSnackbars
 import dev.ragnarok.filegallery.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.filegallery.view.MySearchView
-import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieView
 import okio.buffer
 import okio.source
 import java.io.File
@@ -940,12 +940,10 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             summary = BuildConfig.VERSION_NAME
             onClick {
                 val view = View.inflate(requireActivity(), R.layout.dialog_about_us, null)
-                val anim: RLottieImageView = view.findViewById(R.id.lottie_animation)
+                val anim: ThorVGLottieView = view.findViewById(R.id.lottie_animation)
                 if (FenrirNative.isNativeLoaded) {
                     anim.fromRes(
                         R.raw.fenrir,
-                        Utils.dp(170f),
-                        Utils.dp(170f),
                         intArrayOf(
                             0x333333,
                             getColorPrimary(requireActivity()),
@@ -953,7 +951,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                             getColorSecondary(requireActivity())
                         )
                     )
-                    anim.playAnimation()
+                    anim.startAnimation()
                 }
                 MaterialAlertDialogBuilder(requireActivity())
                     .setView(view)

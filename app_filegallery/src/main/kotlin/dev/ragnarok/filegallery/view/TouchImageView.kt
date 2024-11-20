@@ -27,22 +27,52 @@ import androidx.appcompat.widget.AppCompatImageView
 import com.squareup.picasso3.Rotatable
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.animation.AnimatedFileDrawable
+import dev.ragnarok.fenrir.module.animation.AnimatedFileDrawable.LoadedFrom
+import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.getParcelableCompat
 import dev.ragnarok.filegallery.getSerializableCompat
+import dev.ragnarok.filegallery.nonNullNoEmpty
+import dev.ragnarok.filegallery.picasso.PicassoInstance
+import dev.ragnarok.filegallery.util.Utils
+import dev.ragnarok.filegallery.util.coroutines.CancelableJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.filegallery.view.natives.animation.AnimationNetworkCache
+import kotlinx.coroutines.flow.flow
+import okhttp3.Call
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import java.io.File
+import java.lang.ref.WeakReference
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
 @SuppressLint("ClickableViewAccessibility")
 @Suppress("unused")
-open class TouchImageView @JvmOverloads constructor(
+class TouchImageView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) :
     AppCompatImageView(context, attrs, defStyle) {
+    //%%~Animation
+    private var mDisposable = CancelableJob()
+    private val cache: AnimationNetworkCache = AnimationNetworkCache(context)
+    private var animatedDrawable: AnimatedFileDrawable? = null
+    private var attachedToWindow = false
+    //~%%Animation
+
+    @LoadedFrom
+    private var loadedFrom = LoadedFrom.NO
+    private var filePathTmp: String? = null
+    private var keyTmp: String? = null
+    private var isPlaying: Boolean? = null
+    private var tmpFade: Boolean? = null
+    private var fallbackTmp: String? = null
+
     /**
      * Get the current zoom. This is the zoom relative to the initial
      * scale, not the original resource.
@@ -124,7 +154,7 @@ open class TouchImageView @JvmOverloads constructor(
     var orientationLocked = OrientationLocked.HORIZONTAL
 
     init {
-        super.setClickable(true)
+        super.isClickable = true
         orientation = resources.configuration.orientation
         scaleDetector = ScaleGestureDetector(context, ScaleListener())
         gestureDetector = GestureDetector(context, GestureListener())
@@ -156,6 +186,220 @@ open class TouchImageView @JvmOverloads constructor(
         }
     }
 
+    //%%~Animation
+    private fun setAnimationByUrlCache(
+        key: String,
+        fallback: String?,
+        autoPlay: Boolean,
+        fade: Boolean
+    ) {
+        if (!FenrirNative.isNativeLoaded) {
+            return
+        }
+        val ch = cache.fetch(key)
+        if (ch == null) {
+            return
+        }
+        if (filePathTmp == ch.absolutePath && fallbackTmp == fallback && loadedFrom == LoadedFrom.FILE) {
+            return
+        }
+        clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = false)
+        loadedFrom = LoadedFrom.FILE
+        filePathTmp = ch.absolutePath
+        tmpFade = fade
+        isPlaying = autoPlay
+        fallbackTmp = fallback
+
+        if (attachedToWindow) {
+            createAnimationDrawable()
+        }
+    }
+
+    fun fromAnimationNet(
+        key: String,
+        url: String?,
+        fallback: String?,
+        client: OkHttpClient.Builder,
+        autoPlay: Boolean
+    ) {
+        if (!FenrirNative.isNativeLoaded || url.isNullOrEmpty()) {
+            if (loadedFrom == LoadedFrom.NET) {
+                loadedFrom = LoadedFrom.NO
+            }
+            return
+        }
+        if (filePathTmp == url && keyTmp == key && fallbackTmp == fallback && loadedFrom == LoadedFrom.NET) {
+            return
+        }
+        clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+        loadedFrom = LoadedFrom.NET
+        filePathTmp = url
+        keyTmp = key
+        isPlaying = autoPlay
+        tmpFade = true
+        fallbackTmp = fallback
+
+        if (cache.isCachedFile(key)) {
+            setAnimationByUrlCache(key, fallback, autoPlay, true)
+            return
+        }
+        mDisposable.set(flow {
+            var call: Call? = null
+            try {
+                val request: Request = Request.Builder()
+                    .url(url)
+                    .build()
+                call = client.build().newCall(request)
+                val response: Response = call.execute()
+                if (!response.isSuccessful) {
+                    emit(false)
+                    return@flow
+                }
+                cache.writeTempCacheFile(key, response.body.source())
+                response.close()
+                cache.renameTempFile(key)
+                emit(true)
+            } catch (e: CancellationException) {
+                call?.cancel()
+                throw e
+            }
+        }.fromIOToMain { u ->
+            if (u) {
+                setAnimationByUrlCache(key, fallback, autoPlay, true)
+            }
+        })
+    }
+
+    fun clearAnimationDrawable(callSuper: Boolean, clearState: Boolean, cancelTask: Boolean) {
+        if (cancelTask) {
+            mDisposable.cancel()
+        }
+        if (animatedDrawable != null) {
+            animatedDrawable?.callback = null
+            animatedDrawable?.recycle()
+            animatedDrawable = null
+        }
+        if (callSuper) {
+            super.setImageDrawable(null)
+        }
+        if (clearState) {
+            isPlaying = false
+            loadedFrom = LoadedFrom.NO
+            filePathTmp = null
+            tmpFade = null
+            fallbackTmp = null
+        }
+    }
+
+    private fun createAnimationDrawable() {
+        if (FenrirNative.isNativeLoaded && attachedToWindow && loadedFrom != LoadedFrom.NO && animatedDrawable == null && filePathTmp != null) {
+            val ref = WeakReference(this)
+            animatedDrawable = AnimatedFileDrawable(
+                filePathTmp ?: "",
+                0,
+                100,
+                100,
+                tmpFade == true,
+                object : AnimatedFileDrawable.DecoderListener {
+                    override fun onError() {
+                        ref.get()?.let {
+                            fallbackTmp.nonNullNoEmpty { k ->
+                                PicassoInstance.with().load(k).into(it)
+                            }
+                        }
+                    }
+
+                })
+            if (animatedDrawable?.isDecoded != true) {
+                clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+                return
+            }
+            tmpFade = false
+            animatedDrawable?.setAllowDecodeSingleFrame(true)
+
+            imageRenderedAtLeastOnce = false
+            super.setImageDrawable(animatedDrawable)
+            savePreviousImageValues()
+            fitImageToView()
+
+            if (isPlaying == true) {
+                playAnimation()
+            }
+        }
+    }
+
+    fun fromAnimationFile(file: File, autoPlay: Boolean) {
+        if (!FenrirNative.isNativeLoaded || !file.exists()) {
+            return
+        }
+        if (filePathTmp == file.absolutePath && loadedFrom == LoadedFrom.FILE) {
+            return
+        }
+        clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
+        loadedFrom = LoadedFrom.FILE
+        filePathTmp = file.absolutePath
+        tmpFade = false
+        isPlaying = autoPlay
+        if (attachedToWindow) {
+            createAnimationDrawable()
+        }
+    }
+
+    override fun onAttachedToWindow() {
+        attachedToWindow = true
+        super.onAttachedToWindow()
+        when {
+            loadedFrom == LoadedFrom.NET -> {
+                filePathTmp?.let {
+                    keyTmp?.let { s ->
+                        fromAnimationNet(
+                            s,
+                            it,
+                            fallbackTmp,
+                            Utils.createOkHttp(Constants.PICASSO_TIMEOUT),
+                            isPlaying == true,
+                        )
+                    }
+                    return
+                }
+                clearAnimationDrawable(callSuper = false, clearState = true, cancelTask = false)
+            }
+
+            loadedFrom != LoadedFrom.NO -> {
+                createAnimationDrawable()
+            }
+        }
+    }
+
+    override fun onDetachedFromWindow() {
+        attachedToWindow = false
+        super.onDetachedFromWindow()
+        if (loadedFrom != LoadedFrom.NO) {
+            clearAnimationDrawable(callSuper = true, clearState = false, cancelTask = true)
+        }
+    }
+
+    fun isPlayingAnimation(): Boolean {
+        return animDrawable?.isRunning == true
+    }
+
+    fun playAnimation() {
+        animatedDrawable?.start()
+        isPlaying = true
+    }
+
+    fun resetFrame() {
+        animatedDrawable?.seekTo(0, true)
+    }
+
+    fun stopAnimation() {
+        animatedDrawable?.let {
+            it.stop()
+            isPlaying = false
+        }
+    }
+    //~Animation
+
     fun setRotateImageToFitScreen(rotateImageToFitScreen: Boolean) {
         isRotateImageToFitScreen = rotateImageToFitScreen
     }
@@ -184,90 +428,34 @@ open class TouchImageView @JvmOverloads constructor(
         touchCoordinatesListener = onTouchCoordinatesListener
     }
 
-    open fun fromAnimFile(file: File) {
-        if (!FenrirNative.isNativeLoaded) {
-            return
-        }
-        clearAnimationDrawable()
-        setAnimation(
-            AnimatedFileDrawable(
-                file,
-                0,
-                100,
-                100,
-                true,
-                object : AnimatedFileDrawable.DecoderListener {
-                    override fun onError() {
-
-                    }
-                })
-        )
-    }
-
-    open fun clearAnimationDrawable() {
-        if (animDrawable != null) {
-            animDrawable?.stop()
-            animDrawable?.callback = null
-            animDrawable?.recycle()
-            animDrawable = null
-        }
-    }
-
-    private fun setAnimation(videoDrawable: AnimatedFileDrawable) {
-        if (!videoDrawable.isDecoded) return
-        animDrawable = videoDrawable
-        animDrawable?.setAllowDecodeSingleFrame(true)
-        animDrawable?.callback = this
-        animDrawable?.start()
-        setImageDrawable(animDrawable)
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        animDrawable?.callback = this
-        animDrawable?.start()
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        animDrawable?.stop()
-        animDrawable?.callback = null
-    }
-
-    open fun isPlaying(): Boolean {
-        return animDrawable?.isRunning == true
-    }
-
     override fun setImageResource(resId: Int) {
-        clearAnimationDrawable()
         imageRenderedAtLeastOnce = false
         super.setImageResource(resId)
+        clearAnimationDrawable(callSuper = false, clearState = true, cancelTask = true)
         savePreviousImageValues()
         fitImageToView()
     }
 
     override fun setImageBitmap(bm: Bitmap?) {
-        clearAnimationDrawable()
         imageRenderedAtLeastOnce = false
         super.setImageBitmap(bm)
+        clearAnimationDrawable(callSuper = false, clearState = true, cancelTask = true)
         savePreviousImageValues()
         fitImageToView()
     }
 
     override fun setImageDrawable(drawable: Drawable?) {
-        if (drawable !is AnimatedFileDrawable) {
-            clearAnimationDrawable()
-        }
         imageRenderedAtLeastOnce = false
         super.setImageDrawable(drawable)
+        clearAnimationDrawable(callSuper = false, clearState = true, cancelTask = true)
         savePreviousImageValues()
         fitImageToView()
     }
 
     override fun setImageURI(uri: Uri?) {
-        clearAnimationDrawable()
         imageRenderedAtLeastOnce = false
         super.setImageURI(uri)
+        clearAnimationDrawable(callSuper = false, clearState = true, cancelTask = true)
         savePreviousImageValues()
         fitImageToView()
     }
@@ -285,7 +473,7 @@ open class TouchImageView @JvmOverloads constructor(
         }
     }
 
-    override fun getScaleType() = touchScaleType!!
+    override fun getScaleType() = touchScaleType ?: ScaleType.MATRIX
 
     /**
      * Returns false if image is in initial, unzoomed state. False, otherwise.
@@ -544,21 +732,22 @@ open class TouchImageView @JvmOverloads constructor(
         }
 
     internal fun orientationMismatch(drawable: Drawable?): Boolean {
-        return viewWidth > viewHeight != drawable!!.intrinsicWidth > drawable.intrinsicHeight
+        return viewWidth > viewHeight != (drawable?.intrinsicWidth
+            ?: 0) > (drawable?.intrinsicHeight ?: 0)
     }
 
     private fun getDrawableWidth(drawable: Drawable?): Int {
         return if (orientationMismatch(drawable) && isRotateImageToFitScreen) {
-            drawable!!.intrinsicHeight
+            drawable?.intrinsicHeight ?: 0
         } else
-            drawable!!.intrinsicWidth
+            drawable?.intrinsicWidth ?: 0
     }
 
     private fun getDrawableHeight(drawable: Drawable?): Int {
         return if (orientationMismatch(drawable) && isRotateImageToFitScreen) {
-            drawable!!.intrinsicWidth
+            drawable?.intrinsicWidth ?: 0
         } else
-            drawable!!.intrinsicHeight
+            drawable?.intrinsicHeight ?: 0
     }
 
     /**
@@ -743,14 +932,11 @@ open class TouchImageView @JvmOverloads constructor(
             }
 
             ScaleType.CENTER_INSIDE -> {
-                run {
-                    scaleY = min(1f, min(scaleX, scaleY))
-                    scaleX = scaleY
-                }
-                run {
-                    scaleY = min(scaleX, scaleY)
-                    scaleX = scaleY
-                }
+                scaleY = min(1f, min(scaleX, scaleY))
+                scaleX = scaleY
+
+                scaleY = min(scaleX, scaleY)
+                scaleX = scaleY
             }
 
             ScaleType.FIT_CENTER, ScaleType.FIT_START, ScaleType.FIT_END -> {
@@ -1235,7 +1421,7 @@ open class TouchImageView @JvmOverloads constructor(
      * to the bounds of the bitmap size.
      * @return Coordinates of the point touched, in the coordinate system of the original drawable.
      */
-    protected fun transformCoordTouchToBitmap(x: Float, y: Float, clipToBitmap: Boolean): PointF {
+    private fun transformCoordTouchToBitmap(x: Float, y: Float, clipToBitmap: Boolean): PointF {
         touchMatrix.getValues(floatMatrix)
         val origW = drawable.intrinsicWidth.toFloat()
         val origH = drawable.intrinsicHeight.toFloat()
@@ -1258,7 +1444,7 @@ open class TouchImageView @JvmOverloads constructor(
      * @param by y-coordinate in original bitmap coordinate system
      * @return Coordinates of the point in the view's coordinate system.
      */
-    protected fun transformCoordBitmapToTouch(bx: Float, by: Float): PointF {
+    private fun transformCoordBitmapToTouch(bx: Float, by: Float): PointF {
         touchMatrix.getValues(floatMatrix)
         val origW = drawable.intrinsicWidth.toFloat()
         val origH = drawable.intrinsicHeight.toFloat()

@@ -34,4 +34,7 @@ interface IStoriesShortVideosInteractor {
         startFrom: String?,
         count: Int?
     ): Flow<Pair<List<Video>, String?>>
+
+    fun subscribe(accountId: Long, owner_id: Long): Flow<Int>
+    fun unsubscribe(accountId: Long, owner_id: Long): Flow<Int>
 }

@@ -12,7 +12,7 @@ class IStatusService : IServiceRest() {
      * @param groupId Identifier of a community to set a status in. If left blank the status is set to current user.
      * @return 1
      */
-    operator fun set(
+    fun set(
         text: String?,
         groupId: Long?
     ): Flow<BaseResponse<Int>> {

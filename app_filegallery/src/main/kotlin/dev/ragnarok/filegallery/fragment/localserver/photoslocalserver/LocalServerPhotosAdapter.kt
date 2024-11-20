@@ -17,7 +17,7 @@ import dev.ragnarok.filegallery.settings.CurrentTheme.getColorSecondary
 import dev.ragnarok.filegallery.util.AppTextUtils
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.view.AspectRatioImageView
-import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieView
 
 class LocalServerPhotosAdapter(private val mContext: Context, private var data: List<Photo>) :
     RecyclerView.Adapter<LocalServerPhotosAdapter.ViewHolder>() {
@@ -47,15 +47,16 @@ class LocalServerPhotosAdapter(private val mContext: Context, private var data: 
                 viewHolder.current.visibility = View.VISIBLE
                 viewHolder.current.fromRes(
                     R.raw.select_fire,
-                    Utils.dp(100f),
-                    Utils.dp(100f),
                     intArrayOf(0xFF812E, colorPrimary),
                     true
                 )
-                viewHolder.current.playAnimation()
+                viewHolder.current.startAnimation()
             } else {
                 viewHolder.current.visibility = View.GONE
-                viewHolder.current.clearAnimationDrawable()
+                viewHolder.current.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
             }
         }
         val targetUrl = photo.preview_url
@@ -98,7 +99,7 @@ class LocalServerPhotosAdapter(private val mContext: Context, private var data: 
         val photoImageView: AspectRatioImageView = itemView.findViewById(R.id.imageView)
         val tvDate: TextView = itemView.findViewById(R.id.vk_photo_item_date)
         val bottomTop: ViewGroup = itemView.findViewById(R.id.vk_photo_item_top)
-        val current: RLottieImageView = itemView.findViewById(R.id.current)
+        val current: ThorVGLottieView = itemView.findViewById(R.id.current)
     }
 
 }

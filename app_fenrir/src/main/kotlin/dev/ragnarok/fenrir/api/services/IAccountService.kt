@@ -63,9 +63,11 @@ class IAccountService : IServiceRest() {
 
     //https://vk.com/dev/account.registerDevice
     fun registerDevice(
+        api_id: Int?,
+        app_id: Int?,
         token: String?,
         pushes_granted: Int?,
-        app_version: String?,
+        app_version: Int?,
         push_provider: String?,
         companion_apps: String?,
         type: Int?,
@@ -86,6 +88,9 @@ class IAccountService : IServiceRest() {
                 "device_model" to deviceModel,
                 "device_id" to deviceId,
                 "system_version" to systemVersion,
+                "has_google_services" to 1,
+                "app_id" to app_id,
+                "api_id" to api_id,
                 "settings" to settings
             ), baseInt
         )

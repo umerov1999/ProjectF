@@ -27,7 +27,7 @@ class ArticleDboEntity : DboEntity() {
     var isFavorite = false
         private set
 
-    operator fun set(id: Int, owner_id: Long): ArticleDboEntity {
+    fun set(id: Int, owner_id: Long): ArticleDboEntity {
         this.id = id
         ownerId = owner_id
         return this

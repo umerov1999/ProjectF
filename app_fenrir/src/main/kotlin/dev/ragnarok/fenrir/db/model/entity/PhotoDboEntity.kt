@@ -43,7 +43,7 @@ class PhotoDboEntity : DboEntity() {
     var sizes: PhotoSizeEntity? = null
         private set
 
-    operator fun set(id: Int, ownerId: Long): PhotoDboEntity {
+    fun set(id: Int, ownerId: Long): PhotoDboEntity {
         this.id = id
         this.ownerId = ownerId
         return this

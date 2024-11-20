@@ -199,11 +199,13 @@
         <attr name="snowflakesFadingEnabled" format="boolean" />
         <attr name="snowflakesAlreadyFalling" format="boolean" />
     </declare-styleable>
-    <declare-styleable name="RLottieImageView">
+    <declare-styleable name="ThorVGLottieView">
         <attr name="loopAnimation" format="boolean" />
+        <attr name="loopMode" format="enum">
+            <enum name="restart" value="1" />
+            <enum name="reverse" value="2" />
+        </attr>
         <attr name="fromRes" format="reference" />
-        <attr name="w" format="dimension" />
-        <attr name="h" format="dimension" />
     </declare-styleable>
     <declare-styleable name="AnimatedShapeableImageView">
         <attr name="default_width" format="dimension" />

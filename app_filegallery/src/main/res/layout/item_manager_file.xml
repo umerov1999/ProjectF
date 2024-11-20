@@ -29,7 +29,7 @@
             app:dominantMeasurement="width"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.MediumRoundedPictures" />
 
-        <dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
+        <dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieView
             android:id="@+id/current"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -434,7 +434,7 @@ class WallPostPresenter(
         view?.copyTextToClipboard(builder.toString())
     }
 
-    fun fireHasgTagClick(hashTag: String) {
+    fun fireHashTagClick(hashTag: String) {
         view?.goToNewsSearch(
             accountId,
             hashTag

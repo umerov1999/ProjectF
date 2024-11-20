@@ -52,13 +52,12 @@ import dev.ragnarok.filegallery.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.upload.Upload
-import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.ViewUtils
 import dev.ragnarok.filegallery.util.coroutines.CancelableJob
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.filegallery.view.MySearchView
-import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieView
 import java.io.File
 import java.util.Calendar
 
@@ -68,7 +67,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
     private var mRecyclerView: RecyclerView? = null
     private var mLayoutManager: GridLayoutManager? = null
     private var empty: TextView? = null
-    private var loading: RLottieImageView? = null
+    private var loading: ThorVGLottieView? = null
     private var tvCurrentDir: TextView? = null
     private var mAdapter: FileManagerAdapter? = null
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
@@ -188,13 +187,19 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
         animLoad = ObjectAnimator.ofFloat(loading, View.ALPHA, 0.0f).setDuration(1000)
         animLoad?.addListener(object : StubAnimatorListener() {
             override fun onAnimationEnd(animation: Animator) {
-                loading?.clearAnimationDrawable()
+                loading?.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
                 loading?.visibility = View.GONE
                 loading?.alpha = 1f
             }
 
             override fun onAnimationCancel(animation: Animator) {
-                loading?.clearAnimationDrawable()
+                loading?.clearAnimationDrawable(
+                    callSuper = true, clearState = true,
+                    cancelTask = true
+                )
                 loading?.visibility = View.GONE
                 loading?.alpha = 1f
             }
@@ -430,8 +435,6 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
                 loading?.alpha = 1f
                 loading?.fromRes(
                     R.raw.s_loading,
-                    Utils.dp(180f),
-                    Utils.dp(180f),
                     intArrayOf(
                         0x333333,
                         CurrentTheme.getColorPrimary(requireActivity()),
@@ -439,7 +442,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
                         CurrentTheme.getColorSecondary(requireActivity())
                     )
                 )
-                loading?.playAnimation()
+                loading?.startAnimation()
             })
         }
     }

@@ -46,7 +46,7 @@ import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.filegallery.util.toast.CustomSnackbars
 import dev.ragnarok.filegallery.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.filegallery.view.WeakViewAnimatorAdapter
-import dev.ragnarok.filegallery.view.natives.rlottie.RLottieImageView
+import dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieView
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.util.regex.Pattern
@@ -516,7 +516,7 @@ class AudioLocalServerRecyclerAdapter(
                     view?.visibility = View.GONE
                 }
             }
-        val visual: RLottieImageView = itemView.findViewById(R.id.item_audio_visual)
+        val visual: ThorVGLottieView = itemView.findViewById(R.id.item_audio_visual)
         val time: TextView = itemView.findViewById(R.id.item_audio_time)
         var animator: ObjectAnimator? = null
         fun startSelectionAnimation() {
