@@ -5,6 +5,7 @@
 //#define THORVG_JPG_LOADER_SUPPORT
 #define THORVG_LOTTIE_LOADER_SUPPORT
 #define THORVG_THREAD_SUPPORT
+#define THORVG_FILE_IO_SUPPORT
 #if defined(__ARM_NEON__) || defined(__aarch64__)
 #define THORVG_NEON_VECTOR_SUPPORT
 #else

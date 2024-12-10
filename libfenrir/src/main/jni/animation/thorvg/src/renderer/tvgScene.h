@@ -23,6 +23,7 @@
 #ifndef _TVG_SCENE_H_
 #define _TVG_SCENE_H_
 
+#include <algorithm>
 #include "tvgMath.h"
 #include "tvgPaint.h"
 
@@ -62,8 +63,8 @@ struct Scene::Impl
     Scene* scene = nullptr;
     RenderRegion vport = {0, 0, INT32_MAX, INT32_MAX};
     Array<RenderEffect*>* effects = nullptr;
+    uint8_t compFlag = CompositionFlag::Invalid;
     uint8_t opacity;         //for composition
-    bool needComp = false;   //composite or not
 
     Impl(Scene* s) : scene(s)
     {
@@ -73,42 +74,42 @@ struct Scene::Impl
     {
         resetEffects();
 
-        for (auto paint : paints) {
-            if (P(paint)->unref() == 0) delete(paint);
-        }
+        clearPaints();
 
         if (auto renderer = PP(scene)->renderer) {
             renderer->dispose(rd);
         }
     }
 
-    bool needComposition(uint8_t opacity)
+    uint8_t needComposition(uint8_t opacity)
     {
-        if (opacity == 0 || paints.empty()) return false;
+        compFlag = CompositionFlag::Invalid;
 
-        //post effects requires composition
-        if (effects) return true;
+        if (opacity == 0 || paints.empty()) return 0;
 
-        //Masking / Blending may require composition (even if opacity == 255)
-        if (scene->mask(nullptr) != MaskMethod::None) return true;
-        if (PP(scene)->blendMethod != BlendMethod::Normal) return true;
+        //post effects, masking, blending may require composition
+        if (effects) compFlag |= CompositionFlag::PostProcessing;
+        if (scene->mask(nullptr) != MaskMethod::None) compFlag |= CompositionFlag::Masking;
+        if (PP(scene)->blendMethod != BlendMethod::Normal) compFlag |= CompositionFlag::Blending;
 
         //Half translucent requires intermediate composition.
-        if (opacity == 255) return false;
+        if (opacity == 255) return compFlag;
 
         //If scene has several children or only scene, it may require composition.
         //OPTIMIZE: the bitmap type of the picture would not need the composition.
         //OPTIMIZE: a single paint of a scene would not need the composition.
-        if (paints.size() == 1 && paints.front()->type() == Type::Shape) return false;
+        if (paints.size() == 1 && paints.front()->type() == Type::Shape) return compFlag;
 
-        return true;
+        compFlag |= CompositionFlag::Opacity;
+
+        return 1;
     }
 
     RenderData update(RenderMethod* renderer, const Matrix& transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flag, TVG_UNUSED bool clipper)
     {
         this->vport = renderer->viewport();
 
-        if ((needComp = needComposition(opacity))) {
+        if (needComposition(opacity)) {
             /* Overriding opacity value. If this scene is half-translucent,
                It must do intermediate composition with that opacity value. */
             this->opacity = opacity;
@@ -128,8 +129,8 @@ struct Scene::Impl
 
         renderer->blend(PP(scene)->blendMethod);
 
-        if (needComp) {
-            cmp = renderer->target(bounds(renderer), renderer->colorSpace());
+        if (compFlag) {
+            cmp = renderer->target(bounds(renderer), renderer->colorSpace(), static_cast<CompositionFlag>(compFlag));
             renderer->beginComposite(cmp, MaskMethod::None, opacity);
         }
 
@@ -142,7 +143,7 @@ struct Scene::Impl
             if (effects) {
                 auto direct = effects->count == 1 ? true : false;
                 for (auto e = effects->begin(); e < effects->end(); ++e) {
-                    renderer->effect(cmp, *e, direct);
+                    renderer->effect(cmp, *e, opacity, direct);
                 }
             }
             renderer->endComposite(cmp);
@@ -225,12 +226,12 @@ struct Scene::Impl
     {
         if (ret) TVGERR("RENDERER", "TODO: duplicate()");
 
-        auto scene = Scene::gen().release();
+        auto scene = Scene::gen();
         auto dup = scene->pImpl;
 
         for (auto paint : paints) {
             auto cdup = paint->duplicate();
-            P(cdup)->ref();
+            cdup->ref();
             dup->paints.push_back(cdup);
         }
 
@@ -239,12 +240,48 @@ struct Scene::Impl
         return scene;
     }
 
-    void clear(bool free)
+    Result clearPaints()
     {
-        for (auto paint : paints) {
-            if (P(paint)->unref() == 0 && free) delete(paint);
+        auto itr = paints.begin();
+        while (itr != paints.end()) {
+            (*itr)->unref();
+            paints.erase(itr++);
         }
-        paints.clear();
+        return Result::Success;
+    }
+
+    Result remove(Paint* paint)
+    {
+        owned(paint);
+        paint->unref();
+        paints.remove(paint);
+        return Result::Success;
+    }
+
+    void owned(Paint* paint)
+    {
+#ifdef THORVG_LOG_ENABLED
+        for (auto p : paints) {
+            if (p == paint) return;
+        }
+        TVGERR("RENDERER", "The paint(%p) is not existed from the scene(%p)", paint, scene);
+#endif
+    }
+
+    Result insert(Paint* target, Paint* at)
+    {
+        //Relocated the paint to the current scene space
+        P(target)->renderFlag |= RenderUpdateFlag::Transform;
+
+        if (at == nullptr) {
+            paints.push_back(target);
+        } else {
+            //OPTIMIZE: Remove searching?
+            auto itr = find_if(paints.begin(), paints.end(),[&at](const Paint* paint){ return at == paint; });
+            if (itr == paints.end()) return Result::InvalidArguments;
+            paints.insert(itr, target);
+        }
+        return Result::Success;
     }
 
     Iterator* iterator()

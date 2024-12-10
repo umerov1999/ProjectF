@@ -58,15 +58,19 @@ Result Text::font(const char* name, float size, const char* style) noexcept
 }
 
 
-Result Text::load(const char* path) noexcept
+Result Text::load(const char* filename) noexcept
 {
+#ifdef THORVG_FILE_IO_SUPPORT
     bool invalid; //invalid path
-    if (!LoaderMgr::loader(path, &invalid, nullptr)) {
+    if (!LoaderMgr::loader(filename, &invalid, nullptr)) {
         if (invalid) return Result::InvalidArguments;
         else return Result::NonSupport;
     }
-
     return Result::Success;
+#else
+    TVGLOG("RENDERER", "FILE IO is disabled!");
+    return Result::NonSupport;
+#endif
 }
 
 
@@ -87,8 +91,13 @@ Result Text::load(const char* name, const char* data, uint32_t size, const char*
 
 Result Text::unload(const char* filename) noexcept
 {
+#ifdef THORVG_FILE_IO_SUPPORT
     if (LoaderMgr::retrieve(filename)) return Result::Success;
     return Result::InsufficientCondition;
+#else
+    TVGLOG("RENDERER", "FILE IO is disabled!");
+    return Result::NonSupport;
+#endif
 }
 
 
@@ -98,15 +107,15 @@ Result Text::fill(uint8_t r, uint8_t g, uint8_t b) noexcept
 }
 
 
-Result Text::fill(unique_ptr<Fill> f) noexcept
+Result Text::fill(Fill* f) noexcept
 {
-    return pImpl->shape->fill(std::move(f));
+    return pImpl->shape->fill(f);
 }
 
 
-unique_ptr<Text> Text::gen() noexcept
+Text* Text::gen() noexcept
 {
-    return unique_ptr<Text>(new Text);
+    return new Text;
 }
 
 

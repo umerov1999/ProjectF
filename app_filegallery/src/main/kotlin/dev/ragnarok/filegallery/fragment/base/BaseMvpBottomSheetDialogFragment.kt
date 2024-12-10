@@ -30,7 +30,9 @@ abstract class BaseMvpBottomSheetDialogFragment<P : AbsPresenter<V>, V : IMvpVie
     AbsMvpBottomSheetDialogFragment<P, V>(), IMvpView, IErrorView, IToastView, IToolbarView {
 
     override fun showError(errorText: String?) {
-        customToast?.showToastError(errorText)
+        if (isAdded) {
+            customToast?.showToastError(errorText)
+        }
     }
 
     override val customToast: AbsCustomToast?

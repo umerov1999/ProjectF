@@ -829,6 +829,11 @@ void ConvertToMSBPlane_16(const uint16_t* src_y,
     }
   }
 #endif
+#if defined(HAS_MULTIPLYROW_16_SME)
+  if (TestCpuFlag(kCpuHasSME)) {
+    MultiplyRow_16 = MultiplyRow_16_SME;
+  }
+#endif
 
   for (y = 0; y < height; ++y) {
     MultiplyRow_16(src_y, dst_y, scale, width);
@@ -3134,6 +3139,11 @@ int ARGBMultiply(const uint8_t* src_argb0,
     }
   }
 #endif
+#if defined(HAS_ARGBMULTIPLYROW_SME)
+  if (TestCpuFlag(kCpuHasSME)) {
+    ARGBMultiplyRow = ARGBMultiplyRow_SME;
+  }
+#endif
 #if defined(HAS_ARGBMULTIPLYROW_MSA)
   if (TestCpuFlag(kCpuHasMSA)) {
     ARGBMultiplyRow = ARGBMultiplyRow_Any_MSA;
@@ -5208,11 +5218,18 @@ int HalfFloatPlane(const uint16_t* src_y,
   }
 #endif
 #if defined(HAS_HALFFLOATROW_NEON)
-  if (TestCpuFlag(kCpuHasNEON)) {
-    HalfFloatRow =
-        scale == 1.0f ? HalfFloat1Row_Any_NEON : HalfFloatRow_Any_NEON;
+  if (TestCpuFlag(kCpuHasNEON)
+#if defined(__arm__)
+      // When scale is 1/65535 the scale * 2^-112 used to convert is a denormal.
+      // But when Neon vmul is asked to multiply a normal float by that
+      // denormal scale, even though the result would have been normal, it
+      // flushes to zero.  The scalar version of vmul supports denormals.
+      && scale >= 1.0f / 4096.0f
+#endif
+  ) {
+    HalfFloatRow = HalfFloatRow_Any_NEON;
     if (IS_ALIGNED(width, 16)) {
-      HalfFloatRow = scale == 1.0f ? HalfFloat1Row_NEON : HalfFloatRow_NEON;
+      HalfFloatRow = HalfFloatRow_NEON;
     }
   }
 #endif

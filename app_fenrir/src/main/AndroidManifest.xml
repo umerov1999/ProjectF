@@ -618,7 +618,9 @@
         <activity
             android:name="dev.ragnarok.fenrir.activity.qr.CameraScanActivity"
             android:label="@string/scan_qr"
-            android:theme="@style/App.DayNight.Swipes" />
+            android:screenOrientation="locked"
+            android:theme="@style/App.DayNight.Swipes"
+            tools:ignore="DiscouragedApi" />
 
         <activity
             android:name="dev.ragnarok.fenrir.activity.DualTabPhotoActivity"

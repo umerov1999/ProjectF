@@ -181,7 +181,7 @@ class CameraScanActivity : NoMainActivity() {
             }
         }
         val op = RotatedImage(mYBuffer, widthImage, heightImage)
-        if (tmpRotationDegrees != 180) {
+        if (tmpRotationDegrees != 180 && tmpRotationDegrees != 0) {
             op.height = widthImage
             op.width = heightImage
         }

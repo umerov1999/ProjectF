@@ -59,9 +59,11 @@ GlCanvas::~GlCanvas()
 }
 
 
-Result GlCanvas::target(int32_t id, uint32_t w, uint32_t h) noexcept
+Result GlCanvas::target(int32_t id, uint32_t w, uint32_t h, ColorSpace cs) noexcept
 {
 #ifdef THORVG_GL_RASTER_SUPPORT
+    if (cs != ColorSpace::ABGR8888S) return Result::NonSupport;
+
     if (Canvas::pImpl->status != Status::Damaged && Canvas::pImpl->status != Status::Synced) {
         return Result::InsufficientCondition;
     }
@@ -83,11 +85,11 @@ Result GlCanvas::target(int32_t id, uint32_t w, uint32_t h) noexcept
 }
 
 
-unique_ptr<GlCanvas> GlCanvas::gen() noexcept
+GlCanvas* GlCanvas::gen() noexcept
 {
 #ifdef THORVG_GL_RASTER_SUPPORT
     if (GlRenderer::init() <= 0) return nullptr;
-    return unique_ptr<GlCanvas>(new GlCanvas);
+    return new GlCanvas;
 #endif
     return nullptr;
 }

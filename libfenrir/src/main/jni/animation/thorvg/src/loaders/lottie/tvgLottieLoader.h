@@ -53,12 +53,12 @@ public:
     LottieLoader();
     ~LottieLoader();
 
-    bool open(const string& path, const ColorReplace& colorReplacement) override;
-    bool open(const char* data, uint32_t size, const std::string& rpath, bool copy, const ColorReplace& colorReplacement) override;
+    bool open(const char* path, const ColorReplace& colorReplacement) override;
+    bool open(const char* data, uint32_t size, const char* rpath, bool copy, const ColorReplace& colorReplacement) override;
     bool resize(Paint* paint, float w, float h) override;
     bool read() override;
     Paint* paint() override;
-    bool override(const char* slot);
+    bool override(const char* slot, bool byDefault = false);
 
     //Frame Controls
     bool frame(float no) override;

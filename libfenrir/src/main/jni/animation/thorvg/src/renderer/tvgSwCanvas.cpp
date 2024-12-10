@@ -68,7 +68,7 @@ Result SwCanvas::mempool(MempoolPolicy policy) noexcept
     if (!renderer) return Result::MemoryCorruption;
 
     //It can't change the policy during the running.
-    if (!Canvas::pImpl->paints.empty()) return Result::InsufficientCondition;
+    if (!Canvas::pImpl->scene->paints().empty()) return Result::InsufficientCondition;
 
     if (policy == MempoolPolicy::Individual) renderer->mempool(false);
     else renderer->mempool(true);
@@ -109,11 +109,11 @@ Result SwCanvas::target(uint32_t* buffer, uint32_t stride, uint32_t w, uint32_t 
 }
 
 
-unique_ptr<SwCanvas> SwCanvas::gen() noexcept
+SwCanvas* SwCanvas::gen() noexcept
 {
 #ifdef THORVG_SW_RASTER_SUPPORT
     if (SwRenderer::init() <= 0) return nullptr;
-    return unique_ptr<SwCanvas>(new SwCanvas);
+    return new SwCanvas;
 #endif
     return nullptr;
 }

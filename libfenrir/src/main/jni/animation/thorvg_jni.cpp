@@ -15,10 +15,15 @@
 #include "fenrir_native.h"
 #include "tvgGifEncoder.h"
 
-class LottieInfo {
+class LottieAnimation {
 public:
-    std::unique_ptr<tvg::Animation> animation;
-    std::unique_ptr<tvg::SwCanvas> canvas;
+    ~LottieAnimation() {
+        delete animation;
+        delete canvas;
+    }
+
+    tvg::Animation *animation = nullptr;
+    tvg::SwCanvas *canvas = nullptr;
     bool isCanvasPushed = false;
 };
 
@@ -83,9 +88,10 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGSVGRender_createBitmapNat
     auto picture = tvg::Picture::gen();
     bool orig;
     std::string jsonString = doDecompressResource(u->size(), u->data(), orig);
-    tvg::Result result = orig ? picture->load((const char *) u->data(), u->size(), "svg", "", true)
+    tvg::Result result = orig ? picture->load((const char *) u->data(), u->size(), "svg", nullptr,
+                                              true)
                               : picture->load((const char *) jsonString.data(), jsonString.size(),
-                                              "svg", "", true);
+                                              "svg", nullptr, true);
     if (result != tvg::Result::Success) {
         return;
     }
@@ -181,7 +187,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nLoadFromF
                                                                                     jintArray data,
                                                                                     jintArray colorReplacement,
                                                                                     jboolean useMoveColor) {
-    auto *info = new LottieInfo();
+    auto *info = new LottieAnimation();
     tvg::ColorReplace colors;
     if (useMoveColor) {
         colors.setUseCustomColorsLottieOffset();
@@ -226,7 +232,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nLoadFromF
     std::string jsonString = doDecompressResource(length, arr, orig);
     if (orig) {
         info->animation = tvg::Animation::gen();
-        info->animation->picture()->load(arr, length, "lottie", "", true, colors._ptr());
+        info->animation->picture()->load(arr, length, "lottie", nullptr, true, &colors);
     }
     delete[] arr;
     if (!orig) {
@@ -235,8 +241,8 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nLoadFromF
             return 0;
         }
         info->animation = tvg::Animation::gen();
-        info->animation->picture()->load(jsonString.data(), jsonString.size(), "lottie", "", true,
-                                         colors._ptr());
+        info->animation->picture()->load(jsonString.data(), jsonString.size(), "lottie", nullptr,
+                                         true, &colors);
     }
     info->canvas = tvg::SwCanvas::gen();
     float tmpWidth = 0;
@@ -283,17 +289,18 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nLoadFromM
         }
     }
 
-    auto *info = new LottieInfo();
+    auto *info = new LottieAnimation();
     auto u = reinterpret_cast<std::vector<char> *>(json);
     bool orig;
     std::string jsonString = doDecompressResource(u->size(), u->data(), orig);
     if (orig) {
         info->animation = tvg::Animation::gen();
-        info->animation->picture()->load(u->data(), u->size(), "lottie", "", true, colors._ptr());
+        info->animation->picture()->load(u->data(), u->size(), "lottie", nullptr, true, &colors);
     } else {
         info->animation = tvg::Animation::gen();
-        info->animation->picture()->load(jsonString.data(), jsonString.size(), "lottie", "", true,
-                                         colors._ptr());
+        info->animation->picture()->load(jsonString.data(), jsonString.size(), "lottie", nullptr,
+                                         true,
+                                         &colors);
     }
     info->canvas = tvg::SwCanvas::gen();
     float tmpWidth = 0;
@@ -321,7 +328,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nDestroy(J
     if (!ptr) {
         return;
     }
-    auto *info = reinterpret_cast<LottieInfo *>(ptr);
+    auto *info = reinterpret_cast<LottieAnimation *>(ptr);
     delete info;
 }
 
@@ -333,7 +340,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nSetBuffer
         return;
     }
 
-    auto *info = reinterpret_cast<LottieInfo *>(ptr);
+    auto *info = reinterpret_cast<LottieAnimation *>(ptr);
     void *pixels;
     if (AndroidBitmap_lockPixels(env, bitmap, &pixels) >= 0) {
         info->canvas->sync();
@@ -381,7 +388,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nGetFrame(
     if (!ptr || !bitmap) {
         return;
     }
-    auto *info = reinterpret_cast<LottieInfo *>(ptr);
+    auto *info = reinterpret_cast<LottieAnimation *>(ptr);
     if (!info->canvas) {
         return;
     }
@@ -392,7 +399,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nGetFrame(
         info->animation->frame((float) frame);
         if (!info->isCanvasPushed) {
             info->isCanvasPushed = true;
-            info->canvas->push(tvg::cast<tvg::Picture>(info->animation->picture()));
+            info->canvas->push(info->animation->picture());
         } else {
             info->canvas->update(info->animation->picture());
         }
@@ -413,7 +420,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottie2Gif_lottie2gif(JNI
                                                                              jint fps,
                                                                              jstring gifName,
                                                                              jobject listener) {
-    auto info = LottieInfo();
+    auto info = LottieAnimation();
     char const *srcString = SafeGetStringUTFChars(env, srcPath, nullptr);
     std::string path = srcString;
     if (srcString != nullptr) {
@@ -439,7 +446,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottie2Gif_lottie2gif(JNI
     std::string jsonString = doDecompressResource(length, arr, orig);
     if (orig) {
         info.animation = tvg::Animation::gen();
-        info.animation->picture()->load(arr, length, "lottie", "", true);
+        info.animation->picture()->load(arr, length, "lottie", nullptr, true);
     }
     delete[] arr;
     if (!orig) {
@@ -447,7 +454,8 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottie2Gif_lottie2gif(JNI
             return 0;
         }
         info.animation = tvg::Animation::gen();
-        info.animation->picture()->load(jsonString.data(), jsonString.size(), "lottie", "", true);
+        info.animation->picture()->load(jsonString.data(), jsonString.size(), "lottie", nullptr,
+                                        true);
     }
     if (!info.animation) {
         return false;
@@ -469,7 +477,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottie2Gif_lottie2gif(JNI
         info.canvas->push(std::move(bg));
     }
 
-    info.canvas->push(tvg::cast<tvg::Picture>(info.animation->picture()));
+    info.canvas->push(info.animation->picture());
 
     char const *gifNameString = SafeGetStringUTFChars(env, gifName, nullptr);
     std::string gifNameStr = gifNameString;

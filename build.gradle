@@ -34,7 +34,7 @@ buildscript {
     ext.graphicsShapesVersion = "1.0.1"
     ext.lifecycleVersion = "2.8.7"
     ext.mediaVersion = "1.7.0"
-    ext.media3Version = "1.5.0-rc02"
+    ext.media3Version = "1.5.0"
     ext.resourceInspectionAnnotation = "1.0.1"
     ext.savedStateVersion = "1.3.0-alpha05"
     ext.swiperefreshlayoutVersion = "1.2.0-alpha01"
@@ -58,7 +58,7 @@ buildscript {
     ext.autoValueVersion = "1.11.0"
 
     //common libraries
-    ext.kotlin_version = "2.1.0-RC2"
+    ext.kotlin_version = "2.1.0"
     ext.kotlin_coroutines = "1.9.0"
     ext.kotlin_serializer = "1.7.3"
     ext.okhttpLibraryVersion = "5.0.0-SNAPSHOT"
@@ -92,7 +92,7 @@ buildscript {
         //maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.7.2"
+        classpath "com.android.tools.build:gradle:8.8.0-rc01"
         classpath "com.google.gms:google-services:4.4.2"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"

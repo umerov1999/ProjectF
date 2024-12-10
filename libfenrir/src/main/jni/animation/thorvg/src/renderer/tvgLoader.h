@@ -29,11 +29,11 @@ struct LoaderMgr
 {
     static bool init();
     static bool term();
-    static LoadModule* loader(const char* filename, bool* invalid, std::unique_ptr<ColorReplace> colorReplacement);
-    static LoadModule* loader(const char* data, uint32_t size, const char* mimeType, const char* rpath, bool copy, std::unique_ptr<ColorReplace> colorReplacement);
+    static LoadModule* loader(const char* filename, bool* invalid, ColorReplace *colorReplacement);
+    static LoadModule* loader(const char* data, uint32_t size, const char* mimeType, const char* rpath, bool copy, ColorReplace *colorReplacement);
     static LoadModule* loader(const uint32_t* data, uint32_t w, uint32_t h, ColorSpace cs, bool copy);
-    static LoadModule* loader(const char* name, const char* data, uint32_t size, const char* mimeType, bool copy, std::unique_ptr<ColorReplace> colorReplacement);
-    static LoadModule* loader(const char* key, std::unique_ptr<ColorReplace> colorReplacement);
+    static LoadModule* loader(const char* name, const char* data, uint32_t size, const char* mimeType, bool copy, ColorReplace *colorReplacement);
+    static LoadModule* loader(const char* key, ColorReplace *colorReplacement);
     static bool retrieve(const char* filename);
     static bool retrieve(LoadModule* loader);
 };

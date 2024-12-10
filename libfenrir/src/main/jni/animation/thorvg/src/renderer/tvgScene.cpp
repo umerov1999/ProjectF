@@ -55,9 +55,9 @@ Scene::~Scene()
 }
 
 
-unique_ptr<Scene> Scene::gen() noexcept
+Scene* Scene::gen() noexcept
 {
-    return unique_ptr<Scene>(new Scene);
+    return new Scene;
 }
 
 
@@ -67,26 +67,23 @@ Type Scene::type() const noexcept
 }
 
 
-Result Scene::push(unique_ptr<Paint> paint) noexcept
+Result Scene::push(Paint* target, Paint* at) noexcept
 {
-    auto p = paint.release();
-    if (!p) return Result::MemoryCorruption;
-    PP(p)->ref();
-    pImpl->paints.push_back(p);
+    if (!target) return Result::InvalidArguments;
+    target->ref();
 
-    return Result::Success;
+    return pImpl->insert(target, at);
 }
 
 
-Result Scene::clear(bool free) noexcept
+Result Scene::remove(Paint* paint) noexcept
 {
-    pImpl->clear(free);
-
-    return Result::Success;
+    if (paint) return pImpl->remove(paint);
+    else return pImpl->clearPaints();
 }
 
 
-list<Paint*>& Scene::paints() noexcept
+const list<Paint*>& Scene::paints() const noexcept
 {
     return pImpl->paints;
 }

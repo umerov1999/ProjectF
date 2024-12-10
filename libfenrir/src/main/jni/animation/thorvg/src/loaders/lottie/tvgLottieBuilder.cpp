@@ -217,8 +217,6 @@ void LottieBuilder::updateGroup(LottieGroup* parent, LottieObject** child, float
     contexts.back(new RenderContext(*ctx, propagator, group->mergeable()));
 
     updateChildren(group, frameNo, contexts);
-
-    contexts.free();
 }
 
 
@@ -274,7 +272,7 @@ void LottieBuilder::updateGradientStroke(LottieGroup* parent, LottieObject** chi
     auto stroke = static_cast<LottieGradientStroke*>(*child);
 
     ctx->merging = nullptr;
-    ctx->propagator->strokeFill(unique_ptr<Fill>(stroke->fill(frameNo, exps)));
+    ctx->propagator->strokeFill(stroke->fill(frameNo, exps));
     _updateStroke(static_cast<LottieStroke*>(stroke), frameNo, ctx, exps);
 }
 
@@ -302,7 +300,7 @@ void LottieBuilder::updateGradientFill(LottieGroup* parent, LottieObject** child
 
     ctx->merging = nullptr;
     //TODO: reuse the fill instance?
-    ctx->propagator->fill(unique_ptr<Fill>(fill->fill(frameNo, exps)));
+    ctx->propagator->fill(fill->fill(frameNo, exps));
     ctx->propagator->fill(fill->rule);
 
     if (ctx->propagator->strokeWidth() > 0) ctx->propagator->order(true);
@@ -320,7 +318,7 @@ static bool _draw(LottieGroup* parent, LottieShape* shape, RenderContext* ctx)
         ctx->merging = static_cast<Shape*>(ctx->propagator->duplicate());
     }
 
-    parent->scene->push(cast(ctx->merging));
+    parent->scene->push(ctx->merging);
 
     return true;
 }
@@ -366,12 +364,12 @@ static void _repeat(LottieGroup* parent, Shape* path, RenderContext* ctx)
         //push repeat shapes in order.
         if (repeater->inorder) {
             for (auto shape = shapes.begin(); shape < shapes.end(); ++shape) {
-                parent->scene->push(cast(*shape));
+                parent->scene->push(*shape);
                 propagators.push(*shape);
             }
         } else if (!shapes.empty()) {
             for (auto shape = shapes.end() - 1; shape >= shapes.begin(); --shape) {
-                parent->scene->push(cast(*shape));
+                parent->scene->push(*shape);
                 propagators.push(*shape);
             }
         }
@@ -691,6 +689,7 @@ static void _updateStar(TVG_UNUSED LottieGroup* parent, LottiePolyStar* star, Ma
             auto intermediate = Shape::gen();
             roundness->modifyPolystar(P(shape)->rs.path.cmds, P(shape)->rs.path.pts, P(intermediate)->rs.path.cmds, P(intermediate)->rs.path.pts, outerRoundness, hasRoundness);
             offsetPath->modifyPolystar(P(intermediate)->rs.path.cmds, P(intermediate)->rs.path.pts, P(merging)->rs.path.cmds, P(merging)->rs.path.pts);
+            delete(intermediate);
         } else {
             roundness->modifyPolystar(P(shape)->rs.path.cmds, P(shape)->rs.path.pts, P(merging)->rs.path.cmds, P(merging)->rs.path.pts, outerRoundness, hasRoundness);
         }
@@ -777,6 +776,7 @@ static void _updatePolygon(LottieGroup* parent, LottiePolyStar* star, Matrix* tr
             auto intermediate = Shape::gen();
             roundness->modifyPolystar(P(shape)->rs.path.cmds, P(shape)->rs.path.pts, P(intermediate)->rs.path.cmds, P(intermediate)->rs.path.pts, 0.0f, false);
             offsetPath->modifyPolystar(P(intermediate)->rs.path.cmds, P(intermediate)->rs.path.pts, P(merging)->rs.path.cmds, P(merging)->rs.path.pts);
+            delete(intermediate);
         } else {
             roundness->modifyPolystar(P(shape)->rs.path.cmds, P(shape)->rs.path.pts, P(merging)->rs.path.cmds, P(merging)->rs.path.pts, 0.0f, false);
         }
@@ -963,7 +963,7 @@ void LottieBuilder::updatePrecomp(LottieComposition* comp, LottieLayer* precomp,
     //clip the layer viewport
     auto clipper = precomp->statical.pooling(true);
     clipper->transform(precomp->cache.matrix);
-    precomp->scene->clip(cast(clipper));
+    precomp->scene->clip(clipper);
 }
 
 
@@ -971,14 +971,14 @@ void LottieBuilder::updateSolid(LottieLayer* layer)
 {
     auto solidFill = layer->statical.pooling(true);
     solidFill->opacity(layer->cache.opacity);
-    layer->scene->push(cast(solidFill));
+    layer->scene->push(solidFill);
 }
 
 
 void LottieBuilder::updateImage(LottieGroup* layer)
 {
     auto image = static_cast<LottieImage*>(layer->children.first());
-    layer->scene->push(tvg::cast(image->pooling(true)));
+    layer->scene->push(image->pooling(true));
 }
 
 
@@ -992,9 +992,10 @@ void LottieBuilder::updateText(LottieLayer* layer, float frameNo)
     if (!p || !text->font) return;
 
     auto scale = doc.size;
-    Point cursor = {0.0f, 0.0f};
+    Point cursor{};
+    //TODO: Need to revise to alloc scene / textgroup when they are really necessary
     auto scene = Scene::gen();
-    auto textGroup = Scene::gen();
+    Scene* textGroup = Scene::gen();
     int line = 0;
     int space = 0;
     auto lineSpacing = 0.0f;
@@ -1017,14 +1018,15 @@ void LottieBuilder::updateText(LottieLayer* layer, float frameNo)
             else if (doc.justify == 2) layout.x += (doc.bbox.size.x * 0.5f) - (cursor.x * 0.5f * scale);  //center aligned
 
             //new text group, single scene based on text-grouping
-            scene->push(std::move(textGroup));
+            scene->push(textGroup);
             textGroup = Scene::gen();
             textGroup->translate(cursor.x, cursor.y);
 
             scene->translate(layout.x, layout.y);
             scene->scale(scale);
 
-            layer->scene->push(std::move(scene));
+            layer->scene->push(scene);
+            scene = nullptr;
 
             if (*p == '\0') break;
             ++p;
@@ -1043,9 +1045,22 @@ void LottieBuilder::updateText(LottieLayer* layer, float frameNo)
             ++space;
             if (textGrouping == LottieText::AlignOption::Group::Word) {
                 //new text group, single scene for each word
-                scene->push(std::move(textGroup));
+                scene->push(textGroup);
                 textGroup = Scene::gen();
                 textGroup->translate(cursor.x, cursor.y);
+            }
+        }
+
+        /* all lowercase letters are converted to uppercase in the "t" text field, making the "ca" value irrelevant, thus AllCaps is nothing to do.
+           So only convert lowercase letters to uppercase (for 'SmallCaps' an extra scaling factor applied) */
+        auto code = p;
+        auto capScale = 1.0f;
+        char capCode;
+        if ((unsigned char)(p[0]) < 0x80 && doc.caps) {
+            if (*p >= 'a' && *p <= 'z') {
+                capCode = *p + 'A' - 'a';
+                code = &capCode;
+                if (doc.caps == 2) capScale = 0.7f;
             }
         }
 
@@ -1054,10 +1069,10 @@ void LottieBuilder::updateText(LottieLayer* layer, float frameNo)
         for (auto g = text->font->chars.begin(); g < text->font->chars.end(); ++g) {
             auto glyph = *g;
             //draw matched glyphs
-            if (!strncmp(glyph->code, p, glyph->len)) {
+            if (!strncmp(glyph->code, code, glyph->len)) {
                 if (textGrouping == LottieText::AlignOption::Group::Chars || textGrouping == LottieText::AlignOption::Group::All) {
                     //new text group, single scene for each characters
-                    scene->push(std::move(textGroup));
+                    scene->push(textGroup);
                     textGroup = Scene::gen();
                     textGroup->translate(cursor.x, cursor.y);
                 }
@@ -1083,42 +1098,61 @@ void LottieBuilder::updateText(LottieLayer* layer, float frameNo)
                     shape->strokeFill(doc.stroke.color.rgb[0], doc.stroke.color.rgb[1], doc.stroke.color.rgb[2]);
                 }
 
-                bool needGroup = false;
+                auto needGroup = false;
+                //text range process
                 if (!text->ranges.empty()) {
                     Point scaling = {1.0f, 1.0f};
                     auto rotation = 0.0f;
                     Point translation = {0.0f, 0.0f};
+                    auto color = doc.color;
+                    auto strokeColor = doc.stroke.color;
+                    uint8_t opacity = 255;
+                    uint8_t fillOpacity = 255;
+                    uint8_t strokeOpacity = 255;
 
-                    //text range process
                     for (auto s = text->ranges.begin(); s < text->ranges.end(); ++s) {
-                        float start, end;
-                        (*s)->range(frameNo, float(totalChars), start, end);
-
                         auto basedIdx = idx;
                         if ((*s)->based == LottieTextRange::Based::CharsExcludingSpaces) basedIdx = idx - space;
                         else if ((*s)->based == LottieTextRange::Based::Words) basedIdx = line + space;
                         else if ((*s)->based == LottieTextRange::Based::Lines) basedIdx = line;
 
-                        if (basedIdx < start || basedIdx >= end) continue;
+                        auto f = (*s)->factor(frameNo, float(totalChars), (float)basedIdx);
+                        if (tvg::zero(f)) continue;
                         needGroup = true;
 
-                        translation = translation + (*s)->style.position(frameNo);
-                        scaling = scaling * (*s)->style.scale(frameNo) * 0.01f;
-                        rotation += (*s)->style.rotation(frameNo);
+                        translation = translation + f * (*s)->style.position(frameNo);
+                        scaling = scaling * (f * ((*s)->style.scale(frameNo) * 0.01f - Point{1.0f, 1.0f}) + Point{1.0f, 1.0f});
+                        rotation += f * (*s)->style.rotation(frameNo);
 
-                        shape->opacity((*s)->style.opacity(frameNo));
+                        opacity = (uint8_t)(opacity - f * (opacity - (*s)->style.opacity(frameNo)));
+                        shape->opacity(opacity);
 
-                        auto color = (*s)->style.fillColor(frameNo);
-                        shape->fill(color.rgb[0], color.rgb[1], color.rgb[2], (*s)->style.fillOpacity(frameNo));
+                        auto rangeColor = (*s)->style.fillColor(frameNo); //TODO: use flag to check whether it was really set
+                        if (tvg::equal(f, 1.0f)) color = rangeColor;
+                        else {
+                            color.rgb[0] = lerp<uint8_t>(color.rgb[0], rangeColor.rgb[0], f);
+                            color.rgb[1] = lerp<uint8_t>(color.rgb[1], rangeColor.rgb[1], f);
+                            color.rgb[2] = lerp<uint8_t>(color.rgb[2], rangeColor.rgb[2], f);
+                        }
+                        fillOpacity = (uint8_t)(fillOpacity - f * (fillOpacity - (*s)->style.fillOpacity(frameNo)));
+                        shape->fill(color.rgb[0], color.rgb[1], color.rgb[2], fillOpacity);
 
                         if (doc.stroke.render) {
-                            auto strokeColor = (*s)->style.strokeColor(frameNo);
-                            shape->strokeWidth((*s)->style.strokeWidth(frameNo) / scale);
-                            shape->strokeFill(strokeColor.rgb[0], strokeColor.rgb[1], strokeColor.rgb[2], (*s)->style.strokeOpacity(frameNo));
+                            shape->strokeWidth(f * (*s)->style.strokeWidth(frameNo) / scale);
+                            auto rangeColor = (*s)->style.strokeColor(frameNo); //TODO: use flag to check whether it was really set
+                            if (tvg::equal(f, 1.0f)) strokeColor = rangeColor;
+                            else {
+                                strokeColor.rgb[0] = lerp<uint8_t>(strokeColor.rgb[0], rangeColor.rgb[0], f);
+                                strokeColor.rgb[1] = lerp<uint8_t>(strokeColor.rgb[1], rangeColor.rgb[1], f);
+                                strokeColor.rgb[2] = lerp<uint8_t>(strokeColor.rgb[2], rangeColor.rgb[2], f);
+                            }
+                            strokeOpacity = (uint8_t)(strokeOpacity - f * (strokeOpacity - (*s)->style.strokeOpacity(frameNo)));
+                            shape->strokeFill(strokeColor.rgb[0], strokeColor.rgb[1], strokeColor.rgb[2], strokeOpacity);
                         }
-                        cursor.x += (*s)->style.letterSpacing(frameNo);
 
-                        auto spacing = (*s)->style.lineSpacing(frameNo);
+                        cursor.x += f * (*s)->style.letterSpacing(frameNo);
+
+                        auto spacing = f * (*s)->style.lineSpacing(frameNo);
                         if (spacing > lineSpacing) lineSpacing = spacing;
                     }
 
@@ -1141,33 +1175,34 @@ void LottieBuilder::updateText(LottieLayer* layer, float frameNo)
                         //center pivoting
                         textGroupMatrix.e13 += (pivotX * textGroupMatrix.e11 + pivotX * textGroupMatrix.e12);
                         textGroupMatrix.e23 += (pivotY * textGroupMatrix.e21 + pivotY * textGroupMatrix.e22);
-                        
+
                         textGroup->transform(textGroupMatrix);
                     }
 
                     auto& matrix = shape->transform();
                     tvg::identity(&matrix);
-                    translate(&matrix, (translation.x / scale + cursor.x) - textGroupMatrix.e13, (translation.y / scale + cursor.y) - textGroupMatrix.e23);
-                    tvg::scale(&matrix, scaling.x, scaling.y);
+                    translate(&matrix, translation.x / scale + cursor.x - textGroupMatrix.e13, translation.y / scale + cursor.y - textGroupMatrix.e23);
+                    tvg::scale(&matrix, scaling.x * capScale, scaling.y * capScale);
                     shape->transform(matrix);
                 }
 
                 if (needGroup) {
-                    textGroup->push(cast(shape));
+                    textGroup->push(shape);
                 } else {
                     // When text isn't selected, exclude the shape from the text group
                     auto& matrix = shape->transform();
                     matrix.e13 = cursor.x;
                     matrix.e23 = cursor.y;
+                    matrix.e11 = matrix.e22 = capScale; //cases with matrix scaling factors =! 1 handled in the 'needGroup' scenario
                     shape->transform(matrix);
-                    scene->push(cast(shape));
+                    scene->push(shape);
                 }
 
                 p += glyph->len;
                 idx += glyph->len;
 
                 //advance the cursor position horizontally
-                cursor.x += glyph->width + doc.tracking;
+                cursor.x += (glyph->width + doc.tracking) * capScale;
 
                 found = true;
                 break;
@@ -1179,6 +1214,9 @@ void LottieBuilder::updateText(LottieLayer* layer, float frameNo)
             ++idx;
         }
     }
+
+    delete(scene);
+    delete(textGroup);
 }
 
 
@@ -1210,18 +1248,18 @@ void LottieBuilder::updateMaskings(LottieLayer* layer, float frameNo)
 
     //Cheaper. Replace the masking with a clipper
     if (layer->masks.count == 1 && compMethod == MaskMethod::Alpha && opacity == 255) {
-        layer->scene->clip(tvg::cast(pShape));
+        layer->scene->clip(pShape);
         return;
     }
 
     //Introduce an intermediate scene for embracing the matte + masking
     if (layer->matteTarget) {
-        auto scene = Scene::gen().release();
-        scene->push(cast(layer->scene));
+        auto scene = Scene::gen();
+        scene->push(layer->scene);
         layer->scene = scene;
     }
 
-    layer->scene->mask(tvg::cast(pShape), compMethod);
+    layer->scene->mask(pShape, compMethod);
 
     //Apply the subsquent masks
     for (auto m = layer->masks.begin() + 1; m < layer->masks.end(); ++m) {
@@ -1239,7 +1277,7 @@ void LottieBuilder::updateMaskings(LottieLayer* layer, float frameNo)
             shape->fill(255, 255, 255, mask->opacity(frameNo));
             shape->transform(layer->cache.matrix);
             mask->pathset(frameNo, P(shape)->rs.path.cmds, P(shape)->rs.path.pts, nullptr, nullptr, nullptr, exps);
-            pShape->mask(tvg::cast(shape), method);
+            pShape->mask(shape, method);
             pShape = shape;
             pMethod = method;
         }
@@ -1255,7 +1293,7 @@ bool LottieBuilder::updateMatte(LottieComposition* comp, float frameNo, Scene* s
     updateLayer(comp, scene, target, frameNo);
 
     if (target->scene) {
-        layer->scene->mask(cast(target->scene), layer->matteType);
+        layer->scene->mask(target->scene, layer->matteType);
     } else if (layer->matteType == MaskMethod::Alpha || layer->matteType == MaskMethod::Luma) {
         //matte target is not exist. alpha blending definitely bring an invisible result
         delete(layer->scene);
@@ -1306,7 +1344,7 @@ void LottieBuilder::updateLayer(LottieComposition* comp, Scene* scene, LottieLay
     if (layer->type != LottieLayer::Null && layer->cache.opacity == 0) return;
 
     //Prepare render data
-    layer->scene = Scene::gen().release();
+    layer->scene = Scene::gen();
     layer->scene->id = layer->id;
 
     //ignore opacity when Null layer?
@@ -1351,7 +1389,7 @@ void LottieBuilder::updateLayer(LottieComposition* comp, Scene* scene, LottieLay
     updateEffect(layer, frameNo);
 
     //the given matte source was composited by the target earlier.
-    if (!layer->matteSrc) scene->push(cast(layer->scene));
+    if (!layer->matteSrc) scene->push(layer->scene);
 }
 
 
@@ -1468,7 +1506,7 @@ bool LottieBuilder::update(LottieComposition* comp, float frameNo)
 
     //update children layers
     auto root = comp->root;
-    root->scene->clear();
+    root->scene->remove();
 
     if (exps && comp->expressions) exps->update(comp->timeAtFrame(frameNo));
 
@@ -1485,7 +1523,7 @@ void LottieBuilder::build(LottieComposition* comp)
 {
     if (!comp) return;
 
-    comp->root->scene = Scene::gen().release();
+    comp->root->scene = Scene::gen();
 
     _buildComposition(comp, comp->root);
 
@@ -1494,5 +1532,5 @@ void LottieBuilder::build(LottieComposition* comp)
     //viewport clip
     auto clip = Shape::gen();
     clip->appendRect(0, 0, comp->w, comp->h);
-    comp->root->scene->clip(std::move(clip));
+    comp->root->scene->clip(clip);
 }

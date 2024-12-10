@@ -32,6 +32,7 @@ class SettingsBackup {
         var download_photo_tap: Boolean? = null
         var show_photos_line: Boolean? = null
         var instant_photo_display: Boolean? = null
+        var validate_tls: Boolean? = null
         var picasso_dispatcher: String? = null
         var audio_round_icon: Boolean? = null
         var use_long_click_download: Boolean? = null

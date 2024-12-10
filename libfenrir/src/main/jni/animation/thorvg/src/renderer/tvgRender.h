@@ -36,6 +36,7 @@ using RenderData = void*;
 using pixel_t = uint32_t;
 
 enum RenderUpdateFlag : uint8_t {None = 0, Path = 1, Color = 2, Gradient = 4, Stroke = 8, Transform = 16, Image = 32, GradientStroke = 64, Blend = 128, All = 255};
+enum CompositionFlag : uint8_t {Invalid = 0, Opacity = 1, Blending = 2, Masking = 4, PostProcessing = 8};  //Composition Purpose
 
 struct RenderSurface
 {
@@ -67,6 +68,11 @@ struct RenderSurface
     }
 };
 
+struct RenderColor
+{
+    uint8_t r, g, b, a;
+};
+
 struct RenderCompositor
 {
     MaskMethod method;
@@ -90,7 +96,7 @@ struct RenderRegion
 struct RenderStroke
 {
     float width = 0.0f;
-    uint8_t color[4] = {0, 0, 0, 0};
+    RenderColor color{};
     Fill *fill = nullptr;
     float* dashPattern = nullptr;
     uint32_t dashCnt = 0;
@@ -109,8 +115,7 @@ struct RenderStroke
     void operator=(const RenderStroke& rhs)
     {
         width = rhs.width;
-
-        memcpy(color, rhs.color, sizeof(color));
+        color = rhs.color;
 
         delete(fill);
         if (rhs.fill) fill = rhs.fill->duplicate();
@@ -173,7 +178,7 @@ struct RenderShape
     } path;
 
     Fill *fill = nullptr;
-    uint8_t color[4] = {0, 0, 0, 0};    //r, g, b, a
+    RenderColor color{};
     RenderStroke *stroke = nullptr;
     FillRule rule = FillRule::Winding;
 
@@ -185,10 +190,10 @@ struct RenderShape
 
     void fillColor(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const
     {
-        if (r) *r = color[0];
-        if (g) *g = color[1];
-        if (b) *b = color[2];
-        if (a) *a = color[3];
+        if (r) *r = color.r;
+        if (g) *g = color.g;
+        if (b) *b = color.b;
+        if (a) *a = color.a;
     }
 
     float strokeWidth() const
@@ -209,10 +214,10 @@ struct RenderShape
     {
         if (!stroke) return false;
 
-        if (r) *r = stroke->color[0];
-        if (g) *g = stroke->color[1];
-        if (b) *b = stroke->color[2];
-        if (a) *a = stroke->color[3];
+        if (r) *r = stroke->color.r;
+        if (g) *g = stroke->color.g;
+        if (b) *b = stroke->color.b;
+        if (a) *a = stroke->color.a;
 
         return true;
     }
@@ -334,12 +339,12 @@ public:
     virtual bool clear() = 0;
     virtual bool sync() = 0;
 
-    virtual RenderCompositor* target(const RenderRegion& region, ColorSpace cs) = 0;
+    virtual RenderCompositor* target(const RenderRegion& region, ColorSpace cs, CompositionFlag flags) = 0;
     virtual bool beginComposite(RenderCompositor* cmp, MaskMethod method, uint8_t opacity) = 0;
     virtual bool endComposite(RenderCompositor* cmp) = 0;
 
     virtual bool prepare(RenderEffect* effect) = 0;
-    virtual bool effect(RenderCompositor* cmp, const RenderEffect* effect, bool direct) = 0;
+    virtual bool effect(RenderCompositor* cmp, const RenderEffect* effect, uint8_t opacity, bool direct) = 0;
 };
 
 static inline bool MASK_REGION_MERGING(MaskMethod method)

@@ -21,8 +21,6 @@
  */
 
 #include "tvgMath.h"
-#include "tvgPaint.h"
-#include "tvgFill.h"
 #include "tvgTaskScheduler.h"
 #include "tvgLottieModel.h"
 
@@ -41,28 +39,10 @@ void LottieSlot::reset()
 {
     if (!overridden) return;
 
+    auto shallow = pairs.count == 1 ? true : false;
+
     for (auto pair = pairs.begin(); pair < pairs.end(); ++pair) {
-        switch (type) {
-            case LottieProperty::Type::ColorStop: {
-                static_cast<LottieGradient*>(pair->obj)->colorStops.release();
-                static_cast<LottieGradient*>(pair->obj)->colorStops = *static_cast<LottieColorStop*>(pair->prop);
-                static_cast<LottieColorStop*>(pair->prop)->frames = nullptr;
-                break;
-            }
-            case LottieProperty::Type::Color: {
-                static_cast<LottieSolid*>(pair->obj)->color.release();
-                static_cast<LottieSolid*>(pair->obj)->color = *static_cast<LottieColor*>(pair->prop);
-                static_cast<LottieColor*>(pair->prop)->frames = nullptr;
-                break;
-            }
-            case LottieProperty::Type::TextDoc: {
-                static_cast<LottieText*>(pair->obj)->doc.release();
-                static_cast<LottieText*>(pair->obj)->doc = *static_cast<LottieTextDoc*>(pair->prop);
-                static_cast<LottieTextDoc*>(pair->prop)->frames = nullptr;
-                break;
-            }
-            default: break;
-        }
+        pair->obj->override(pair->prop, shallow, true);
         delete(pair->prop);
         pair->prop = nullptr;
     }
@@ -70,70 +50,132 @@ void LottieSlot::reset()
 }
 
 
-void LottieSlot::assign(LottieObject* target, ColorReplace* colorReplacement)
+void LottieSlot::assign(LottieObject* target, bool byDefault, ColorReplace* colorReplacement)
 {
+    auto copy = !overridden && !byDefault;
+    auto shallow = pairs.count == 1 ? true : false;
+
     //apply slot object to all targets
     for (auto pair = pairs.begin(); pair < pairs.end(); ++pair) {
         //backup the original properties before overwriting
         switch (type) {
-            case LottieProperty::Type::ColorStop: {
-                if (!overridden) {
-                    pair->prop = new LottieColorStop;
-                    *static_cast<LottieColorStop*>(pair->prop) = static_cast<LottieGradient*>(pair->obj)->colorStops;
-                }
-
-                pair->obj->override(&static_cast<LottieGradient*>(target)->colorStops);
+            case LottieProperty::Type::Opacity: {
+                if (copy) pair->prop = new LottieOpacity(static_cast<LottieSolid*>(pair->obj)->opacity);
+                pair->obj->override(&static_cast<LottieSolid*>(target)->opacity, shallow, byDefault);
                 break;
             }
             case LottieProperty::Type::Color: {
                 auto color = static_cast<LottieSolid*>(pair->obj)->color;
                 colorReplacement->getCustomColorLottie32(color.value.rgb[0], color.value.rgb[1], color.value.rgb[2]);
-                if (!overridden) {
-                    pair->prop = new LottieColor;
-                    *static_cast<LottieColor*>(pair->prop) = color;
-                }
-
-                pair->obj->override(&color);
+                if (copy) pair->prop = new LottieColor(color);
+                pair->obj->override(&color, shallow, byDefault);
+                break;
+            }
+            case LottieProperty::Type::ColorStop: {
+                if (copy) pair->prop = new LottieColorStop(static_cast<LottieGradient*>(pair->obj)->colorStops);
+                pair->obj->override(&static_cast<LottieGradient*>(target)->colorStops, shallow, byDefault);
                 break;
             }
             case LottieProperty::Type::TextDoc: {
-                if (!overridden) {
-                    pair->prop = new LottieTextDoc;
-                    *static_cast<LottieTextDoc*>(pair->prop) = static_cast<LottieText*>(pair->obj)->doc;
-                }
-
-                pair->obj->override(&static_cast<LottieText*>(target)->doc);
+                if (copy) pair->prop = new LottieTextDoc(static_cast<LottieText*>(pair->obj)->doc);
+                pair->obj->override(&static_cast<LottieText*>(target)->doc, shallow, byDefault);
+                break;
+            }
+            case LottieProperty::Type::Image: {
+                if (copy) pair->prop = new LottieBitmap(static_cast<LottieImage*>(pair->obj)->data);
+                pair->obj->override(&static_cast<LottieImage*>(target)->data, shallow, byDefault);
                 break;
             }
             default: break;
         }
     }
-    overridden = true;
+    if (!byDefault) overridden = true;
 }
 
 
-void LottieTextRange::range(float frameNo, float totalLen, float& start, float& end)
+float LottieTextRange::factor(float frameNo, float totalLen, float idx)
 {
+    auto offset = this->offset(frameNo);
+    auto start = this->start(frameNo) + offset;
+    auto end = this->end(frameNo) + offset;
+
+    if (random > 0) {
+        auto range = end - start;
+        auto len = (rangeUnit == Unit::Percent) ? 100.0f : totalLen;
+        start = static_cast<float>(random % int(len - range));
+        end = start + range;
+    }
+
     auto divisor = (rangeUnit == Unit::Percent) ? (100.0f / totalLen) : 1.0f;
-    auto offset = this->offset(frameNo) / divisor;
-    start = nearbyintf(this->start(frameNo) / divisor) + offset;
-    end = nearbyintf(this->end(frameNo) / divisor) + offset;
+    start /= divisor;
+    end /= divisor;
 
-    if (start > end) std::swap(start, end);
+    auto f = 0.0f;
 
-    if (random == 0) return;
+    switch (this->shape) {
+        case Square: {
+            auto smoothness = this->smoothness(frameNo);
+            if (tvg::zero(smoothness)) f = idx >= nearbyintf(start) && idx < nearbyintf(end) ? 1.0f : 0.0f;
+            else {
+                if (idx >= std::floor(start)) {
+                    auto diff = idx - start;
+                    f = diff < 0.0f ? std::min(end, 1.0f) + diff : end - idx;
+                }
+                smoothness *= 0.01f;
+                f = (f - (1.0f - smoothness) * 0.5f) / smoothness;
+            }
+            break;
+        }
+        case RampUp: {
+            f = tvg::equal(start, end) ? (idx >= end ? 1.0f : 0.0f) : (0.5f + idx - start) / (end - start);
+            break;
+        }
+        case RampDown: {
+            f = tvg::equal(start, end) ? (idx >= end ? 0.0f : 1.0f) : 1.0f - (0.5f + idx - start) / (end - start);
+            break;
+        }
+        case Triangle: {
+            f = tvg::equal(start, end) ? 0.0f : 2.0f * (0.5f + idx - start) / (end - start);
+            f = f < 1.0f ? f : 2.0f - f;
+            break;
+        }
+        case Round: {
+            idx += 0.5f - start;
+            clamp(idx, 0.0f, end - start);
+            auto range = 0.5f * (end - start);
+            auto t = idx - range;
+            f = tvg::equal(start, end) ? 0.0f : sqrtf(1.0f - t * t / (range * range));
+            break;
+        }
+        case Smooth: {
+            idx += 0.5f - start;
+            clamp(idx, 0.0f, end - start);
+            f = tvg::equal(start, end) ? 0.0f : 0.5f * (1.0f + cosf(MATH_PI * (1.0f + 2.0f * idx / (end - start))));
+            break;
+        }
+    }
+    clamp(f, 0.0f, 1.0f);
 
-    auto range = end - start;
-    auto len = (rangeUnit == Unit::Percent) ? 100.0f : totalLen;
-    start = static_cast<float>(random % int(len - range));
-    end = start + range;
-}
+    //apply easing
+    auto minEase = this->minEase(frameNo);
+    clamp(minEase, -100.0f, 100.0f);
+    auto maxEase = this->maxEase(frameNo);
+    clamp(maxEase, -100.0f, 100.0f);
+    if (!tvg::zero(minEase) || !tvg::zero(maxEase)) {
+        Point in{1.0f, 1.0f};
+        Point out{0.0f, 0.0f};
 
+        if (maxEase > 0.0f) in.x = 1.0f - maxEase * 0.01f;
+        else in.y = 1.0f + maxEase * 0.01f;
+        if (minEase > 0.0f) out.x = minEase * 0.01f;
+        else out.y = -minEase * 0.01f;
 
-LottieImage::~LottieImage()
-{
-    free(b64Data);
-    free(mimeType);
+        interpolator->set(nullptr, in, out);
+        f = interpolator->progress(f);
+    }
+    clamp(f, 0.0f, 1.0f);
+
+    return f * this->maxAmount(frameNo) * 0.01f;
 }
 
 
@@ -141,20 +183,33 @@ void LottieImage::prepare()
 {
     LottieObject::type = LottieObject::Image;
 
-    auto picture = Picture::gen().release();
+    auto picture = Picture::gen();
 
     //force to load a picture on the same thread
     TaskScheduler::async(false);
 
-    if (size > 0) picture->load((const char*)b64Data, size, mimeType);
-    else picture->load(path);
+    if (data.size > 0) picture->load((const char*)data.b64Data, data.size, data.mimeType);
+    else picture->load(data.path);
 
     TaskScheduler::async(true);
 
-    picture->size(width, height);
-    PP(picture)->ref();
+    picture->size(data.width, data.height);
+    picture->ref();
 
     pooler.push(picture);
+}
+
+
+void LottieImage::update()
+{
+    //Update the picture data
+    TaskScheduler::async(false);
+    for (auto p = pooler.begin(); p < pooler.end(); ++p) {
+        if (data.size > 0) (*p)->load((const char*)data.b64Data, data.size, data.mimeType);
+        else (*p)->load(data.path);
+        (*p)->size(data.width, data.height);
+    }
+    TaskScheduler::async(true);
 }
 
 
@@ -286,12 +341,12 @@ Fill* LottieGradient::fill(float frameNo, LottieExpressions* exps)
 
     //Linear Graident
     if (id == 1) {
-        fill = LinearGradient::gen().release();
+        fill = LinearGradient::gen();
         static_cast<LinearGradient*>(fill)->linear(s.x, s.y, e.x, e.y);
     }
     //Radial Gradient
     if (id == 2) {
-        fill = RadialGradient::gen().release();
+        fill = RadialGradient::gen();
 
         auto w = fabsf(e.x - s.x);
         auto h = fabsf(e.y - s.y);
@@ -442,16 +497,16 @@ void LottieLayer::prepare(RGB24* color)
 
     //prepare the viewport clipper
     if (type == LottieLayer::Precomp) {
-        auto clipper = Shape::gen().release();
+        auto clipper = Shape::gen();
         clipper->appendRect(0.0f, 0.0f, w, h);
-        PP(clipper)->ref();
+        clipper->ref();
         statical.pooler.push(clipper);
     //prepare solid fill in advance if it is a layer type.
     } else if (color && type == LottieLayer::Solid) {
-        auto solidFill = Shape::gen().release();
+        auto solidFill = Shape::gen();
         solidFill->appendRect(0, 0, static_cast<float>(w), static_cast<float>(h));
         solidFill->fill(color->rgb[0], color->rgb[1], color->rgb[2]);
-        PP(solidFill)->ref();
+        solidFill->ref();
         statical.pooler.push(solidFill);
     }
 

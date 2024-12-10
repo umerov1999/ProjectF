@@ -43,6 +43,10 @@ void LottieLoader::run(unsigned tid)
             ScopedLock lock(key);
             comp = parser.comp;
         }
+        if (parser.slots) {
+            override(parser.slots, true);
+            parser.slots = nullptr;
+        }
         builder->build(comp);
 
         release();
@@ -57,8 +61,6 @@ void LottieLoader::release()
         free((char*)content);
         content = nullptr;
     }
-    free(dirName);
-    dirName = nullptr;
 }
 
 
@@ -81,6 +83,8 @@ LottieLoader::~LottieLoader()
     //TODO: correct position?
     delete(comp);
     delete(builder);
+
+    free(dirName);
 }
 
 
@@ -195,7 +199,7 @@ bool LottieLoader::header()
 }
 
 
-bool LottieLoader::open(const char* data, uint32_t size, const std::string& rpath, bool copy, const ColorReplace& colorReplacement)
+bool LottieLoader::open(const char* data, uint32_t size, const char* rpath, bool copy, const ColorReplace& colorReplacement)
 {
     colorReplaceInternal = colorReplacement;
     if (copy) {
@@ -208,17 +212,18 @@ bool LottieLoader::open(const char* data, uint32_t size, const std::string& rpat
     this->size = size;
     this->copy = copy;
 
-    if (rpath.empty()) this->dirName = strdup(".");
-    else this->dirName = strdup(rpath.c_str());
+    if (!rpath) this->dirName = strdup(".");
+    else this->dirName = strdup(rpath);
 
     return header();
 }
 
 
-bool LottieLoader::open(const string& path, const ColorReplace& colorReplacement)
+bool LottieLoader::open(const char* path, const ColorReplace& colorReplacement)
 {
+#ifdef THORVG_FILE_IO_SUPPORT
     colorReplaceInternal = colorReplacement;
-    auto f = fopen(path.c_str(), "r");
+    auto f = fopen(path, "r");
     if (!f) return false;
 
     fseek(f, 0, SEEK_END);
@@ -240,11 +245,14 @@ bool LottieLoader::open(const string& path, const ColorReplace& colorReplacement
 
     fclose(f);
 
-    this->dirName = strDirname(path.c_str());
+    this->dirName = strDirname(path);
     this->content = content;
     this->copy = true;
 
     return header();
+#else
+    return false;
+#endif
 }
 
 
@@ -289,34 +297,35 @@ Paint* LottieLoader::paint()
 }
 
 
-bool LottieLoader::override(const char* slot)
+bool LottieLoader::override(const char* slots, bool byDefault)
 {
     if (!ready() || comp->slots.count == 0) return false;
 
-    auto success = true;
-
     //override slots
-    if (slot) {
+    if (slots) {
         //Copy the input data because the JSON parser will encode the data immediately.
-        auto temp = strdup(slot);
+        auto temp = byDefault ? slots : strdup(slots);
 
         //parsing slot json
         LottieParser parser(temp, dirName, colorReplaceInternal);
         parser.comp = comp;
 
         auto idx = 0;
+        auto succeed = false;
         while (auto sid = parser.sid(idx == 0)) {
+            auto applied = false;
             for (auto s = comp->slots.begin(); s < comp->slots.end(); ++s) {
                 if (strcmp((*s)->sid, sid)) continue;
-                if (!parser.apply(*s)) success = false;
+                if (parser.apply(*s, byDefault)) succeed = applied = true;
                 break;
             }
+            if (!applied) parser.skip(sid);
             ++idx;
         }
-
-        if (idx < 1) success = false;
-        free(temp);
-        rebuild = overridden = success;
+        free((char*)temp);
+        rebuild = succeed;
+        overridden |= succeed;
+        return rebuild;
     //reset slots
     } else if (overridden) {
         for (auto s = comp->slots.begin(); s < comp->slots.end(); ++s) {
@@ -325,7 +334,7 @@ bool LottieLoader::override(const char* slot)
         overridden = false;
         rebuild = true;
     }
-    return success;
+    return true;
 }
 
 

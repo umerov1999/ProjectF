@@ -40,6 +40,7 @@ class SettingsBackup {
         var image_size: String? = null
         var start_news: String? = null
         var crypt_version: String? = null
+        var validate_tls: Boolean? = null
         var photo_preview_size: String? = null
         var viewpager_page_transform: String? = null
         var player_cover_transform: String? = null

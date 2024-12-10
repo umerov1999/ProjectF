@@ -163,8 +163,8 @@ Paint* Paint::Impl::duplicate(Paint* ret)
 
     ret->pImpl->opacity = opacity;
 
-    if (maskData) ret->pImpl->mask(ret, maskData->target->duplicate(), maskData->method);
-    if (clipper) ret->pImpl->clip(clipper->duplicate());
+    if (maskData) ret->mask(maskData->target->duplicate(), maskData->method);
+    if (clipper) ret->clip(clipper->duplicate());
 
     return ret;
 }
@@ -216,7 +216,7 @@ bool Paint::Impl::render(RenderMethod* renderer)
 
         if (MASK_REGION_MERGING(maskData->method)) region.add(P(maskData->target)->bounds(renderer));
         if (region.w == 0 || region.h == 0) return true;
-        cmp = renderer->target(region, MASK_TO_COLORSPACE(renderer, maskData->method));
+        cmp = renderer->target(region, MASK_TO_COLORSPACE(renderer, maskData->method), CompositionFlag::Masking);
         if (renderer->beginComposite(cmp, MaskMethod::None, 255)) {
             maskData->target->pImpl->render(renderer);
         }
@@ -357,12 +357,12 @@ bool Paint::Impl::bounds(float* x, float* y, float* w, float* h, bool transforme
 void Paint::Impl::reset()
 {
     if (clipper) {
-        delete(clipper);
+        clipper->unref();
         clipper = nullptr;
     }
 
     if (maskData) {
-        if (P(maskData->target)->unref() == 0) delete(maskData->target);
+        maskData->target->unref();
         free(maskData);
         maskData = nullptr;
     }
@@ -374,7 +374,7 @@ void Paint::Impl::reset()
 
     blendMethod = BlendMethod::Normal;
     renderFlag = RenderUpdateFlag::None;
-    ctxFlag = ContextFlag::Invalid;
+    ctxFlag = ContextFlag::Default;
     opacity = 255;
     paint->id = 0;
 }
@@ -442,25 +442,22 @@ Paint* Paint::duplicate() const noexcept
 }
 
 
-Result Paint::clip(std::unique_ptr<Paint> clipper) noexcept
+Result Paint::clip(Paint* clipper) noexcept
 {
-    auto p = clipper.release();
-
-    if (p && p->type() != Type::Shape) {
+    if (clipper && clipper->type() != Type::Shape) {
         TVGERR("RENDERER", "Clipping only supports the Shape!");
+        TVG_DELETE(clipper);
         return Result::NonSupport;
     }
-    pImpl->clip(p);
+    pImpl->clip(clipper);
     return Result::Success;
 }
 
 
-Result Paint::mask(std::unique_ptr<Paint> target, MaskMethod method) noexcept
+Result Paint::mask(Paint* target, MaskMethod method) noexcept
 {
-    auto p = target.release();
-    if (pImpl->mask(this, p, method)) return Result::Success;
-
-    delete(p);
+    if (pImpl->mask(target, method)) return Result::Success;
+    if (target) TVG_DELETE(target);
     return Result::InvalidArguments;
 }
 
@@ -505,4 +502,34 @@ Result Paint::blend(BlendMethod method) noexcept
     }
 
     return Result::Success;
+}
+
+
+uint8_t Paint::ref() noexcept
+{
+    if (pImpl->refCnt == UINT8_MAX) TVGERR("RENDERER", "Reference Count Overflow!");
+    else ++pImpl->refCnt;
+
+    return pImpl->refCnt;
+}
+
+
+uint8_t Paint::unref(bool free) noexcept
+{
+    if (pImpl->refCnt > 0) --pImpl->refCnt;
+    else TVGERR("RENDERER", "Corrupted Reference Count!");
+
+    if (free && pImpl->refCnt == 0) {
+        //TODO: use the global dismiss function?
+        delete(this);
+        return 0;
+    }
+
+    return pImpl->refCnt;
+}
+
+
+uint8_t Paint::refCnt() const noexcept
+{
+    return pImpl->refCnt;
 }

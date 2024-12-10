@@ -64,10 +64,10 @@ struct Picture::Impl
     RenderData rd = nullptr;          //engine data
     float w = 0, h = 0;
     Picture* picture = nullptr;
+    uint8_t cFlag = CompositionFlag::Invalid;
     bool resizing = false;
-    bool needComp = false;            //need composition
 
-    bool needComposition(uint8_t opacity);
+    void queryComposition(uint8_t opacity);
     bool render(RenderMethod* renderer);
     bool size(float w, float h);
     RenderRegion bounds(RenderMethod* renderer);
@@ -107,7 +107,7 @@ struct Picture::Impl
                 loader->resize(paint, w, h);
                 resizing = false;
             }
-            needComp = needComposition(opacity) ? true : false;
+            queryComposition(opacity);
             rd = paint->pImpl->update(renderer, transform, clips, opacity, flag, false);
         }
         return rd;
@@ -122,12 +122,12 @@ struct Picture::Impl
         return true;
     }
 
-    Result load(const char* filename, std::unique_ptr<ColorReplace> colorReplacement)
+    Result load(const char* filename, ColorReplace *colorReplacement)
     {
         if (paint || surface) return Result::InsufficientCondition;
 
         bool invalid;  //Invalid Path
-        auto loader = static_cast<ImageLoader*>(LoaderMgr::loader(filename, &invalid, std::move(colorReplacement)));
+        auto loader = static_cast<ImageLoader*>(LoaderMgr::loader(filename, &invalid, colorReplacement));
         if (!loader) {
             if (invalid) return Result::InvalidArguments;
             return Result::NonSupport;
@@ -135,10 +135,10 @@ struct Picture::Impl
         return load(loader);
     }
 
-    Result load(const char* data, uint32_t size, const char* mimeType, const char* rpath, bool copy, std::unique_ptr<ColorReplace> colorReplacement)
+    Result load(const char* data, uint32_t size, const char* mimeType, const char* rpath, bool copy, ColorReplace *colorReplacement)
     {
         if (paint || surface) return Result::InsufficientCondition;
-        auto loader = static_cast<ImageLoader*>(LoaderMgr::loader(data, size, mimeType, rpath, copy, std::move(colorReplacement)));
+        auto loader = static_cast<ImageLoader*>(LoaderMgr::loader(data, size, mimeType, rpath, copy, colorReplacement));
         if (!loader) return Result::NonSupport;
         return load(loader);
     }
@@ -159,7 +159,7 @@ struct Picture::Impl
 
         load();
 
-        auto picture = Picture::gen().release();
+        auto picture = Picture::gen();
         auto dup = picture->pImpl;
 
         if (paint) dup->paint = paint->duplicate();

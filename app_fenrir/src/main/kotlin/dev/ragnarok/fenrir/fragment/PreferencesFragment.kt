@@ -40,9 +40,7 @@ import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
-import com.squareup.picasso3.BitmapSafeResize.isOverflowCanvas
-import com.squareup.picasso3.BitmapSafeResize.setHardwareRendering
-import com.squareup.picasso3.BitmapSafeResize.setMaxResolution
+import com.squareup.picasso3.BitmapSafeResize
 import de.maxr1998.modernpreferences.AbsPreferencesFragment
 import de.maxr1998.modernpreferences.PreferenceScreen
 import de.maxr1998.modernpreferences.PreferencesAdapter
@@ -86,6 +84,7 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.backup.SettingsBackup
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
+import dev.ragnarok.fenrir.util.CoverSafeResize
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CompositeJob
@@ -1639,10 +1638,10 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         sz = its.toString().trim().toInt()
                     } catch (_: NumberFormatException) {
                     }
-                    if (isOverflowCanvas(sz) || sz in 0..99) {
+                    if (BitmapSafeResize.isOverflowCanvas(sz) || sz in 0..99) {
                         return@onTextBeforeChanged false
                     } else {
-                        setMaxResolution(sz)
+                        BitmapSafeResize.setMaxResolution(sz)
                     }
                     requireActivity().recreate()
                     true
@@ -1664,10 +1663,10 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         sz = its.toString().trim().toInt()
                     } catch (_: NumberFormatException) {
                     }
-                    if (isOverflowCanvas(sz) || sz in 0..99) {
+                    if (CoverSafeResize.isOverflowCanvas(sz) || sz in 0..99) {
                         return@onTextBeforeChanged false
                     } else {
-                        setMaxResolution(sz)
+                        CoverSafeResize.setMaxResolution(sz)
                     }
                     true
                 }
@@ -1691,7 +1690,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         sz = it.trim().toInt()
                     } catch (_: NumberFormatException) {
                     }
-                    setHardwareRendering(sz)
+                    BitmapSafeResize.setHardwareRendering(sz)
                     requireActivity().recreate()
                 }
             }

@@ -112,7 +112,7 @@ struct LottieVectorFrame
 //Property would have an either keyframes or single value.
 struct LottieProperty
 {
-    enum class Type : uint8_t { Point = 0, Float, Opacity, Color, PathSet, ColorStop, Position, TextDoc, Invalid };
+    enum class Type : uint8_t { Point = 0, Float, Opacity, Color, PathSet, ColorStop, Position, TextDoc, Image, Invalid };
 
     LottieExpression* exp = nullptr;
     Type type;
@@ -261,6 +261,12 @@ struct LottieGenericProperty : LottieProperty
     LottieGenericProperty(T v) : value(v) {}
     LottieGenericProperty() {}
 
+    LottieGenericProperty(const LottieGenericProperty<T>& rhs)
+    {
+        copy(rhs);
+        type = rhs.type;
+    }
+
     ~LottieGenericProperty()
     {
         release();
@@ -329,14 +335,17 @@ struct LottieGenericProperty : LottieProperty
         return operator()(frameNo);
     }
 
-    LottieGenericProperty<T>& operator=(const LottieGenericProperty<T>& other)
+    void copy(const LottieGenericProperty<T>& rhs, bool shallow = true)
     {
-        //shallow copy, used for slot overriding
-        if (other.frames) {
-            frames = other.frames;
-            const_cast<LottieGenericProperty<T>&>(other).frames = nullptr;
-        } else value = other.value;
-        return *this;
+        if (rhs.frames) {
+            if (shallow) {
+                frames = rhs.frames;
+                const_cast<LottieGenericProperty<T>&>(rhs).frames = nullptr;
+            } else {
+                frames = new Array<LottieScalarFrame<T>>;
+                *frames = *rhs.frames;
+            }
+        } else value = rhs.value;
     }
 
     float angle(float frameNo) { return 0; }
@@ -504,6 +513,14 @@ struct LottieColorStop : LottieProperty
     uint16_t count = 0;     //colorstop count
     bool populated = false;
 
+    LottieColorStop() {}
+
+    LottieColorStop(const LottieColorStop& rhs)
+    {
+        copy(rhs);
+        type = rhs.type;
+    }
+
     ~LottieColorStop()
     {
         release();
@@ -608,20 +625,22 @@ struct LottieColorStop : LottieProperty
         return fill->colorStops(result.data, count);
     }
 
-    LottieColorStop& operator=(const LottieColorStop& other)
+    void copy(const LottieColorStop& rhs, bool shallow = true)
     {
-        //shallow copy, used for slot overriding
-        if (other.frames) {
-            frames = other.frames;
-            const_cast<LottieColorStop&>(other).frames = nullptr;
+        if (rhs.frames) {
+            if (shallow) {
+                frames = rhs.frames;
+                const_cast<LottieColorStop&>(rhs).frames = nullptr;
+            } else {
+                frames = new Array<LottieScalarFrame<ColorStop>>;
+                *frames = *rhs.frames;
+            }
         } else {
-            value = other.value;
-            const_cast<LottieColorStop&>(other).value = {nullptr, nullptr};
+            value = rhs.value;
+            const_cast<LottieColorStop&>(rhs).value = ColorStop();
         }
-        populated = other.populated;
-        count = other.count;
-
-        return *this;
+        populated = rhs.populated;
+        count = rhs.count;
     }
 
     void prepare() {}
@@ -735,6 +754,14 @@ struct LottieTextDoc : LottieProperty
     Array<LottieScalarFrame<TextDocument>>* frames = nullptr;
     TextDocument value;
 
+    LottieTextDoc() {}
+
+    LottieTextDoc(const LottieTextDoc& rhs)
+    {
+        copy(rhs);
+        type = rhs.type;
+    }
+
     ~LottieTextDoc()
     {
         release();
@@ -808,21 +835,82 @@ struct LottieTextDoc : LottieProperty
         return frame->value;
     }
 
-    LottieTextDoc& operator=(const LottieTextDoc& other)
+    void copy(const LottieTextDoc& rhs, bool shallow = true)
     {
-        //shallow copy, used for slot overriding
-        if (other.frames) {
-            frames = other.frames;
-            const_cast<LottieTextDoc&>(other).frames = nullptr;
+        if (rhs.frames) {
+            if (shallow) {
+                frames = rhs.frames;
+                const_cast<LottieTextDoc&>(rhs).frames = nullptr;
+            } else {
+                frames = new Array<LottieScalarFrame<TextDocument>>;
+                *frames = *rhs.frames;
+            }
         } else {
-            value = other.value;
-            const_cast<LottieTextDoc&>(other).value.text = nullptr;
-            const_cast<LottieTextDoc&>(other).value.name = nullptr;
+            value = rhs.value;
+            const_cast<LottieTextDoc&>(rhs).value.text = nullptr;
+            const_cast<LottieTextDoc&>(rhs).value.name = nullptr;
         }
-        return *this;
     }
 
     void prepare() {}
+};
+
+
+struct LottieBitmap : LottieProperty
+{
+    union {
+        char* b64Data = nullptr;
+        char* path;
+    };
+    char* mimeType = nullptr;
+    uint32_t size = 0;
+    float width = 0.0f;
+    float height = 0.0f;
+
+    LottieBitmap() {}
+
+    LottieBitmap(const LottieBitmap& rhs)
+    {
+        copy(rhs);
+        type = rhs.type;
+    }
+
+    ~LottieBitmap()
+    {
+        release();
+    }
+
+    void release()
+    {
+        free(b64Data);
+        free(mimeType);
+
+        b64Data = nullptr;
+        mimeType = nullptr;
+    }
+
+    uint32_t frameCnt() override { return 0; }
+    uint32_t nearest(float time) override { return 0; }
+    float frameNo(int32_t key) override { return 0; }
+
+    void copy(const LottieBitmap& rhs, bool shallow = true)
+    {
+        if (shallow) {
+            b64Data = rhs.b64Data;
+            mimeType = rhs.mimeType;
+        } else {
+            //TODO: optimize here by avoiding data copy
+            TVGLOG("LOTTIE", "Shallow copy of the image data!");
+            b64Data = strdup(rhs.b64Data);
+            mimeType = strdup(rhs.mimeType);
+        }
+        size = rhs.size;
+        width = rhs.width;
+        height = rhs.height;
+
+        const_cast<LottieBitmap&>(rhs).b64Data = nullptr;
+        const_cast<LottieBitmap&>(rhs).mimeType = nullptr;
+    }
 };
 
 

@@ -2499,6 +2499,18 @@ static SvgStyleGradient* _createRadialGradient(SvgLoaderData* loader, const char
 }
 
 
+static SvgColor* _findLatestColor(const SvgLoaderData* loader)
+{
+    auto parent = loader->stack.count > 0 ? loader->stack.last() : loader->doc;
+
+    while (parent != nullptr) {
+        if (parent->style->curColorSet) return &parent->style->color;
+        parent = parent->parent;
+    }
+    return nullptr;
+}
+
+
 static bool _attrParseStopsStyle(void* data, const char* key, const char* value)
 {
     SvgLoaderData* loader = (SvgLoaderData*)data;
@@ -2508,7 +2520,13 @@ static bool _attrParseStopsStyle(void* data, const char* key, const char* value)
         stop->a = _toOpacity(value);
         loader->svgParse->flags = (loader->svgParse->flags | SvgStopStyleFlags::StopOpacity);
     } else if (!strcmp(key, "stop-color")) {
-        if (_toColor(value, &stop->r, &stop->g, &stop->b, nullptr)) {
+        if (!strcmp(value, "currentColor")) {
+            if (auto latestColor = _findLatestColor(loader)) {
+                stop->r = latestColor->r;
+                stop->g = latestColor->g;
+                stop->b = latestColor->b;
+            }
+        } else if (_toColor(value, &stop->r, &stop->g, &stop->b, nullptr)) {
             loader->svgParse->flags = (loader->svgParse->flags | SvgStopStyleFlags::StopColor);
         }
     } else {
@@ -2531,7 +2549,13 @@ static bool _attrParseStops(void* data, const char* key, const char* value)
             stop->a = _toOpacity(value);
         }
     } else if (!strcmp(key, "stop-color")) {
-        if (!(loader->svgParse->flags & SvgStopStyleFlags::StopColor)) {
+        if (!strcmp(value, "currentColor")) {
+            if (auto latestColor = _findLatestColor(loader)) {
+                stop->r = latestColor->r;
+                stop->g = latestColor->g;
+                stop->b = latestColor->b;
+            }
+        } else if (!(loader->svgParse->flags & SvgStopStyleFlags::StopColor)) {
             _toColor(value, &stop->r, &stop->g, &stop->b, nullptr);
         }
     } else if (!strcmp(key, "style")) {
@@ -3756,7 +3780,7 @@ void SvgLoader::run(unsigned tid)
     //According to the SVG standard the value of the width/height of the viewbox set to 0 disables rendering
     if ((viewFlag & SvgViewFlag::Viewbox) && (fabsf(vw) <= FLOAT_EPSILON || fabsf(vh) <= FLOAT_EPSILON)) {
         TVGLOG("SVG", "The <viewBox> width and/or height set to 0 - rendering disabled.");
-        root = Scene::gen().release();
+        root = Scene::gen();
         return;
     }
 
@@ -3873,7 +3897,7 @@ bool SvgLoader::header()
 }
 
 
-bool SvgLoader::open(const char* data, uint32_t size, TVG_UNUSED const string& rpath, bool copy, const ColorReplace& colorReplacement)
+bool SvgLoader::open(const char* data, uint32_t size, TVG_UNUSED const char* rpath, bool copy, const ColorReplace& colorReplacement)
 {
     clear();
 
@@ -3891,8 +3915,9 @@ bool SvgLoader::open(const char* data, uint32_t size, TVG_UNUSED const string& r
 }
 
 
-bool SvgLoader::open(const string& path, const ColorReplace& colorReplacement)
+bool SvgLoader::open(const char* path, const ColorReplace& colorReplacement)
 {
+#ifdef THORVG_FILE_IO_SUPPORT
     clear();
 
     ifstream f;
@@ -3910,6 +3935,9 @@ bool SvgLoader::open(const string& path, const ColorReplace& colorReplacement)
     size = filePath.size();
 
     return header();
+#else
+    return false;
+#endif
 }
 
 

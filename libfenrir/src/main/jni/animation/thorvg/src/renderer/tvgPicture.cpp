@@ -56,16 +56,18 @@ RenderUpdateFlag Picture::Impl::load()
 }
 
 
-bool Picture::Impl::needComposition(uint8_t opacity)
+void Picture::Impl::queryComposition(uint8_t opacity)
 {
+    cFlag = CompositionFlag::Invalid;
+
     //In this case, paint(scene) would try composition itself.
-    if (opacity < 255) return false;
+    if (opacity < 255) return;
 
     //Composition test
     const Paint* target;
     picture->mask(&target);
-    if (!target || target->pImpl->opacity == 255 || target->pImpl->opacity == 0) return false;
-    return true;
+    if (!target || target->pImpl->opacity == 255 || target->pImpl->opacity == 0) return;
+    cFlag = CompositionFlag::Opacity;
 }
 
 
@@ -77,8 +79,8 @@ bool Picture::Impl::render(RenderMethod* renderer)
     if (surface) return renderer->renderImage(rd);
     else if (paint) {
         RenderCompositor* cmp = nullptr;
-        if (needComp) {
-            cmp = renderer->target(bounds(renderer), renderer->colorSpace());
+        if (cFlag) {
+            cmp = renderer->target(bounds(renderer), renderer->colorSpace(), static_cast<CompositionFlag>(cFlag));
             renderer->beginComposite(cmp, MaskMethod::None, 255);
         }
         ret = paint->pImpl->render(renderer);
@@ -142,9 +144,9 @@ Picture::~Picture()
 }
 
 
-unique_ptr<Picture> Picture::gen() noexcept
+Picture* Picture::gen() noexcept
 {
-    return unique_ptr<Picture>(new Picture);
+    return new Picture;
 }
 
 
@@ -154,19 +156,24 @@ Type Picture::type() const noexcept
 }
 
 
-Result Picture::load(const char* filename, std::unique_ptr<ColorReplace> colorReplacement) noexcept
+Result Picture::load(const char* filename, ColorReplace *colorReplacement) noexcept
 {
+#ifdef THORVG_FILE_IO_SUPPORT
     if (!filename) return Result::InvalidArguments;
 
-    return pImpl->load(filename, std::move(colorReplacement));
+    return pImpl->load(filename, colorReplacement);
+#else
+    TVGLOG("RENDERER", "FILE IO is disabled!");
+    return Result::NonSupport;
+#endif
 }
 
 
-Result Picture::load(const char* data, uint32_t size, const char* mimeType, const char* rpath, bool copy, std::unique_ptr<ColorReplace> colorReplacement) noexcept
+Result Picture::load(const char* data, uint32_t size, const char* mimeType, const char* rpath, bool copy, ColorReplace *colorReplacement) noexcept
 {
     if (!data || size <= 0) return Result::InvalidArguments;
 
-    return pImpl->load(data, size, mimeType, rpath, copy, std::move(colorReplacement));
+    return pImpl->load(data, size, mimeType, rpath, copy, colorReplacement);
 }
 
 
@@ -212,6 +219,9 @@ const Paint* Picture::paint(uint32_t id) noexcept
         return true;
     };
 
-    tvg::Accessor::gen()->set(this, cb, &value);
+    auto accessor = tvg::Accessor::gen();
+    accessor->set(this, cb, &value);
+    delete(accessor);
+
     return value.ret;
 }
