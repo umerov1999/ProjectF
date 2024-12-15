@@ -3,9 +3,9 @@ package dev.ragnarok.fenrir.api.adapters
 import dev.ragnarok.fenrir.api.model.VKApiAudioPlaylist
 import dev.ragnarok.fenrir.api.model.response.ServicePlaylistResponse
 import dev.ragnarok.fenrir.kJson
-import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
-import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
-import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 
 class ServicePlaylistResponseDtoAdapter :
     AbsDtoAdapter<ServicePlaylistResponse>("ServicePlaylistResponse") {

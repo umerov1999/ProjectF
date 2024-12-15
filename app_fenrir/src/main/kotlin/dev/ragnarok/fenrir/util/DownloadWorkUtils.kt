@@ -44,9 +44,9 @@ import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.inMainThread
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingleSafe
 import dev.ragnarok.fenrir.util.hls.M3U8
-import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.msgpack.MsgPack
 import okhttp3.Request
 import java.io.BufferedInputStream
 import java.io.File

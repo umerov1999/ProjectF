@@ -4,8 +4,8 @@ import dev.ragnarok.fenrir.api.model.VKApiPhoto
 import dev.ragnarok.fenrir.api.model.VKApiStory
 import dev.ragnarok.fenrir.api.model.VKApiVideo
 import dev.ragnarok.fenrir.kJson
-import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
-import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonObject
 
 class StoryDtoAdapter : AbsDtoAdapter<VKApiStory>("VKApiStory") {
     @Throws(Exception::class)

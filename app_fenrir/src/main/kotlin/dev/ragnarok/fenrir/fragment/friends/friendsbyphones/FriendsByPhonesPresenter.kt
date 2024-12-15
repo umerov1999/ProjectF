@@ -10,13 +10,13 @@ import dev.ragnarok.fenrir.domain.IAccountsInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.kJson
+import dev.ragnarok.fenrir.kJsonPretty
 import dev.ragnarok.fenrir.model.ContactConversation
 import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
-import dev.ragnarok.fenrir.util.serializeble.json.Json
-import dev.ragnarok.fenrir.util.serializeble.json.decodeFromBufferedSource
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.decodeFromBufferedSource
 import okio.buffer
 import okio.source
 import java.io.File
@@ -70,11 +70,11 @@ class FriendsByPhonesPresenter(accountId: Long, savedInstanceState: Bundle?) :
         var out: FileOutputStream? = null
         try {
 
-            val bytes = Json {
-                prettyPrint = true
-            }.encodeToString(ListSerializer(ContactConversation.serializer()), data).toByteArray(
-                Charsets.UTF_8
-            )
+            val bytes =
+                kJsonPretty.encodeToString(ListSerializer(ContactConversation.serializer()), data)
+                    .toByteArray(
+                        Charsets.UTF_8
+                    )
             out = FileOutputStream(file)
             val bom = byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte())
             out.write(bom)

@@ -19,9 +19,9 @@ import dev.ragnarok.fenrir.model.VideoAlbumCriteria
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
-import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.msgpack.MsgPack
 
 internal class VideoAlbumsStorage(base: AppStorages) : AbsStorage(base), IVideoAlbumsStorage {
     override fun findByCriteria(criteria: VideoAlbumCriteria): Flow<List<VideoAlbumDboEntity>> {

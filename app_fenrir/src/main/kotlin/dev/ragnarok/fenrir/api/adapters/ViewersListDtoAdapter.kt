@@ -5,9 +5,9 @@ import dev.ragnarok.fenrir.api.model.response.ViewersListResponse
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.requireNonNull
-import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
-import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
-import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 
 class ViewersListDtoAdapter : AbsDtoAdapter<ViewersListResponse>("ViewersListAdapter") {
     @Throws(Exception::class)

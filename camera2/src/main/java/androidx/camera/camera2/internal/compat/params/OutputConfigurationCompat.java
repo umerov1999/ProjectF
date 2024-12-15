@@ -115,6 +115,11 @@ public final class OutputConfigurationCompat {
         }
     }
 
+    @RequiresApi(33)
+    public OutputConfigurationCompat(@NonNull OutputConfiguration outputConfiguration) {
+        mImpl = OutputConfigurationCompatApi33Impl.wrap(outputConfiguration);
+    }
+
     private OutputConfigurationCompat(@NonNull OutputConfigurationCompatImpl impl) {
         mImpl = impl;
     }

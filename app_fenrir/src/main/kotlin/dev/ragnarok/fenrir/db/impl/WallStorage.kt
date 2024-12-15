@@ -34,11 +34,11 @@ import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.wrap
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
-import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.msgpack.MsgPack
 
 internal class WallStorage(base: AppStorages) : AbsStorage(base), IWallStorage {
     override fun storeWallEntities(

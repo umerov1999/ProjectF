@@ -47,7 +47,7 @@ android {
             //noinspection ChromeOsAbiSupport
             abiFilters = targetAbi
         }
-        resConfigs "en", "ru"
+        androidResources.localeFilters = ["en", "ru"]
     }
 
     lint {
@@ -67,6 +67,7 @@ android {
                             "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
                             "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
                             "-opt-in=kotlinx.serialization.internal.CoreFriendModuleApi",
+                            "-opt-in=kotlinx.serialization.SealedSerializationApi",
                             "-opt-in=kotlinx.serialization.InternalSerializationApi",
                             "-opt-in=kotlin.RequiresOptIn", "-opt-in=kotlin.ExperimentalStdlibApi"]
     }

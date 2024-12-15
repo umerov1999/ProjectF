@@ -69,12 +69,12 @@ import dev.ragnarok.filegallery.util.coroutines.CancelableJob
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.toMain
-import dev.ragnarok.filegallery.util.serializeble.json.*
-import dev.ragnarok.filegallery.util.serializeble.prefs.Preferences
 import dev.ragnarok.filegallery.util.toast.CustomSnackbars
 import dev.ragnarok.filegallery.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.filegallery.view.MySearchView
 import dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieView
+import kotlinx.serialization.json.*
+import kotlinx.serialization.prefs.Preferences
 import okio.buffer
 import okio.source
 import java.io.File
@@ -145,7 +145,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 root.put("app", app.build())
                 val settings = SettingsBackup().doBackup()
                 root.put("settings", settings)
-                val bytes = Json { prettyPrint = true }.printJsonElement(root.build()).toByteArray(
+                val bytes = kJsonPretty.printJsonElement(root.build()).toByteArray(
                     Charsets.UTF_8
                 )
                 val out = FileOutputStream(file)

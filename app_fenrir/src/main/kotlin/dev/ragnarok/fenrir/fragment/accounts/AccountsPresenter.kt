@@ -33,6 +33,7 @@ import dev.ragnarok.fenrir.exception.UnauthorizedException
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
 import dev.ragnarok.fenrir.isMsgPack
 import dev.ragnarok.fenrir.kJson
+import dev.ragnarok.fenrir.kJsonPretty
 import dev.ragnarok.fenrir.longpoll.LongpollInstance
 import dev.ragnarok.fenrir.model.Account
 import dev.ragnarok.fenrir.model.IOwnersBundle
@@ -57,19 +58,6 @@ import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.inMainThread
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingle
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingleSafe
-import dev.ragnarok.fenrir.util.serializeble.json.Json
-import dev.ragnarok.fenrir.util.serializeble.json.JsonArrayBuilder
-import dev.ragnarok.fenrir.util.serializeble.json.JsonObjectBuilder
-import dev.ragnarok.fenrir.util.serializeble.json.contentOrNull
-import dev.ragnarok.fenrir.util.serializeble.json.decodeFromBufferedSource
-import dev.ragnarok.fenrir.util.serializeble.json.intOrNull
-import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
-import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
-import dev.ragnarok.fenrir.util.serializeble.json.jsonPrimitive
-import dev.ragnarok.fenrir.util.serializeble.json.long
-import dev.ragnarok.fenrir.util.serializeble.json.longOrNull
-import dev.ragnarok.fenrir.util.serializeble.json.put
-import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -78,6 +66,18 @@ import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.JsonArrayBuilder
+import kotlinx.serialization.json.JsonObjectBuilder
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.decodeFromBufferedSource
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.long
+import kotlinx.serialization.json.longOrNull
+import kotlinx.serialization.json.put
+import kotlinx.serialization.msgpack.MsgPack
 import okhttp3.FormBody
 import okhttp3.Request
 import okio.buffer
@@ -377,7 +377,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
             if (!device.isNullOrEmpty()) {
                 root.put("device", device)
             }
-            val bytes = Json { prettyPrint = true }.printJsonElement(root.build()).toByteArray(
+            val bytes = kJsonPretty.printJsonElement(root.build()).toByteArray(
                 Charsets.UTF_8
             )
             out = FileOutputStream(file)
@@ -742,7 +742,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                 }
             }
             root.put("conversations_saved", arrDialogs.build())
-            val bytes = Json { prettyPrint = true }.printJsonElement(root.build()).toByteArray(
+            val bytes = kJsonPretty.printJsonElement(root.build()).toByteArray(
                 Charsets.UTF_8
             )
             out = FileOutputStream(file)

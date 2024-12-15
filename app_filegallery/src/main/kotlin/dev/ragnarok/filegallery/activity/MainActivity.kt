@@ -380,7 +380,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
 
     private fun handleIntent(action: String?, main: Boolean) {
         if (main) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && needHelp(
+            if (Utils.hasTiramisuTarget() && needHelp(
                     NOTIFICATION_PERMISSION,
                     1
                 ) && !AppPerms.hasNotificationPermissionSimple(this)

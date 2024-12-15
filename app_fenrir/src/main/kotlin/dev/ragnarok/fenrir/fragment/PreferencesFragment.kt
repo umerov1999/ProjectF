@@ -93,12 +93,12 @@ import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.util.refresh.RefreshToken
-import dev.ragnarok.fenrir.util.serializeble.prefs.Preferences
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.MySearchView
 import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
+import kotlinx.serialization.prefs.Preferences
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException

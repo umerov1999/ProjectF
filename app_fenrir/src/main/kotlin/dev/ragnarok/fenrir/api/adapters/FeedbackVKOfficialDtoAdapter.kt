@@ -12,8 +12,8 @@ import dev.ragnarok.fenrir.model.FeedbackVKOfficialList
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.serializeble.json.*
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.*
 
 class FeedbackVKOfficialDtoAdapter :
     AbsDtoAdapter<FeedbackVKOfficialList>("FeedbackVKOfficialList") {

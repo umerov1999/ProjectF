@@ -1,8 +1,8 @@
 package dev.ragnarok.filegallery.api.adapters
 
 import dev.ragnarok.filegallery.model.Audio
-import dev.ragnarok.filegallery.util.serializeble.json.JsonElement
-import dev.ragnarok.filegallery.util.serializeble.json.jsonObject
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonObject
 
 class AudioDtoAdapter : AbsDtoAdapter<Audio>("Audio") {
     @Throws(Exception::class)

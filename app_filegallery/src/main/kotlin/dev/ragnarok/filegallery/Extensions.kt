@@ -13,13 +13,24 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.view.View
 import androidx.annotation.ColorInt
+import androidx.core.database.getBlobOrNull
 import androidx.core.database.getStringOrNull
-import dev.ragnarok.filegallery.util.serializeble.json.Json
+import kotlinx.serialization.json.Json
 import okhttp3.ResponseBody
 import java.io.Serializable
 import kotlin.contracts.contract
 
 val kJson: Json by lazy { Json { ignoreUnknownKeys = true; isLenient = true } }
+val kJsonPretty: Json by lazy {
+    Json {
+        ignoreUnknownKeys = true; isLenient = true; prettyPrint = true
+    }
+}
+val kJsonNotPretty: Json by lazy {
+    Json {
+        ignoreUnknownKeys = true; isLenient = true; prettyPrint = false
+    }
+}
 
 fun SQLiteDatabase.query(
     tableName: String,
@@ -40,6 +51,9 @@ fun Cursor.getBoolean(columnName: String): Boolean =
 
 fun Cursor.getString(columnName: String): String? =
     getStringOrNull(getColumnIndexOrThrow(columnName))
+
+fun Cursor.getBlob(columnName: String): ByteArray? =
+    getBlobOrNull(getColumnIndexOrThrow(columnName))
 
 inline fun <reified T> Collection<T?>?.safeAllIsNullOrEmpty(): Boolean {
     contract {

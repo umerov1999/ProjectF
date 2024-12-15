@@ -22,9 +22,9 @@ import dev.ragnarok.fenrir.util.Optional
 import dev.ragnarok.fenrir.util.Optional.Companion.wrap
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
-import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.msgpack.MsgPack
 
 internal class PhotoAlbumsStorage(base: AppStorages) : AbsStorage(base), IPhotoAlbumsStorage {
     override fun findAlbumById(

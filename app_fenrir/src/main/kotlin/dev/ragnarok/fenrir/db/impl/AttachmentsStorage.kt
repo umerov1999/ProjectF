@@ -23,9 +23,9 @@ import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
-import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.msgpack.MsgPack
 
 internal class AttachmentsStorage(base: AppStorages) : AbsStorage(base), IAttachmentsStorage {
     override fun attachDbos(

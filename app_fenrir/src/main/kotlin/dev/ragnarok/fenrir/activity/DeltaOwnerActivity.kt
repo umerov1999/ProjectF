@@ -28,6 +28,7 @@ import dev.ragnarok.fenrir.activity.slidr.model.SlidrPosition
 import dev.ragnarok.fenrir.fragment.absownerslist.OwnersAdapter
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.kJson
+import dev.ragnarok.fenrir.kJsonPretty
 import dev.ragnarok.fenrir.listener.AppStyleable
 import dev.ragnarok.fenrir.model.DeltaOwner
 import dev.ragnarok.fenrir.model.Owner
@@ -51,9 +52,8 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
-import dev.ragnarok.fenrir.util.serializeble.json.Json
-import dev.ragnarok.fenrir.util.serializeble.json.decodeFromBufferedSource
 import dev.ragnarok.fenrir.util.toast.CustomToast
+import kotlinx.serialization.json.decodeFromBufferedSource
 import okio.buffer
 import okio.source
 import java.io.File
@@ -135,7 +135,7 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
                     )
                     var out: FileOutputStream? = null
                     try {
-                        val bytes = Json { prettyPrint = true }.encodeToString(
+                        val bytes = kJsonPretty.encodeToString(
                             DeltaOwner.serializer(),
                             delta
                         ).toByteArray(

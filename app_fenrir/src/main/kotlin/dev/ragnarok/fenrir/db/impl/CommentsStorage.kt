@@ -32,13 +32,13 @@ import dev.ragnarok.fenrir.util.Unixtime.now
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.createPublishSubject
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
-import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.single
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.msgpack.MsgPack
 
 internal class CommentsStorage(base: AppStorages) : AbsStorage(base), ICommentsStorage {
     private val minorUpdatesPublisher = createPublishSubject<CommentUpdate>()

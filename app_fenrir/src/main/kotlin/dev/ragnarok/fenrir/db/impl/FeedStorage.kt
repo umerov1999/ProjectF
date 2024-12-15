@@ -30,10 +30,10 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.join
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
-import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.msgpack.MsgPack
 
 internal class FeedStorage(base: AppStorages) : AbsStorage(base), IFeedStorage {
     private val storeLock = Any()

@@ -19,12 +19,22 @@ import android.view.View
 import androidx.annotation.ColorInt
 import androidx.core.database.getBlobOrNull
 import androidx.core.database.getStringOrNull
-import dev.ragnarok.fenrir.util.serializeble.json.Json
+import kotlinx.serialization.json.Json
 import okhttp3.ResponseBody
 import java.io.Serializable
 import kotlin.contracts.contract
 
 val kJson: Json by lazy { Json { ignoreUnknownKeys = true; isLenient = true } }
+val kJsonPretty: Json by lazy {
+    Json {
+        ignoreUnknownKeys = true; isLenient = true; prettyPrint = true
+    }
+}
+val kJsonNotPretty: Json by lazy {
+    Json {
+        ignoreUnknownKeys = true; isLenient = true; prettyPrint = false
+    }
+}
 
 fun SQLiteDatabase.query(
     tableName: String,

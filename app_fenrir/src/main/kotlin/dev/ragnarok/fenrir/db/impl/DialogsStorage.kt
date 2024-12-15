@@ -42,10 +42,10 @@ import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.createPublishSubject
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.emptyListFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.myEmit
-import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.msgpack.MsgPack
 
 internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsStorage {
     private val unreadDialogsCounter = createPublishSubject<Pair<Long, Int>>()

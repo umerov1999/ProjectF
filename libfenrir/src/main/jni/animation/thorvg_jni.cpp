@@ -129,7 +129,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGSVGRender_createBitmapNat
             return;
         }
 
-        canvas->push(std::move(picture));
+        canvas->push(picture);
         if (canvas->draw() == tvg::Result::Success) {
             canvas->sync();
         }
@@ -347,7 +347,6 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nSetBuffer
         info->canvas->target((uint32_t *) pixels, (uint32_t) width, (uint32_t) width,
                              (uint32_t) height,
                              tvg::ColorSpace::ABGR8888);
-        info->canvas->clear(false);
 
         float scale;
         float shiftX = 0.0f, shiftY = 0.0f;
@@ -395,7 +394,6 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nGetFrame(
 
     void *pixels;
     if (AndroidBitmap_lockPixels(env, bitmap, &pixels) >= 0) {
-        info->canvas->clear(false);
         info->animation->frame((float) frame);
         if (!info->isCanvasPushed) {
             info->isCanvasPushed = true;
@@ -403,7 +401,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nGetFrame(
         } else {
             info->canvas->update(info->animation->picture());
         }
-        if (info->canvas->draw() == tvg::Result::Success) {
+        if (info->canvas->draw(true) == tvg::Result::Success) {
             info->canvas->sync();
         }
         AndroidBitmap_unlockPixels(env, bitmap);
@@ -474,7 +472,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottie2Gif_lottie2gif(JNI
         auto bg = tvg::Shape::gen();
         bg->appendRect(0, 0, (float) w, (float) h);
         bg->fill(((bgColor >> 16) & 0xff), ((bgColor >> 8) & 0xff), (bgColor & 0xff));
-        info.canvas->push(std::move(bg));
+        info.canvas->push(bg);
     }
 
     info.canvas->push(info.animation->picture());
@@ -534,11 +532,10 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottie2Gif_lottie2gif(JNI
         env->CallVoidMethod(store_Wlistener, mth_start);
 
         for (auto p = 0.0f; p < duration; p += delay) {
-            info.canvas->clear(false);
             auto frameNo = info.animation->totalFrame() * (p / duration);
             info.animation->frame(frameNo);
             info.canvas->update();
-            if (info.canvas->draw() == tvg::Result::Success) {
+            if (info.canvas->draw(true) == tvg::Result::Success) {
                 info.canvas->sync();
             }
             if (!gifWriteFrame(&writer, reinterpret_cast<uint8_t *>(pixels), w, h,
@@ -553,11 +550,10 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottie2Gif_lottie2gif(JNI
         env->CallVoidMethod(store_Wlistener, mth_end);
     } else {
         for (auto p = 0.0f; p < duration; p += delay) {
-            info.canvas->clear(false);
             auto frameNo = info.animation->totalFrame() * (p / duration);
             info.animation->frame(frameNo);
             info.canvas->update(info.animation->picture());
-            if (info.canvas->draw() == tvg::Result::Success) {
+            if (info.canvas->draw(true) == tvg::Result::Success) {
                 info.canvas->sync();
             }
 

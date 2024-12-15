@@ -429,7 +429,7 @@ LoadModule* LoaderMgr::loader(const char* name, const char* data, uint32_t size,
 
     //function is dedicated for ttf loader (the only supported font loader)
     auto loader = new TtfLoader;
-    if (loader->open(data, size, "", copy, std::move(colorReplacement))) {
+    if (loader->open(data, size, "", copy, colorReplacement)) {
         loader->hashpath = strdup(name);
         loader->pathcache = true;
         ScopedLock lock(key);

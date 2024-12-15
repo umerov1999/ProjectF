@@ -21,11 +21,11 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Exestime.log
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
-import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.msgpack.MsgPack
 
 internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersStorage {
     override fun storeStickerSets(accountId: Long, sets: List<StickerSetEntity>): Flow<Boolean> {

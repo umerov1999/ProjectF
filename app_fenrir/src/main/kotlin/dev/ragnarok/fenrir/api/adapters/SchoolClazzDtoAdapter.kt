@@ -1,10 +1,10 @@
 package dev.ragnarok.fenrir.api.adapters
 
 import dev.ragnarok.fenrir.api.model.database.SchoolClazzDto
-import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
-import dev.ragnarok.fenrir.util.serializeble.json.intOrNull
-import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
-import dev.ragnarok.fenrir.util.serializeble.json.jsonPrimitive
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonPrimitive
 
 class SchoolClazzDtoAdapter : AbsDtoAdapter<SchoolClazzDto>("SchoolClazzDto") {
     @Throws(Exception::class)

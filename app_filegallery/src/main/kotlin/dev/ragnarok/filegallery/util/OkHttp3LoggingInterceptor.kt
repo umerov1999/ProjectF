@@ -2,8 +2,8 @@ package dev.ragnarok.filegallery.util
 
 import com.github.luben.zstd.ZstdInputStream
 import dev.ragnarok.filegallery.kJson
-import dev.ragnarok.filegallery.util.serializeble.json.Json
-import dev.ragnarok.filegallery.util.serializeble.msgpack.MsgPack
+import dev.ragnarok.filegallery.kJsonNotPretty
+import kotlinx.serialization.msgpack.MsgPack
 import okhttp3.Headers
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -265,15 +265,11 @@ class OkHttp3LoggingInterceptor @JvmOverloads constructor(
                             .contains("application/x-msgpack")
                     ) {
                         val pp = MsgPack.parseToJsonElement(buffer.clone())
-                        logger.log(Json {
-                            prettyPrint = false
-                        }.printJsonElement(pp))
+                        logger.log(kJsonNotPretty.printJsonElement(pp))
                     } else if (headers["Content-Type"].orEmpty().lowercase()
                             .contains("application/json")
                     ) {
-                        logger.log(Json {
-                            prettyPrint = false
-                        }.printJsonElement(kJson.parseToJsonElement(buffer.clone())))
+                        logger.log(kJsonNotPretty.printJsonElement(kJson.parseToJsonElement(buffer.clone())))
                     } else if (headers["Content-Type"].orEmpty().lowercase()
                             .contains("text/html")
                     ) {

@@ -24,9 +24,9 @@ import dev.ragnarok.fenrir.model.criteria.TopicsCriteria
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
-import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.msgpack.MsgPack
 import kotlin.math.abs
 
 internal class TopicsStorage(base: AppStorages) : AbsStorage(base), ITopicsStore {

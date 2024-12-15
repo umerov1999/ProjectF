@@ -2,11 +2,11 @@ package dev.ragnarok.fenrir.api.adapters
 
 import dev.ragnarok.fenrir.api.model.GroupSettingsDto
 import dev.ragnarok.fenrir.kJson
-import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
-import dev.ragnarok.fenrir.util.serializeble.json.int
-import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
-import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
-import dev.ragnarok.fenrir.util.serializeble.json.jsonPrimitive
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 class GroupSettingsDtoAdapter : AbsDtoAdapter<GroupSettingsDto>("GroupSettingsDto") {
     @Throws(Exception::class)

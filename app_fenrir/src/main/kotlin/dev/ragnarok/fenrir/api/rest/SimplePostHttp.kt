@@ -8,11 +8,11 @@ import dev.ragnarok.fenrir.ifNonNull
 import dev.ragnarok.fenrir.isJson
 import dev.ragnarok.fenrir.isMsgPack
 import dev.ragnarok.fenrir.kJson
-import dev.ragnarok.fenrir.util.serializeble.json.decodeFromBufferedSource
-import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.json.decodeFromBufferedSource
+import kotlinx.serialization.msgpack.MsgPack
 import okhttp3.FormBody
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient

@@ -2,9 +2,9 @@ package dev.ragnarok.filegallery.api.adapters
 
 import dev.ragnarok.filegallery.model.Photo
 import dev.ragnarok.filegallery.orZero
-import dev.ragnarok.filegallery.util.serializeble.json.JsonElement
-import dev.ragnarok.filegallery.util.serializeble.json.jsonArray
-import dev.ragnarok.filegallery.util.serializeble.json.jsonObject
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 
 class PhotoDtoAdapter : AbsDtoAdapter<Photo>("Photo") {
     @Throws(Exception::class)

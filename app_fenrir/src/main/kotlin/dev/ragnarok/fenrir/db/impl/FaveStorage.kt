@@ -43,10 +43,10 @@ import dev.ragnarok.fenrir.model.criteria.FaveProductsCriteria
 import dev.ragnarok.fenrir.model.criteria.FaveVideosCriteria
 import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
-import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.single
+import kotlinx.serialization.msgpack.MsgPack
 import kotlin.math.abs
 
 internal class FaveStorage(mRepositoryContext: AppStorages) : AbsStorage(mRepositoryContext),

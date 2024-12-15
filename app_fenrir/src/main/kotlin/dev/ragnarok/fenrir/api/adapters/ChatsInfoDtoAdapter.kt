@@ -3,8 +3,8 @@ package dev.ragnarok.fenrir.api.adapters
 import dev.ragnarok.fenrir.api.model.VKApiChat
 import dev.ragnarok.fenrir.api.model.response.ChatsInfoResponse
 import dev.ragnarok.fenrir.kJson
-import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
-import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonArray
 
 class ChatsInfoDtoAdapter : AbsDtoAdapter<ChatsInfoResponse>("ChatsInfoResponse") {
     @Throws(Exception::class)

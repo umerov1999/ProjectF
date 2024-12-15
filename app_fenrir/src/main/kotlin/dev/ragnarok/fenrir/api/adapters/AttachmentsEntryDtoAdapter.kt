@@ -4,8 +4,8 @@ import dev.ragnarok.fenrir.api.adapters.AttachmentsDtoAdapter.Companion.parse
 import dev.ragnarok.fenrir.api.model.VKApiAttachments
 import dev.ragnarok.fenrir.api.model.VKApiNotSupported
 import dev.ragnarok.fenrir.api.model.interfaces.VKApiAttachment
-import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
-import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonObject
 
 class AttachmentsEntryDtoAdapter : AbsDtoAdapter<VKApiAttachments.Entry>("VKApiAttachments.Entry") {
     @Throws(Exception::class)

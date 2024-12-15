@@ -3,9 +3,9 @@ package dev.ragnarok.fenrir.api.adapters
 import dev.ragnarok.fenrir.api.model.CommentsDto
 import dev.ragnarok.fenrir.api.model.VKApiTopic
 import dev.ragnarok.fenrir.kJson
-import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
-import dev.ragnarok.fenrir.util.serializeble.json.intOrNull
-import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.jsonObject
 
 class TopicDtoAdapter : AbsDtoAdapter<VKApiTopic>("VKApiTopic") {
     @Throws(Exception::class)

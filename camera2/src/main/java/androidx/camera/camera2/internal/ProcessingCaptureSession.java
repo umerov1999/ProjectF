@@ -24,6 +24,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.camera.camera2.impl.Camera2ImplConfig;
 import androidx.camera.camera2.internal.compat.params.DynamicRangesCompat;
+import androidx.camera.camera2.internal.compat.quirk.CaptureSessionShouldUseMrirQuirk;
+import androidx.camera.camera2.internal.compat.quirk.DeviceQuirks;
 import androidx.camera.camera2.interop.CaptureRequestOptions;
 import androidx.camera.camera2.interop.ExperimentalCamera2Interop;
 import androidx.camera.core.ImageAnalysis;
@@ -124,7 +126,8 @@ final class ProcessingCaptureSession implements CaptureSessionInterface {
             @NonNull Camera2CameraInfoImpl camera2CameraInfoImpl,
             @NonNull DynamicRangesCompat dynamicRangesCompat, @NonNull Executor executor,
             @NonNull ScheduledExecutorService scheduledExecutorService) {
-        mCaptureSession = new CaptureSession(dynamicRangesCompat);
+        mCaptureSession = new CaptureSession(dynamicRangesCompat,
+                DeviceQuirks.get(CaptureSessionShouldUseMrirQuirk.class) != null);
         mSessionProcessor = sessionProcessor;
         mCamera2CameraInfoImpl = camera2CameraInfoImpl;
         mExecutor = executor;
@@ -382,7 +385,7 @@ final class ProcessingCaptureSession implements CaptureSessionInterface {
                 break;
             case ON_CAPTURE_SESSION_STARTED:
                 for (CaptureConfig captureConfig : captureConfigs) {
-                    if (captureConfig.getTemplateType() == CameraDevice.TEMPLATE_STILL_CAPTURE) {
+                    if (isTemplateTypeForStillCapture(captureConfig.getTemplateType())) {
                         issueStillCaptureRequest(captureConfig);
                     } else {
                         issueTriggerRequest(captureConfig);
@@ -397,6 +400,12 @@ final class ProcessingCaptureSession implements CaptureSessionInterface {
                 break;
         }
     }
+
+    private boolean isTemplateTypeForStillCapture(int templateType) {
+        return templateType == CameraDevice.TEMPLATE_STILL_CAPTURE
+                || templateType == CameraDevice.TEMPLATE_VIDEO_SNAPSHOT;
+    }
+
     void issueStillCaptureRequest(@NonNull CaptureConfig captureConfig) {
         CaptureRequestOptions.Builder builder =
                 CaptureRequestOptions.Builder.from(

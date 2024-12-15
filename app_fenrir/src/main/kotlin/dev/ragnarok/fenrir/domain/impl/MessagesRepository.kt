@@ -130,7 +130,6 @@ import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingleSafe
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toFlowThrowable
-import dev.ragnarok.fenrir.util.serializeble.json.decodeFromBufferedSource
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -144,6 +143,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.single
+import kotlinx.serialization.json.decodeFromBufferedSource
 import okio.buffer
 import okio.source
 import java.io.File

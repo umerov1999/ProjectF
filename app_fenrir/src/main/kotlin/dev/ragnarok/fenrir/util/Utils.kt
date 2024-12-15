@@ -746,6 +746,10 @@ object Utils {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && BuildConfig.TARGET_SDK >= Build.VERSION_CODES.R
     }
 
+    fun hasTiramisuTarget(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && BuildConfig.TARGET_SDK >= Build.VERSION_CODES.TIRAMISU
+    }
+
     fun hasVanillaIceCreamTarget(): Boolean {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && BuildConfig.TARGET_SDK >= Build.VERSION_CODES.VANILLA_ICE_CREAM
     }

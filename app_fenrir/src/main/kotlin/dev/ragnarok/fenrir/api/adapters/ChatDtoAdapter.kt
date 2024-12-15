@@ -6,10 +6,10 @@ import dev.ragnarok.fenrir.api.model.VKApiCommunity
 import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.orZero
-import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
-import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
-import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
-import dev.ragnarok.fenrir.util.serializeble.json.long
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.long
 
 class ChatDtoAdapter : AbsDtoAdapter<VKApiChat>("VKApiChat") {
     @Throws(Exception::class)

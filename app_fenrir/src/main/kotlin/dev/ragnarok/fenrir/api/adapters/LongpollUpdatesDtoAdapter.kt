@@ -4,9 +4,9 @@ import dev.ragnarok.fenrir.api.model.longpoll.AbsLongpollEvent
 import dev.ragnarok.fenrir.api.model.longpoll.VKApiLongpollUpdates
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.util.Logger
-import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
-import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
-import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 
 class LongpollUpdatesDtoAdapter : AbsDtoAdapter<VKApiLongpollUpdates>("VkApiLongpollUpdates") {
     @Throws(Exception::class)

@@ -130,6 +130,11 @@ public class DeviceQuirksLoader {
                 SmallDisplaySizeQuirk.load())) {
             quirks.add(new SmallDisplaySizeQuirk());
         }
+        if (quirkSettings.shouldEnableQuirk(
+                CaptureSessionShouldUseMrirQuirk.class,
+                CaptureSessionShouldUseMrirQuirk.load())) {
+            quirks.add(new CaptureSessionShouldUseMrirQuirk());
+        }
 
         return quirks;
     }

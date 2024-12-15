@@ -1,9 +1,9 @@
 package dev.ragnarok.filegallery.api.adapters
 
 import dev.ragnarok.filegallery.model.Video
-import dev.ragnarok.filegallery.util.serializeble.json.JsonElement
-import dev.ragnarok.filegallery.util.serializeble.json.jsonArray
-import dev.ragnarok.filegallery.util.serializeble.json.jsonObject
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 
 class VideoDtoAdapter : AbsDtoAdapter<Video>("Video") {
     @Throws(Exception::class)

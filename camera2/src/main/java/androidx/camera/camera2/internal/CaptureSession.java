@@ -16,6 +16,8 @@
 
 package androidx.camera.camera2.internal;
 
+import android.annotation.SuppressLint;
+import android.graphics.ImageFormat;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCaptureSession.CaptureCallback;
@@ -23,6 +25,7 @@ import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.DynamicRangeProfiles;
+import android.hardware.camera2.params.MultiResolutionStreamInfo;
 import android.hardware.camera2.params.OutputConfiguration;
 import android.os.Build;
 import android.view.Surface;
@@ -31,6 +34,7 @@ import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
+import androidx.annotation.RequiresApi;
 import androidx.camera.camera2.impl.Camera2ImplConfig;
 import androidx.camera.camera2.internal.compat.params.DynamicRangeConversions;
 import androidx.camera.camera2.internal.compat.params.DynamicRangesCompat;
@@ -51,6 +55,7 @@ import androidx.camera.core.impl.CaptureConfig;
 import androidx.camera.core.impl.DeferrableSurface;
 import androidx.camera.core.impl.Quirks;
 import androidx.camera.core.impl.SessionConfig;
+import androidx.camera.core.impl.utils.SurfaceUtil;
 import androidx.camera.core.impl.utils.executor.CameraXExecutors;
 import androidx.camera.core.impl.utils.futures.FutureCallback;
 import androidx.camera.core.impl.utils.futures.FutureChain;
@@ -60,11 +65,15 @@ import androidx.core.util.Preconditions;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CancellationException;
 
 /**
@@ -123,24 +132,43 @@ final class CaptureSession implements CaptureSessionInterface {
     private final RequestMonitor mRequestMonitor;
     private final DynamicRangesCompat mDynamicRangesCompat;
     private final TemplateParamsOverride mTemplateParamsOverride;
+    private final boolean mCanUseMultiResolutionImageReader;
 
     /**
      * Constructor for CaptureSession without CameraQuirk.
      */
     CaptureSession(@NonNull DynamicRangesCompat dynamicRangesCompat) {
-        this(dynamicRangesCompat, new Quirks(Collections.emptyList()));
+        this(dynamicRangesCompat, false);
+    }
+
+    /**
+     * Constructor for CaptureSession without CameraQuirk.
+     */
+    CaptureSession(@NonNull DynamicRangesCompat dynamicRangesCompat,
+            boolean canUseMultiResolutionImageReader) {
+        this(dynamicRangesCompat, new Quirks(Collections.emptyList()),
+                canUseMultiResolutionImageReader);
+    }
+
+    /**
+     * Constructor for CaptureSession with CameraQuirk.
+     */
+    CaptureSession(@NonNull DynamicRangesCompat dynamicRangesCompat,
+            @NonNull Quirks cameraQuirks) {
+        this(dynamicRangesCompat, cameraQuirks, false);
     }
 
     /**
      * Constructor for CaptureSession.
      */
     CaptureSession(@NonNull DynamicRangesCompat dynamicRangesCompat,
-            @NonNull Quirks cameraQuirks) {
+            @NonNull Quirks cameraQuirks, boolean canUseMultiResolutionImageReader) {
         mState = State.INITIALIZED;
         mDynamicRangesCompat = dynamicRangesCompat;
         mCaptureSessionStateCallback = new StateCallback();
         mRequestMonitor = new RequestMonitor(cameraQuirks.contains(CaptureNoResponseQuirk.class));
         mTemplateParamsOverride = new TemplateParamsOverride(cameraQuirks);
+        mCanUseMultiResolutionImageReader = canUseMultiResolutionImageReader;
     }
 
     @Override
@@ -300,19 +328,41 @@ final class CaptureSession implements CaptureSessionInterface {
                     CaptureConfig.Builder sessionParameterConfigBuilder =
                             CaptureConfig.Builder.from(sessionConfig.getRepeatingCaptureConfig());
 
+                    Map<SessionConfig.OutputConfig, OutputConfigurationCompat>
+                            mrirOutputConfigurationCompatMap = new HashMap<>();
+                    if (mCanUseMultiResolutionImageReader && Build.VERSION.SDK_INT >= 35) {
+                        Map<Integer, List<SessionConfig.OutputConfig>> groupIdToOutputConfigsMap =
+                                groupMrirOutputConfigs(sessionConfig.getOutputConfigs());
+                        mrirOutputConfigurationCompatMap =
+                                createMultiResolutionOutputConfigurationCompats(
+                                        groupIdToOutputConfigsMap, mConfiguredSurfaceMap);
+                    }
+
                     List<OutputConfigurationCompat> outputConfigList = new ArrayList<>();
                     String physicalCameraIdForAllStreams =
                             camera2Config.getPhysicalCameraId(null);
                     for (SessionConfig.OutputConfig outputConfig :
                             sessionConfig.getOutputConfigs()) {
-                        OutputConfigurationCompat outputConfiguration =
-                                getOutputConfigurationCompat(
-                                        outputConfig,
-                                        mConfiguredSurfaceMap,
-                                        physicalCameraIdForAllStreams);
-                        if (mStreamUseCaseMap.containsKey(outputConfig.getSurface())) {
-                            outputConfiguration.setStreamUseCase(
-                                    mStreamUseCaseMap.get(outputConfig.getSurface()));
+                        OutputConfigurationCompat outputConfiguration = null;
+
+                        // If an OutputConfiguration has been created via the MRIR approach,
+                        // retrieves it from the map
+                        if (mCanUseMultiResolutionImageReader && Build.VERSION.SDK_INT >= 35) {
+                            outputConfiguration = mrirOutputConfigurationCompatMap.get(
+                                    outputConfig);
+                        }
+
+                        // Otherwise, uses the original approach to create the
+                        // OutputConfigurationCompat.
+                        if (outputConfiguration == null) {
+                            outputConfiguration = getOutputConfigurationCompat(
+                                    outputConfig,
+                                    mConfiguredSurfaceMap,
+                                    physicalCameraIdForAllStreams);
+                            if (mStreamUseCaseMap.containsKey(outputConfig.getSurface())) {
+                                outputConfiguration.setStreamUseCase(
+                                        mStreamUseCaseMap.get(outputConfig.getSurface()));
+                            }
                         }
                         outputConfigList.add(outputConfiguration);
                     }
@@ -897,6 +947,110 @@ final class CaptureSession implements CaptureSessionInterface {
         }
         Collections.addAll(camera2Callbacks, additionalCallbacks);
         return Camera2CaptureCallbacks.createComboCallback(camera2Callbacks);
+    }
+
+    /**
+     * Returns the map which contains the data by mapping surface group id to OutputConfig list.
+     */
+    @NonNull
+    private static Map<Integer, List<SessionConfig.OutputConfig>> groupMrirOutputConfigs(
+            @NonNull Collection<SessionConfig.OutputConfig> outputConfigs) {
+        Map<Integer, List<SessionConfig.OutputConfig>> groupResult = new HashMap<>();
+
+        for (SessionConfig.OutputConfig outputConfig : outputConfigs) {
+            // When shared surfaces is not empty, surface sharing will be enabled on the
+            // OutputConfiguration. In that case, MultiResolutionImageReader shouldn't be used.
+            if (outputConfig.getSurfaceGroupId() <= 0
+                    || !outputConfig.getSharedSurfaces().isEmpty()) {
+                continue;
+            }
+            List<SessionConfig.OutputConfig> groupedOutputConfigs = groupResult.get(
+                    outputConfig.getSurfaceGroupId());
+            if (groupedOutputConfigs == null) {
+                groupedOutputConfigs = new ArrayList<>();
+                groupResult.put(outputConfig.getSurfaceGroupId(), groupedOutputConfigs);
+            }
+            groupedOutputConfigs.add(outputConfig);
+        }
+
+        // Double-check that the list size of each group is at least 2. It is the necessary
+        // condition to create a MRIR.
+        Map<Integer, List<SessionConfig.OutputConfig>> mrirGroupResult = new HashMap<>();
+        for (int groupId : groupResult.keySet()) {
+            if (groupResult.get(groupId).size() >= 2) {
+                mrirGroupResult.put(groupId, groupResult.get(groupId));
+            }
+        }
+
+        return mrirGroupResult;
+    }
+
+    @NonNull
+    @RequiresApi(35)
+    private static Map<SessionConfig.OutputConfig, OutputConfigurationCompat>
+            createMultiResolutionOutputConfigurationCompats(
+            @NonNull Map<Integer, List<SessionConfig.OutputConfig>> groupIdToOutputConfigsMap,
+            @NonNull Map<DeferrableSurface, Surface> configuredSurfaceMap) {
+        Map<SessionConfig.OutputConfig, OutputConfigurationCompat>
+                outputConfigToOutputConfigurationCompatMap = new HashMap<>();
+
+        for (int groupId : groupIdToOutputConfigsMap.keySet()) {
+            List<MultiResolutionStreamInfo> streamInfos = new ArrayList<>();
+            int imageFormat = ImageFormat.UNKNOWN;
+            for (SessionConfig.OutputConfig outputConfig : groupIdToOutputConfigsMap.get(groupId)) {
+                Surface surface = configuredSurfaceMap.get(outputConfig.getSurface());
+                SurfaceUtil.SurfaceInfo surfaceInfo = SurfaceUtil.getSurfaceInfo(surface);
+                if (imageFormat == ImageFormat.UNKNOWN) {
+                    imageFormat = surfaceInfo.format;
+                }
+                streamInfos.add(new MultiResolutionStreamInfo(surfaceInfo.width, surfaceInfo.height,
+                        Objects.requireNonNull(outputConfig.getPhysicalCameraId())));
+            }
+            if (imageFormat == ImageFormat.UNKNOWN || streamInfos.isEmpty()) {
+                Logger.e(TAG, "Skips to create instances for multi-resolution output. imageFormat: "
+                        + imageFormat + ", streamInfos size: " + streamInfos.size());
+                continue;
+            }
+            List<OutputConfiguration> outputConfigurations =
+                    createInstancesForMultiResolutionOutput(streamInfos, imageFormat);
+            if (outputConfigurations != null) {
+                for (SessionConfig.OutputConfig outputConfig : groupIdToOutputConfigsMap.get(
+                        groupId)) {
+                    OutputConfiguration outputConfiguration = outputConfigurations.remove(0);
+                    Surface surface = configuredSurfaceMap.get(outputConfig.getSurface());
+                    outputConfiguration.addSurface(surface);
+                    outputConfigToOutputConfigurationCompatMap.put(outputConfig,
+                            new OutputConfigurationCompat(outputConfiguration));
+                }
+            }
+        }
+        return outputConfigToOutputConfigurationCompatMap;
+    }
+
+    /**
+     * Use java reflection to access the API so that we don't need to upgrade compileSdk as 35 in
+     * the release branch. When this method is invoked, the API has become public on the device. It
+     * won't cause the problem about accessing the non-SDK API.
+     */
+    /** @noinspection unchecked */
+    @SuppressLint("BanUncheckedReflection")
+    @SuppressWarnings("unchecked")
+    @RequiresApi(35)
+    @Nullable
+    private static List<OutputConfiguration> createInstancesForMultiResolutionOutput(
+            @NonNull List<MultiResolutionStreamInfo> streamInfos, int format) {
+        // TODO(b/376185185): Invoke the API directly after the androidx code base upgrades to
+        //  compile by API 35 SDK.
+        try {
+            Method createInstanceMethod = OutputConfiguration.class.getMethod(
+                    "createInstancesForMultiResolutionOutput", Collection.class, int.class);
+            return (List<OutputConfiguration>) createInstanceMethod.invoke(null, streamInfos,
+                    format);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            Logger.e(TAG,
+                    "Failed to create instances for multi-resolution output, " + e.getMessage());
+            return null;
+        }
     }
 
     enum State {

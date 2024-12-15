@@ -3,9 +3,9 @@ package dev.ragnarok.fenrir.api.adapters.catalog_v2_audio
 import dev.ragnarok.fenrir.api.adapters.AbsDtoAdapter
 import dev.ragnarok.fenrir.api.model.catalog_v2_audio.VKApiCatalogV2Link
 import dev.ragnarok.fenrir.orZero
-import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
-import dev.ragnarok.fenrir.util.serializeble.json.jsonArray
-import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 
 class VKApiCatalogV2LinkDtoAdapter : AbsDtoAdapter<VKApiCatalogV2Link>("VKApiCatalogV2Link") {
     @Throws(Exception::class)

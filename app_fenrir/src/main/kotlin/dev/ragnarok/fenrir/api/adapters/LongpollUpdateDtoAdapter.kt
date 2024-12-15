@@ -10,7 +10,7 @@ import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.serializeble.json.*
+import kotlinx.serialization.json.*
 import java.util.Collections
 
 class LongpollUpdateDtoAdapter : AbsDtoAdapter<AbsLongpollEvent?>("AbsLongpollEvent?") {

@@ -2,10 +2,10 @@ package dev.ragnarok.fenrir.api.adapters
 
 import dev.ragnarok.fenrir.api.model.response.CustomCommentsResponse
 import dev.ragnarok.fenrir.kJson
-import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
-import dev.ragnarok.fenrir.util.serializeble.json.intOrNull
-import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
-import dev.ragnarok.fenrir.util.serializeble.json.jsonPrimitive
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 class CustomCommentsResponseDtoAdapter :
     AbsDtoAdapter<CustomCommentsResponse>("CustomCommentsResponse") {

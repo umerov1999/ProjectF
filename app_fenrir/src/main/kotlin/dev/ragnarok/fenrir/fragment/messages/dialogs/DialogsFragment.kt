@@ -61,6 +61,7 @@ import dev.ragnarok.fenrir.util.HelperSimple.NOTIFICATION_PERMISSION
 import dev.ragnarok.fenrir.util.HelperSimple.needHelp
 import dev.ragnarok.fenrir.util.InputTextDialog
 import dev.ragnarok.fenrir.util.MessagesReplyItemCallback
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
@@ -124,7 +125,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && needHelp(
+        if (Utils.hasTiramisuTarget() && needHelp(
                 NOTIFICATION_PERMISSION,
                 1
             ) && !AppPerms.hasNotificationPermissionSimple(requireActivity())

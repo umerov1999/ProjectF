@@ -3,9 +3,9 @@ package dev.ragnarok.fenrir.api.adapters
 import dev.ragnarok.fenrir.api.model.VKApiAttachments
 import dev.ragnarok.fenrir.api.model.VKApiComment
 import dev.ragnarok.fenrir.kJson
-import dev.ragnarok.fenrir.util.serializeble.json.JsonElement
-import dev.ragnarok.fenrir.util.serializeble.json.jsonObject
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonObject
 
 class CommentDtoAdapter : AbsDtoAdapter<VKApiComment>("VKApiComment") {
     @Throws(Exception::class)

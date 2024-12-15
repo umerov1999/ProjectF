@@ -1,7 +1,7 @@
 package dev.ragnarok.fenrir.db.serialize
 
 import dev.ragnarok.fenrir.model.Photo
-import dev.ragnarok.fenrir.util.serializeble.msgpack.MsgPack
+import kotlinx.serialization.msgpack.MsgPack
 
 object Serializers {
     val PHOTOS_SERIALIZER: ISerializeAdapter<Photo> = object : ISerializeAdapter<Photo> {
