@@ -37,24 +37,23 @@ int decode_packet_to_mp4_audio(AVCodecContext *context, AVFrame *frame, AVPacket
 int encode_frame_to_mp4_audio(AVCodecContext *context, AVFrame *frame, AVPacket *packet,
                               bool &got_packet) {
     int ret;
-    int decoded = packet->size;
     got_packet = false;
 
     ret = avcodec_send_frame(context, frame);
     if (ret == AVERROR_EOF)
-        return decoded;
+        return 0;
     else if (ret == AVERROR(EAGAIN)) {
         return AVERROR_BUG;
     }
     ret = avcodec_receive_packet(context, packet);
     if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
-        return decoded;
+        return 0;
     } else if (ret) {
         return ret;
     }
     got_packet = true;
 
-    return decoded;
+    return 0;
 }
 
 bool encode_to_mp4a_to_mp4_audio(const char *src, const char *dst) {
@@ -71,7 +70,8 @@ bool encode_to_mp4a_to_mp4_audio(const char *src, const char *dst) {
     const AVCodec *encoder;
     const AVOutputFormat *fmt;
     int streamId;
-    bool frameFinished = false;
+    bool decodeFrameFinished = false;
+    bool encodePacketFinished = false;
     enum AVCodecID cdc = AV_CODEC_ID_AAC;
 
     int res = avformat_open_input(&formatContext, src, nullptr, nullptr);
@@ -161,11 +161,11 @@ bool encode_to_mp4a_to_mp4_audio(const char *src, const char *dst) {
     while (av_read_frame(formatContext, inPacket) >= 0) {
         if (inPacket->stream_index == streamId) {
             if (decode_packet_to_mp4_audio(fileCodecContext, audioFrameDecoded,
-                                           inPacket, frameFinished) < 0) {
+                                           inPacket, decodeFrameFinished) < 0) {
                 ERRRET("Could not decode_packet")
             }
 
-            if (frameFinished) {
+            if (decodeFrameFinished) {
 
                 // Convert
 
@@ -196,10 +196,10 @@ bool encode_to_mp4a_to_mp4_audio(const char *src, const char *dst) {
                                 audioFrameConverted->nb_samples, nullptr, 0);
 
                     auto buffer_size = av_samples_get_buffer_size(nullptr,
-                                                                    audioCodecContext->ch_layout.nb_channels,
-                                                                    audioFrameConverted->nb_samples,
-                                                                    audioCodecContext->sample_fmt,
-                                                                    0);
+                                                                  audioCodecContext->ch_layout.nb_channels,
+                                                                  audioFrameConverted->nb_samples,
+                                                                  audioCodecContext->sample_fmt,
+                                                                  0);
                     if (buffer_size < 0) ERRRET("Invalid buffer size")
 
                     if (avcodec_fill_audio_frame(audioFrameConverted,
@@ -217,12 +217,12 @@ bool encode_to_mp4a_to_mp4_audio(const char *src, const char *dst) {
                     outPacket->size = 0;
 
                     if (encode_frame_to_mp4_audio(audioCodecContext, audioFrameConverted, outPacket,
-                                                  frameFinished) < 0) {
+                                                  encodePacketFinished) < 0) {
                         av_packet_free(&outPacket);
                         ERRRET("Error encoding audio frame")
                     }
 
-                    if (frameFinished) {
+                    if (encodePacketFinished) {
                         outPacket->stream_index = audioStream->index;
 
                         if (av_interleaved_write_frame(outContext, outPacket) != 0) {

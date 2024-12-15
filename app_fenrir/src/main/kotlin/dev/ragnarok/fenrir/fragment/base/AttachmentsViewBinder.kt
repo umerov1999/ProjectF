@@ -1247,7 +1247,7 @@ class AttachmentsViewBinder(
 
         init {
             mWaveFormView.setActiveColor(mActiveWaveFormColor)
-            mWaveFormView.setNoactiveColor(mNoActiveWaveFormColor)
+            mWaveFormView.setNoActiveColor(mNoActiveWaveFormColor)
             mWaveFormView.setSectionCount(if (Utils.isLandscape(itemView.context)) 128 else 64)
             mWaveFormView.tag = generateHolderId()
             mButtonPlay = itemView.findViewById(R.id.item_voice_button_play)

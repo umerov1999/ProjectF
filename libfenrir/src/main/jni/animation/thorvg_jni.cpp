@@ -18,8 +18,15 @@
 class LottieAnimation {
 public:
     ~LottieAnimation() {
-        delete animation;
-        delete canvas;
+        if (canvas) {
+            delete canvas;
+            canvas = nullptr;
+        }
+        if (animation) {
+            delete animation;
+            animation = nullptr;
+        }
+        isCanvasPushed = false;
     }
 
     tvg::Animation *animation = nullptr;
@@ -93,6 +100,8 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGSVGRender_createBitmapNat
                               : picture->load((const char *) jsonString.data(), jsonString.size(),
                                               "svg", nullptr, true);
     if (result != tvg::Result::Success) {
+        delete canvas;
+        delete picture;
         return;
     }
     float scale;
@@ -126,6 +135,8 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGSVGRender_createBitmapNat
         if (canvas->target((uint32_t *) pixels, w, w, h, tvg::ColorSpace::ABGR8888) !=
             tvg::Result::Success) {
             AndroidBitmap_unlockPixels(env, bitmap);
+            delete canvas;
+            delete picture;
             return;
         }
 
@@ -133,6 +144,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGSVGRender_createBitmapNat
         if (canvas->draw() == tvg::Result::Success) {
             canvas->sync();
         }
+        delete canvas;
         AndroidBitmap_unlockPixels(env, bitmap);
     }
 }

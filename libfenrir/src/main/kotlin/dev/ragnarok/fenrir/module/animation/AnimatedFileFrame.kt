@@ -19,7 +19,7 @@ object AnimatedFileFrame {
         if (!FenrirNative.isNativeLoaded) {
             return null
         }
-        val metaData = IntArray(5)
+        val metaData = IntArray(6)
         val nPtr = createDecoder(file.absolutePath, metaData)
         if (nPtr != 0L && (metaData[0] > 3840 || metaData[1] > 3840)) {
             destroyDecoder(nPtr)

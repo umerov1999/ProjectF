@@ -1596,6 +1596,16 @@ object Utils {
         } else flags
     }
 
+    fun makeImmutablePendingIntent(flags: Int): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && BuildConfig.TARGET_SDK >= Build.VERSION_CODES.S) {
+            if (flags == 0) {
+                PendingIntent.FLAG_IMMUTABLE
+            } else {
+                flags or PendingIntent.FLAG_IMMUTABLE
+            }
+        } else flags
+    }
+
     fun openPlaceWithSwipebleActivity(context: Context, place: Place) {
         val intent = Intent(context, SwipebleActivity::class.java)
         intent.action = MainActivity.ACTION_OPEN_PLACE

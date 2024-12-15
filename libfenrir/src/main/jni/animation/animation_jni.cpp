@@ -18,7 +18,7 @@ extern "C" {
 #include <libswscale/swscale.h>
 }
 
-inline std::string av_make_error_str_animation(int errnum) {
+static inline std::string av_make_error_str_animation(int errnum) {
     char errbuf[AV_ERROR_MAX_STRING_SIZE];
     av_strerror(errnum, errbuf, AV_ERROR_MAX_STRING_SIZE);
     return (std::string) errbuf;
@@ -107,7 +107,7 @@ open_codec_context_animation(int *stream_idx, AVCodecContext **dec_ctx, AVFormat
 
         dec = avcodec_find_decoder(st->codecpar->codec_id);
         if (!dec) {
-            LOGE("failed to find %s codec", av_get_media_type_string(type));
+            LOGE("failed to find %d codec", st->codecpar->codec_id);
             return AVERROR(EINVAL);
         }
 
@@ -140,19 +140,23 @@ int decode_packet_animation(VideoInfo *info, bool &got_frame) {
     got_frame = false;
 
     if (info->pkt.stream_index == info->video_stream_idx) {
-        ret = avcodec_send_packet(info->video_dec_ctx, &info->pkt);
-        if (ret == AVERROR_EOF)
-            return decoded;
-        else if (ret == AVERROR(EAGAIN)) {
-            return AVERROR_BUG;
+        while (decoded > 0) {
+            ret = avcodec_send_packet(info->video_dec_ctx, &info->pkt);
+            if (ret < 0 && ret != AVERROR(EAGAIN)) {
+                return ret;
+            }
+            if (ret >= 0) {
+                ret = avcodec_receive_frame(info->video_dec_ctx, info->frame);
+                if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
+                    return 0;
+                } else if (ret < 0) {
+                    return ret;
+                }
+                got_frame = true;
+                return info->pkt.size;
+            }
+            decoded = info->pkt.size;
         }
-        ret = avcodec_receive_frame(info->video_dec_ctx, info->frame);
-        if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
-            return decoded;
-        } else if (ret) {
-            return ret;
-        }
-        got_frame = true;
     }
 
     return decoded;
@@ -224,6 +228,25 @@ jlong createDecoder_animation(JNIEnv *env, jstring src,
             dataArr[2] = 0;
         }
         dataArr[4] = (int32_t) (info->fmt_ctx->duration * 1000 / AV_TIME_BASE);
+        int video_stream_index = -1;
+        double fps = 30.0;
+        for (int i = 0; i < info->fmt_ctx->nb_streams; i++) {
+            if (info->fmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+                video_stream_index = i;
+                break;
+            }
+        }
+        if (video_stream_index != -1) {
+            AVStream *video_stream = info->fmt_ctx->streams[video_stream_index];
+            if (video_stream->avg_frame_rate.den && video_stream->avg_frame_rate.num) {
+                fps = av_q2d(video_stream->avg_frame_rate);
+            } else if (video_stream->r_frame_rate.den && video_stream->r_frame_rate.num) {
+                fps = av_q2d(video_stream->r_frame_rate);
+            } else {
+                fps = 1.0 / (av_q2d(video_stream->time_base));
+            }
+        }
+        dataArr[5] = (int32_t) fps;
         //(int32_t) (1000 * info->video_stream->duration * av_q2d(info->video_stream->time_base));
         env->ReleaseIntArrayElements(data, dataArr, 0);
     }
@@ -309,7 +332,7 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_seekToMs(JNIEnv *
             return;
         }
         bool got_frame = false;
-        int32_t tries = 1000;
+        int32_t tries = 100;
         while (tries > 0) {
             if (info->pkt.size == 0) {
                 ret = av_read_frame(info->fmt_ctx, &info->pkt);
@@ -429,11 +452,19 @@ void writeFrameToBitmap_animation(JNIEnv *env, VideoInfo *info, jintArray data, 
                                        bitmapHeight);
                 } else if (info->frame->format == AV_PIX_FMT_YUV420P ||
                            info->frame->format == AV_PIX_FMT_YUVJ420P) {
-                    libyuv::H420ToARGB(info->frame->data[0], info->frame->linesize[0],
-                                       info->frame->data[2], info->frame->linesize[2],
-                                       info->frame->data[1], info->frame->linesize[1],
-                                       (uint8_t *) pixels, bitmapWidth * 4, bitmapWidth,
-                                       bitmapHeight);
+                    if (info->frame->colorspace == AVColorSpace::AVCOL_SPC_BT709) {
+                        libyuv::H420ToARGB(info->frame->data[0], info->frame->linesize[0],
+                                           info->frame->data[2], info->frame->linesize[2],
+                                           info->frame->data[1], info->frame->linesize[1],
+                                           (uint8_t *) pixels, bitmapWidth * 4, bitmapWidth,
+                                           bitmapHeight);
+                    } else {
+                        libyuv::I420ToARGB(info->frame->data[0], info->frame->linesize[0],
+                                           info->frame->data[2], info->frame->linesize[2],
+                                           info->frame->data[1], info->frame->linesize[1],
+                                           (uint8_t *) pixels, bitmapWidth * 4, bitmapWidth,
+                                           bitmapHeight);
+                    }
                 } else if (info->frame->format == AV_PIX_FMT_BGRA) {
                     libyuv::ABGRToARGB(info->frame->data[0], info->frame->linesize[0],
                                        (uint8_t *) pixels, info->frame->width * 4,
@@ -566,7 +597,7 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_getVideoFrame(JNI
                                                                              jboolean preview,
                                                                              jfloat start_time,
                                                                              jfloat end_time) {
-    if (ptr == 0 || bitmap == nullptr) {
+    if (ptr == 0) {
         return 0;
     }
     //int64_t time = ConnectionsManager::getInstance(0).getCurrentTimeMonotonicMillis();
@@ -637,11 +668,11 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_getVideoFrame(JNI
         }
         if (got_frame) {
             //LOGD("decoded frame with w = %d, h = %d, format = %d", info->frame->width, info->frame->height, info->frame->format);
-            if (info->frame->format == AV_PIX_FMT_YUV420P ||
-                info->frame->format == AV_PIX_FMT_BGRA ||
-                info->frame->format == AV_PIX_FMT_YUVJ420P ||
-                info->frame->format == AV_PIX_FMT_YUV444P ||
-                info->frame->format == AV_PIX_FMT_YUVA420P) {
+            if (bitmap != nullptr && (info->frame->format == AV_PIX_FMT_YUV420P ||
+                                      info->frame->format == AV_PIX_FMT_BGRA ||
+                                      info->frame->format == AV_PIX_FMT_YUVJ420P ||
+                                      info->frame->format == AV_PIX_FMT_YUV444P ||
+                                      info->frame->format == AV_PIX_FMT_YUVA420P)) {
                 writeFrameToBitmap_animation(env, info, data, bitmap, stride);
             }
             info->has_decoded_frames = true;

@@ -842,7 +842,7 @@ object DownloadWorkUtils {
                     applicationContext,
                     id.hashCode(),
                     intent_open,
-                    Utils.makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
+                    Utils.makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
                 )
                 mBuilder.setContentIntent(readPendingIntent)
 
@@ -1008,7 +1008,7 @@ object DownloadWorkUtils {
                     applicationContext,
                     id.hashCode(),
                     intent_open,
-                    Utils.makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
+                    Utils.makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
                 )
                 mBuilder.setContentIntent(ReadPendingIntent)
 

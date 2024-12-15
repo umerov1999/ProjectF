@@ -324,6 +324,16 @@ object Utils {
         } else flags
     }
 
+    fun makeImmutablePendingIntent(flags: Int): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && BuildConfig.TARGET_SDK >= Build.VERSION_CODES.S) {
+            if (flags == 0) {
+                PendingIntent.FLAG_IMMUTABLE
+            } else {
+                flags or PendingIntent.FLAG_IMMUTABLE
+            }
+        } else flags
+    }
+
     fun BytesToSize(Bytes: Long): String {
         val tb = 1099511627776L
         val gb: Long = 1073741824

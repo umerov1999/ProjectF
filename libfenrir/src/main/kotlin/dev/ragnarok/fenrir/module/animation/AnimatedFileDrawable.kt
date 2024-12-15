@@ -61,7 +61,7 @@ class AnimatedFileDrawable(
         }
     }
 
-    private val metaData = IntArray(5)
+    private val metaData = IntArray(6)
     private val decoderCreated: Boolean
     private val paint = Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG)
     private val sync = Any()
@@ -577,6 +577,9 @@ class AnimatedFileDrawable(
     fun getStartTime(): Long {
         return (startTime * 1000).toLong()
     }
+
+    val fps: Int
+        get() = metaData[5]
 
     @Keep
     interface DecoderListener {

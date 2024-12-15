@@ -52,7 +52,7 @@ class WaveFormView @JvmOverloads constructor(context: Context, attrs: AttributeS
     private var mActiveColor = 0
 
     @ColorInt
-    private var mNoactiveColor = 0
+    private var mNoActiveColor = 0
     private var mSectionCount = 64
     private var mWaveForm = ByteArray(0)
     private var mMaxValue = 50f
@@ -63,7 +63,7 @@ class WaveFormView @JvmOverloads constructor(context: Context, attrs: AttributeS
         val a = context.theme.obtainStyledAttributes(attrs, R.styleable.WaveFormView, 0, 0)
         try {
             mActiveColor = a.getColor(R.styleable.WaveFormView_waveform_active_color, Color.BLUE)
-            mNoactiveColor = a.getInt(R.styleable.WaveFormView_waveform_noactive_color, Color.GRAY)
+            mNoActiveColor = a.getInt(R.styleable.WaveFormView_waveform_noactive_color, Color.GRAY)
         } finally {
             a.recycle()
         }
@@ -131,7 +131,7 @@ class WaveFormView @JvmOverloads constructor(context: Context, attrs: AttributeS
         var offset = 0f
         for (i in mWaveForm.indices) {
             val active = i.toFloat() / mWaveForm.size.toFloat() <= mDisplayedProgress
-            @ColorInt val color = if (active) mActiveColor else mNoactiveColor
+            @ColorInt val color = if (active) mActiveColor else mNoActiveColor
             PAINT.color = color
             val value = mWaveForm[i]
             val pxHeight = height.toFloat() * (value.toFloat() / mMaxValue)
@@ -186,8 +186,8 @@ class WaveFormView @JvmOverloads constructor(context: Context, attrs: AttributeS
         mActiveColor = activeColor
     }
 
-    fun setNoactiveColor(@ColorInt noactiveColor: Int) {
-        mNoactiveColor = noactiveColor
+    fun setNoActiveColor(@ColorInt noActiveColor: Int) {
+        mNoActiveColor = noActiveColor
     }
 
     init {
