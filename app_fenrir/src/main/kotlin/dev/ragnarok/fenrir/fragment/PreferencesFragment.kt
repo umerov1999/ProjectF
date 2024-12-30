@@ -1419,7 +1419,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         FileManagerSelectActivity.makeFileManager(
                             requireActivity(),
                             Environment.getExternalStorageDirectory().absolutePath,
-                            "dirs"
+                            "dirs", null
                         )
                     )
                     true
@@ -1438,7 +1438,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         FileManagerSelectActivity.makeFileManager(
                             requireActivity(),
                             Environment.getExternalStorageDirectory().absolutePath,
-                            "dirs"
+                            "dirs", null
                         )
                     )
                     true
@@ -1457,7 +1457,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         FileManagerSelectActivity.makeFileManager(
                             requireActivity(),
                             Environment.getExternalStorageDirectory().absolutePath,
-                            "dirs"
+                            "dirs", null
                         )
                     )
                     true
@@ -1476,7 +1476,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         FileManagerSelectActivity.makeFileManager(
                             requireActivity(),
                             Environment.getExternalStorageDirectory().absolutePath,
-                            "dirs"
+                            "dirs", null
                         )
                     )
                     true
@@ -1495,7 +1495,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         FileManagerSelectActivity.makeFileManager(
                             requireActivity(),
                             Environment.getExternalStorageDirectory().absolutePath,
-                            "dirs"
+                            "dirs", null
                         )
                     )
                     true
@@ -1867,7 +1867,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         FileManagerSelectActivity.makeFileManager(
                             requireActivity(),
                             Environment.getExternalStorageDirectory().absolutePath,
-                            "dirs"
+                            "dirs", null
                         )
                     )
                     true
@@ -2113,7 +2113,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 FileManagerSelectActivity.makeFileManager(
                     requireActivity(),
                     requireActivity().dataDir.absolutePath,
-                    null
+                    null, null
                 )
             )
         }

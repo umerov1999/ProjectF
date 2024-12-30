@@ -85,21 +85,15 @@ class CommunityBlacklistFragment :
     }
 
     override fun notifyDataSetChanged() {
-        if (mAdapter != null) {
-            (mAdapter ?: return).notifyDataSetChanged()
-        }
+        mAdapter?.notifyDataSetChanged()
     }
 
     override fun diplayData(data: List<Banned>) {
-        if (mAdapter != null) {
-            (mAdapter ?: return).setData(data)
-        }
+        mAdapter?.setData(data)
     }
 
     override fun notifyItemRemoved(index: Int) {
-        if (mAdapter != null) {
-            (mAdapter ?: return).notifyItemRemoved(index)
-        }
+        mAdapter?.notifyItemRemoved(index)
     }
 
     override fun openBanEditor(accountId: Long, groupId: Long, banned: Banned) {

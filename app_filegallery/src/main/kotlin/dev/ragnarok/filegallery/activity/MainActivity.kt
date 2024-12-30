@@ -131,6 +131,17 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
         }
     }
 
+    @get:LayoutRes
+    private val mainContentView: Int
+        get() = R.layout.activity_main
+
+    @get:IdRes
+    private val mainContainerViewId: Int
+        get() = R.id.fragment
+
+    private val frontFragment: Fragment?
+        get() = supportFragmentManager.findFragmentById(mainContainerViewId)
+
     private fun startEnterPinActivity() {
         requestEnterPin.launch(EnterPinActivity.getIntent(this))
     }
@@ -152,10 +163,10 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
             }
         }
         bindToAudioPlayService()
-        setContentView(noMainContentView)
+        setContentView(mainContentView)
         mBottomNavigation = findViewById(R.id.bottom_navigation_menu)
         mBottomNavigation?.setOnItemSelectedListener(this)
-        mViewFragment = findViewById(R.id.fragment)
+        mViewFragment = findViewById(mainContainerViewId)
 
         supportFragmentManager.addOnBackStackChangedListener(mOnBackStackChangedListener)
         resolveToolbarNavigationIcon()
@@ -322,12 +333,6 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
         }
     }
 
-    @get:LayoutRes
-    private val noMainContentView: Int
-        get() = R.layout.activity_main
-    private val frontFragment: Fragment?
-        get() = supportFragmentManager.findFragmentById(R.id.fragment)
-
     override fun onSectionResume(@SectionItem section: Int) {
         mCurrentFrontSection = section
         mBottomNavigation?.menu ?: return
@@ -373,10 +378,6 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
         ins.isAppearanceLightStatusBars = invertIcons
         ins.isAppearanceLightNavigationBars = invertIcons
     }
-
-    @get:IdRes
-    private val mainContainerViewId: Int
-        get() = R.id.fragment
 
     private fun handleIntent(action: String?, main: Boolean) {
         if (main) {
@@ -469,9 +470,11 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
             }
 
             Place.VIDEO_PLAYER -> {
-                val intent = Intent(this, VideoPlayerActivity::class.java)
-                intent.putExtras(args)
-                startActivity(intent)
+                val videoActivity = VideoPlayerActivity.newInstance(this, args)
+                place.launchActivityForResult(
+                    this,
+                    videoActivity
+                )
             }
 
             Place.TAGS -> {

@@ -21,6 +21,14 @@ abstract class NoMainActivity : AppCompatActivity() {
     private val mBackStackListener =
         FragmentManager.OnBackStackChangedListener { resolveToolbarNavigationIcon() }
 
+    @get:LayoutRes
+    protected open val noMainContentView: Int
+        get() = R.layout.activity_no_main
+
+    @get:IdRes
+    protected open val noMainContainerViewId: Int
+        get() = R.id.fragment
+
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(currentStyle())
@@ -37,9 +45,7 @@ abstract class NoMainActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val fm = supportFragmentManager
-                val front = fm.findFragmentById(
-                    mainContainerViewId
-                )
+                val front = fm.findFragmentById(noMainContainerViewId)
                 if (front is BackPressCallback) {
                     if (!(front as BackPressCallback).onBackPressed()) {
                         return
@@ -57,14 +63,6 @@ abstract class NoMainActivity : AppCompatActivity() {
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(Utils.updateActivityContext(newBase))
     }
-
-    @get:LayoutRes
-    protected open val noMainContentView: Int
-        get() = R.layout.activity_no_main
-
-    @get:IdRes
-    protected open val mainContainerViewId: Int
-        get() = R.id.fragment
 
     override fun setSupportActionBar(toolbar: Toolbar?) {
         super.setSupportActionBar(toolbar)

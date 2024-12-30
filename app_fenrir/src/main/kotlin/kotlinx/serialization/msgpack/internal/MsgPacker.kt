@@ -6,14 +6,38 @@ import kotlinx.serialization.msgpack.utils.splitToByteArray
 
 internal interface MsgPacker {
     fun packNull(): ByteArray
+
     fun packBoolean(value: Boolean): ByteArray
-    fun packByte(value: Byte, strict: Boolean = false): ByteArray
-    fun packShort(value: Short, strict: Boolean = false): ByteArray
-    fun packInt(value: Int, strict: Boolean = false): ByteArray
-    fun packLong(value: Long, strict: Boolean = false): ByteArray
+
+    fun packByte(
+        value: Byte,
+        strict: Boolean = false,
+    ): ByteArray
+
+    fun packShort(
+        value: Short,
+        strict: Boolean = false,
+    ): ByteArray
+
+    fun packInt(
+        value: Int,
+        strict: Boolean = false,
+    ): ByteArray
+
+    fun packLong(
+        value: Long,
+        strict: Boolean = false,
+    ): ByteArray
+
     fun packFloat(value: Float): ByteArray
+
     fun packDouble(value: Double): ByteArray
-    fun packString(value: String, rawCompatibility: Boolean = false): ByteArray
+
+    fun packString(
+        value: String,
+        rawCompatibility: Boolean = false,
+    ): ByteArray
+
     fun packByteArray(value: ByteArray): ByteArray
 }
 
@@ -26,7 +50,10 @@ internal class BasicMsgPacker : MsgPacker {
         return byteArrayOf(MsgPackType.Boolean(value))
     }
 
-    override fun packByte(value: Byte, strict: Boolean): ByteArray {
+    override fun packByte(
+        value: Byte,
+        strict: Boolean,
+    ): ByteArray {
         return if (value >= MsgPackType.Int.MIN_NEGATIVE_SINGLE_BYTE) {
             byteArrayOf(value)
         } else {
@@ -34,7 +61,10 @@ internal class BasicMsgPacker : MsgPacker {
         }
     }
 
-    override fun packShort(value: Short, strict: Boolean): ByteArray {
+    override fun packShort(
+        value: Short,
+        strict: Boolean,
+    ): ByteArray {
         return if (value in MsgPackType.Int.MIN_NEGATIVE_BYTE..Byte.MAX_VALUE && !strict) {
             packByte(value.toByte())
         } else {
@@ -56,7 +86,10 @@ internal class BasicMsgPacker : MsgPacker {
         }
     }
 
-    override fun packInt(value: Int, strict: Boolean): ByteArray {
+    override fun packInt(
+        value: Int,
+        strict: Boolean,
+    ): ByteArray {
         return if (value in Short.MIN_VALUE..Short.MAX_VALUE && !strict) {
             packShort(value.toShort())
         } else {
@@ -78,7 +111,10 @@ internal class BasicMsgPacker : MsgPacker {
         }
     }
 
-    override fun packLong(value: Long, strict: Boolean): ByteArray {
+    override fun packLong(
+        value: Long,
+        strict: Boolean,
+    ): ByteArray {
         return if (value in Int.MIN_VALUE..Int.MAX_VALUE && !strict) {
             packInt(value.toInt())
         } else {
@@ -108,46 +144,55 @@ internal class BasicMsgPacker : MsgPacker {
         return byteArrayOf(MsgPackType.Float.DOUBLE) + value.toRawBits().splitToByteArray()
     }
 
-    override fun packString(value: String, rawCompatibility: Boolean): ByteArray {
+    override fun packString(
+        value: String,
+        rawCompatibility: Boolean,
+    ): ByteArray {
         val bytes = value.encodeToByteArray()
-        val prefix = when {
-            bytes.size <= MsgPackType.String.MAX_FIXSTR_LENGTH -> {
-                byteArrayOf(MsgPackType.String.FIXSTR_SIZE_MASK.maskValue(bytes.size.toByte()))
-            }
+        val prefix =
+            when {
+                bytes.size <= MsgPackType.String.MAX_FIXSTR_LENGTH -> {
+                    byteArrayOf(MsgPackType.String.FIXSTR_SIZE_MASK.maskValue(bytes.size.toByte()))
+                }
 
-            bytes.size <= MsgPackType.String.MAX_STR8_LENGTH && !rawCompatibility -> {
-                byteArrayOf(MsgPackType.String.STR8) + bytes.size.toByte().splitToByteArray()
-            }
+                bytes.size <= MsgPackType.String.MAX_STR8_LENGTH && !rawCompatibility -> {
+                    byteArrayOf(MsgPackType.String.STR8) + bytes.size.toByte().splitToByteArray()
+                }
 
-            bytes.size <= MsgPackType.String.MAX_STR16_LENGTH -> {
-                byteArrayOf(MsgPackType.String.STR16) + bytes.size.toShort().splitToByteArray()
-            }
+                bytes.size <= MsgPackType.String.MAX_STR16_LENGTH -> {
+                    byteArrayOf(MsgPackType.String.STR16) + bytes.size.toShort().splitToByteArray()
+                }
 
-            bytes.size <= MsgPackType.String.MAX_STR32_LENGTH -> {
-                byteArrayOf(MsgPackType.String.STR32) + bytes.size.splitToByteArray()
-            }
+                bytes.size <= MsgPackType.String.MAX_STR32_LENGTH -> {
+                    byteArrayOf(MsgPackType.String.STR32) + bytes.size.splitToByteArray()
+                }
 
-            else -> throw MsgPackSerializationException.packingError("String too long. Byte size: ${bytes.size}. Max size: ${MsgPackType.String.MAX_STR32_LENGTH}")
-        }
+                else -> throw MsgPackSerializationException.packingError(
+                    "String too long. Byte size: ${bytes.size}. Max size: ${MsgPackType.String.MAX_STR32_LENGTH}",
+                )
+            }
         return prefix + bytes
     }
 
     override fun packByteArray(value: ByteArray): ByteArray {
-        val prefix = when {
-            value.size <= MsgPackType.Bin.MAX_BIN8_LENGTH -> {
-                byteArrayOf(MsgPackType.Bin.BIN8) + value.size.toByte().splitToByteArray()
-            }
+        val prefix =
+            when {
+                value.size <= MsgPackType.Bin.MAX_BIN8_LENGTH -> {
+                    byteArrayOf(MsgPackType.Bin.BIN8) + value.size.toByte().splitToByteArray()
+                }
 
-            value.size <= MsgPackType.Bin.MAX_BIN16_LENGTH -> {
-                byteArrayOf(MsgPackType.Bin.BIN16) + value.size.toShort().splitToByteArray()
-            }
+                value.size <= MsgPackType.Bin.MAX_BIN16_LENGTH -> {
+                    byteArrayOf(MsgPackType.Bin.BIN16) + value.size.toShort().splitToByteArray()
+                }
 
-            value.size <= MsgPackType.Bin.MAX_BIN32_LENGTH -> {
-                byteArrayOf(MsgPackType.Bin.BIN32) + value.size.splitToByteArray()
-            }
+                value.size <= MsgPackType.Bin.MAX_BIN32_LENGTH -> {
+                    byteArrayOf(MsgPackType.Bin.BIN32) + value.size.splitToByteArray()
+                }
 
-            else -> throw MsgPackSerializationException.packingError("Byte array too long. Byte size: ${value.size}. Max size: ${MsgPackType.Bin.MAX_BIN32_LENGTH}")
-        }
+                else -> throw MsgPackSerializationException.packingError(
+                    "Byte array too long. Byte size: ${value.size}. Max size: ${MsgPackType.Bin.MAX_BIN32_LENGTH}",
+                )
+            }
         return prefix + value
     }
 }

@@ -149,10 +149,10 @@ class MessageAttachmentsFragment :
         mEmptyView = view.findViewById(R.id.no_attachments_text)
         view.findViewById<View>(R.id.button_send).setOnClickListener {
             parentFragmentManager.setFragmentResult(MESSAGE_CLOSE_ONLY, Bundle())
-            (getDialog() ?: return@setOnClickListener).dismiss()
+            getDialog()?.dismiss()
         }
         view.findViewById<View>(R.id.button_hide)
-            .setOnClickListener { (getDialog() ?: return@setOnClickListener).dismiss() }
+            .setOnClickListener { getDialog()?.dismiss() }
         view.findViewById<View>(R.id.button_video).setOnClickListener {
             presenter?.fireButtonVideoClick()
         }
@@ -212,16 +212,14 @@ class MessageAttachmentsFragment :
     }
 
     override fun displayAttachments(entries: List<AttachmentEntry>) {
-        if (mRecyclerView != null) {
+        mRecyclerView?.let {
             mAdapter = AttachmentsBottomSheetAdapter(entries, this)
-            (mRecyclerView ?: return).adapter = mAdapter
+            it.adapter = mAdapter
         }
     }
 
     override fun notifyDataAdded(positionStart: Int, count: Int) {
-        if (mAdapter != null) {
-            (mAdapter ?: return).notifyItemRangeInserted(positionStart + 1, count)
-        }
+        mAdapter?.notifyItemRangeInserted(positionStart + 1, count)
     }
 
     override fun addPhoto(accountId: Long, ownerId: Long) {
@@ -236,9 +234,7 @@ class MessageAttachmentsFragment :
     }
 
     override fun notifyEntryRemoved(index: Int) {
-        if (mAdapter != null) {
-            (mAdapter ?: return).notifyItemRemoved(index + 1)
-        }
+        mAdapter?.notifyItemRemoved(index + 1)
     }
 
     override fun displaySelectUploadPhotoSizeDialog(photos: List<LocalPhoto>) {
@@ -295,15 +291,11 @@ class MessageAttachmentsFragment :
     }
 
     override fun changePercentageSmoothly(id: Int, progress: Int) {
-        if (mAdapter != null) {
-            (mAdapter ?: return).changeUploadProgress(id, progress, true)
-        }
+        mAdapter?.changeUploadProgress(id, progress, true)
     }
 
     override fun notifyItemChanged(index: Int) {
-        if (mAdapter != null) {
-            (mAdapter ?: return).notifyItemChanged(index + 1)
-        }
+        mAdapter?.notifyItemChanged(index + 1)
     }
 
     override fun setEmptyViewVisible(visible: Boolean) {

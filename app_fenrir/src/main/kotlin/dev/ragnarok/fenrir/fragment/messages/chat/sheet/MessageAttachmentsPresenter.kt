@@ -119,16 +119,17 @@ class MessageAttachmentsPresenter(
         for (i in uploads.indices.reversed()) {
             val upload = uploads[i]
             if (destination.compareTo(upload.destination)) {
-                val entry = AttachmentEntry(true, upload)
-                entries.add(0, entry)
-                count++
+                val index = findUploadObjectIndex(upload.getObjectId())
+                if (index == -1) {
+                    val entry = AttachmentEntry(true, upload)
+                    entries.add(0, entry)
+                    count++
+                }
             }
         }
-        val finalCount = count
-        view?.notifyDataAdded(
-            0,
-            finalCount
-        )
+        if (count > 0) {
+            view?.notifyDataAdded(0, count)
+        }
         resolveEmptyViewVisibility()
     }
 

@@ -193,6 +193,13 @@ static void ScalePlaneDown2_16(int src_width,
                                                  : ScaleRowDown2Box_16_NEON;
   }
 #endif
+#if defined(HAS_SCALEROWDOWN2_16_SME)
+  if (TestCpuFlag(kCpuHasSME)) {
+    ScaleRowDown2 = filtering == kFilterNone     ? ScaleRowDown2_16_SME
+                    : filtering == kFilterLinear ? ScaleRowDown2Linear_16_SME
+                                                 : ScaleRowDown2Box_16_SME;
+  }
+#endif
 #if defined(HAS_SCALEROWDOWN2_16_SSE2)
   if (TestCpuFlag(kCpuHasSSE2) && IS_ALIGNED(dst_width, 16)) {
     ScaleRowDown2 =
@@ -1166,6 +1173,11 @@ static int ScalePlaneBilinearDown(int src_width,
     }
   }
 #endif
+#if defined(HAS_INTERPOLATEROW_SME)
+  if (TestCpuFlag(kCpuHasSME)) {
+    InterpolateRow = InterpolateRow_SME;
+  }
+#endif
 #if defined(HAS_INTERPOLATEROW_MSA)
   if (TestCpuFlag(kCpuHasMSA)) {
     InterpolateRow = InterpolateRow_Any_MSA;
@@ -1305,6 +1317,11 @@ static int ScalePlaneBilinearDown_16(int src_width,
     }
   }
 #endif
+#if defined(HAS_INTERPOLATEROW_16_SME)
+  if (TestCpuFlag(kCpuHasSME)) {
+    InterpolateRow = InterpolateRow_16_SME;
+  }
+#endif
 
 #if defined(HAS_SCALEFILTERCOLS_16_SSSE3)
   if (TestCpuFlag(kCpuHasSSSE3) && src_width < 32768) {
@@ -1384,6 +1401,11 @@ static int ScalePlaneBilinearUp(int src_width,
     if (IS_ALIGNED(dst_width, 16)) {
       InterpolateRow = InterpolateRow_NEON;
     }
+  }
+#endif
+#if defined(HAS_INTERPOLATEROW_SME)
+  if (TestCpuFlag(kCpuHasSME)) {
+    InterpolateRow = InterpolateRow_SME;
   }
 #endif
 #if defined(HAS_INTERPOLATEROW_RVV)
@@ -1884,6 +1906,11 @@ static int ScalePlaneBilinearUp_16(int src_width,
     if (IS_ALIGNED(dst_width, 16)) {
       InterpolateRow = InterpolateRow_16_NEON;
     }
+  }
+#endif
+#if defined(HAS_INTERPOLATEROW_16_SME)
+  if (TestCpuFlag(kCpuHasSME)) {
+    InterpolateRow = InterpolateRow_16_SME;
   }
 #endif
 
@@ -2714,6 +2741,38 @@ int NV12Scale(const uint8_t* src_y,
   }
   r = UVScale(src_uv, src_stride_uv, src_halfwidth, src_halfheight, dst_uv,
               dst_stride_uv, dst_halfwidth, dst_halfheight, filtering);
+  return r;
+}
+
+LIBYUV_API
+int NV24Scale(const uint8_t* src_y,
+              int src_stride_y,
+              const uint8_t* src_uv,
+              int src_stride_uv,
+              int src_width,
+              int src_height,
+              uint8_t* dst_y,
+              int dst_stride_y,
+              uint8_t* dst_uv,
+              int dst_stride_uv,
+              int dst_width,
+              int dst_height,
+              enum FilterMode filtering) {
+  int r;
+
+  if (!src_y || !src_uv || src_width <= 0 || src_height == 0 ||
+      src_width > 32768 || src_height > 32768 || !dst_y || !dst_uv ||
+      dst_width <= 0 || dst_height <= 0) {
+    return -1;
+  }
+
+  r = ScalePlane(src_y, src_stride_y, src_width, src_height, dst_y,
+                 dst_stride_y, dst_width, dst_height, filtering);
+  if (r != 0) {
+    return r;
+  }
+  r = UVScale(src_uv, src_stride_uv, src_width, src_height, dst_uv,
+              dst_stride_uv, dst_width, dst_height, filtering);
   return r;
 }
 

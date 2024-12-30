@@ -65,8 +65,8 @@ class VideoAlbumsFragment : BaseMvpFragment<VideoAlbumsPresenter, IVideoAlbumsVi
     }
 
     override fun notifyDataAdded(position: Int, count: Int) {
-        if (mAdapter != null) {
-            (mAdapter ?: return).notifyItemRangeInserted(position, count)
+        mAdapter?.let {
+            it.notifyItemRangeInserted(position, count)
             resolveEmptyTextVisibility()
         }
     }

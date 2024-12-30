@@ -19,7 +19,7 @@ import kotlinx.serialization.msgpack.types.MsgPackType
 import kotlinx.serialization.serializer
 
 open class MsgPackDynamicSerializer(
-    private val nullableSerializer: MsgPackNullableDynamicSerializer = MsgPackNullableDynamicSerializer
+    private val nullableSerializer: MsgPackNullableDynamicSerializer = MsgPackNullableDynamicSerializer,
 ) : KSerializer<Any> {
     companion object Default : MsgPackDynamicSerializer(MsgPackNullableDynamicSerializer)
 
@@ -31,13 +31,16 @@ open class MsgPackDynamicSerializer(
     final override val descriptor: SerialDescriptor =
         buildSerialDescriptor("MsgPackDynamic", SerialKind.CONTEXTUAL)
 
-    final override fun serialize(encoder: Encoder, value: Any) {
+    final override fun serialize(
+        encoder: Encoder,
+        value: Any,
+    ) {
         nullableSerializer.serialize(encoder, value)
     }
 }
 
 open class MsgPackNullableDynamicSerializer(
-    private val dynamicMsgPackExtensionSerializer: DynamicMsgPackExtensionSerializer = DynamicMsgPackExtensionSerializer
+    private val dynamicMsgPackExtensionSerializer: DynamicMsgPackExtensionSerializer = DynamicMsgPackExtensionSerializer,
 ) : KSerializer<Any?> {
     companion object Default : MsgPackNullableDynamicSerializer(DynamicMsgPackExtensionSerializer)
 
@@ -97,7 +100,10 @@ open class MsgPackNullableDynamicSerializer(
 
     @OptIn(InternalSerializationApi::class)
     @Suppress("UNCHECKED_CAST")
-    final override fun serialize(encoder: Encoder, value: Any?) {
+    final override fun serialize(
+        encoder: Encoder,
+        value: Any?,
+    ) {
         if (value == null) encoder.encodeNull()
         when ((value ?: return)::class) {
             Boolean::class -> encoder.encodeBoolean(value as Boolean)

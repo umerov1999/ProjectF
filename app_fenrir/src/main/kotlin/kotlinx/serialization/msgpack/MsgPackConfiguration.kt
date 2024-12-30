@@ -40,7 +40,7 @@ data class MsgPackConfiguration(
      * Encode enum values as Ints corresponding to their ordinal values
      * false by default
      */
-    val ordinalEnums: Boolean = false
+    val ordinalEnums: Boolean = false,
 ) {
     companion object {
         val default: MsgPackConfiguration = MsgPackConfiguration()

@@ -40,7 +40,7 @@ class NotReadMessagesActivity : NoMainActivity(), PlaceProvider, AppStyleable {
     private val mOnBackStackChangedListener =
         FragmentManager.OnBackStackChangedListener { keyboardHide() }
     internal val frontFragment: Fragment?
-        get() = supportFragmentManager.findFragmentById(R.id.fragment)
+        get() = supportFragmentManager.findFragmentById(noMainContainerViewId)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -162,7 +162,7 @@ class NotReadMessagesActivity : NoMainActivity(), PlaceProvider, AppStyleable {
             R.anim.fragment_exit
         )
         fragmentTransaction
-            .replace(R.id.fragment, fragment)
+            .replace(noMainContainerViewId, fragment)
             .addToBackStack(null)
             .commitAllowingStateLoss()
     }

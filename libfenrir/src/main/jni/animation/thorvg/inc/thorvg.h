@@ -43,11 +43,15 @@
 
 #define _TVG_DECLARE_PRIVATE(A) \
     struct Impl; \
-    Impl* pImpl; \
 protected: \
     A(const A&) = delete; \
     const A& operator=(const A&) = delete; \
     A()
+
+#define _TVG_DECLARE_PRIVATE_BASE(A) \
+    _TVG_DECLARE_PRIVATE(A); \
+public: \
+    Impl* pImpl
 
 #define _TVG_DISABLE_CTOR(A) \
     A() = delete; \
@@ -229,7 +233,9 @@ enum class SceneEffect : uint8_t
     ClearAll = 0,      ///< Reset all previously applied scene effects, restoring the scene to its original state.
     GaussianBlur,      ///< Apply a blur effect with a Gaussian filter. Param(3) = {sigma(float)[> 0], direction(int)[both: 0 / horizontal: 1 / vertical: 2], border(int)[duplicate: 0 / wrap: 1], quality(int)[0 - 100]}
     DropShadow,        ///< Apply a drop shadow effect with a Gaussian Blur filter. Param(8) = {color_R(int)[0 - 255], color_G(int)[0 - 255], color_B(int)[0 - 255], opacity(int)[0 - 255], angle(float)[0 - 360], distance(float), blur_sigma(float)[> 0], quality(int)[0 - 100]}
-    Fill               ///< Override the scene content color with a given fill information (Experimental API). Param(5) = {color_R(int)[0 - 255], color_G(int)[0 - 255], color_B(int)[0 - 255], opacity(int)[0 - 255]}
+    Fill,              ///< Override the scene content color with a given fill information (Experimental API). Param(5) = {color_R(int)[0 - 255], color_G(int)[0 - 255], color_B(int)[0 - 255], opacity(int)[0 - 255]}
+    Tint,              ///< Tinting the current scene color with a given black, white color paramters (Experimental API). Param(7) = {black_R(int)[0 - 255], black_G(int)[0 - 255], black_B(int)[0 - 255], white_R(int)[0 - 255], white_G(int)[0 - 255], white_B(int)[0 - 255], intensity(float)[0 - 100]}
+    Tritone            ///< Apply a tritone color effect to the scene using three color parameters for shadows, midtones, and highlights (Experimental API). Param(9) = {Shadow_R(int)[0 - 255], Shadow_G(int)[0 - 255], Shadow_B(int)[0 - 255], Midtone_R(int)[0 - 255], Midtone_G(int)[0 - 255], Midtone_B(int)[0 - 255], Highlight_R(int)[0 - 255], Highlight_G(int)[0 - 255], Highlight_B(int)[0 - 255]}
 };
 
 
@@ -517,7 +523,7 @@ public:
      */
     uint32_t id = 0;
 
-    _TVG_DECLARE_PRIVATE(Paint);
+    _TVG_DECLARE_PRIVATE_BASE(Paint);
 };
 
 
@@ -618,7 +624,7 @@ public:
      */
     virtual Type type() const noexcept = 0;
 
-    _TVG_DECLARE_PRIVATE(Fill);
+    _TVG_DECLARE_PRIVATE_BASE(Fill);
 };
 
 
@@ -635,7 +641,6 @@ public:
 class TVG_API Canvas
 {
 public:
-    Canvas(RenderMethod*);
     virtual ~Canvas();
 
     /**
@@ -751,7 +756,7 @@ public:
      */
     Result sync() noexcept;
 
-    _TVG_DECLARE_PRIVATE(Canvas);
+    _TVG_DECLARE_PRIVATE_BASE(Canvas);
 };
 
 
@@ -766,8 +771,6 @@ public:
 class TVG_API LinearGradient final : public Fill
 {
 public:
-    ~LinearGradient();
-
     /**
      * @brief Sets the linear gradient bounds.
      *
@@ -830,8 +833,6 @@ public:
 class TVG_API RadialGradient final : public Fill
 {
 public:
-    ~RadialGradient();
-
     /**
      * @brief Sets the radial gradient attributes.
      *
@@ -908,8 +909,6 @@ public:
 class TVG_API Shape final : public Paint
 {
 public:
-    ~Shape();
-
     /**
      * @brief Resets the shape path.
      *
@@ -1289,8 +1288,6 @@ public:
 class TVG_API Picture final : public Paint
 {
 public:
-    ~Picture();
-
     /**
      * @brief Loads a picture data directly from a file.
      *
@@ -1422,8 +1419,6 @@ public:
 class TVG_API Scene final : public Paint
 {
 public:
-    ~Scene();
-
     /**
      * @brief Inserts a paint object to the scene.
      *
@@ -1521,8 +1516,6 @@ public:
 class TVG_API Text final : public Paint
 {
 public:
-    ~Text();
-
     /**
      * @brief Sets the font properties for the text.
      *
@@ -1904,7 +1897,7 @@ public:
 class TVG_API Animation
 {
 public:
-    ~Animation();
+    virtual ~Animation();
 
     /**
      * @brief Specifies the current frame in the animation.
@@ -2014,7 +2007,7 @@ public:
      */
     static Animation* gen() noexcept;
 
-    _TVG_DECLARE_PRIVATE(Animation);
+    _TVG_DECLARE_PRIVATE_BASE(Animation);
 };
 
 
@@ -2117,7 +2110,7 @@ public:
      */
     static Saver* gen() noexcept;
 
-    _TVG_DECLARE_PRIVATE(Saver);
+    _TVG_DECLARE_PRIVATE_BASE(Saver);
 };
 
 
@@ -2140,7 +2133,7 @@ public:
     /**
      * @brief Set the access function for traversing the Picture scene tree nodes.
      *
-     * @param[in] picture The picture node to traverse the internal scene-tree.
+     * @param[in] paint The paint node to traverse the internal scene-tree.
      * @param[in] func The callback function calling for every paint nodes of the Picture.
      * @param[in] data Data passed to the @p func as its argument.
      *
@@ -2148,7 +2141,7 @@ public:
      *
      * @note Experimental API
      */
-    Result set(Picture* picture, std::function<bool(const Paint* paint, void* data)> func, void* data) noexcept;
+    Result set(Paint* paint, std::function<bool(const Paint* paint, void* data)> func, void* data) noexcept;
 
     /**
      * @brief Generate a unique ID (hash key) from a given name.
@@ -2173,7 +2166,7 @@ public:
      */
     static Accessor* gen() noexcept;
 
-    _TVG_DECLARE_PRIVATE(Accessor);
+    _TVG_DECLARE_PRIVATE_BASE(Accessor);
 };
 
 /** @}*/

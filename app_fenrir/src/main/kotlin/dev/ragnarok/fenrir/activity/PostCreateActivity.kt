@@ -35,7 +35,7 @@ class PostCreateActivity : NoMainActivity() {
             supportFragmentManager
                 .beginTransaction()
                 .setCustomAnimations(R.anim.fragment_enter, R.anim.fragment_exit)
-                .replace(getMainContainerViewId(), fragment)
+                .replace(noMainContainerViewId, fragment)
                 .addToBackStack(null)
                 .commitAllowingStateLoss()
         }

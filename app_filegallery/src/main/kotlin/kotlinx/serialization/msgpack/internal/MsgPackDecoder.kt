@@ -26,7 +26,7 @@ internal class BasicMsgPackDecoder(
     override val serializersModule: SerializersModule,
     val dataBuffer: MsgPackDataInputBuffer,
     private val msgUnpacker: MsgUnpacker = BasicMsgUnpacker(dataBuffer),
-    val inlineDecoders: Map<SerialDescriptor, (InlineDecoderHelper) -> Decoder> = mapOf()
+    val inlineDecoders: Map<SerialDescriptor, (InlineDecoderHelper) -> Decoder> = mapOf(),
 ) : AbstractDecoder(), MsgPackTypeDecoder {
     fun decodeMsgPackElement(): JsonElement = MsgPackTreeReader(this).read()
     fun getConfiguration(): MsgPackConfiguration {
@@ -246,7 +246,7 @@ internal class BasicMsgPackDecoder(
 }
 
 internal class MsgPackDecoder(
-    private val basicMsgPackDecoder: BasicMsgPackDecoder
+    private val basicMsgPackDecoder: BasicMsgPackDecoder,
 ) : Decoder by basicMsgPackDecoder, CompositeDecoder by basicMsgPackDecoder,
     MsgPackTypeDecoder by basicMsgPackDecoder {
     override val serializersModule: SerializersModule = basicMsgPackDecoder.serializersModule
@@ -255,7 +255,7 @@ internal class MsgPackDecoder(
 internal class ClassMsgPackDecoder(
     private val basicMsgPackDecoder: BasicMsgPackDecoder,
     private val configuration: MsgPackConfiguration,
-    private val size: Int
+    private val size: Int,
 ) : Decoder by basicMsgPackDecoder, CompositeDecoder by basicMsgPackDecoder,
     MsgPackTypeDecoder by basicMsgPackDecoder {
     override val serializersModule: SerializersModule = basicMsgPackDecoder.serializersModule
@@ -277,7 +277,7 @@ internal class ClassMsgPackDecoder(
 }
 
 internal class ExtensionTypeDecoder(
-    private val basicMsgPackDecoder: BasicMsgPackDecoder
+    private val basicMsgPackDecoder: BasicMsgPackDecoder,
 ) : CompositeDecoder, AbstractDecoder(), MsgPackTypeDecoder by basicMsgPackDecoder {
     private val dataBuffer = basicMsgPackDecoder.dataBuffer
     var type: Byte? = null
@@ -340,5 +340,5 @@ internal class ExtensionTypeDecoder(
 
 data class InlineDecoderHelper(
     val serializersModule: SerializersModule,
-    val inputBuffer: MsgPackDataInputBuffer
+    val inputBuffer: MsgPackDataInputBuffer,
 )

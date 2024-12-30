@@ -689,6 +689,11 @@ int I010ToNV12(const uint16_t* src_y,
     }
   }
 #endif
+#if defined(HAS_CONVERT16TO8ROW_SME)
+  if (TestCpuFlag(kCpuHasSME)) {
+    Convert16To8Row = Convert16To8Row_SME;
+  }
+#endif
 #if defined(HAS_CONVERT16TO8ROW_SSSE3)
   if (TestCpuFlag(kCpuHasSSSE3)) {
     Convert16To8Row = Convert16To8Row_Any_SSSE3;
@@ -744,6 +749,11 @@ int I010ToNV12(const uint16_t* src_y,
     if (IS_ALIGNED(halfwidth, 16)) {
       MergeUVRow = MergeUVRow_NEON;
     }
+  }
+#endif
+#if defined(HAS_MERGEUVROW_SME)
+  if (TestCpuFlag(kCpuHasSME)) {
+    MergeUVRow = MergeUVRow_SME;
   }
 #endif
 #if defined(HAS_MERGEUVROW_MSA)
@@ -1188,6 +1198,11 @@ int I422ToNV21(const uint8_t* src_y,
     }
   }
 #endif
+#if defined(HAS_MERGEUVROW_SME)
+  if (TestCpuFlag(kCpuHasSME)) {
+    MergeUVRow = MergeUVRow_SME;
+  }
+#endif
 #if defined(HAS_MERGEUVROW_MSA)
   if (TestCpuFlag(kCpuHasMSA)) {
     MergeUVRow = MergeUVRow_Any_MSA;
@@ -1231,6 +1246,11 @@ int I422ToNV21(const uint8_t* src_y,
     if (IS_ALIGNED(width, 16)) {
       InterpolateRow = InterpolateRow_NEON;
     }
+  }
+#endif
+#if defined(HAS_INTERPOLATEROW_SME)
+  if (TestCpuFlag(kCpuHasSME)) {
+    InterpolateRow = InterpolateRow_SME;
   }
 #endif
 #if defined(HAS_INTERPOLATEROW_MSA)

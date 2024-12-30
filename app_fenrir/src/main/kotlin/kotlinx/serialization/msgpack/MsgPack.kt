@@ -42,13 +42,16 @@ import okio.BufferedSource
  *
  * @see MsgPack.Default The instance using default configurations.
  */
-open class MsgPack @JvmOverloads constructor(
+open class MsgPack
+@JvmOverloads
+constructor(
     private val configuration: MsgPackConfiguration = MsgPackConfiguration.default,
-    final override val serializersModule: SerializersModule = SerializersModule {
-        contextual(Any::class, MsgPackDynamicSerializer)
-    },
+    final override val serializersModule: SerializersModule =
+        SerializersModule {
+            contextual(Any::class, MsgPackDynamicSerializer)
+        },
     private val inlineEncoders: Map<SerialDescriptor, (InlineEncoderHelper) -> Encoder> = mapOf(),
-    private val inlineDecoders: Map<SerialDescriptor, (InlineDecoderHelper) -> Decoder> = mapOf()
+    private val inlineDecoders: Map<SerialDescriptor, (InlineDecoderHelper) -> Decoder> = mapOf(),
 ) : BinaryFormat {
     companion object Default : MsgPack()
 
@@ -73,16 +76,17 @@ open class MsgPack @JvmOverloads constructor(
 
     final override fun <T> decodeFromByteArray(
         deserializer: DeserializationStrategy<T>,
-        bytes: ByteArray
+        bytes: ByteArray,
     ): T {
-        val decoder = MsgPackDecoder(
-            BasicMsgPackDecoder(
-                configuration,
-                serializersModule,
-                bytes.toMsgPackArrayBuffer(),
-                inlineDecoders = inlineDecoders
+        val decoder =
+            MsgPackDecoder(
+                BasicMsgPackDecoder(
+                    configuration,
+                    serializersModule,
+                    bytes.toMsgPackArrayBuffer(),
+                    inlineDecoders = inlineDecoders
+                ),
             )
-        )
         return decoder.decodeSerializableValue(deserializer)
     }
 
@@ -111,7 +115,7 @@ open class MsgPack @JvmOverloads constructor(
 
     final override fun <T> encodeToByteArray(
         serializer: SerializationStrategy<T>,
-        value: T
+        value: T,
     ): ByteArray {
         val encoder = MsgPackEncoder(
             BasicMsgPackEncoder(
@@ -127,7 +131,7 @@ open class MsgPack @JvmOverloads constructor(
             onSuccess = { return encoder.result.toByteArray() },
             onFailure = {
                 throw it
-            }
+            },
         )
     }
 

@@ -219,7 +219,7 @@ abstract class AbsAttachmentsEditFragment<P : AbsAttachmentsEditPresenter<V>, V 
 
     override fun onDestroyView() {
         super.onDestroyView()
-        (mAdapter ?: return).cleanup()
+        mAdapter?.cleanup()
     }
 
     override fun updateProgressAtIndex(index: Int, progress: Int) {

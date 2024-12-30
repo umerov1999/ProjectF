@@ -10,6 +10,7 @@ interface IUploadManager {
     operator fun get(accountId: Long, @Method filters: List<Int>): Flow<List<Upload>>
     fun enqueue(intents: List<UploadIntent>)
     fun cancel(id: Int)
+    fun retry(id: Int)
     fun cancelAll(accountId: Long, destination: UploadDestination)
     fun getCurrent(): Optional<Upload>
     fun observeDeleting(includeCompleted: Boolean): Flow<IntArray>

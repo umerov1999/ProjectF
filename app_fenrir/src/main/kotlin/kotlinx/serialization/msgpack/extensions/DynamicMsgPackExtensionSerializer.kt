@@ -5,6 +5,7 @@ import kotlin.reflect.KClass
 
 open class DynamicMsgPackExtensionSerializer : BaseMsgPackExtensionSerializer<Any?>() {
     companion object Default : DynamicMsgPackExtensionSerializer()
+
     private data class SerializerPair<T : Any>(
         val klass: KClass<T>,
         val serializer: BaseMsgPackExtensionSerializer<T>
@@ -25,7 +26,10 @@ open class DynamicMsgPackExtensionSerializer : BaseMsgPackExtensionSerializer<An
         register(serializer, T::class)
     }
 
-    fun <T : Any> register(serializer: BaseMsgPackExtensionSerializer<T>, klass: KClass<T>) {
+    fun <T : Any> register(
+        serializer: BaseMsgPackExtensionSerializer<T>,
+        klass: KClass<T>,
+    ) {
         serializers[serializer.extTypeId] = SerializerPair(klass, serializer)
     }
 

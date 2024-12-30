@@ -202,15 +202,19 @@ class DocsListPresenter(
     }
 
     private fun onUploadsAdded(added: List<Upload>) {
+        var count = 0
+        val cur = uploadsData.size
         for (u in added) {
             if (destination.compareTo(u.destination)) {
-                val index = uploadsData.size
-                uploadsData.add(u)
-                view?.notifyUploadItemsAdded(
-                    index,
-                    1
-                )
+                val index = findIndexById(uploadsData, u.getObjectId())
+                if (index == -1) {
+                    uploadsData.add(u)
+                    count++
+                }
             }
+        }
+        if (count > 0) {
+            view?.notifyUploadItemsAdded(cur, count)
         }
         resolveUploadDataVisibility()
     }

@@ -129,6 +129,7 @@ struct RenderStroke
             dashPattern = nullptr;
         }
         dashCnt = rhs.dashCnt;
+        dashOffset = rhs.dashOffset;
         miterlimit = rhs.miterlimit;
         cap = rhs.cap;
         join = rhs.join;
@@ -301,7 +302,7 @@ struct RenderEffectDropShadow : RenderEffect
         inst->color[0] = va_arg(args, int);
         inst->color[1] = va_arg(args, int);
         inst->color[2] = va_arg(args, int);
-        inst->color[3] = std::min(va_arg(args, int), 255);
+        inst->color[3] = va_arg(args, int);
         inst->angle = (float) va_arg(args, double);
         inst->distance = (float) va_arg(args, double);
         inst->sigma = std::max((float) va_arg(args, double), 0.0f);
@@ -321,8 +322,52 @@ struct RenderEffectFill : RenderEffect
         inst->color[0] = va_arg(args, int);
         inst->color[1] = va_arg(args, int);
         inst->color[2] = va_arg(args, int);
-        inst->color[3] = std::min(va_arg(args, int), 255);
+        inst->color[3] = va_arg(args, int);
         inst->type = SceneEffect::Fill;
+        return inst;
+    }
+};
+
+struct RenderEffectTint : RenderEffect
+{
+    uint8_t black[3];  //rgb
+    uint8_t white[3];  //rgb
+    uint8_t intensity; //0 - 255
+
+    static RenderEffectTint* gen(va_list& args)
+    {
+        auto inst = new RenderEffectTint;
+        inst->black[0] = va_arg(args, int);
+        inst->black[1] = va_arg(args, int);
+        inst->black[2] = va_arg(args, int);
+        inst->white[0] = va_arg(args, int);
+        inst->white[1] = va_arg(args, int);
+        inst->white[2] = va_arg(args, int);
+        inst->intensity = (uint8_t)(va_arg(args, double) * 2.55f);
+        inst->type = SceneEffect::Tint;
+        return inst;
+    }
+};
+
+struct RenderEffectTritone : RenderEffect
+{
+    uint8_t shadow[3];       //rgb
+    uint8_t midtone[3];      //rgb
+    uint8_t highlight[3];    //rgb
+
+    static RenderEffectTritone* gen(va_list& args)
+    {
+        auto inst = new RenderEffectTritone;
+        inst->shadow[0] = va_arg(args, int);
+        inst->shadow[1] = va_arg(args, int);
+        inst->shadow[2] = va_arg(args, int);
+        inst->midtone[0] = va_arg(args, int);
+        inst->midtone[1] = va_arg(args, int);
+        inst->midtone[2] = va_arg(args, int);
+        inst->highlight[0] = va_arg(args, int);
+        inst->highlight[1] = va_arg(args, int);
+        inst->highlight[2] = va_arg(args, int);
+        inst->type = SceneEffect::Tritone;
         return inst;
     }
 };

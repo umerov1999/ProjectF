@@ -75,6 +75,11 @@ open class Place : Parcelable {
         return this
     }
 
+    fun withParcelableArrayList(name: String, value: ArrayList<out Parcelable>?): Place {
+        prepareArguments().putParcelableArrayList(name, value)
+        return this
+    }
+
     fun prepareArguments(): Bundle {
         if (args == null) {
             args = Bundle()

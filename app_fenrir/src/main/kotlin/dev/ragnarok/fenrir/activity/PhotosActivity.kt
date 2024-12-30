@@ -24,7 +24,7 @@ class PhotosActivity : NoMainActivity(), PlaceProvider {
         supportFragmentManager
             .beginTransaction()
             .setCustomAnimations(R.anim.fragment_enter, R.anim.fragment_exit)
-            .replace(R.id.fragment, ignoredFragment)
+            .replace(noMainContainerViewId, ignoredFragment)
             .addToBackStack(null)
             .commit()
     }
@@ -38,7 +38,7 @@ class PhotosActivity : NoMainActivity(), PlaceProvider {
             supportFragmentManager
                 .beginTransaction()
                 .setCustomAnimations(R.anim.fragment_enter_pop, R.anim.fragment_exit_pop)
-                .replace(R.id.fragment, localPhotosFragment)
+                .replace(noMainContainerViewId, localPhotosFragment)
                 .addToBackStack("photos")
                 .commit()
         } else if (place.type == Place.SINGLE_PHOTO) {

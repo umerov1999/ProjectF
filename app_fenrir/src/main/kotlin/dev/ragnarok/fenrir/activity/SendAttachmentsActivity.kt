@@ -16,10 +16,9 @@ import dev.ragnarok.fenrir.util.ViewUtils
  * Отличие только в том, что этот активити может существовать в нескольких экземплярах
  */
 class SendAttachmentsActivity : MainActivity() {
-    @MainActivityTransforms
-    override fun getMainActivityTransform(): Int {
-        return MainActivityTransforms.SEND_ATTACHMENTS
-    }
+    @get:MainActivityTransforms
+    override val mainActivityTransform: Int
+        get() = MainActivityTransforms.SEND_ATTACHMENTS
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

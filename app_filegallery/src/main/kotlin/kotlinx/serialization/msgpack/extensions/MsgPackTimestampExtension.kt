@@ -12,6 +12,7 @@ sealed class MsgPackTimestamp {
     }
 
     data class T32(val seconds: Long) : MsgPackTimestamp()
+
     data class T64(val seconds: Long, val nanoseconds: Int = 0) : MsgPackTimestamp() {
         init {
             if (nanoseconds > NANOSECONDS_MAX) {
@@ -47,17 +48,19 @@ open class MsgPackTimestampExtensionSerializer :
 
             MsgPackExtension.Type.FIXEXT8 -> {
                 // Working with Timestamp 64
-                val nanoseconds = extension.data
-                    .take(4)
-                    .toByteArray()
-                    .joinToNumber<Long>()
-                    .shr(2) // Shift right by 2 to get 30-bit number
-                    .toInt()
-                val seconds = extension.data[3].toLong().shl(62).ushr(30) +
-                        extension.data
-                            .takeLast(4)
-                            .toByteArray()
-                            .joinToNumber<Long>()
+                val nanoseconds =
+                    extension.data
+                        .take(4)
+                        .toByteArray()
+                        .joinToNumber<Long>()
+                        .shr(2) // Shift right by 2 to get 30-bit number
+                        .toInt()
+                val seconds =
+                    extension.data[3].toLong().shl(62).ushr(30) +
+                            extension.data
+                                .takeLast(4)
+                                .toByteArray()
+                                .joinToNumber<Long>()
                 return MsgPackTimestamp.T64(seconds, nanoseconds)
             }
 
@@ -66,34 +69,37 @@ open class MsgPackTimestampExtensionSerializer :
                 if (extension.data.size != TIMESTAMP_96_DATA_SIZE) {
                     throw MsgPackSerializationException.genericExtensionError(
                         extension,
-                        "Error when parsing datetime. Expected data size of $TIMESTAMP_96_DATA_SIZE, but found ${extension.data.size}"
+                        "Error when parsing datetime. Expected data size of $TIMESTAMP_96_DATA_SIZE, but found ${extension.data.size}",
                     )
                 }
-                val nanoseconds = extension.data
-                    .take(4)
-                    .toByteArray()
-                    .joinToNumber<Long>()
-                val seconds = extension.data
-                    .takeLast(8)
-                    .toByteArray()
-                    .joinToNumber<Long>()
+                val nanoseconds =
+                    extension.data
+                        .take(4)
+                        .toByteArray()
+                        .joinToNumber<Long>()
+                val seconds =
+                    extension.data
+                        .takeLast(8)
+                        .toByteArray()
+                        .joinToNumber<Long>()
                 return MsgPackTimestamp.T92(seconds, nanoseconds)
             }
 
             else -> throw MsgPackSerializationException.genericExtensionError(
                 extension,
-                "Unsupported extension type for timestamp: ${extension.type}"
+                "Unsupported extension type for timestamp: ${extension.type}",
             )
         }
     }
 
     final override fun serialize(extension: MsgPackTimestamp): MsgPackExtension {
         return when (extension) {
-            is MsgPackTimestamp.T32 -> MsgPackExtension(
-                MsgPackExtension.Type.FIXEXT4,
-                extTypeId,
-                extension.seconds.toInt().splitToByteArray()
-            )
+            is MsgPackTimestamp.T32 ->
+                MsgPackExtension(
+                    MsgPackExtension.Type.FIXEXT4,
+                    extTypeId,
+                    extension.seconds.toInt().splitToByteArray(),
+                )
 
             is MsgPackTimestamp.T64 -> {
                 val nanoseconds = extension.nanoseconds.shl(2).splitToByteArray()
@@ -105,16 +111,17 @@ open class MsgPackTimestampExtensionSerializer :
                 MsgPackExtension(
                     MsgPackExtension.Type.FIXEXT8,
                     extTypeId,
-                    nanoseconds.take(3).toByteArray() + combinedByte + seconds.takeLast(4)
+                    nanoseconds.take(3).toByteArray() + combinedByte + seconds.takeLast(4),
                 )
             }
 
-            is MsgPackTimestamp.T92 -> MsgPackExtension(
-                MsgPackExtension.Type.EXT8,
-                extTypeId,
-                extension.nanoseconds.toInt()
-                    .splitToByteArray() + extension.seconds.splitToByteArray()
-            )
+            is MsgPackTimestamp.T92 ->
+                MsgPackExtension(
+                    MsgPackExtension.Type.EXT8,
+                    extTypeId,
+                    extension.nanoseconds.toInt()
+                        .splitToByteArray() + extension.seconds.splitToByteArray(),
+                )
         }
     }
 }

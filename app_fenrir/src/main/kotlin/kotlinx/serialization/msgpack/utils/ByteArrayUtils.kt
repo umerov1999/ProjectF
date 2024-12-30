@@ -1,13 +1,14 @@
 package kotlinx.serialization.msgpack.utils
 
 internal inline fun <reified T : Number> T.splitToByteArray(): ByteArray {
-    val byteCount = when (T::class) {
-        Byte::class -> 1
-        Short::class -> 2
-        Int::class -> 4
-        Long::class -> 8
-        else -> throw UnsupportedOperationException("Can't split number of type ${T::class} to bytes!")
-    }
+    val byteCount =
+        when (T::class) {
+            Byte::class -> 1
+            Short::class -> 2
+            Int::class -> 4
+            Long::class -> 8
+            else -> throw UnsupportedOperationException("Can't split number of type ${T::class} to bytes!")
+        }
 
     val result = ByteArray(byteCount)
     (byteCount - 1).downTo(0).forEach {
@@ -17,11 +18,12 @@ internal inline fun <reified T : Number> T.splitToByteArray(): ByteArray {
 }
 
 internal inline fun <reified T : Number> ByteArray.joinToNumber(): T {
-    val number = mapIndexed { index, byte ->
-        (byte.toLong() and 0xff) shl (8 * (size - (index + 1)))
-    }.fold(0L) { acc, it ->
-        acc or it
-    }
+    val number =
+        mapIndexed { index, byte ->
+            (byte.toLong() and 0xff) shl (8 * (size - (index + 1)))
+        }.fold(0L) { acc, it ->
+            acc or it
+        }
     return when (T::class) {
         Byte::class -> number.toByte()
         Short::class -> number.toShort()

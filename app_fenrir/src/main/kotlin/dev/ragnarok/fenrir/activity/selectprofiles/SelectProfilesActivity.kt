@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.activity.selectprofiles
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.Extra
@@ -29,16 +30,21 @@ class SelectProfilesActivity : MainActivity(), SelectedProfilesAdapter.ActionLis
     private var mRecyclerView: RecyclerView? = null
     private var mProfilesAdapter: SelectedProfilesAdapter? = null
 
-    @MainActivityTransforms
-    override fun getMainActivityTransform(): Int {
-        return MainActivityTransforms.PROFILES
-    }
+    @get:MainActivityTransforms
+    override val mainActivityTransform: Int
+        get() = MainActivityTransforms.PROFILES
+
+    @get:LayoutRes
+    override val mainContentView: Int
+        get() = if (Settings.get().main().is_side_navigation) {
+            R.layout.activity_main_with_profiles_selection_side
+        } else {
+            R.layout.activity_main_with_profiles_selection
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        mLayoutRes = if (Settings.get()
-                .main().is_side_navigation
-        ) R.layout.activity_main_with_profiles_selection_side else R.layout.activity_main_with_profiles_selection
         super.onCreate(savedInstanceState)
+
         mLastBackPressedTime = Long.MAX_VALUE - DOUBLE_BACK_PRESSED_TIMEOUT
         acceptableCriteria = intent.getParcelableExtraCompat(Extra.CRITERIA)
         if (savedInstanceState != null) {
@@ -92,7 +98,6 @@ class SelectProfilesActivity : MainActivity(), SelectedProfilesAdapter.ActionLis
     companion object {
         private val TAG = SelectProfilesActivity::class.simpleName.orEmpty()
         private const val SAVE_SELECTED_OWNERS = "save_selected_owners"
-
 
         fun createIntent(
             context: Context,

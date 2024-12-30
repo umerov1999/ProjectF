@@ -66,7 +66,7 @@ class FriendsByPhonesFragment : BaseMvpFragment<FriendsByPhonesPresenter, IFrien
             FileManagerSelectActivity.makeFileManager(
                 requireActivity(),
                 Environment.getExternalStorageDirectory().absolutePath,
-                "dirs"
+                "dirs", null
             )
         )
     }
@@ -76,7 +76,7 @@ class FriendsByPhonesFragment : BaseMvpFragment<FriendsByPhonesPresenter, IFrien
             FileManagerSelectActivity.makeFileManager(
                 requireActivity(),
                 Environment.getExternalStorageDirectory().absolutePath,
-                "json"
+                "json", null
             )
         )
     }

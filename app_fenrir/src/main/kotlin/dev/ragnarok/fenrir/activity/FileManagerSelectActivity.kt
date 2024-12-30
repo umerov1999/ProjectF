@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import dev.ragnarok.fenrir.Extra
-import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.slidr.Slidr
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrConfig
 import dev.ragnarok.fenrir.fragment.filemanagerselect.FileManagerSelectFragment
@@ -33,18 +32,11 @@ class FileManagerSelectActivity : NoMainActivity() {
         fileManagerFragment.arguments = args
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.fragment, fileManagerFragment)
+            .replace(noMainContainerViewId, fileManagerFragment)
             .commit()
     }
 
     companion object {
-        fun makeFileManager(context: Context, path: String, ext: String?): Intent {
-            val intent = Intent(context, FileManagerSelectActivity::class.java)
-            intent.putExtra(Extra.PATH, path)
-            intent.putExtra(Extra.EXT, ext)
-            return intent
-        }
-
         fun makeFileManager(context: Context, path: String, ext: String?, header: String?): Intent {
             val intent = Intent(context, FileManagerSelectActivity::class.java)
             intent.putExtra(Extra.PATH, path)

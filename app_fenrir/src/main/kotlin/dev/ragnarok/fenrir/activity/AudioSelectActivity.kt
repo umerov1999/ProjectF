@@ -25,7 +25,7 @@ class AudioSelectActivity : NoMainActivity(), PlaceProvider {
         supportFragmentManager
             .beginTransaction()
             .setCustomAnimations(R.anim.fragment_enter_pop, R.anim.fragment_exit_pop)
-            .replace(getMainContainerViewId(), fragment)
+            .replace(noMainContainerViewId, fragment)
             .addToBackStack("audio-select")
             .commit()
     }
@@ -36,7 +36,7 @@ class AudioSelectActivity : NoMainActivity(), PlaceProvider {
             supportFragmentManager
                 .beginTransaction()
                 .setCustomAnimations(R.anim.fragment_enter_pop, R.anim.fragment_exit_pop)
-                .replace(getMainContainerViewId(), singleTabSearchFragment)
+                .replace(noMainContainerViewId, singleTabSearchFragment)
                 .addToBackStack("audio-search-select")
                 .commit()
         } else if (place.type == Place.AUDIOS_IN_ALBUM) {
@@ -44,7 +44,7 @@ class AudioSelectActivity : NoMainActivity(), PlaceProvider {
                 .beginTransaction()
                 .setCustomAnimations(R.anim.fragment_enter_pop, R.anim.fragment_exit_pop)
                 .replace(
-                    getMainContainerViewId(),
+                    noMainContainerViewId,
                     AudiosFragment.newInstance(place.safeArguments(), true)
                 )
                 .addToBackStack("audio-in_playlist-select")

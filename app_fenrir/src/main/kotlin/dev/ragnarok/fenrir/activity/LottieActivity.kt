@@ -106,7 +106,7 @@ class LottieActivity : AppCompatActivity() {
         fManager.launch(
             FileManagerSelectActivity.makeFileManager(
                 this, Environment.getExternalStorageDirectory().absolutePath,
-                "dirs"
+                "dirs", null
             )
         )
     }

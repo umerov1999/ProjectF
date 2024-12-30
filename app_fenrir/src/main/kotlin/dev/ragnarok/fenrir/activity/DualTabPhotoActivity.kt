@@ -42,7 +42,7 @@ class DualTabPhotoActivity : NoMainActivity(), PlaceProvider {
         supportFragmentManager
             .beginTransaction()
             .setCustomAnimations(R.anim.fragment_enter_pop, R.anim.fragment_exit_pop)
-            .replace(getMainContainerViewId(), fragment)
+            .replace(noMainContainerViewId, fragment)
             .addToBackStack("dual-tab-photos")
             .commit()
     }
@@ -63,15 +63,17 @@ class DualTabPhotoActivity : NoMainActivity(), PlaceProvider {
                 supportFragmentManager
                     .beginTransaction()
                     .setCustomAnimations(R.anim.fragment_enter_pop, R.anim.fragment_exit_pop)
-                    .replace(R.id.fragment, fragment)
+                    .replace(noMainContainerViewId, fragment)
                     .addToBackStack("vk-album-photos")
                     .commit()
             }
 
             Place.VK_INTERNAL_PLAYER -> {
-                val intent = Intent(this, VideoPlayerActivity::class.java)
-                intent.putExtras(args)
-                startActivity(intent)
+                val videoActivity = VideoPlayerActivity.newInstance(this, args)
+                place.launchActivityForResult(
+                    this,
+                    videoActivity
+                )
             }
 
             Place.SINGLE_PHOTO -> {
@@ -85,7 +87,7 @@ class DualTabPhotoActivity : NoMainActivity(), PlaceProvider {
                 supportFragmentManager
                     .beginTransaction()
                     .setCustomAnimations(R.anim.fragment_enter_pop, R.anim.fragment_exit_pop)
-                    .replace(R.id.fragment, localPhotosFragment)
+                    .replace(noMainContainerViewId, localPhotosFragment)
                     .addToBackStack("local-album-photos")
                     .commit()
             }

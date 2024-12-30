@@ -8,12 +8,14 @@ import kotlinx.serialization.msgpack.stream.MsgPackDataInputOkio
 import kotlinx.serialization.msgpack.stream.MsgPackDataOutputBuffer
 
 private fun ByteArray.toHex() = this.joinToString(separator = "") { it.toHex() }
+
 private fun Byte.toHex() = toInt().and(0xff).toString(16).padStart(2, '0')
+
 private fun MsgPackExtension.toInfoString() =
     "{type = $type, extTypeId = $extTypeId, data = ${data.toHex()}}"
 
 class MsgPackSerializationException private constructor(
-    override val message: String
+    override val message: String,
 ) : SerializationException() {
     companion object {
         private fun MsgPackDataInputBuffer.locationInfo(): String {
@@ -25,11 +27,11 @@ class MsgPackSerializationException private constructor(
                 ${
                     it.subList(0, currentIndex()).toByteArray().toHex()
                 }[${peekSafely()}]${it.subList((currentIndex() + 1).coerceAtMost(it.size), it.size)}
-                ${(0 until currentIndex()).joinToString(separator = "") { "  " }}} ^^ ${
-                    ((currentIndex() + 1) until it.size).joinToString(
-                        separator = ""
+                ${
+                    (0 until currentIndex()).joinToString(
+                        separator = "",
                     ) { "  " }
-                }
+                }} ^^ ${((currentIndex() + 1) until it.size).joinToString(separator = "") { "  " }}
                 """.trimIndent()
             }
         }
@@ -40,36 +42,40 @@ class MsgPackSerializationException private constructor(
         private fun coreSerialization(
             buffer: MsgPackDataBuffer,
             locationInfo: String,
-            reason: String? = null
+            reason: String? = null,
         ): MsgPackSerializationException {
             val buf = (if (buffer is MsgPackDataInputOkio) buffer.currentIndex()
                 .toString() + " pos" else buffer.toByteArray().toHex())
             return MsgPackSerializationException(
-                "MsgPack Serialization failure while serializing: ${
-                    buf
-                }\nReason: $reason\nCurrent position:\n\n$locationInfo"
+                """
+                MsgPack Serialization failure while serializing: $buf
+                Reason: $reason
+                Current position:
+                
+                $locationInfo
+                """.trimIndent(),
             )
         }
 
         private fun extensionSerialization(
             extension: MsgPackExtension,
-            reason: String? = null
+            reason: String? = null,
         ): MsgPackSerializationException {
             return MsgPackSerializationException(
-                "MsgPack Serialization failure while serializing: ${extension.toInfoString()}\nReason: $reason"
+                "MsgPack Serialization failure while serializing: ${extension.toInfoString()}\nReason: $reason",
             )
         }
 
         fun deserialization(
             buffer: MsgPackDataInputBuffer,
-            reason: String? = null
+            reason: String? = null,
         ): MsgPackSerializationException {
             return coreSerialization(buffer, buffer.locationInfo(), reason)
         }
 
         fun serialization(
             buffer: MsgPackDataOutputBuffer,
-            reason: String? = null
+            reason: String? = null,
         ): MsgPackSerializationException {
             return coreSerialization(buffer, buffer.locationInfo(), reason)
         }
@@ -77,28 +83,28 @@ class MsgPackSerializationException private constructor(
         fun extensionSerializationWrongType(
             extension: MsgPackExtension,
             expectedType: Byte,
-            foundType: Byte
+            foundType: Byte,
         ): MsgPackSerializationException {
             return extensionSerialization(
                 extension,
-                "Expected extension type ${expectedType.toHex()} but found ${foundType.toHex()}. Deserialized extension: $extension"
+                "Expected extension type ${expectedType.toHex()} but found ${foundType.toHex()}. Deserialized extension: $extension",
             )
         }
 
         fun extensionDeserializationWrongType(
             extension: MsgPackExtension,
             expectedType: Byte,
-            foundType: Byte
+            foundType: Byte,
         ): MsgPackSerializationException {
             return extensionSerialization(
                 extension,
-                "Expected extension type ${expectedType.toHex()} but found ${foundType.toHex()}. Serialized extension: $extension"
+                "Expected extension type ${expectedType.toHex()} but found ${foundType.toHex()}. Serialized extension: $extension",
             )
         }
 
         fun genericExtensionError(
             extension: MsgPackExtension,
-            reason: String? = null
+            reason: String? = null,
         ): MsgPackSerializationException {
             return extensionSerialization(extension, reason)
         }
@@ -118,7 +124,7 @@ class MsgPackSerializationException private constructor(
         fun strictTypeError(
             buffer: MsgPackDataInputBuffer,
             expectedType: String,
-            foundType: String
+            foundType: String,
         ): MsgPackSerializationException {
             return deserialization(
                 buffer,

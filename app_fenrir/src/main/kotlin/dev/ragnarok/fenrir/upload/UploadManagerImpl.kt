@@ -155,11 +155,10 @@ class UploadManagerImpl(
             }
             val builder: NotificationCompat.Builder =
                 NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-            builder.setContentTitle(context.getString(R.string.files_uploading_notification_title))
-                .setSmallIcon(R.drawable.ic_notification_upload)
-                .setOngoing(true)
-                .setProgress(100, it.progress, false)
-                .build()
+                    .setContentTitle(context.getString(R.string.files_uploading_notification_title) + " " + it.progress.toString() + "%")
+                    .setSmallIcon(R.drawable.ic_notification_upload)
+                    .setOngoing(true)
+                    .setProgress(100, it.progress, false)
             if (AppPerms.hasNotificationPermissionSimple(context)) {
                 notificationManager.notify(NotificationHelper.NOTIFICATION_UPLOAD, builder.build())
             }
@@ -228,12 +227,16 @@ class UploadManagerImpl(
                         server,
                         WeakProgressPublisher(first)
                     ).catch {
-                        onUploadFail(first, it)
+                        if (isActive()) {
+                            onUploadFail(first, it)
+                        }
                     }.collect {
-                        onUploadComplete(
-                            first,
-                            it
-                        )
+                        if (isActive()) {
+                            onUploadComplete(
+                                first,
+                                it
+                            )
+                        }
                     }
                 }
             )
@@ -257,8 +260,8 @@ class UploadManagerImpl(
                 upload
             )] = result.server
             completeProcessor.myEmit(create(upload, result))
-            startIfNotStartedInternal()
         }
+        startIfNotStartedInternal()
     }
 
     private fun onUploadFail(upload: Upload, t: Throwable) {
@@ -284,13 +287,13 @@ class UploadManagerImpl(
             }
             upload.setStatus(Upload.STATUS_ERROR).errorText = errorMessage
             statusProcessor.myEmit(upload)
-            startIfNotStartedInternal()
         }
+        startIfNotStartedInternal()
     }
 
     override fun cancel(id: Int) {
         synchronized(this) {
-            if (current != null && (current ?: return@synchronized).getObjectId() == id) {
+            if (current?.getObjectId() == id) {
                 compositeDisposable.clear()
                 current = null
             }
@@ -300,6 +303,18 @@ class UploadManagerImpl(
                 deletingProcessor.myEmit(intArrayOf(id))
             }
             startIfNotStarted()
+        }
+    }
+
+    override fun retry(id: Int) {
+        synchronized(this) {
+            val index = findIndexById(queue, id)
+            if (index != -1) {
+                val upload = queue[index]
+                upload.setStatus(Upload.STATUS_QUEUE).errorText = null
+                statusProcessor.myEmit(upload)
+                startIfNotStarted()
+            }
         }
     }
 

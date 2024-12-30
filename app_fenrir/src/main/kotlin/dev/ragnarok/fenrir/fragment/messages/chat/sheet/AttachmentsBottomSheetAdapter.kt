@@ -159,17 +159,17 @@ class AttachmentsBottomSheetAdapter(
                 bindPhotoAlbum(holder, model as PhotoAlbum)
             }
         }
-        holder.buttomRemove.setOnClickListener {
+        holder.buttonRemove.setOnClickListener {
             actionListener.onButtonRemoveClick(
                 entry
             )
         }
-        holder.Retry.setOnClickListener { actionListener.onButtonRetryClick(entry) }
+        holder.buttonRetry.setOnClickListener { actionListener.onButtonRetryClick(entry) }
     }
 
     private fun bindMessages(holder: EntryHolder, messages: FwdMessages) {
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         holder.image.setBackgroundResource(R.drawable.background_emails)
         if (messages.fwds.nonNullNoEmpty() && messages.fwds.size == 1 && messages.fwds[0].text.nonNullNoEmpty()) {
@@ -182,7 +182,7 @@ class AttachmentsBottomSheetAdapter(
 
     private fun bindWallReplies(holder: EntryHolder) {
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         holder.image.setBackgroundResource(R.drawable.background_emails)
         holder.title.setText(R.string.comment)
@@ -208,7 +208,7 @@ class AttachmentsBottomSheetAdapter(
             false
         )
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         bindImageView(holder, photoLink)
     }
@@ -217,7 +217,7 @@ class AttachmentsBottomSheetAdapter(
         holder.title.setText(R.string.graffiti)
         val photoLink = graffiti.url
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         bindImageView(holder, photoLink)
     }
@@ -225,7 +225,7 @@ class AttachmentsBottomSheetAdapter(
     private fun bindArticle(holder: EntryHolder, article: Article) {
         holder.title.setText(R.string.article)
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         val photoLink = article.photo?.getUrlForSize(
             PhotoSize.X,
@@ -237,17 +237,17 @@ class AttachmentsBottomSheetAdapter(
     private fun bindMarket(holder: EntryHolder, market: Market) {
         holder.title.text = market.title
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         bindImageView(holder, market.thumb_photo)
     }
 
-    private fun bindMarketAlbum(holder: EntryHolder, market_album: MarketAlbum) {
-        holder.title.text = market_album.title
+    private fun bindMarketAlbum(holder: EntryHolder, marketAlbum: MarketAlbum) {
+        holder.title.text = marketAlbum.title
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
-        val photoLink = market_album.photo?.getUrlForSize(
+        val photoLink = marketAlbum.photo?.getUrlForSize(
             PhotoSize.X,
             false
         )
@@ -257,7 +257,7 @@ class AttachmentsBottomSheetAdapter(
     private fun bindAudioArtist(holder: EntryHolder, artist: AudioArtist) {
         holder.title.text = artist.name
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         val photoLink = artist.getMaxPhoto()
         bindImageView(holder, photoLink)
@@ -266,7 +266,7 @@ class AttachmentsBottomSheetAdapter(
     private fun bindAudioPlaylist(holder: EntryHolder, link: AudioPlaylist) {
         holder.title.text = link.title
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         val photoLink = link.thumb_image
         bindImageView(holder, photoLink)
@@ -275,7 +275,7 @@ class AttachmentsBottomSheetAdapter(
     private fun bindStory(holder: EntryHolder, story: Story) {
         holder.title.setText(R.string.story)
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         val photoLink = story.owner?.maxSquareAvatar
         bindImageView(holder, photoLink)
@@ -284,7 +284,7 @@ class AttachmentsBottomSheetAdapter(
     private fun bindNarrative(holder: EntryHolder, narratives: Narratives) {
         holder.title.setText(R.string.narratives)
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         val photoLink = narratives.cover
         bindImageView(holder, photoLink)
@@ -293,7 +293,7 @@ class AttachmentsBottomSheetAdapter(
     private fun bindCall(holder: EntryHolder) {
         holder.title.setText(R.string.call)
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         with().cancelRequest(holder.image)
         holder.image.setImageResource(R.drawable.phone_call_color)
@@ -302,7 +302,7 @@ class AttachmentsBottomSheetAdapter(
     private fun bindGeo(holder: EntryHolder) {
         holder.title.setText(R.string.geo)
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         with().cancelRequest(holder.image)
         holder.image.setImageResource(R.drawable.geo_color)
@@ -311,7 +311,7 @@ class AttachmentsBottomSheetAdapter(
     private fun bindNotSupported(holder: EntryHolder) {
         holder.title.setText(R.string.not_supported)
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         with().cancelRequest(holder.image)
         holder.image.setImageResource(R.drawable.not_supported)
@@ -320,16 +320,16 @@ class AttachmentsBottomSheetAdapter(
     private fun bindEvent(holder: EntryHolder, event: Event) {
         holder.title.text = event.button_text
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         with().cancelRequest(holder.image)
     }
 
     private fun bindAudio(holder: EntryHolder, audio: Audio) {
-        val audiostr = audio.artist + " - " + audio.title
-        holder.title.text = audiostr
+        val audioTitle = audio.artist + " - " + audio.title
+        holder.title.text = audioTitle
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         holder.image.setBackgroundResource(R.drawable.background_unknown_song)
         bindImageView(holder, audio.thumb_image_big)
@@ -337,7 +337,7 @@ class AttachmentsBottomSheetAdapter(
 
     private fun bindVideo(holder: EntryHolder, video: Video) {
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         holder.title.text = video.title
         bindImageView(holder, video.image)
@@ -345,7 +345,7 @@ class AttachmentsBottomSheetAdapter(
 
     private fun bindDoc(holder: EntryHolder, doc: Document) {
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         holder.title.text = doc.title
         val imgUrl = doc.getPreviewWithSize(PhotoSize.Q, false)
@@ -355,7 +355,7 @@ class AttachmentsBottomSheetAdapter(
     @SuppressLint("SetTextI18n")
     private fun bindPoll(holder: EntryHolder, poll: Poll) {
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         with()
             .load(R.drawable.background_gray)
@@ -366,7 +366,7 @@ class AttachmentsBottomSheetAdapter(
 
     private fun bindPost(holder: EntryHolder, post: Post) {
         holder.progress.visibility = View.INVISIBLE
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.tintView.visibility = View.GONE
         val title = post.textCopiesInclude
         if (title.isNullOrEmpty()) {
@@ -389,11 +389,11 @@ class AttachmentsBottomSheetAdapter(
             holder.progress.changePercentage(0)
         }
         @ColorInt var titleColor = CurrentTheme.getPrimaryTextColorCode(holder.title.context)
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         when (upload.status) {
             Upload.STATUS_UPLOADING -> {
-                val precentText = upload.progress.toString() + "%"
-                holder.title.text = precentText
+                val percentText = upload.progress.toString() + "%"
+                holder.title.text = percentText
             }
 
             Upload.STATUS_CANCELLING -> holder.title.setText(R.string.cancelling)
@@ -401,7 +401,7 @@ class AttachmentsBottomSheetAdapter(
             Upload.STATUS_ERROR -> {
                 holder.title.setText(R.string.error)
                 titleColor = ERROR_COLOR
-                holder.Retry.visibility = View.VISIBLE
+                holder.buttonRetry.visibility = View.VISIBLE
             }
         }
         holder.title.setTextColor(titleColor)
@@ -419,8 +419,8 @@ class AttachmentsBottomSheetAdapter(
     fun changeUploadProgress(id: Int, progress: Int, smoothly: Boolean) {
         val holder = holders.findOneByEntityId(id)
         if (holder != null) {
-            val precentText = "$progress%"
-            holder.title.text = precentText
+            val percentText = "$progress%"
+            holder.title.text = percentText
             if (smoothly) {
                 holder.progress.changePercentageSmoothly(progress)
             } else {
@@ -431,7 +431,7 @@ class AttachmentsBottomSheetAdapter(
 
     private fun bindImageHolder(holder: EntryHolder, photo: Photo) {
         val url = photo.getUrlForSize(PhotoSize.Q, false)
-        holder.Retry.visibility = View.GONE
+        holder.buttonRetry.visibility = View.GONE
         holder.progress.visibility = View.INVISIBLE
         holder.tintView.visibility = View.GONE
         holder.title.setText(R.string.photo)
@@ -470,9 +470,9 @@ class AttachmentsBottomSheetAdapter(
         RecyclerView.ViewHolder(itemView), IdentificableHolder {
         val image: ImageView = itemView.findViewById(R.id.image)
         val title: TextView = itemView.findViewById(R.id.title)
-        val buttomRemove: ViewGroup = itemView.findViewById(R.id.progress_root)
+        val buttonRemove: ViewGroup = itemView.findViewById(R.id.progress_root)
         val progress: CircleRoadProgress = itemView.findViewById(R.id.progress_view)
-        val Retry: ImageView = itemView.findViewById(R.id.retry_upload)
+        val buttonRetry: ImageView = itemView.findViewById(R.id.retry_upload)
         val tintView: View = itemView.findViewById(R.id.tint_view)
         override val holderId: Int
             get() = tintView.tag as Int

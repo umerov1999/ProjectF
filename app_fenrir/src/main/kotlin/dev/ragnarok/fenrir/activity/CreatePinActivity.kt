@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.activity
 
 import android.os.Bundle
-import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.pin.createpin.CreatePinFragment
 
 class CreatePinActivity : NoMainActivity() {
@@ -10,7 +9,7 @@ class CreatePinActivity : NoMainActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager
                 .beginTransaction()
-                .replace(R.id.fragment, CreatePinFragment.newInstance())
+                .replace(noMainContainerViewId, CreatePinFragment.newInstance())
                 .commit()
         }
     }

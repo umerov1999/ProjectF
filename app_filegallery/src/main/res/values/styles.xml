@@ -180,19 +180,6 @@
         <item name="colorSecondaryContainer">#ECEBE8</item>
     </style>
 
-    <style name="App.DayNight.BlueYellow" parent="App.DayNight">
-        <item name="colorPrimary">#448AFF</item>
-        <item name="colorControlNormal">#448AFF</item>
-        <item name="colorSecondary">#FFA726</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="colorOnPrimaryContainer">#001643</item>
-        <item name="colorPrimaryContainer">#E7EBF3</item>
-        <item name="colorPrimaryInverse">#C9D6EA</item>
-        <item name="colorOnSecondary">#FFFFFF</item>
-        <item name="colorOnSecondaryContainer">#1E1710</item>
-        <item name="colorSecondaryContainer">#F2EBDF</item>
-    </style>
-
     <style name="App.DayNight.Fire" parent="App.DayNight">
         <item name="colorPrimary">#FF9800</item>
         <item name="colorControlNormal">#FF9800</item>
@@ -214,19 +201,6 @@
         <item name="colorOnPrimaryContainer">#450D08</item>
         <item name="colorPrimaryContainer">#F8E7E5</item>
         <item name="colorPrimaryInverse">#F6CAC9</item>
-        <item name="colorOnSecondary">#FEFEFE</item>
-        <item name="colorOnSecondaryContainer">#1D1212</item>
-        <item name="colorSecondaryContainer">#F4E5E3</item>
-    </style>
-
-    <style name="App.DayNight.VioletRed" parent="App.DayNight">
-        <item name="colorPrimary">#9800FF</item>
-        <item name="colorControlNormal">#9800FF</item>
-        <item name="colorSecondary">#F44336</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="colorOnPrimaryContainer">#25003C</item>
-        <item name="colorPrimaryContainer">#EFE0F5</item>
-        <item name="colorPrimaryInverse">#DCBDF1</item>
         <item name="colorOnSecondary">#FEFEFE</item>
         <item name="colorOnSecondaryContainer">#1D1212</item>
         <item name="colorSecondaryContainer">#F4E5E3</item>
@@ -273,19 +247,6 @@
         <item name="colorSecondaryContainer">#EBDDF5</item>
     </style>
 
-    <style name="App.DayNight.BlueViolet" parent="App.DayNight">
-        <item name="colorPrimary">#448AFF</item>
-        <item name="colorControlNormal">#448AFF</item>
-        <item name="colorSecondary">#8500FF</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="colorOnPrimaryContainer">#001643</item>
-        <item name="colorPrimaryContainer">#E7EBF3</item>
-        <item name="colorPrimaryInverse">#C9D6EA</item>
-        <item name="colorOnSecondary">#FFFEFF</item>
-        <item name="colorOnSecondaryContainer">#16111E</item>
-        <item name="colorSecondaryContainer">#EBDDF5</item>
-    </style>
-
     <style name="App.DayNight.YellowViolet" parent="App.DayNight">
         <item name="colorPrimary">#FF9800</item>
         <item name="colorControlNormal">#FF9800</item>
@@ -312,19 +273,6 @@
         <item name="colorSecondaryContainer">#DCEEF3</item>
     </style>
 
-    <style name="App.DayNight.VioletYellow" parent="App.DayNight">
-        <item name="colorPrimary">#8500FF</item>
-        <item name="colorControlNormal">#8500FF</item>
-        <item name="colorSecondary">#FF9800</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="colorOnPrimaryContainer">#21003E</item>
-        <item name="colorPrimaryContainer">#EEE1F6</item>
-        <item name="colorPrimaryInverse">#D9BEF2</item>
-        <item name="colorOnSecondary">#FFFFFF</item>
-        <item name="colorOnSecondaryContainer">#1E1710</item>
-        <item name="colorSecondaryContainer">#F4ECDD</item>
-    </style>
-
     <style name="App.DayNight.FuxiaNeonYellow" parent="App.DayNight">
         <item name="colorPrimary">#FE59C2</item>
         <item name="colorControlNormal">#FE59C2</item>
@@ -349,32 +297,6 @@
         <item name="colorOnSecondary">#FFFFFF</item>
         <item name="colorOnSecondaryContainer">#18101D</item>
         <item name="colorSecondaryContainer">#EDDDF2</item>
-    </style>
-
-    <style name="App.DayNight.VioletGreen" parent="App.DayNight">
-        <item name="colorPrimary">#8500FF</item>
-        <item name="colorControlNormal">#8500FF</item>
-        <item name="colorSecondary">#268000</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="colorOnPrimaryContainer">#21003E</item>
-        <item name="colorPrimaryContainer">#EEE1F6</item>
-        <item name="colorPrimaryInverse">#D9BEF2</item>
-        <item name="colorOnSecondary">#FFFFFF</item>
-        <item name="colorOnSecondaryContainer">#070905</item>
-        <item name="colorSecondaryContainer">#AEEFB9</item>
-    </style>
-
-    <style name="App.DayNight.GreenViolet" parent="App.DayNight">
-        <item name="colorPrimary">#268000</item>
-        <item name="colorControlNormal">#268000</item>
-        <item name="colorSecondary">#8500FF</item>
-        <item name="colorOnPrimary">#DBDBDB</item>
-        <item name="colorOnPrimaryContainer">#051500</item>
-        <item name="colorPrimaryContainer">#C7D5C4</item>
-        <item name="colorPrimaryInverse">#B4D2A7</item>
-        <item name="colorOnSecondary">#FFFEFF</item>
-        <item name="colorOnSecondaryContainer">#16111E</item>
-        <item name="colorSecondaryContainer">#EBDDF5</item>
     </style>
 
     <style name="App.DayNight.Green" parent="App.DayNight">
@@ -484,13 +406,9 @@
 
     <style name="App.DayNight.ColdGold.Amoled" parent="App.DayNight.ColdGold" />
 
-    <style name="App.DayNight.BlueYellow.Amoled" parent="App.DayNight.BlueYellow" />
-
     <style name="App.DayNight.Fire.Amoled" parent="App.DayNight.Fire" />
 
     <style name="App.DayNight.Red.Amoled" parent="App.DayNight.Red" />
-
-    <style name="App.DayNight.VioletRed.Amoled" parent="App.DayNight.VioletRed" />
 
     <style name="App.DayNight.Contrast.Amoled" parent="App.DayNight.Contrast" />
 
@@ -498,21 +416,13 @@
 
     <style name="App.DayNight.Violet.Amoled" parent="App.DayNight.Violet" />
 
-    <style name="App.DayNight.BlueViolet.Amoled" parent="App.DayNight.BlueViolet" />
-
     <style name="App.DayNight.YellowViolet.Amoled" parent="App.DayNight.YellowViolet" />
-
-    <style name="App.DayNight.VioletYellow.Amoled" parent="App.DayNight.VioletYellow" />
 
     <style name="App.DayNight.FuxiaNeonYellow.Amoled" parent="App.DayNight.FuxiaNeonYellow" />
 
     <style name="App.DayNight.FuxiaNeonViolet.Amoled" parent="App.DayNight.FuxiaNeonViolet" />
 
     <style name="App.DayNight.NeonYellowIce.Amoled" parent="App.DayNight.NeonYellowIce" />
-
-    <style name="App.DayNight.VioletGreen.Amoled" parent="App.DayNight.VioletGreen" />
-
-    <style name="App.DayNight.GreenViolet.Amoled" parent="App.DayNight.GreenViolet" />
 
     <style name="App.DayNight.Orange.Amoled" parent="App.DayNight.Orange" />
 
@@ -577,22 +487,12 @@
         <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
     </style>
 
-    <style name="App.DayNight.BlueYellow.MD1" parent="App.DayNight.BlueYellow">
-        <item name="materialCardStyle">@style/CardViewMD</item>
-        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
-    </style>
-
     <style name="App.DayNight.Fire.MD1" parent="App.DayNight.Fire">
         <item name="materialCardStyle">@style/CardViewMD</item>
         <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
     </style>
 
     <style name="App.DayNight.Red.MD1" parent="App.DayNight.Red">
-        <item name="materialCardStyle">@style/CardViewMD</item>
-        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
-    </style>
-
-    <style name="App.DayNight.VioletRed.MD1" parent="App.DayNight.VioletRed">
         <item name="materialCardStyle">@style/CardViewMD</item>
         <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
     </style>
@@ -612,17 +512,7 @@
         <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
     </style>
 
-    <style name="App.DayNight.BlueViolet.MD1" parent="App.DayNight.BlueViolet">
-        <item name="materialCardStyle">@style/CardViewMD</item>
-        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
-    </style>
-
     <style name="App.DayNight.YellowViolet.MD1" parent="App.DayNight.YellowViolet">
-        <item name="materialCardStyle">@style/CardViewMD</item>
-        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
-    </style>
-
-    <style name="App.DayNight.VioletYellow.MD1" parent="App.DayNight.VioletYellow">
         <item name="materialCardStyle">@style/CardViewMD</item>
         <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
     </style>
@@ -638,16 +528,6 @@
     </style>
 
     <style name="App.DayNight.NeonYellowIce.MD1" parent="App.DayNight.NeonYellowIce">
-        <item name="materialCardStyle">@style/CardViewMD</item>
-        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
-    </style>
-
-    <style name="App.DayNight.VioletGreen.MD1" parent="App.DayNight.VioletGreen">
-        <item name="materialCardStyle">@style/CardViewMD</item>
-        <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
-    </style>
-
-    <style name="App.DayNight.GreenViolet.MD1" parent="App.DayNight.GreenViolet">
         <item name="materialCardStyle">@style/CardViewMD</item>
         <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
     </style>

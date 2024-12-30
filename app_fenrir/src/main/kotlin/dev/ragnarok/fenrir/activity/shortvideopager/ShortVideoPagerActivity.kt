@@ -85,10 +85,9 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
     private var shortVideoDuration: TextView? = null
     private var playDispose = CancelableJob()
 
-    @LayoutRes
-    override fun getNoMainContentView(): Int {
-        return R.layout.activity_shortvideo_pager
-    }
+    @get:LayoutRes
+    override val noMainContentView: Int
+        get() = R.layout.activity_shortvideo_pager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

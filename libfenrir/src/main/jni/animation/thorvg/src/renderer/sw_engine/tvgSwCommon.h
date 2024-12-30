@@ -543,8 +543,8 @@ SwRle* rleRender(const SwBBox* bbox);
 void rleFree(SwRle* rle);
 void rleReset(SwRle* rle);
 void rleMerge(SwRle* rle, SwRle* clip1, SwRle* clip2);
-void rleClip(SwRle* rle, const SwRle* clip);
-void rleClip(SwRle* rle, const SwBBox* clip);
+bool rleClip(SwRle* rle, const SwRle* clip);
+bool rleClip(SwRle* rle, const SwBBox* clip);
 
 SwMpool* mpoolInit(uint32_t threads);
 bool mpoolTerm(SwMpool* mpool);
@@ -571,6 +571,7 @@ void rasterXYFlip(uint32_t* src, uint32_t* dst, int32_t stride, int32_t w, int32
 void rasterUnpremultiply(RenderSurface* surface);
 void rasterPremultiply(RenderSurface* surface);
 bool rasterConvertCS(RenderSurface* surface, ColorSpace to);
+uint32_t rasterUnpremultiply(uint32_t data);
 
 bool effectGaussianBlur(SwCompositor* cmp, SwSurface* surface, const RenderEffectGaussianBlur* params);
 bool effectGaussianBlurPrepare(RenderEffectGaussianBlur* effect);
@@ -578,5 +579,9 @@ bool effectDropShadow(SwCompositor* cmp, SwSurface* surfaces[2], const RenderEff
 bool effectDropShadowPrepare(RenderEffectDropShadow* effect);
 bool effectFillPrepare(RenderEffectFill* effect);
 bool effectFill(SwCompositor* cmp, const RenderEffectFill* params, bool direct);
+bool effectTintPrepare(RenderEffectTint* effect);
+bool effectTint(SwCompositor* cmp, const RenderEffectTint* params, bool direct);
+bool effectTritonePrepare(RenderEffectTritone* effect);
+bool effectTritone(SwCompositor* cmp, const RenderEffectTritone* params, bool direct);
 
 #endif /* _TVG_SW_COMMON_H_ */

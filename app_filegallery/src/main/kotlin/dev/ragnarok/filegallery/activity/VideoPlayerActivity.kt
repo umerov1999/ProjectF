@@ -445,5 +445,17 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
 
     companion object {
         const val EXTRA_VIDEO = "video"
+
+        fun newInstance(context: Context, args: Bundle): Intent {
+            val intent = Intent(context, VideoPlayerActivity::class.java)
+            intent.putExtras(args)
+            return intent
+        }
+
+        fun buildArgs(video: Video?): Bundle {
+            val args = Bundle()
+            args.putParcelable(EXTRA_VIDEO, video)
+            return args
+        }
     }
 }

@@ -14,7 +14,7 @@ class ProxyManagerActivity : NoMainActivity(), PlaceProvider {
             supportFragmentManager
                 .beginTransaction()
                 .setCustomAnimations(R.anim.fragment_enter_pop, R.anim.fragment_exit_pop)
-                .replace(getMainContainerViewId(), ProxyManagerFrgament.newInstance())
+                .replace(noMainContainerViewId, ProxyManagerFrgament.newInstance())
                 .addToBackStack("proxy-manager")
                 .commit()
         }
@@ -25,7 +25,7 @@ class ProxyManagerActivity : NoMainActivity(), PlaceProvider {
             supportFragmentManager
                 .beginTransaction()
                 .setCustomAnimations(R.anim.fragment_enter_pop, R.anim.fragment_exit_pop)
-                .replace(getMainContainerViewId(), AddProxyFragment.newInstance())
+                .replace(noMainContainerViewId, AddProxyFragment.newInstance())
                 .addToBackStack("proxy-add")
                 .commit()
         }

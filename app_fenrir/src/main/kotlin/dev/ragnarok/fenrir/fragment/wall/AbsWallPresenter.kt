@@ -875,15 +875,19 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     }
 
     private fun onUploadsAdded(added: List<Upload>) {
+        var count = 0
+        val cur = uploadsData.size
         for (u in added) {
             if (listOf(Method.STORY, Method.PHOTO_TO_PROFILE).contains(u.destination.method)) {
-                val index = uploadsData.size
-                uploadsData.add(u)
-                view?.notifyUploadItemsAdded(
-                    index,
-                    1
-                )
+                val index = Utils.findIndexById(uploadsData, u.getObjectId())
+                if (index == -1) {
+                    uploadsData.add(u)
+                    count++
+                }
             }
+        }
+        if (count > 0) {
+            view?.notifyUploadItemsAdded(cur, count)
         }
         resolveUploadDataVisibility()
     }

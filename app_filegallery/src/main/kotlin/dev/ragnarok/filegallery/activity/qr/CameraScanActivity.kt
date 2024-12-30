@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -18,8 +19,11 @@ import android.util.ArrayMap
 import android.util.AttributeSet
 import android.util.Log
 import android.util.Size
+import android.view.Display
 import android.view.MotionEvent
 import android.view.View
+import android.view.WindowManager
+import androidx.annotation.LayoutRes
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraInfoUnavailableException
 import androidx.camera.core.CameraSelector
@@ -35,6 +39,8 @@ import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.BinaryBitmap
@@ -49,25 +55,38 @@ import com.google.zxing.ResultPointCallback
 import com.google.zxing.common.HybridBinarizer
 import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.R
+import dev.ragnarok.filegallery.activity.ActivityFeatures
 import dev.ragnarok.filegallery.activity.NoMainActivity
 import dev.ragnarok.filegallery.activity.slidr.Slidr
 import dev.ragnarok.filegallery.activity.slidr.model.SlidrConfig
+import dev.ragnarok.filegallery.listener.AppStyleable
 import dev.ragnarok.filegallery.nonNullNoEmpty
 import dev.ragnarok.filegallery.settings.CurrentTheme
+import dev.ragnarok.filegallery.settings.CurrentTheme.getNavigationBarColor
+import dev.ragnarok.filegallery.settings.CurrentTheme.getStatusBarColor
+import dev.ragnarok.filegallery.settings.CurrentTheme.getStatusBarNonColored
 import dev.ragnarok.filegallery.toColor
 import dev.ragnarok.filegallery.util.AppPerms
 import dev.ragnarok.filegallery.util.AppPerms.requestPermissionsResultAbs
 import dev.ragnarok.filegallery.util.Utils
+import dev.ragnarok.filegallery.util.Utils.hasVanillaIceCreamTarget
+import dev.ragnarok.filegallery.util.coroutines.CancelableJob
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.delayTaskFlow
+import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.toMain
 import java.util.EnumSet
 
-class CameraScanActivity : NoMainActivity() {
-    private lateinit var textureView: PreviewView
+class CameraScanActivity : NoMainActivity(), AppStyleable {
+    private lateinit var viewFinder: PreviewView
     private var camera: Camera? = null
     private var finder: FinderView? = null
     private var flashButton: FloatingActionButton? = null
     private val reader: MultiFormatReader = MultiFormatReader()
     private var isFlash = false
     private var mYBuffer = ByteArray(0)
+    private var mDecorView: View? = null
+    private var mFocusView: View? = null
+    private var focusHideJob = CancelableJob()
+    private var imageAnalysisPointer: ImageAnalysis? = null
 
     inner class DecoderResultPointCallback : ResultPointCallback {
         override fun foundPossibleResultPoint(point: ResultPoint) {
@@ -105,16 +124,25 @@ class CameraScanActivity : NoMainActivity() {
         )
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        focusHideJob.cancel()
+    }
+
+    @get:LayoutRes
+    override val noMainContentView: Int
+        get() = R.layout.activity_camera_scan
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Slidr.attach(
             this,
             SlidrConfig.Builder().scrimColor(CurrentTheme.getColorBackground(this)).build()
         )
-        setContentView(R.layout.activity_camera_scan)
-        textureView = findViewById(R.id.preview)
+        viewFinder = findViewById(R.id.preview)
         finder = findViewById(R.id.view_finder)
         flashButton = findViewById(R.id.flash_button)
+        mFocusView = findViewById(R.id.focus)
         updateFlashButton()
 
         flashButton?.setOnClickListener {
@@ -130,6 +158,54 @@ class CameraScanActivity : NoMainActivity() {
         } else {
             requestCameraPermission.launch()
         }
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        mDecorView = window.decorView
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            mDecorView?.layoutParams =
+                WindowManager.LayoutParams(WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES)
+        }
+
+        mDecorView?.let {
+            WindowInsetsControllerCompat(window, it).let { controller ->
+                controller.hide(WindowInsetsCompat.Type.statusBars())
+                controller.systemBarsBehavior =
+                    WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        ActivityFeatures.Builder()
+            .begin()
+            .setBarsColored(colored = false, invertIcons = false)
+            .build()
+            .apply(this)
+    }
+
+    @Suppress("DEPRECATION")
+    private fun getScreenRotation(): Int {
+        try {
+            var currentDisplay: Display? = null
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                currentDisplay = display
+            } else {
+                val manager = getSystemService(WINDOW_SERVICE) as WindowManager?
+                if (manager != null) {
+                    currentDisplay = manager.defaultDisplay
+                }
+            }
+            return currentDisplay?.rotation ?: -1
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return -1
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        imageAnalysisPointer?.targetRotation = getScreenRotation()
     }
 
     private fun detect(source: LuminanceSource): String? {
@@ -198,8 +274,10 @@ class CameraScanActivity : NoMainActivity() {
                 )
             ).setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
             .build()
+        val cameraSelector =
+            CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
         val preview = Preview.Builder().setResolutionSelector(resolution).build()
-        preview.surfaceProvider = textureView.surfaceProvider
+        preview.surfaceProvider = viewFinder.surfaceProvider
         val imageAnalysis = ImageAnalysis.Builder()
             .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
             .setResolutionSelector(resolution)
@@ -247,6 +325,8 @@ class CameraScanActivity : NoMainActivity() {
             imageProxy.close()
         }
 
+        imageAnalysisPointer = imageAnalysis
+
         // request a ProcessCameraProvider
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
@@ -255,9 +335,7 @@ class CameraScanActivity : NoMainActivity() {
             try {
                 val cameraProvider = cameraProviderFuture.get()
                 camera = cameraProvider.bindToLifecycle(
-                    this, CameraSelector.Builder()
-                        .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                        .build(),
+                    this, cameraSelector,
                     imageAnalysis, preview
                 )
             } catch (e: Exception) {
@@ -265,15 +343,23 @@ class CameraScanActivity : NoMainActivity() {
             }
         }, ContextCompat.getMainExecutor(this))
 
-        textureView.setOnTouchListener { _, event ->
+        viewFinder.setOnTouchListener { _, event ->
             return@setOnTouchListener when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     true
                 }
 
                 MotionEvent.ACTION_UP -> {
+                    focusHideJob.cancel()
+                    mFocusView?.visibility = View.VISIBLE
+                    mFocusView?.x = event.x
+                    mFocusView?.y = event.y
+                    focusHideJob += delayTaskFlow(1000).toMain {
+                        mFocusView?.visibility = View.GONE
+                    }
+
                     val factory: MeteringPointFactory = SurfaceOrientedMeteringPointFactory(
-                        textureView.width.toFloat(), textureView.height.toFloat()
+                        viewFinder.width.toFloat(), viewFinder.height.toFloat()
                     )
                     val autoFocusPoint = factory.createPoint(event.x, event.y)
                     try {
@@ -295,6 +381,22 @@ class CameraScanActivity : NoMainActivity() {
                 else -> false // Unhandled event.
             }
         }
+    }
+
+    @Suppress("DEPRECATION")
+    override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
+        val w = window
+        if (!hasVanillaIceCreamTarget()) {
+            w.statusBarColor =
+                if (colored) getStatusBarColor(this) else getStatusBarNonColored(
+                    this
+                )
+            w.navigationBarColor =
+                if (colored) getNavigationBarColor(this) else Color.BLACK
+        }
+        val ins = WindowInsetsControllerCompat(w, w.decorView)
+        ins.isAppearanceLightStatusBars = invertIcons
+        ins.isAppearanceLightNavigationBars = invertIcons
     }
 
     open class FinderView(context: Context, attrs: AttributeSet?) :

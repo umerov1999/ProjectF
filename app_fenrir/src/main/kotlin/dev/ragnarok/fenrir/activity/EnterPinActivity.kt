@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.pin.enterpin.EnterPinFragment
 import dev.ragnarok.fenrir.util.Utils
 
@@ -13,7 +12,7 @@ open class EnterPinActivity : NoMainActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager
                 .beginTransaction()
-                .replace(R.id.fragment, EnterPinFragment.newInstance())
+                .replace(noMainContainerViewId, EnterPinFragment.newInstance())
                 .commit()
         }
     }

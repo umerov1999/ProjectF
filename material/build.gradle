@@ -3,7 +3,7 @@ plugins {
     id("kotlin-android")
 }
 
-//1.13.0-alpha08
+//1.13.0-alpha09
 
 def srcDirs = [
         'com/google/android/material/animation',
@@ -65,7 +65,7 @@ def srcDirs = [
 ]
 
 android {
-    namespace "com.google.android.material"
+    namespace = "com.google.android.material"
     sourceSets {
         main.java.srcDir 'java'
         main.java.includes = srcDirs.collect { it + '/**/*.java' }

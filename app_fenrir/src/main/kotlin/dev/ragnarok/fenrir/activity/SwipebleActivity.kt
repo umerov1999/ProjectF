@@ -14,10 +14,9 @@ import dev.ragnarok.fenrir.util.ViewUtils
  * Отличие только в том, что этот активити может существовать в нескольких экземплярах
  */
 class SwipebleActivity : MainActivity() {
-    @MainActivityTransforms
-    override fun getMainActivityTransform(): Int {
-        return MainActivityTransforms.SWIPEBLE
-    }
+    @get:MainActivityTransforms
+    override val mainActivityTransform: Int
+        get() = MainActivityTransforms.SWIPEBLE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

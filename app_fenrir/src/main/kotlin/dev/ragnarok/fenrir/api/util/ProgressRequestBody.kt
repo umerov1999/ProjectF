@@ -32,6 +32,7 @@ class ProgressRequestBody(
                 uploaded += read.toLong()
                 sink.write(buffer, 0, read)
             }
+            listener?.onProgressUpdate(100)
         } catch (e: Exception) {
             if (e is IOException) {
                 throw e

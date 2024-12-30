@@ -20,6 +20,8 @@ import android.view.animation.LinearInterpolator
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.IdRes
+import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowInsetsControllerCompat
@@ -286,7 +288,31 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             supportFinishAfterTransition()
         }
     }
-    protected var mLayoutRes = if (Settings.get().main().isSnow_mode) snowLayout else normalLayout
+
+    @get:LayoutRes
+    protected open val mainContentView: Int
+        get() = if (Settings.get().main().is_side_navigation) {
+            if (Settings.get().main().isSnow_mode) {
+                R.layout.activity_main_side_with_snow
+            } else {
+                R.layout.activity_main_side
+            }
+        } else {
+            if (Settings.get().main().isSnow_mode) {
+                R.layout.activity_main_with_snow
+            } else {
+                R.layout.activity_main
+            }
+        }
+
+    @get:IdRes
+    protected open val mainContainerViewId: Int
+        get() = R.id.fragment
+
+    @get:MainActivityTransforms
+    protected open val mainActivityTransform: Int
+        get() = MainActivityTransforms.MAIN
+
     protected var mLastBackPressedTime: Long = 0
 
     private val requestCreatePin = registerForActivityResult(
@@ -343,19 +369,6 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     private var mTargetPage: Pair<AbsMenuItem, Boolean>? = null
     private var resumed = false
     private var isZoomPhoto = false
-    private val snowLayout: Int
-        get() = if (Settings.get()
-                .main().is_side_navigation
-        ) R.layout.activity_main_side_with_snow else R.layout.activity_main_with_snow
-    private val normalLayout: Int
-        get() = if (Settings.get()
-                .main().is_side_navigation
-        ) R.layout.activity_main_side else R.layout.activity_main
-
-    @MainActivityTransforms
-    protected open fun getMainActivityTransform(): Int {
-        return MainActivityTransforms.MAIN
-    }
 
     private fun postResume(action: Action<MainActivity>) {
         if (resumed) {
@@ -380,7 +393,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
 
     override fun onCreate(savedInstanceState: Bundle?) {
         delegate.applyDayNight()
-        if (savedInstanceState == null && getMainActivityTransform() == MainActivityTransforms.MAIN) {
+        if (savedInstanceState == null && mainActivityTransform == MainActivityTransforms.MAIN) {
             nextRandom()
         }
         setTheme(currentStyle())
@@ -403,14 +416,14 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             .filter { it.first == mAccountId }
             .sharedFlowToMain { updateMessagesBagde(it.second) })
         bindToAudioPlayService()
-        setContentView(mLayoutRes)
+        setContentView(mainContentView)
         mAccountId = Settings.get()
             .accounts()
             .current
         setStatusbarColored(true, Settings.get().ui().isDarkModeEnabled(this))
         val mDrawerLayout = findViewById<DrawerLayout>(R.id.my_drawer_layout)
 
-        mViewFragment = findViewById(R.id.fragment)
+        mViewFragment = findViewById(mainContainerViewId)
         val anim: ObjectAnimator
         if (mDrawerLayout != null && Settings.get().main().is_side_navigation) {
             navigationView?.setUp(mDrawerLayout)
@@ -467,7 +480,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     startAccountsActivityZero()
                 }
             } else {
-                if (getMainActivityTransform() == MainActivityTransforms.MAIN) {
+                if (mainActivityTransform == MainActivityTransforms.MAIN) {
                     checkFCMRegistration(false)
                     mCompositeJob.add(MusicPlaybackController.tracksExist.findAllAudios(this)
                         .andThen(
@@ -522,7 +535,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     }
                 }
                 if (supportFragmentManager.backStackEntryCount == 1 || supportFragmentManager.backStackEntryCount <= 0) {
-                    if (getMainActivityTransform() != MainActivityTransforms.SWIPEBLE) {
+                    if (mainActivityTransform != MainActivityTransforms.SWIPEBLE) {
                         if (isFragmentWithoutNavigation) {
                             openNavigationPage(AbsNavigationView.SECTION_ITEM_FEED, false)
                             return
@@ -760,7 +773,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 }
             } else {
                 mToolbar?.setNavigationIcon(R.drawable.arrow_left)
-                if (getMainActivityTransform() != MainActivityTransforms.SWIPEBLE) {
+                if (mainActivityTransform != MainActivityTransforms.SWIPEBLE) {
                     mToolbar?.setNavigationOnClickListener {
                         openNavigationPage(
                             AbsNavigationView.SECTION_ITEM_FEED,
@@ -869,7 +882,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
 
             Intent.ACTION_SEND_MULTIPLE == intent.action -> {
                 val mime = intent.type
-                if (getMainActivityTransform() == MainActivityTransforms.MAIN && intent.extras != null && mime.nonNullNoEmpty() && isMimeAudio(
+                if (mainActivityTransform == MainActivityTransforms.MAIN && intent.extras != null && mime.nonNullNoEmpty() && isMimeAudio(
                         mime
                     ) && intent.extras?.containsKey(Intent.EXTRA_STREAM) == true
                 ) {
@@ -924,7 +937,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             Intent.ACTION_VIEW == intent.action -> {
                 val data = intent.data
                 val mime = intent.type ?: ""
-                if (getMainActivityTransform() == MainActivityTransforms.MAIN && mime.nonNullNoEmpty() && isMimeAudio(
+                if (mainActivityTransform == MainActivityTransforms.MAIN && mime.nonNullNoEmpty() && isMimeAudio(
                         mime
                     )
                 ) {
@@ -979,7 +992,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             attachToFront(chatFragment)
         } else {
             if (Settings.get()
-                    .ui().swipes_chat_mode == SwipesChatMode.SLIDR && getMainActivityTransform() == MainActivityTransforms.MAIN
+                    .ui().swipes_chat_mode == SwipesChatMode.SLIDR && mainActivityTransform == MainActivityTransforms.MAIN
             ) {
                 val intent = Intent(this, ChatActivity::class.java)
                 intent.action = ChatActivity.ACTION_OPEN_PLACE
@@ -992,7 +1005,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     Utils.finishActivityImmediate(this)
                 }
             } else if (Settings.get()
-                    .ui().swipes_chat_mode == SwipesChatMode.SLIDR && getMainActivityTransform() != MainActivityTransforms.MAIN
+                    .ui().swipes_chat_mode == SwipesChatMode.SLIDR && mainActivityTransform != MainActivityTransforms.MAIN
             ) {
                 val chatFragment = newInstance(accountId, messagesOwnerId, peer)
                 attachToFront(chatFragment)
@@ -1214,7 +1227,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     }
 
     private val frontFragment: Fragment?
-        get() = supportFragmentManager.findFragmentById(R.id.fragment)
+        get() = supportFragmentManager.findFragmentById(mainContainerViewId)
 
     private val isChatFragment: Boolean
         get() = frontFragment is ChatFragment
@@ -1292,7 +1305,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             R.anim.fragment_exit
         )
         fragmentTransaction
-            .replace(R.id.fragment, fragment)
+            .replace(mainContainerViewId, fragment)
             .addToBackStack(null)
             .commitAllowingStateLoss()
     }
@@ -1535,9 +1548,11 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             }
 
             Place.VK_INTERNAL_PLAYER -> {
-                val intent = Intent(this, VideoPlayerActivity::class.java)
-                intent.putExtras(args)
-                startActivity(intent)
+                val videoActivity = VideoPlayerActivity.newInstance(this, args)
+                place.launchActivityForResult(
+                    this,
+                    videoActivity
+                )
             }
 
             Place.LIKES_AND_COPIES -> attachToFront(LikesFragment.newInstance(args))

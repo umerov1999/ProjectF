@@ -134,11 +134,10 @@ object PlaceFactory {
         groupId: Long,
         users: ArrayList<User>?
     ): Place {
-        val place = Place(Place.COMMUNITY_MANAGER_ADD)
+        return Place(Place.COMMUNITY_MANAGER_ADD)
             .withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withLongExtra(Extra.GROUP_ID, groupId)
-        place.prepareArguments().putParcelableArrayList(Extra.USERS, users)
-        return place
+            .withParcelableArrayList(Extra.USERS, users)
     }
 
     fun getTmpSourceGalleryPlace(accountId: Long, source: TmpSource, index: Int): Place {
@@ -157,11 +156,10 @@ object PlaceFactory {
     }
 
     fun getCommunityAddBanPlace(accountId: Long, groupId: Long, users: ArrayList<User>?): Place {
-        val place = Place(Place.COMMUNITY_ADD_BAN)
+        return Place(Place.COMMUNITY_ADD_BAN)
             .withLongExtra(Extra.ACCOUNT_ID, accountId)
             .withLongExtra(Extra.GROUP_ID, groupId)
-        place.prepareArguments().putParcelableArrayList(Extra.USERS, users)
-        return place
+            .withParcelableArrayList(Extra.USERS, users)
     }
 
     fun getCommunityBanEditPlace(accountId: Long, groupId: Long, banned: Banned?): Place {
@@ -467,11 +465,13 @@ object PlaceFactory {
         @InternalVideoSize size: Int,
         isLocal: Boolean
     ): Place {
-        val place = Place(Place.VK_INTERNAL_PLAYER)
-        place.prepareArguments().putParcelable(VideoPlayerActivity.EXTRA_VIDEO, video)
-        place.prepareArguments().putInt(VideoPlayerActivity.EXTRA_SIZE, size)
-        place.prepareArguments().putBoolean(VideoPlayerActivity.EXTRA_LOCAL, isLocal)
-        return place
+        return Place(Place.VK_INTERNAL_PLAYER).setArguments(
+            VideoPlayerActivity.buildArgs(
+                video,
+                size,
+                isLocal
+            )
+        )
     }
 
     fun getResolveDomainPlace(aid: Long, url: String?, domain: String?): Place {

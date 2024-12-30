@@ -143,21 +143,6 @@
         <item name="colorSecondaryContainer">#222427</item>
     </style>
 
-    <style name="App.DayNight.VioletRed" parent="App.DayNight">
-        <item name="colorPrimary">#9800FF</item>
-        <item name="colorControlNormal">#9800FF</item>
-        <item name="colorSecondary">#F44336</item>
-        <item name="icon_color_active">#AAF44336</item>
-        <item name="icon_color_inactive">#AA151515</item>
-        <item name="colorOnPrimary">#1F092F</item>
-        <item name="colorOnPrimaryContainer">#EFDCF9</item>
-        <item name="colorPrimaryContainer">#331948</item>
-        <item name="colorPrimaryInverse">#4C2D65</item>
-        <item name="colorOnSecondary">#161010</item>
-        <item name="colorOnSecondaryContainer">#F5E4E3</item>
-        <item name="colorSecondaryContainer">#261F1F</item>
-    </style>
-
     <style name="App.DayNight.IceGreen" parent="App.DayNight">
         <item name="colorPrimary">#448AFF</item>
         <item name="colorControlNormal">#448AFF</item>
@@ -263,21 +248,6 @@
         <item name="colorSecondaryContainer">#302F2C</item>
     </style>
 
-    <style name="App.DayNight.BlueYellow" parent="App.DayNight">
-        <item name="colorPrimary">#448AFF</item>
-        <item name="colorControlNormal">#448AFF</item>
-        <item name="colorSecondary">#FFA726</item>
-        <item name="icon_color_active">#AA448AFF</item>
-        <item name="icon_color_inactive">#AAFF0000</item>
-        <item name="colorOnPrimary">#0C1B32</item>
-        <item name="colorOnPrimaryContainer">#E3EAF8</item>
-        <item name="colorPrimaryContainer">#1B2E4A</item>
-        <item name="colorPrimaryInverse">#304767</item>
-        <item name="colorOnSecondary">#191511</item>
-        <item name="colorOnSecondaryContainer">#F4EBDE</item>
-        <item name="colorSecondaryContainer">#292420</item>
-    </style>
-
     <style name="App.DayNight.Fire" parent="App.DayNight">
         <item name="colorPrimary">#FF9800</item>
         <item name="colorControlNormal">#FF9800</item>
@@ -342,21 +312,6 @@
         <item name="colorSecondaryContainer">#242029</item>
     </style>
 
-    <style name="App.DayNight.BlueViolet" parent="App.DayNight">
-        <item name="colorPrimary">#448AFF</item>
-        <item name="colorControlNormal">#448AFF</item>
-        <item name="colorSecondary">#8500FF</item>
-        <item name="icon_color_active">#AA448AFF</item>
-        <item name="icon_color_inactive">#AAFF0000</item>
-        <item name="colorOnPrimary">#0C1B32</item>
-        <item name="colorOnPrimaryContainer">#E3EAF8</item>
-        <item name="colorPrimaryContainer">#1B2E4A</item>
-        <item name="colorPrimaryInverse">#304767</item>
-        <item name="colorOnSecondary">#141119</item>
-        <item name="colorOnSecondaryContainer">#EADCF6</item>
-        <item name="colorSecondaryContainer">#24202A</item>
-    </style>
-
     <style name="App.DayNight.YellowViolet" parent="App.DayNight">
         <item name="colorPrimary">#FF9800</item>
         <item name="colorControlNormal">#FF9800</item>
@@ -387,21 +342,6 @@
         <item name="colorSecondaryContainer">#1F2728</item>
     </style>
 
-    <style name="App.DayNight.VioletYellow" parent="App.DayNight">
-        <item name="colorPrimary">#8500FF</item>
-        <item name="colorControlNormal">#8500FF</item>
-        <item name="colorSecondary">#FF9800</item>
-        <item name="icon_color_active">#AA9800FF</item>
-        <item name="icon_color_inactive">#AAFF0000</item>
-        <item name="colorOnPrimary">#1E0A30</item>
-        <item name="colorOnPrimaryContainer">#EEDCFA</item>
-        <item name="colorPrimaryContainer">#311A49</item>
-        <item name="colorPrimaryInverse">#492E66</item>
-        <item name="colorOnSecondary">#191511</item>
-        <item name="colorOnSecondaryContainer">#F6EBDC</item>
-        <item name="colorSecondaryContainer">#292420</item>
-    </style>
-
     <style name="App.DayNight.FuxiaNeonYellow" parent="App.DayNight">
         <item name="colorPrimary">#FE59C2</item>
         <item name="colorControlNormal">#FE59C2</item>
@@ -430,36 +370,6 @@
         <item name="colorOnSecondary">#151018</item>
         <item name="colorOnSecondaryContainer">#ECDCF4</item>
         <item name="colorSecondaryContainer">#251F29</item>
-    </style>
-
-    <style name="App.DayNight.VioletGreen" parent="App.DayNight">
-        <item name="colorPrimary">#8500FF</item>
-        <item name="colorControlNormal">#8500FF</item>
-        <item name="colorSecondary">#268000</item>
-        <item name="icon_color_active">#AA9800FF</item>
-        <item name="icon_color_inactive">#AAFF0000</item>
-        <item name="colorOnPrimary">#1E0A30</item>
-        <item name="colorOnPrimaryContainer">#EEDCFA</item>
-        <item name="colorPrimaryContainer">#311A49</item>
-        <item name="colorPrimaryInverse">#492E66</item>
-        <item name="colorOnSecondary">#000000</item>
-        <item name="colorOnSecondaryContainer">#8D9788</item>
-        <item name="colorSecondaryContainer">#1E231E</item>
-    </style>
-
-    <style name="App.DayNight.GreenViolet" parent="App.DayNight">
-        <item name="colorPrimary">#268000</item>
-        <item name="colorControlNormal">#268000</item>
-        <item name="colorSecondary">#8500FF</item>
-        <item name="icon_color_active">#AA268000</item>
-        <item name="icon_color_inactive">#AAFF0000</item>
-        <item name="colorOnPrimary">#000000</item>
-        <item name="colorOnPrimaryContainer">#747F70</item>
-        <item name="colorPrimaryContainer">#030602</item>
-        <item name="colorPrimaryInverse">#0F170B</item>
-        <item name="colorOnSecondary">#141119</item>
-        <item name="colorOnSecondaryContainer">#EADCF6</item>
-        <item name="colorSecondaryContainer">#24202A</item>
     </style>
 
     <style name="App.DayNight.Green" parent="App.DayNight">
@@ -696,22 +606,6 @@
         <item name="messages_background_color">#000000</item>
     </style>
 
-    <style name="App.DayNight.BlueYellow.Amoled" parent="App.DayNight.BlueYellow">
-        <item name="dividerColor">#151515</item>
-        <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
-        <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
-        <item name="chat_background_cookies">@drawable/cookies_black</item>
-        <item name="chat_background_lines">@drawable/lines_black</item>
-        <item name="android:colorBackground">@android:color/black</item>
-        <item name="colorBackgroundFloating">@android:color/black</item>
-        <item name="colorOnBackground">#000000</item>
-        <item name="colorSurface">#F20B0B0B</item>
-        <item name="message_bubble_color">#0B0B0B</item>
-        <item name="sticker_hint_color">#DD0B0B0B</item>
-        <item name="messages_background_color">#000000</item>
-    </style>
-
     <style name="App.DayNight.Fire.Amoled" parent="App.DayNight.Fire">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
@@ -729,22 +623,6 @@
     </style>
 
     <style name="App.DayNight.Red.Amoled" parent="App.DayNight.Red">
-        <item name="dividerColor">#151515</item>
-        <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
-        <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
-        <item name="chat_background_cookies">@drawable/cookies_black</item>
-        <item name="chat_background_lines">@drawable/lines_black</item>
-        <item name="android:colorBackground">@android:color/black</item>
-        <item name="colorBackgroundFloating">@android:color/black</item>
-        <item name="colorOnBackground">#000000</item>
-        <item name="colorSurface">#F20B0B0B</item>
-        <item name="message_bubble_color">#0B0B0B</item>
-        <item name="sticker_hint_color">#DD0B0B0B</item>
-        <item name="messages_background_color">#000000</item>
-    </style>
-
-    <style name="App.DayNight.VioletRed.Amoled" parent="App.DayNight.VioletRed">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
         <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
@@ -808,39 +686,7 @@
         <item name="messages_background_color">#000000</item>
     </style>
 
-    <style name="App.DayNight.BlueViolet.Amoled" parent="App.DayNight.BlueViolet">
-        <item name="dividerColor">#151515</item>
-        <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
-        <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
-        <item name="chat_background_cookies">@drawable/cookies_black</item>
-        <item name="chat_background_lines">@drawable/lines_black</item>
-        <item name="android:colorBackground">@android:color/black</item>
-        <item name="colorBackgroundFloating">@android:color/black</item>
-        <item name="colorOnBackground">#000000</item>
-        <item name="colorSurface">#F20B0B0B</item>
-        <item name="message_bubble_color">#0B0B0B</item>
-        <item name="sticker_hint_color">#DD0B0B0B</item>
-        <item name="messages_background_color">#000000</item>
-    </style>
-
     <style name="App.DayNight.YellowViolet.Amoled" parent="App.DayNight.YellowViolet">
-        <item name="dividerColor">#151515</item>
-        <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
-        <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
-        <item name="chat_background_cookies">@drawable/cookies_black</item>
-        <item name="chat_background_lines">@drawable/lines_black</item>
-        <item name="android:colorBackground">@android:color/black</item>
-        <item name="colorBackgroundFloating">@android:color/black</item>
-        <item name="colorOnBackground">#000000</item>
-        <item name="colorSurface">#F20B0B0B</item>
-        <item name="message_bubble_color">#0B0B0B</item>
-        <item name="sticker_hint_color">#DD0B0B0B</item>
-        <item name="messages_background_color">#000000</item>
-    </style>
-
-    <style name="App.DayNight.VioletYellow.Amoled" parent="App.DayNight.VioletYellow">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
         <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
@@ -889,38 +735,6 @@
     </style>
 
     <style name="App.DayNight.NeonYellowIce.Amoled" parent="App.DayNight.NeonYellowIce">
-        <item name="dividerColor">#151515</item>
-        <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
-        <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
-        <item name="chat_background_cookies">@drawable/cookies_black</item>
-        <item name="chat_background_lines">@drawable/lines_black</item>
-        <item name="android:colorBackground">@android:color/black</item>
-        <item name="colorBackgroundFloating">@android:color/black</item>
-        <item name="colorOnBackground">#000000</item>
-        <item name="colorSurface">#F20B0B0B</item>
-        <item name="message_bubble_color">#0B0B0B</item>
-        <item name="sticker_hint_color">#DD0B0B0B</item>
-        <item name="messages_background_color">#000000</item>
-    </style>
-
-    <style name="App.DayNight.VioletGreen.Amoled" parent="App.DayNight.VioletGreen">
-        <item name="dividerColor">#151515</item>
-        <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
-        <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
-        <item name="chat_background_cookies">@drawable/cookies_black</item>
-        <item name="chat_background_lines">@drawable/lines_black</item>
-        <item name="android:colorBackground">@android:color/black</item>
-        <item name="colorBackgroundFloating">@android:color/black</item>
-        <item name="colorOnBackground">#000000</item>
-        <item name="colorSurface">#F20B0B0B</item>
-        <item name="message_bubble_color">#0B0B0B</item>
-        <item name="sticker_hint_color">#DD0B0B0B</item>
-        <item name="messages_background_color">#000000</item>
-    </style>
-
-    <style name="App.DayNight.GreenViolet.Amoled" parent="App.DayNight.GreenViolet">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
         <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>

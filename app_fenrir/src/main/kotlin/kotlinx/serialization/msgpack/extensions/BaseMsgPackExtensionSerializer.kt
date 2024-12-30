@@ -23,7 +23,10 @@ abstract class BaseMsgPackExtensionSerializer<T> : KSerializer<T> {
 
     final override val descriptor: SerialDescriptor = serializer.descriptor
 
-    override fun serialize(encoder: Encoder, value: T) {
+    override fun serialize(
+        encoder: Encoder,
+        value: T,
+    ) {
         val extension = serialize(value)
         if (checkTypeId && extension.extTypeId != extTypeId) {
             throw MsgPackSerializationException.extensionSerializationWrongType(
@@ -36,7 +39,9 @@ abstract class BaseMsgPackExtensionSerializer<T> : KSerializer<T> {
     }
 
     abstract fun deserialize(extension: MsgPackExtension): T
+
     abstract fun serialize(extension: T): MsgPackExtension
+
     abstract val extTypeId: Byte
     internal open val checkTypeId: Boolean = true
 }

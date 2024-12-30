@@ -56,7 +56,7 @@ abstract class AbsDtoAdapter<T>(name: String) : KSerializer<T> {
             contract {
                 returns(true) implies (element is JsonArray)
             }
-            return element is JsonArray && element.size > 0
+            return element is JsonArray && element.isNotEmpty()
         }
 
         fun hasPrimitive(obj: JsonObject?, name: String): Boolean {

@@ -119,7 +119,7 @@ class LocalJsonToChatActivity : NoMainActivity(), PlaceProvider, AppStyleable, S
         supportFragmentManager
             .beginTransaction()
             .setCustomAnimations(R.anim.fragment_enter, R.anim.fragment_exit)
-            .replace(getMainContainerViewId(), fragment)
+            .replace(noMainContainerViewId, fragment)
             .addToBackStack("primary_local_chat")
             .commitAllowingStateLoss()
     }

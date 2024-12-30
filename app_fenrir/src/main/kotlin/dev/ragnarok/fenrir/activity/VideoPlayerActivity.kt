@@ -627,5 +627,23 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         const val EXTRA_VIDEO = "video"
         const val EXTRA_SIZE = "size"
         const val EXTRA_LOCAL = "local"
+
+        fun newInstance(context: Context, args: Bundle): Intent {
+            val intent = Intent(context, VideoPlayerActivity::class.java)
+            intent.putExtras(args)
+            return intent
+        }
+
+        fun buildArgs(
+            video: Video?,
+            @InternalVideoSize size: Int,
+            isLocal: Boolean
+        ): Bundle {
+            val args = Bundle()
+            args.putParcelable(EXTRA_VIDEO, video)
+            args.putInt(EXTRA_SIZE, size)
+            args.putBoolean(EXTRA_LOCAL, isLocal)
+            return args
+        }
     }
 }

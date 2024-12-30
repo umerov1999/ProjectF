@@ -63,9 +63,11 @@ object PlaceFactory {
     fun getInternalPlayerPlace(
         video: Video
     ): Place {
-        val place = Place(Place.VIDEO_PLAYER)
-        place.prepareArguments().putParcelable(VideoPlayerActivity.EXTRA_VIDEO, video)
-        return place
+        return Place(Place.VIDEO_PLAYER).setArguments(
+            VideoPlayerActivity.buildArgs(
+                video
+            )
+        )
     }
 
     fun getTagDirsPlace(ownerId: Long, isSelect: Boolean): Place {

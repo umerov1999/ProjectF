@@ -88,14 +88,14 @@ struct SwShapeTask : SwTask
         return strokeWidth < 2.0f || rshape->stroke->dashCnt > 0 || rshape->stroke->strokeFirst || rshape->strokeTrim() || rshape->stroke->color.a < 255;
     }
 
-    float validStrokeWidth()
+    float validStrokeWidth(bool clipper)
     {
         if (!rshape->stroke) return 0.0f;
 
         auto width = rshape->stroke->width;
         if (tvg::zero(width)) return 0.0f;
 
-        if (!rshape->stroke->fill && (MULTIPLY(rshape->stroke->color.a, opacity) == 0)) return 0.0f;
+        if (!clipper && (!rshape->stroke->fill && (MULTIPLY(rshape->stroke->color.a, opacity) == 0))) return 0.0f;
         if (tvg::zero(rshape->stroke->trim.begin - rshape->stroke->trim.end)) return 0.0f;
 
         return (width * sqrt(transform.e11 * transform.e11 + transform.e12 * transform.e12));
@@ -103,11 +103,10 @@ struct SwShapeTask : SwTask
 
     bool clip(SwRle* target) override
     {
-        if (shape.fastTrack) rleClip(target, &bbox);
-        else if (shape.rle) rleClip(target, shape.rle);
-        else return false;
-
-        return true;
+        if (shape.strokeRle) return rleClip(target, shape.strokeRle);
+        if (shape.fastTrack) return rleClip(target, &bbox);
+        if (shape.rle) return rleClip(target, shape.rle);
+        return false;
     }
 
     void run(unsigned tid) override
@@ -118,7 +117,7 @@ struct SwShapeTask : SwTask
             return;
         }
 
-        auto strokeWidth = validStrokeWidth();
+        auto strokeWidth = validStrokeWidth(clipper);
         SwBBox renderRegion{};
         auto visibleFill = false;
 
@@ -156,14 +155,11 @@ struct SwShapeTask : SwTask
         if (flags & (RenderUpdateFlag::Path | RenderUpdateFlag::Stroke | RenderUpdateFlag::Transform)) {
             if (strokeWidth > 0.0f) {
                 shapeResetStroke(&shape, rshape, transform);
-
                 if (!shapeGenStrokeRle(&shape, rshape, transform, bbox, renderRegion, mpool, tid)) goto err;
                 if (auto fill = rshape->strokeFill()) {
                     auto ctable = (flags & RenderUpdateFlag::GradientStroke) ? true : false;
                     if (ctable) shapeResetStrokeFill(&shape);
                     if (!shapeGenStrokeFillColors(&shape, fill, transform, surface, opacity, ctable)) goto err;
-                } else {
-                    shapeDelStrokeFill(&shape);
                 }
             } else {
                 shapeDelStroke(&shape);
@@ -176,10 +172,8 @@ struct SwShapeTask : SwTask
         //Clip Path
         for (auto clip = clips.begin(); clip < clips.end(); ++clip) {
             auto clipper = static_cast<SwTask*>(*clip);
-            //Clip shape rle
-            if (shape.rle && !clipper->clip(shape.rle)) goto err;
-            //Clip stroke rle
-            if (shape.strokeRle && !clipper->clip(shape.strokeRle)) goto err;
+            if (shape.rle && !clipper->clip(shape.rle)) goto err;                 //Clip shape rle
+            if (shape.strokeRle && !clipper->clip(shape.strokeRle)) goto err;     //Clip stroke rle
         }
 
         bbox = renderRegion; //sync
@@ -659,6 +653,8 @@ bool SwRenderer::prepare(RenderEffect* effect)
         case SceneEffect::GaussianBlur: return effectGaussianBlurPrepare(static_cast<RenderEffectGaussianBlur*>(effect));
         case SceneEffect::DropShadow: return effectDropShadowPrepare(static_cast<RenderEffectDropShadow*>(effect));
         case SceneEffect::Fill: return effectFillPrepare(static_cast<RenderEffectFill*>(effect));
+        case SceneEffect::Tint: return effectTintPrepare(static_cast<RenderEffectTint*>(effect));
+        case SceneEffect::Tritone: return effectTritonePrepare(static_cast<RenderEffectTritone*>(effect));
         default: return false;
     }
 }
@@ -690,6 +686,12 @@ bool SwRenderer::effect(RenderCompositor* cmp, const RenderEffect* effect, bool 
         }
         case SceneEffect::Fill: {
             return effectFill(p, static_cast<const RenderEffectFill*>(effect), direct);
+        }
+        case SceneEffect::Tint: {
+            return effectTint(p, static_cast<const RenderEffectTint*>(effect), direct);
+        }
+        case SceneEffect::Tritone: {
+            return effectTritone(p, static_cast<const RenderEffectTritone*>(effect), direct);
         }
         default: return false;
     }

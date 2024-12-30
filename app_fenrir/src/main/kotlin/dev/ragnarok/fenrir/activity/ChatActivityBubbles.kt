@@ -197,7 +197,7 @@ class ChatActivityBubbles : NoMainActivity(), PlaceProvider, AppStyleable, Servi
             R.anim.fragment_exit
         )
         fragmentTransaction
-            .replace(R.id.fragment, fragment)
+            .replace(noMainContainerViewId, fragment)
             .addToBackStack(null)
             .commitAllowingStateLoss()
     }

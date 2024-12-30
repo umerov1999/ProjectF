@@ -8,7 +8,7 @@ plugins {
 //viewpager 1.1.0
 
 android {
-    namespace "androidx.recyclerview"
+    namespace = "androidx.recyclerview"
     compileSdk = appCompileSDK
     buildToolsVersion = appBuildTools
 

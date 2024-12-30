@@ -31,7 +31,7 @@ class VideoSelectActivity : NoMainActivity(), PlaceProvider {
         supportFragmentManager
             .beginTransaction()
             .setCustomAnimations(R.anim.fragment_enter_pop, R.anim.fragment_exit_pop)
-            .replace(getMainContainerViewId(), fragment)
+            .replace(noMainContainerViewId, fragment)
             .addToBackStack("video-tabs")
             .commit()
     }
@@ -43,7 +43,7 @@ class VideoSelectActivity : NoMainActivity(), PlaceProvider {
                 supportFragmentManager
                     .beginTransaction()
                     .setCustomAnimations(R.anim.fragment_enter_pop, R.anim.fragment_exit_pop)
-                    .replace(getMainContainerViewId(), fragment)
+                    .replace(noMainContainerViewId, fragment)
                     .addToBackStack("video-album")
                     .commit()
             }
@@ -54,7 +54,7 @@ class VideoSelectActivity : NoMainActivity(), PlaceProvider {
                 supportFragmentManager
                     .beginTransaction()
                     .setCustomAnimations(R.anim.fragment_enter_pop, R.anim.fragment_exit_pop)
-                    .replace(getMainContainerViewId(), singleTabSearchFragment)
+                    .replace(noMainContainerViewId, singleTabSearchFragment)
                     .addToBackStack("video-search")
                     .commit()
             }

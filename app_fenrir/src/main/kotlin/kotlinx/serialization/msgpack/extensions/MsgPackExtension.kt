@@ -7,7 +7,7 @@ import kotlinx.serialization.msgpack.types.MsgPackType
 class MsgPackExtension(
     val type: Byte,
     val extTypeId: Byte,
-    val data: ByteArray
+    val data: ByteArray,
 ) {
     object Type {
         const val FIXEXT1 = MsgPackType.Ext.FIXEXT1

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace "dev.ragnarok.filegallery"
+    namespace = "dev.ragnarok.filegallery"
     buildFeatures {
         aidl = true
         buildConfig = true

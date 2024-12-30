@@ -355,7 +355,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
             FileManagerSelectActivity.makeFileManager(
                 requireActivity(),
                 Environment.getExternalStorageDirectory().absolutePath,
-                "dirs"
+                "dirs", null
             )
         )
     }
@@ -579,7 +579,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
             FileManagerSelectActivity.makeFileManager(
                 requireActivity(),
                 Environment.getExternalStorageDirectory().absolutePath,
-                "json"
+                "json", null
             )
         )
     }
@@ -589,7 +589,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
             FileManagerSelectActivity.makeFileManager(
                 requireActivity(),
                 Environment.getExternalStorageDirectory().absolutePath,
-                "json"
+                "json", null
             )
         )
     }

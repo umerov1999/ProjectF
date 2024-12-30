@@ -17,7 +17,7 @@ class AccountsActivity : NoMainActivity(), PlaceProvider {
         if (savedInstanceState == null) {
             supportFragmentManager
                 .beginTransaction()
-                .replace(getMainContainerViewId(), AccountsFragment())
+                .replace(noMainContainerViewId, AccountsFragment())
                 .addToBackStack("accounts")
                 .commit()
         }
@@ -28,7 +28,7 @@ class AccountsActivity : NoMainActivity(), PlaceProvider {
             Place.PREFERENCES -> {
                 supportFragmentManager
                     .beginTransaction()
-                    .replace(getMainContainerViewId(), newInstance(place.safeArguments()))
+                    .replace(noMainContainerViewId, newInstance(place.safeArguments()))
                     .addToBackStack("preferences")
                     .commit()
             }
@@ -36,7 +36,7 @@ class AccountsActivity : NoMainActivity(), PlaceProvider {
             Place.SETTINGS_THEME -> {
                 supportFragmentManager
                     .beginTransaction()
-                    .replace(getMainContainerViewId(), ThemeFragment())
+                    .replace(noMainContainerViewId, ThemeFragment())
                     .addToBackStack("preferences_themes")
                     .commit()
             }
@@ -44,13 +44,13 @@ class AccountsActivity : NoMainActivity(), PlaceProvider {
             Place.SHORTCUTS -> {
                 supportFragmentManager
                     .beginTransaction()
-                    .replace(getMainContainerViewId(), ShortcutsViewFragment())
+                    .replace(noMainContainerViewId, ShortcutsViewFragment())
                     .addToBackStack("shortcuts")
                     .commit()
             }
 
             else -> {
-                CustomSnackbars.createCustomSnackbars(findViewById(getMainContainerViewId()))
+                CustomSnackbars.createCustomSnackbars(findViewById(noMainContainerViewId))
                     ?.coloredSnack(R.string.not_available, Color.RED)?.show()
             }
         }

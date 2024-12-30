@@ -29,6 +29,14 @@ abstract class NoMainActivity : AppCompatActivity() {
             return this is ChatActivity || this is LocalJsonToChatActivity || this is ChatActivityBubbles
         }
 
+    @get:LayoutRes
+    protected open val noMainContentView: Int
+        get() = R.layout.activity_no_main
+
+    @get:IdRes
+    protected open val noMainContainerViewId: Int
+        get() = R.id.fragment
+
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(currentStyle())
@@ -36,7 +44,7 @@ abstract class NoMainActivity : AppCompatActivity() {
         Utils.registerColorsThorVG(this)
         super.onCreate(savedInstanceState)
         isZoomPhoto = Settings.get().main().isDo_zoom_photo
-        setContentView(getNoMainContentView())
+        setContentView(noMainContentView)
         if (!hasVanillaIceCreamTarget()) {
             val w = window
             w.statusBarColor = CurrentTheme.getStatusBarColor(this)
@@ -46,9 +54,7 @@ abstract class NoMainActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val fm = supportFragmentManager
-                val front = fm.findFragmentById(
-                    getMainContainerViewId()
-                )
+                val front = fm.findFragmentById(noMainContainerViewId)
                 if (front is BackPressCallback) {
                     if (!(front as BackPressCallback).onBackPressed()) {
                         return
@@ -71,16 +77,6 @@ abstract class NoMainActivity : AppCompatActivity() {
         return if (!isZoomPhoto) {
             super.dispatchTouchEvent(ev)
         } else getInstance()?.dispatchTouchEvent(ev, this) == true || super.dispatchTouchEvent(ev)
-    }
-
-    @LayoutRes
-    protected open fun getNoMainContentView(): Int {
-        return R.layout.activity_no_main
-    }
-
-    @IdRes
-    protected open fun getMainContainerViewId(): Int {
-        return R.id.fragment
     }
 
     override fun setSupportActionBar(toolbar: Toolbar?) {

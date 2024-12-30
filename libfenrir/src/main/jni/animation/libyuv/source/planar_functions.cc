@@ -77,6 +77,11 @@ void CopyPlane(const uint8_t* src_y,
     CopyRow = IS_ALIGNED(width, 32) ? CopyRow_NEON : CopyRow_Any_NEON;
   }
 #endif
+#if defined(HAS_COPYROW_SME)
+  if (TestCpuFlag(kCpuHasSME)) {
+    CopyRow = CopyRow_SME;
+  }
+#endif
 #if defined(HAS_COPYROW_RVV)
   if (TestCpuFlag(kCpuHasRVV)) {
     CopyRow = CopyRow_RVV;
@@ -136,6 +141,11 @@ void Convert16To8Plane(const uint16_t* src_y,
     if (IS_ALIGNED(width, 16)) {
       Convert16To8Row = Convert16To8Row_NEON;
     }
+  }
+#endif
+#if defined(HAS_CONVERT16TO8ROW_SME)
+  if (TestCpuFlag(kCpuHasSME)) {
+    Convert16To8Row = Convert16To8Row_SME;
   }
 #endif
 #if defined(HAS_CONVERT16TO8ROW_SSSE3)
@@ -635,6 +645,11 @@ void MergeUVPlane(const uint8_t* src_u,
     }
   }
 #endif
+#if defined(HAS_MERGEUVROW_SME)
+  if (TestCpuFlag(kCpuHasSME)) {
+    MergeUVRow = MergeUVRow_SME;
+  }
+#endif
 #if defined(HAS_MERGEUVROW_MSA)
   if (TestCpuFlag(kCpuHasMSA)) {
     MergeUVRow = MergeUVRow_Any_MSA;
@@ -772,6 +787,11 @@ void MergeUVPlane_16(const uint16_t* src_u,
     if (IS_ALIGNED(width, 8)) {
       MergeUVRow_16 = MergeUVRow_16_NEON;
     }
+  }
+#endif
+#if defined(HAS_MERGEUVROW_16_SME)
+  if (TestCpuFlag(kCpuHasSME)) {
+    MergeUVRow_16 = MergeUVRow_16_SME;
   }
 #endif
 
@@ -4423,6 +4443,11 @@ int InterpolatePlane(const uint8_t* src0,
     }
   }
 #endif
+#if defined(HAS_INTERPOLATEROW_SME)
+  if (TestCpuFlag(kCpuHasSME)) {
+    InterpolateRow = InterpolateRow_SME;
+  }
+#endif
 #if defined(HAS_INTERPOLATEROW_MSA)
   if (TestCpuFlag(kCpuHasMSA)) {
     InterpolateRow = InterpolateRow_Any_MSA;
@@ -4506,6 +4531,11 @@ int InterpolatePlane_16(const uint16_t* src0,
     if (IS_ALIGNED(width, 8)) {
       InterpolateRow_16 = InterpolateRow_16_NEON;
     }
+  }
+#endif
+#if defined(HAS_INTERPOLATEROW_16_SME)
+  if (TestCpuFlag(kCpuHasSME)) {
+    InterpolateRow_16 = InterpolateRow_16_SME;
   }
 #endif
 #if defined(HAS_INTERPOLATEROW_16_MSA)
@@ -5710,6 +5740,11 @@ int UYVYToNV12(const uint8_t* src_uyvy,
     if (IS_ALIGNED(width, 16)) {
       InterpolateRow = InterpolateRow_NEON;
     }
+  }
+#endif
+#if defined(HAS_INTERPOLATEROW_SME)
+  if (TestCpuFlag(kCpuHasSME)) {
+    InterpolateRow = InterpolateRow_SME;
   }
 #endif
 #if defined(HAS_INTERPOLATEROW_MSA)

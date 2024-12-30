@@ -550,7 +550,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         FileManagerSelectActivity.makeFileManager(
                             requireActivity(),
                             Environment.getExternalStorageDirectory().absolutePath,
-                            "dirs"
+                            "dirs", null
                         )
                     )
                     true
@@ -565,7 +565,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         FileManagerSelectActivity.makeFileManager(
                             requireActivity(),
                             Environment.getExternalStorageDirectory().absolutePath,
-                            "dirs"
+                            "dirs", null
                         )
                     )
                     true
@@ -580,7 +580,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         FileManagerSelectActivity.makeFileManager(
                             requireActivity(),
                             Environment.getExternalStorageDirectory().absolutePath,
-                            "dirs"
+                            "dirs", null
                         )
                     )
                     true
@@ -881,7 +881,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         FileManagerSelectActivity.makeFileManager(
                             requireActivity(),
                             Environment.getExternalStorageDirectory().absolutePath,
-                            "dirs"
+                            "dirs", null
                         )
                     )
                     true
@@ -894,7 +894,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         FileManagerSelectActivity.makeFileManager(
                             requireActivity(),
                             Environment.getExternalStorageDirectory().absolutePath,
-                            "json"
+                            "json", null
                         )
                     )
                     true

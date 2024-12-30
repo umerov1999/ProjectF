@@ -62,10 +62,9 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
     private var mFullscreen = false
     private var mDownload: CircleCounterButton? = null
 
-    @LayoutRes
-    override fun getNoMainContentView(): Int {
-        return R.layout.fragment_single_url_photo
-    }
+    @get:LayoutRes
+    override val noMainContentView: Int
+        get() = R.layout.activity_single_url_photo
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {

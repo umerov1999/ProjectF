@@ -265,10 +265,9 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
     private val bShowPhotosLine = Settings.get().main().isShow_photos_line
     private val mAdapterRecycler = ImageListAdapter()
 
-    @LayoutRes
-    override fun getNoMainContentView(): Int {
-        return R.layout.activity_photo_pager
-    }
+    @get:LayoutRes
+    override val noMainContentView: Int
+        get() = R.layout.activity_photo_pager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

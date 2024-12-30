@@ -97,10 +97,9 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
     private var helpDisposable = CancelableJob()
     private var playDispose = CancelableJob()
 
-    @LayoutRes
-    override fun getNoMainContentView(): Int {
-        return R.layout.activity_story_pager
-    }
+    @get:LayoutRes
+    override val noMainContentView: Int
+        get() = R.layout.activity_story_pager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

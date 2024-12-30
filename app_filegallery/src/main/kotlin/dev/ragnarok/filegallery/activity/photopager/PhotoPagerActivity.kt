@@ -197,9 +197,11 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
             }
 
             Place.VIDEO_PLAYER -> {
-                val intent = Intent(this, VideoPlayerActivity::class.java)
-                intent.putExtras(args)
-                startActivity(intent)
+                val videoActivity = VideoPlayerActivity.newInstance(this, args)
+                place.launchActivityForResult(
+                    this,
+                    videoActivity
+                )
             }
         }
     }

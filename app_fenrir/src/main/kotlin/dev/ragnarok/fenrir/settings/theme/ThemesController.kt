@@ -105,24 +105,6 @@ object ThemesController {
             R.style.App_DayNight_Gray_MD1
         ),
         ThemeValue(
-            "blue_violet",
-            "#448AFF",
-            "#8500FF",
-            "Ice Violet",
-            R.style.App_DayNight_BlueViolet,
-            R.style.App_DayNight_BlueViolet_Amoled,
-            R.style.App_DayNight_BlueViolet_MD1
-        ).toast("#4D7198", "#448AFF"),
-        ThemeValue(
-            "blue_yellow",
-            "#448AFF",
-            "#FFA726",
-            "Ice Fire",
-            R.style.App_DayNight_BlueYellow,
-            R.style.App_DayNight_BlueYellow_Amoled,
-            R.style.App_DayNight_BlueYellow_MD1
-        ).toast("#4D7198", "#448AFF"),
-        ThemeValue(
             "yellow_violet",
             "#FF9800",
             "#8500FF",
@@ -130,24 +112,6 @@ object ThemesController {
             R.style.App_DayNight_YellowViolet,
             R.style.App_DayNight_YellowViolet_Amoled,
             R.style.App_DayNight_YellowViolet_MD1
-        ),
-        ThemeValue(
-            "violet_yellow",
-            "#8500FF",
-            "#FF9800",
-            "Violet Fire",
-            R.style.App_DayNight_VioletYellow,
-            R.style.App_DayNight_VioletYellow_Amoled,
-            R.style.App_DayNight_VioletYellow_MD1
-        ),
-        ThemeValue(
-            "violet_red",
-            "#9800FF",
-            "#F44336",
-            "Violet Red",
-            R.style.App_DayNight_VioletRed,
-            R.style.App_DayNight_VioletRed_Amoled,
-            R.style.App_DayNight_VioletRed_MD1
         ),
         ThemeValue(
             "red_violet",
@@ -204,24 +168,6 @@ object ThemesController {
             R.style.App_DayNight_PinkGray,
             R.style.App_DayNight_PinkGray_Amoled,
             R.style.App_DayNight_PinkGray_MD1
-        ),
-        ThemeValue(
-            "violet_green",
-            "#8500FF",
-            "#268000",
-            "Violet Green",
-            R.style.App_DayNight_VioletGreen,
-            R.style.App_DayNight_VioletGreen_Amoled,
-            R.style.App_DayNight_VioletGreen_MD1
-        ),
-        ThemeValue(
-            "green_violet",
-            "#268000",
-            "#8500FF",
-            "Green Violet",
-            R.style.App_DayNight_GreenViolet,
-            R.style.App_DayNight_GreenViolet_Amoled,
-            R.style.App_DayNight_GreenViolet_MD1
         ),
         ThemeValue(
             "violet_ice",

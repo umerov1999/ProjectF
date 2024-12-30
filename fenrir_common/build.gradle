@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace "dev.ragnarok.fenrir_common"
+    namespace = "dev.ragnarok.fenrir_common"
     compileSdk = appCompileSDK
     buildToolsVersion = appBuildTools
 

@@ -1,7 +1,8 @@
 #!/bin/bash
 SCRIPT_DIR=${PWD}
 cd ~/
-git clone https://git.ffmpeg.org/ffmpeg.git
+#git clone https://git.ffmpeg.org/ffmpeg.git
+git clone https://github.com/FFmpeg/FFmpeg ffmpeg
 cd ffmpeg
 git checkout release/7.1
 rm -r -f ".git"

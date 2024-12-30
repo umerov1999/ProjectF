@@ -21,7 +21,7 @@ class PhotoAlbumsActivity : NoMainActivity(), PlaceProvider {
             supportFragmentManager
                 .beginTransaction()
                 .setCustomAnimations(R.anim.fragment_enter, R.anim.fragment_exit)
-                .add(R.id.fragment, fragment)
+                .add(noMainContainerViewId, fragment)
                 .addToBackStack(null)
                 .commit()
         }
@@ -33,7 +33,7 @@ class PhotoAlbumsActivity : NoMainActivity(), PlaceProvider {
             supportFragmentManager
                 .beginTransaction()
                 .setCustomAnimations(R.anim.fragment_enter_pop, R.anim.fragment_exit_pop)
-                .replace(R.id.fragment, fragment)
+                .replace(noMainContainerViewId, fragment)
                 .addToBackStack("photos")
                 .commit()
         }

@@ -51,10 +51,9 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
     private var mButtonAddOrDelete: CircleCounterButton? = null
     private var mFullscreen = false
 
-    @LayoutRes
-    override fun getNoMainContentView(): Int {
-        return R.layout.fragment_gif_pager
-    }
+    @get:LayoutRes
+    override val noMainContentView: Int
+        get() = R.layout.fragment_gif_pager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

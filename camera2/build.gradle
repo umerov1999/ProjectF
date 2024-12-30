@@ -6,7 +6,7 @@ plugins {
 //1.4.1
 
 android {
-    namespace "androidx.camera"
+    namespace = "androidx.camera"
     compileSdk = appCompileSDK
     buildToolsVersion = appBuildTools
 
