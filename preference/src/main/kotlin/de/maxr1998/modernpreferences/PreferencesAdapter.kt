@@ -207,7 +207,9 @@ class PreferencesAdapter @VisibleForTesting constructor(
     init {
         // Necessary for testing, because setHasStableIds calls into an (in the stubbed android.jar)
         // uninitialized observer list which causes a NPE
-        if (hasStableIds) setHasStableIds(true)
+        if (hasStableIds) {
+            setHasStableIds(true)
+        }
         root?.let(::setRootScreen)
     }
 
@@ -233,7 +235,9 @@ class PreferencesAdapter @VisibleForTesting constructor(
     @VisibleForTesting
     @MainThread
     internal fun openScreen(screen: PreferenceScreen) {
-        if (onScreenChangeListener?.beforeScreenChange(screen) == false) return
+        if (onScreenChangeListener?.beforeScreenChange(screen) == false) {
+            return
+        }
 
         currentScreen.adapter = null
         screenStack.push(screen)
@@ -294,11 +298,9 @@ class PreferencesAdapter @VisibleForTesting constructor(
         }
 
         // Inflate preference widget
-        if (viewType > 0) layoutInflater.inflate(
-            viewType,
-            view.findViewById(R.id.map_widget_frame),
-            true
-        )
+        if (viewType > 0) {
+            layoutInflater.inflate(viewType, view.findViewById(R.id.map_widget_frame), true)
+        }
 
         return ViewHolder(viewType, view)
     }
@@ -316,7 +318,9 @@ class PreferencesAdapter @VisibleForTesting constructor(
         holder.itemView.setOnClickListener {
             if (pref is PreferenceScreen) {
                 openScreen(pref) // Navigate to sub screen
-            } else pref.performClick(holder)
+            } else {
+                pref.performClick(holder)
+            }
         }
         holder.itemView.setOnLongClickListener {
             pref.performLongClick(holder)
@@ -354,11 +358,14 @@ class PreferencesAdapter @VisibleForTesting constructor(
 
     private val scrollListener = object : RecyclerView.OnScrollListener() {
         override fun onScrollStateChanged(r: RecyclerView, state: Int) {
-            if (state == RecyclerView.SCROLL_STATE_IDLE) currentScreen.apply {
-                val layoutManager = r.layoutManager as LinearLayoutManager?
-                scrollPosition = layoutManager?.findFirstCompletelyVisibleItemPosition() ?: 0
-                scrollOffset =
-                    r.findViewHolderForAdapterPosition(scrollPosition)?.run { itemView.top } ?: 0
+            if (state == RecyclerView.SCROLL_STATE_IDLE) {
+                currentScreen.apply {
+                    val layoutManager = r.layoutManager as LinearLayoutManager?
+                    scrollPosition = layoutManager?.findFirstCompletelyVisibleItemPosition() ?: 0
+                    scrollOffset =
+                        r.findViewHolderForAdapterPosition(scrollPosition)?.run { itemView.top }
+                            ?: 0
+                }
             }
         }
     }
@@ -379,14 +386,19 @@ class PreferencesAdapter @VisibleForTesting constructor(
         val widgetFrame: ViewGroup? = itemView.findViewById(R.id.map_widget_frame)
         val widget: View? = widgetFrame?.getChildAt(0)
 
+        private val accentTextColor: ColorStateList
+
         init {
             // Apply accent text color via theme attribute from library or fallback to AppCompat
             val attrs =
                 intArrayOf(R.attr.mapAccentTextColor, androidx.appcompat.R.attr.colorPrimary)
-            val accentTextColor =
+            accentTextColor =
                 itemView.context.theme.obtainStyledAttributes(attrs).use { array ->
                     // Return first resolved attribute or null
-                    if (array.indexCount > 0) array.getColorStateList(array.getIndex(0)) else null
+                    when {
+                        array.indexCount > 0 -> array.getColorStateList(array.getIndex(0))
+                        else -> null
+                    }
                 }
                     ?: ColorStateList.valueOf(Color.BLACK) // fallback to black if no colorAccent is defined (unlikely)
 
@@ -395,9 +407,14 @@ class PreferencesAdapter @VisibleForTesting constructor(
                 AccentButtonPreference.RESOURCE_CONST -> title.setTextColor(accentTextColor)
             }
 
+            // Set initial badge color
+            setBadgeColor(null)
+        }
+
+        internal fun setBadgeColor(color: ColorStateList?) {
             badge?.apply {
-                setTextColor(accentTextColor)
-                backgroundTintList = accentTextColor
+                setTextColor(color ?: accentTextColor)
+                backgroundTintList = color ?: accentTextColor
                 backgroundTintMode = PorterDuff.Mode.SRC_ATOP
             }
         }

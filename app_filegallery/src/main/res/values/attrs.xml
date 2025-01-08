@@ -7,7 +7,6 @@
 
     <attr name="toolbar_left_icon_color" format="color" />
 
-    <attr name="fab_secondary" format="reference" />
     <attr name="fab_player" format="reference" />
 
     <attr name="messages_background_color" format="color" />

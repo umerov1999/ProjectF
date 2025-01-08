@@ -150,7 +150,10 @@ class EditTextPreference(key: String, fragmentManager: FragmentManager) :
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
             return MaterialAlertDialogBuilder(requireActivity()).apply {
                 val view = View.inflate(context, R.layout.map_preference_dialog_edittext, null)
-                if (titleRes != DISABLED_RESOURCE_ID) setTitle(titleRes) else setTitle(title)
+                when {
+                    titleRes != DISABLED_RESOURCE_ID -> setTitle(titleRes)
+                    else -> setTitle(title)
+                }
                 val editText = view.findViewById<TextInputEditText>(R.id.preference_edit).apply {
                     if (textInputType != InputType.TYPE_NULL) {
                         inputType = textInputType

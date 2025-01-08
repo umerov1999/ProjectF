@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textview.MaterialTextView
 import com.squareup.picasso3.BitmapTarget
 import com.squareup.picasso3.Picasso
@@ -180,7 +179,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         }
         mHeaderHolder?.ivVerified?.visibility =
             if (community.isVerified) View.VISIBLE else View.GONE
-        if (!details.canMessage) mHeaderHolder?.fabMessage?.setImageResource(R.drawable.close) else mHeaderHolder?.fabMessage?.setImageResource(
+        if (!details.canMessage) mHeaderHolder?.btnMessage?.setIconResource(R.drawable.close) else mHeaderHolder?.btnMessage?.setIconResource(
             R.drawable.email
         )
         val photoUrl = community.maxSquareAvatar
@@ -586,7 +585,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
             root.findViewById(R.id.header_group_primary_button)
         val secondaryActionButton: MaterialButton =
             root.findViewById(R.id.header_group_secondary_button)
-        val fabMessage: FloatingActionButton = root.findViewById(R.id.header_group_fab_message)
+        val btnMessage: MaterialButton = root.findViewById(R.id.header_group_btn_message)
         val mFiltersAdapter: HorizontalOptionsAdapter<PostFilter>
         val mMenuAdapter: HorizontalMenuAdapter
         val menuList: RecyclerView = root.findViewById(R.id.menu_recyclerview)
@@ -626,7 +625,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
             tvStatus.setOnClickListener {
                 presenter?.fireHeaderStatusClick()
             }
-            fabMessage.setOnClickListener {
+            btnMessage.setOnClickListener {
                 presenter?.fireChatClick()
             }
             secondaryActionButton.setOnClickListener {

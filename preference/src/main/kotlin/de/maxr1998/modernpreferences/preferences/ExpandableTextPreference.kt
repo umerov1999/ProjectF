@@ -63,9 +63,15 @@ class ExpandableTextPreference(key: String) : Preference(key) {
         }) as TextView
         widget.tag = tv
         tv.apply {
-            if (textRes != DISABLED_RESOURCE_ID) setText(textRes) else text =
-                this@ExpandableTextPreference.text
-            typeface = if (monospace) Typeface.MONOSPACE else Typeface.SANS_SERIF
+            when {
+                textRes != DISABLED_RESOURCE_ID -> setText(textRes)
+                else -> text =
+                    this@ExpandableTextPreference.text
+            }
+            typeface = when {
+                monospace -> Typeface.MONOSPACE
+                else -> Typeface.SANS_SERIF
+            }
             with(context.obtainStyledAttributes(intArrayOf(R.attr.expandableTextBackgroundColor))) {
                 setBackgroundColor(
                     getColor(

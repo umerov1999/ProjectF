@@ -4,6 +4,9 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
+import de.maxr1998.modernpreferences.helpers.readTypedObjectCompat
+import de.maxr1998.modernpreferences.helpers.writeTypedObjectCompat
+import de.maxr1998.modernpreferences.preferences.Badge
 
 /**
  * Represents a selectable item in a selection dialog preference,
@@ -19,13 +22,15 @@ data class SelectionItem(
     @StringRes
     val summaryRes: Int,
     val summary: CharSequence?,
+    val badgeInfo: Badge?
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readInt(),
         parcel.readString()!!,
         parcel.readInt(),
-        parcel.readString()
+        parcel.readString(),
+        parcel.readTypedObjectCompat(Badge.CREATOR)
     )
 
     /**
@@ -34,15 +39,26 @@ data class SelectionItem(
     constructor(
         key: String,
         @StringRes titleRes: Int,
-        @StringRes summaryRes: Int = DISABLED_RESOURCE_ID
-    ) :
-            this(key, titleRes, "", summaryRes, null)
+        @StringRes summaryRes: Int = DISABLED_RESOURCE_ID,
+        badgeInfo: Badge? = null
+    ) : this(key, titleRes, "", summaryRes, null, badgeInfo)
 
     /**
      * @see SelectionItem
      */
-    constructor(key: String, title: CharSequence, summary: CharSequence? = null) :
-            this(key, DISABLED_RESOURCE_ID, title, DISABLED_RESOURCE_ID, summary)
+    constructor(
+        key: String,
+        title: CharSequence,
+        summary: CharSequence? = null,
+        badgeInfo: Badge? = null
+    ) : this(
+        key,
+        DISABLED_RESOURCE_ID,
+        title,
+        DISABLED_RESOURCE_ID,
+        summary,
+        badgeInfo
+    )
 
     override fun describeContents(): Int {
         return 0
@@ -54,6 +70,7 @@ data class SelectionItem(
         dest.writeString(title.toString())
         dest.writeInt(summaryRes)
         dest.writeString(summary?.toString())
+        dest.writeTypedObjectCompat(badgeInfo, flags)
     }
 
     companion object CREATOR : Parcelable.Creator<SelectionItem> {

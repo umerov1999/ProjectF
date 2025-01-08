@@ -33,7 +33,7 @@
     <attr name="icon_color_inactive" format="color" />
     <attr name="toolbar_left_icon_color" format="color" />
 
-    <attr name="fab_secondary" format="reference" />
+    <attr name="button_secondary" format="reference" />
     <attr name="fab_player" format="reference" />
 
     <attr name="navi_menu_color" format="color" />

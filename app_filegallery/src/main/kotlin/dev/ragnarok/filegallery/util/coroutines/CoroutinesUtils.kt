@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 
 object CoroutinesUtils {
     val coroutineExceptionHandlerWithToast = CoroutineExceptionHandler { _, throwable ->
@@ -158,6 +159,14 @@ object CoroutinesUtils {
         return map {
             delay(timeMillis)
             it
+        }
+    }
+
+    inline fun <reified T> Flow<T>.timeOutFlow(timeMillis: Long): Flow<T> {
+        return map {
+            withTimeout(timeMillis) {
+                it
+            }
         }
     }
 

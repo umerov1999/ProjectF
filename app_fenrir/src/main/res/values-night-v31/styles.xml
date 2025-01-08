@@ -47,7 +47,7 @@
         <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.AppTheme.LargeComponent
         </item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButton</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondary.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondary</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonAudio</item>
         <item name="icon_color_active">@color/m3_ref_palette_dynamic_primary60</item>
         <item name="icon_color_inactive">#AAFF0000</item>

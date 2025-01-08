@@ -52,7 +52,7 @@
         <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.AppTheme.LargeComponent
         </item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButton</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondary.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondary</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonAudio</item>
         <item name="icon_color_active">#AA448AFF</item>
         <item name="icon_color_inactive">#AAFF0000</item>
@@ -465,7 +465,7 @@
     <style name="App.DayNight.Ice.Amoled" parent="App.DayNight.Ice">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -481,7 +481,7 @@
     <style name="App.DayNight.VioletIce.Amoled" parent="App.DayNight.VioletIce">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -497,7 +497,7 @@
     <style name="App.DayNight.BlueRed.Amoled" parent="App.DayNight.BlueRed">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -513,7 +513,7 @@
     <style name="App.DayNight.IceGreen.Amoled" parent="App.DayNight.IceGreen">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -529,7 +529,7 @@
     <style name="App.DayNight.OldIce.Amoled" parent="App.DayNight.OldIce">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -545,7 +545,7 @@
     <style name="App.DayNight.Cold.Amoled" parent="App.DayNight.Cold">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -561,7 +561,7 @@
     <style name="App.DayNight.ColdGreen.Amoled" parent="App.DayNight.ColdGreen">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -577,7 +577,7 @@
     <style name="App.DayNight.CoffeePistachio.Amoled" parent="App.DayNight.CoffeePistachio">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -593,7 +593,7 @@
     <style name="App.DayNight.ColdGold.Amoled" parent="App.DayNight.ColdGold">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -609,7 +609,7 @@
     <style name="App.DayNight.Fire.Amoled" parent="App.DayNight.Fire">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -625,7 +625,7 @@
     <style name="App.DayNight.Red.Amoled" parent="App.DayNight.Red">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -641,7 +641,7 @@
     <style name="App.DayNight.Contrast.Amoled" parent="App.DayNight.Contrast">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -657,7 +657,7 @@
     <style name="App.DayNight.RedViolet.Amoled" parent="App.DayNight.RedViolet">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -673,7 +673,7 @@
     <style name="App.DayNight.Violet.Amoled" parent="App.DayNight.Violet">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -689,7 +689,7 @@
     <style name="App.DayNight.YellowViolet.Amoled" parent="App.DayNight.YellowViolet">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -705,7 +705,7 @@
     <style name="App.DayNight.FuxiaNeonYellow.Amoled" parent="App.DayNight.FuxiaNeonYellow">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -721,7 +721,7 @@
     <style name="App.DayNight.FuxiaNeonViolet.Amoled" parent="App.DayNight.FuxiaNeonViolet">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -737,7 +737,7 @@
     <style name="App.DayNight.NeonYellowIce.Amoled" parent="App.DayNight.NeonYellowIce">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -753,7 +753,7 @@
     <style name="App.DayNight.Gray.Amoled" parent="App.DayNight.Gray">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -769,7 +769,7 @@
     <style name="App.DayNight.Orange.Amoled" parent="App.DayNight.Orange">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -785,7 +785,7 @@
     <style name="App.DayNight.OrangeGray.Amoled" parent="App.DayNight.OrangeGray">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -801,7 +801,7 @@
     <style name="App.DayNight.Green.Amoled" parent="App.DayNight.Green">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -817,7 +817,7 @@
     <style name="App.DayNight.VioletGray.Amoled" parent="App.DayNight.VioletGray">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -833,7 +833,7 @@
     <style name="App.DayNight.PinkGray.Amoled" parent="App.DayNight.PinkGray">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -849,7 +849,7 @@
     <style name="App.DayNight.Lineage.Amoled" parent="App.DayNight.Lineage">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -865,7 +865,7 @@
     <style name="App.DayNight.Dynamic.Amoled" parent="App.DayNight.Dynamic">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="chat_background_cookies">@drawable/cookies_black</item>
         <item name="chat_background_lines">@drawable/lines_black</item>
@@ -915,7 +915,7 @@
         </item>
         <item name="materialCardViewStyle">@style/Theme.MaterialCardView</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButton</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondary.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondary</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonAudio</item>
         <item name="icon_color_active">#AA448AFF</item>
         <item name="icon_color_inactive">#AAFF0000</item>
@@ -948,9 +948,14 @@
         <item name="tint">?colorSurface</item>
     </style>
 
-    <style name="Theme.FloatingActionButtonSecondaryAmoled.Small" parent="Widget.Material3.FloatingActionButton.Small.Secondary">
+    <style name="Theme.ButtonSecondaryAmoled" parent="Widget.Material3.Button.IconButton">
+        <item name="shapeAppearanceOverlay">@style/MyButton.shapeAppearance</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:textColor">?colorOnSurface</item>
+        <item name="iconTint">?colorSurface</item>
+        <item name="iconPadding">0dp</item>
         <item name="backgroundTint">?colorOnSurface</item>
-        <item name="tint">?colorSurface</item>
     </style>
 
     <style name="App.CrashError" parent="Base.App.DayNight">

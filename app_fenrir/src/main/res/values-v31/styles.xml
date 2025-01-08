@@ -24,7 +24,7 @@
         <item name="materialCardViewStyle">@style/Theme.MaterialCardView</item>
         <item name="badgeStyle">@style/Theme.BadgeStyle</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButton</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondary.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondary</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondary</item>
 
         <item name="materialCardStyle">@style/CardViewMD2</item>

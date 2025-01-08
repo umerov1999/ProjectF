@@ -153,48 +153,55 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="12dp"
+                android:layout_marginEnd="8dp"
                 android:baselineAligned="false"
-                android:gravity="end"
+                android:gravity="center"
                 android:orientation="horizontal">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/header_group_primary_button"
-                    style="@style/MyOutlinedButton"
+                <com.google.android.material.button.MaterialSplitButton
+                    style="@style/MySplitButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:insetTop="3dp"
-                    android:insetBottom="3dp"
-                    android:textSize="12sp"
-                    app:backgroundTint="@color/button_profile_tint"
-                    tools:text="Primary" />
+                    android:layout_weight="1">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/header_group_primary_button"
+                        style="@style/MyOutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:insetTop="3dp"
+                        android:insetBottom="3dp"
+                        android:textSize="12sp"
+                        app:backgroundTint="@color/button_profile_tint"
+                        tools:text="Primary" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/header_group_btn_message"
+                        style="?attr/materialSplitButtonIconFilledStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:insetTop="3dp"
+                        android:insetBottom="3dp"
+                        android:minWidth="56dp"
+                        app:icon="@drawable/email" />
+
+                </com.google.android.material.button.MaterialSplitButton>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/header_group_secondary_button"
                     style="@style/MyOutlinedButton"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_weight="1"
                     android:insetTop="3dp"
                     android:insetBottom="3dp"
                     android:textSize="12sp"
                     app:backgroundTint="@color/button_profile_tint"
                     tools:text="Secondary" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/header_group_fab_message"
-                    style="?attr/fab_secondary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:contentDescription="@null"
-                    android:src="@drawable/email"
-                    app:elevation="1dp"
-                    app:fabSize="mini" />
             </LinearLayout>
 
         </LinearLayout>

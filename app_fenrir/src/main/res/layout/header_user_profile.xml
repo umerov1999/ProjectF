@@ -175,39 +175,47 @@
                 android:gravity="center"
                 android:orientation="horizontal">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/subscribe_btn"
-                    style="@style/MyOutlinedButton"
+                <com.google.android.material.button.MaterialSplitButton
+                    style="@style/MySplitButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/subscribe_btn"
+                        style="@style/MyOutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:insetTop="3dp"
+                        android:insetBottom="3dp"
+                        android:textSize="12sp"
+                        app:backgroundTint="@color/button_profile_tint"
+                        tools:text="Subscribe" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/header_user_profile_btn_message"
+                        style="?attr/materialSplitButtonIconFilledStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:insetTop="3dp"
+                        android:insetBottom="3dp"
+                        android:minWidth="56dp"
+                        app:icon="@drawable/email" />
+
+                </com.google.android.material.button.MaterialSplitButton>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/info_btn"
+                    style="?button_secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_weight="1"
                     android:insetTop="3dp"
                     android:insetBottom="3dp"
-                    android:textSize="12sp"
-                    app:backgroundTint="@color/button_profile_tint"
-                    tools:text="Subscribe" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/header_user_profile_fab_message"
-                    style="@style/Widget.Material3.FloatingActionButton.Small.Surface"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:contentDescription="@null"
-                    android:src="@drawable/email"
-                    app:elevation="1dp" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/info_btn"
-                    style="?attr/fab_secondary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:contentDescription="@null"
-                    android:src="@drawable/about_writed"
-                    app:elevation="1dp" />
+                    android:minWidth="24dp"
+                    app:icon="@drawable/about_writed" />
 
             </LinearLayout>
 

@@ -52,7 +52,6 @@
         <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.AppTheme.LargeComponent
         </item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButton</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondary</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonAudio</item>
 
         <item name="dividerColor">#313131</item>
@@ -396,7 +395,6 @@
     <style name="App.DayNight.Ice.Amoled" parent="App.DayNight.Ice">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="colorBackgroundFloating">@android:color/black</item>
@@ -409,7 +407,6 @@
     <style name="App.DayNight.VioletIce.Amoled" parent="App.DayNight.VioletIce">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="colorBackgroundFloating">@android:color/black</item>
@@ -422,7 +419,6 @@
     <style name="App.DayNight.BlueRed.Amoled" parent="App.DayNight.BlueRed">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="colorBackgroundFloating">@android:color/black</item>
@@ -435,7 +431,6 @@
     <style name="App.DayNight.IceGreen.Amoled" parent="App.DayNight.IceGreen">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="colorBackgroundFloating">@android:color/black</item>
@@ -448,7 +443,6 @@
     <style name="App.DayNight.OldIce.Amoled" parent="App.DayNight.OldIce">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>
@@ -462,7 +456,6 @@
     <style name="App.DayNight.Cold.Amoled" parent="App.DayNight.Cold">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>
@@ -476,7 +469,6 @@
     <style name="App.DayNight.ColdGreen.Amoled" parent="App.DayNight.ColdGreen">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>
@@ -490,7 +482,6 @@
     <style name="App.DayNight.CoffeePistachio.Amoled" parent="App.DayNight.CoffeePistachio">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>
@@ -504,7 +495,6 @@
     <style name="App.DayNight.ColdGold.Amoled" parent="App.DayNight.ColdGold">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>
@@ -518,7 +508,6 @@
     <style name="App.DayNight.Fire.Amoled" parent="App.DayNight.Fire">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>
@@ -532,7 +521,6 @@
     <style name="App.DayNight.Red.Amoled" parent="App.DayNight.Red">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>
@@ -546,7 +534,6 @@
     <style name="App.DayNight.Contrast.Amoled" parent="App.DayNight.Contrast">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>
@@ -560,7 +547,6 @@
     <style name="App.DayNight.RedViolet.Amoled" parent="App.DayNight.RedViolet">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>
@@ -574,7 +560,6 @@
     <style name="App.DayNight.Violet.Amoled" parent="App.DayNight.Violet">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>
@@ -588,7 +573,6 @@
     <style name="App.DayNight.YellowViolet.Amoled" parent="App.DayNight.YellowViolet">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>
@@ -602,7 +586,6 @@
     <style name="App.DayNight.FuxiaNeonYellow.Amoled" parent="App.DayNight.FuxiaNeonYellow">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>
@@ -616,7 +599,6 @@
     <style name="App.DayNight.FuxiaNeonViolet.Amoled" parent="App.DayNight.FuxiaNeonViolet">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>
@@ -630,7 +612,6 @@
     <style name="App.DayNight.NeonYellowIce.Amoled" parent="App.DayNight.NeonYellowIce">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>
@@ -644,7 +625,6 @@
     <style name="App.DayNight.Gray.Amoled" parent="App.DayNight.Gray">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>
@@ -658,9 +638,8 @@
     <style name="App.DayNight.Orange.Amoled" parent="App.DayNight.Orange">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
-        <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
+        <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="colorBackgroundFloating">@android:color/black</item>
         <item name="colorOnBackground">#000000</item>
@@ -672,9 +651,8 @@
     <style name="App.DayNight.OrangeGray.Amoled" parent="App.DayNight.OrangeGray">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
-        <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
+        <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="colorBackgroundFloating">@android:color/black</item>
         <item name="colorOnBackground">#000000</item>
@@ -686,7 +664,6 @@
     <style name="App.DayNight.Green.Amoled" parent="App.DayNight.Green">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>
@@ -700,7 +677,6 @@
     <style name="App.DayNight.VioletGray.Amoled" parent="App.DayNight.VioletGray">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>
@@ -714,7 +690,6 @@
     <style name="App.DayNight.PinkGray.Amoled" parent="App.DayNight.PinkGray">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>
@@ -728,7 +703,6 @@
     <style name="App.DayNight.Lineage.Amoled" parent="App.DayNight.Lineage">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>
@@ -742,7 +716,6 @@
     <style name="App.DayNight.Dynamic.Amoled" parent="App.DayNight.Dynamic">
         <item name="dividerColor">#151515</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButtonAmoled</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondaryAmoled</item>
 
         <item name="android:colorBackground">@android:color/black</item>

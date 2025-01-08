@@ -35,6 +35,7 @@ import de.maxr1998.modernpreferences.helpers.DependencyManager
 import de.maxr1998.modernpreferences.helpers.KEY_ROOT_SCREEN
 import de.maxr1998.modernpreferences.helpers.PreferenceMarker
 import de.maxr1998.modernpreferences.preferences.AccentButtonPreference
+import de.maxr1998.modernpreferences.preferences.Badge
 import de.maxr1998.modernpreferences.preferences.CheckBoxPreference
 import de.maxr1998.modernpreferences.preferences.CollapsePreference
 import de.maxr1998.modernpreferences.preferences.ColorPickPreference
@@ -88,9 +89,7 @@ abstract class AbstractPreference internal constructor(val key: String) {
         iconRes = DISABLED_RESOURCE_ID
     }
 
-    @StringRes
-    var badgeRes: Int = DISABLED_RESOURCE_ID
-    var badge: CharSequence? = null
+    var badgeInfo: Badge? = null
 
     // State
     var visible = true
@@ -105,8 +104,7 @@ abstract class AbstractPreference internal constructor(val key: String) {
         summaryDisabledRes = other.summaryDisabledRes
         icon = other.icon
         iconRes = other.iconRes
-        badge = other.badge
-        badgeRes = other.badgeRes
+        badgeInfo = other.badgeInfo?.copy()
 
         visible = other.visible
         collapsed = other.collapsed
@@ -257,9 +255,11 @@ open class Preference(key: String) : AbstractPreference(key) {
 
     internal fun attachToScreen(screen: PreferenceScreen, position: Int) {
         check(parent == null) { "Preference was already attached to a screen!" }
+
         parent = screen
         screenPosition = position
         prefs = if (persistent) screen.prefs else null
+
         DependencyManager.register(this)
         onAttach()
     }
@@ -300,8 +300,10 @@ open class Preference(key: String) : AbstractPreference(key) {
 
         preBindListener?.onPreBind(this, holder)
 
-        holder.itemView.layoutParams.height =
-            if (visible && !collapsed) ViewGroup.LayoutParams.WRAP_CONTENT else 0
+        holder.itemView.layoutParams.height = when {
+            visible && !collapsed -> ViewGroup.LayoutParams.WRAP_CONTENT
+            else -> 0
+        }
         if (!visible || collapsed) {
             holder.itemView.isVisible = false
             return
@@ -325,8 +327,10 @@ open class Preference(key: String) : AbstractPreference(key) {
         holder.iconFrame.apply {
             isVisible = itemVisible || !preferenceParent.collapseIcon
             if (isVisible && this is LinearLayout) {
-                gravity =
-                    if (preferenceParent.centerIcon) Gravity.CENTER else Gravity.START or Gravity.CENTER_VERTICAL
+                gravity = when {
+                    preferenceParent.centerIcon -> Gravity.CENTER
+                    else -> Gravity.START or Gravity.CENTER_VERTICAL
+                }
             }
         }
         holder.title.apply {
@@ -339,17 +343,18 @@ open class Preference(key: String) : AbstractPreference(key) {
             maxLines = Config.summaryMaxLines
             isVisible = summary != null
         }
-        holder.badge?.apply {
-            itemVisible = true
-            when {
-                badgeRes != DISABLED_RESOURCE_ID -> setText(badgeRes)
-                badge != null -> text = badge
-                else -> {
-                    text = null
-                    itemVisible = false
+        val badgeInfo = badgeInfo
+        if (badgeInfo != null) {
+            holder.badge?.apply {
+                when {
+                    badgeInfo.textRes != DISABLED_RESOURCE_ID -> setText(badgeInfo.textRes)
+                    else -> text = badgeInfo.text
                 }
+                isVisible = badgeInfo.isVisible
             }
-            isVisible = itemVisible
+            holder.setBadgeColor(badgeInfo.badgeColor)
+        } else {
+            holder.badge?.isVisible = false
         }
         holder.widgetFrame?.apply {
             isVisible = childCount > 0 && this@Preference !is SeekBarPreference
@@ -380,7 +385,9 @@ open class Preference(key: String) : AbstractPreference(key) {
 
     internal fun performClick(holder: PreferencesAdapter.ViewHolder) {
         onClick(holder)
-        if (clickListener?.onClick(this, holder) == true) bindViews(holder)
+        if (clickListener?.onClick(this, holder) == true) {
+            bindViews(holder)
+        }
     }
 
     internal fun performLongClick(holder: PreferencesAdapter.ViewHolder): Boolean {
@@ -410,6 +417,10 @@ open class Preference(key: String) : AbstractPreference(key) {
 
     open fun onClick(holder: PreferencesAdapter.ViewHolder) {}
 
+    fun hasValue(): Boolean {
+        return prefs?.contains(key) == true
+    }
+
     open fun onLongClick(holder: PreferencesAdapter.ViewHolder): Boolean {
         if (inSearchParentStory != null) {
             Snackbar.make(holder.itemView, inSearchParentStory.orEmpty(), LENGTH_LONG).show()
@@ -427,8 +438,9 @@ open class Preference(key: String) : AbstractPreference(key) {
         }
     }
 
-    fun getInt(defaultValue: Int): Int =
-        prefs?.getInt(key, defaultValue) ?: defaultValue
+    fun getInt(defaultValue: Int): Int {
+        return prefs?.getInt(key, defaultValue) ?: defaultValue
+    }
 
     /**
      * Save a boolean for this [Preference]s' [key] to the [SharedPreferences] of the attached [PreferenceScreen]
@@ -439,8 +451,9 @@ open class Preference(key: String) : AbstractPreference(key) {
         }
     }
 
-    fun getBoolean(defaultValue: Boolean): Boolean =
-        prefs?.getBoolean(key, defaultValue) ?: defaultValue
+    fun getBoolean(defaultValue: Boolean): Boolean {
+        return prefs?.getBoolean(key, defaultValue) ?: defaultValue
+    }
 
     /**
      * Save a String for this [Preference]s' [key] to the [SharedPreferences] of the attached [PreferenceScreen]
@@ -451,7 +464,9 @@ open class Preference(key: String) : AbstractPreference(key) {
         }
     }
 
-    fun getString(): String? = prefs?.getString(key, null)
+    fun getString(): String? {
+        return prefs?.getString(key, null)
+    }
 
     @Deprecated(
         "Passing a default value is not supported anymore, " +
@@ -468,7 +483,9 @@ open class Preference(key: String) : AbstractPreference(key) {
         }
     }
 
-    fun getStringSet(): Set<String>? = prefs?.getStringSet(key, null)
+    fun getStringSet(): Set<String>? {
+        return prefs?.getStringSet(key, null)
+    }
 
     /**
      * Can be set to [Preference.preBindListener]
@@ -557,8 +574,9 @@ class PreferenceScreen internal constructor(builder: Builder) : Preference(build
 
     init {
         copyAbstract(builder)
-        for (i in preferences.indices)
+        for (i in preferences.indices) {
             preferences[i].attachToScreen(this, i)
+        }
     }
 
     fun getPreferenceList(): List<Preference> {
@@ -601,7 +619,9 @@ class PreferenceScreen internal constructor(builder: Builder) : Preference(build
      */
     fun requestRebind(key: String) {
         val index = indexOf(key)
-        if (index > 0) requestRebind(index)
+        if (index > 0) {
+            requestRebind(index)
+        }
     }
 
     internal fun requestRebind(position: Int, itemCount: Int = 1) {

@@ -1,9 +1,7 @@
 package de.maxr1998.modernpreferences.preferences.choice
 
 import android.app.Dialog
-import android.os.Build
 import android.os.Bundle
-import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
@@ -12,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.maxr1998.modernpreferences.PreferencesExtra
 import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
+import de.maxr1998.modernpreferences.helpers.getParcelableArrayListCompat
 import de.maxr1998.modernpreferences.preferences.DialogPreference
 
 abstract class AbstractChoiceDialogPreference(
@@ -47,17 +46,12 @@ abstract class AbstractChoiceDialogPreference(
     abstract fun resetSelection()
 
     abstract class AbsChooseDialog : DialogFragment() {
-        @Suppress("deprecation")
-        private inline fun <reified T : Parcelable> Bundle.getParcelableArrayListCompat(key: String): ArrayList<T>? {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                getParcelableArrayList(key, T::class.java)
-            } else {
-                getParcelableArrayList(key)
-            }
-        }
-
         protected abstract fun commit()
         protected abstract val allowMultiSelect: Boolean
+
+        internal fun shouldSelect(item: SelectionItem): Boolean {
+            return onItemClickListener?.onItemSelected(item) != false
+        }
 
         internal abstract fun select(item: SelectionItem)
         abstract fun isSelected(item: SelectionItem): Boolean
@@ -68,6 +62,8 @@ abstract class AbstractChoiceDialogPreference(
         @StringRes
         private var titleRes: Int = DISABLED_RESOURCE_ID
         protected var selectionAdapter: SelectionAdapter? = null
+
+        var onItemClickListener: OnItemClickListener? = null
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)

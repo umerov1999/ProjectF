@@ -47,7 +47,9 @@ class MultiChoiceDialogPreference(
         if (selectionBeforeChangeListener?.onSelectionBeforeChange(this, resultSet) != false) {
             commitStringSet(resultSet)
             selections.clear()
-            selections += p.mapNotNull { key -> items.find { (key1, _, _, _, _) -> key1 == key } }
+            selections += p.mapNotNull { key ->
+                items.find { (key1, _, _, _, _) -> key1 == key }
+            }
             requestRebind()
             selectionAfterChangeListener?.onSelectionAfterChange(this, resultSet)
         }
@@ -56,7 +58,9 @@ class MultiChoiceDialogPreference(
     override fun resetSelection() {
         val persisted = getStringSet() ?: initialSelections?.toList() ?: emptyList()
         selections.clear()
-        selections += persisted.mapNotNull { key -> items.find { (key1, _, _, _, _) -> key1 == key } }
+        selections += persisted.mapNotNull { key ->
+            items.find { (key1, _, _, _, _) -> key1 == key }
+        }
     }
 
     override fun createAndShowDialogFragment() {

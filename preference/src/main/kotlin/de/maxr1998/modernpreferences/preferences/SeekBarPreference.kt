@@ -21,14 +21,13 @@ import android.widget.Space
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
+import com.google.android.material.slider.Slider
 import de.maxr1998.modernpreferences.Preference
 import de.maxr1998.modernpreferences.PreferencesAdapter
 import de.maxr1998.modernpreferences.R
 import de.maxr1998.modernpreferences.helpers.onSeek
-import de.maxr1998.modernpreferences.views.ModernSeekBar
 
 class SeekBarPreference(key: String) : Preference(key) {
-
     var min = 0
     var max = 0
     var default: Int? = null
@@ -102,14 +101,15 @@ class SeekBarPreference(key: String) : Preference(key) {
         val sb = (widget?.tag
             ?: LayoutInflater.from(widget?.context)
                 .inflate(R.layout.map_preference_widget_seekbar, holder.root)
-                .findViewById(android.R.id.progress)) as ModernSeekBar?
+                .findViewById(android.R.id.progress)) as Slider?
         val tv = (sb?.tag ?: holder.itemView.findViewById(R.id.progress_text)) as TextView?
         widget?.tag = sb?.apply {
             isEnabled = enabled
-            max = calcRaw(this@SeekBarPreference.max)
-            progress = calcRaw(valueInternal)
-            hasTickMarks = showTickMarks
-            this@SeekBarPreference.default?.let { default = calcRaw(it) }
+            valueTo = max.toFloat()
+            value = valueInternal.toFloat()
+            valueFrom = min.toFloat()
+            stepSize = step.toFloat()
+            isTickVisible = showTickMarks
 
             onSeek { v, done ->
                 if (done) {
@@ -117,14 +117,13 @@ class SeekBarPreference(key: String) : Preference(key) {
                     commitInt(valueInternal)
                     seekAfterListener?.onSeekAfter(this@SeekBarPreference, v)
                 } else {
-                    val next = calcValue(v)
                     // Check if listener allows the value change
-                    if (seekBeforeListener?.onSeekBefore(this@SeekBarPreference, next) != false) {
+                    if (seekBeforeListener?.onSeekBefore(this@SeekBarPreference, v) != false) {
                         // Update internal value
-                        valueInternal = next
+                        valueInternal = v
                     } else {
                         // Restore previous value
-                        progress = calcRaw(valueInternal)
+                        value = valueInternal.toFloat()
                     }
                     // Update preview text
                     tv?.text = formatter(valueInternal)
@@ -136,9 +135,6 @@ class SeekBarPreference(key: String) : Preference(key) {
             text = formatter(valueInternal)
         }
     }
-
-    private fun calcRaw(value: Int) = (value - min) / step
-    private fun calcValue(raw: Int) = min + raw * step
 
     fun interface OnSeekAfterListener {
         fun onSeekAfter(

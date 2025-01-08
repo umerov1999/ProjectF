@@ -30,9 +30,12 @@ abstract class TwoStatePreference(key: String) : StatefulPreference(key) {
         get() = checkedInternal
         set(value) {
             checkNotNull(parent) {
-                "Setting the checked value before the preference was attached isn't supported. Consider using `defaultValue` instead."
+                "Setting the checked value before the preference was attached isn't supported. " +
+                        "Consider using `defaultValue` instead."
             }
-            if (value != checkedInternal) updateState(null, value)
+            if (value != checkedInternal) {
+                updateState(null, value)
+            }
         }
 
     /**
@@ -91,8 +94,12 @@ abstract class TwoStatePreference(key: String) : StatefulPreference(key) {
             if (holder != null) {
                 if (summaryOnRes != DISABLED_RESOURCE_ID || summaryOn != null) {
                     bindViews(holder)
-                } else updateButton(holder)
-            } else requestRebind()
+                } else {
+                    updateButton(holder)
+                }
+            } else {
+                requestRebind()
+            }
             publishState()
             checkedAfterChangeListener?.onCheckedAfterChanged(this, holder, new)
         }
@@ -101,11 +108,10 @@ abstract class TwoStatePreference(key: String) : StatefulPreference(key) {
     private fun updateButton(holder: PreferencesAdapter.ViewHolder) {
         holder.icon?.drawable?.apply {
             if (this is StateListDrawable) {
-                setState(
-                    if (checkedInternal) intArrayOf(android.R.attr.state_checked) else IntArray(
-                        0
-                    )
-                )
+                state = when {
+                    checkedInternal -> intArrayOf(android.R.attr.state_checked)
+                    else -> IntArray(0)
+                }
             }
         }
         (holder.widget as CompoundButton?)?.isChecked = checkedInternal

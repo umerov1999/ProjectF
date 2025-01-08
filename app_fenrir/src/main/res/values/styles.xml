@@ -28,7 +28,7 @@
         <item name="materialCardViewStyle">@style/Theme.MaterialCardView</item>
         <item name="badgeStyle">@style/Theme.BadgeStyle</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButton</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondary.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondary</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondary</item>
 
         <item name="materialCardStyle">@style/CardViewMD2</item>
@@ -683,7 +683,7 @@
         </item>
         <item name="materialCardViewStyle">@style/Theme.MaterialCardView</item>
         <item name="floatingActionButtonStyle">@style/Theme.FloatingActionButton</item>
-        <item name="fab_secondary">@style/Theme.FloatingActionButtonSecondary.Small</item>
+        <item name="button_secondary">@style/Theme.ButtonSecondary</item>
         <item name="fab_player">@style/Theme.FloatingActionButtonSecondary</item>
         <item name="dialogs_unread_color">#20b0b0b0</item>
         <item name="navi_menu_selector">@drawable/list_selector_white</item>
@@ -798,9 +798,14 @@
         <item name="tint">@color/white</item>
     </style>
 
-    <style name="Theme.FloatingActionButtonSecondary.Small" parent="Widget.Material3.FloatingActionButton.Small.Secondary">
+    <style name="Theme.ButtonSecondary" parent="Widget.Material3.Button.IconButton">
+        <item name="shapeAppearanceOverlay">@style/MyButton.shapeAppearance</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="iconTint">@color/white</item>
+        <item name="iconPadding">0dp</item>
         <item name="backgroundTint">?colorSecondary</item>
-        <item name="tint">@color/white</item>
     </style>
 
     <style name="Theme.FloatingActionButtonAudio" parent="Widget.Material3.FloatingActionButton.Primary">
@@ -892,6 +897,15 @@
 
     <style name="Widget.MPM.Item" parent="">
         <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="MySplitButton" parent="Widget.Material3.MaterialButtonGroup.Connected">
+        <item name="android:spacing">2dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="innerCornerSize">@xml/m3_split_button_inner_corner_size_state_list</item>
+        <item name="buttonSizeChange">@null</item>
+        <item name="shapeAppearance">@style/MyButton.shapeAppearance</item>
     </style>
 
     <style name="MyOutlinedButton" parent="Widget.Material3.Button.OutlinedButton">

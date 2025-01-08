@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginBottom="5dp"
@@ -20,7 +21,8 @@
             android:gravity="center_horizontal"
             android:text="@string/slidr_vertical_settings"
             android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
-            android:textSize="22sp" />
+            android:textColor="?colorPrimary"
+            android:textSize="18sp" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/text_vertical_sensitive"
@@ -28,15 +30,19 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
-        <androidx.appcompat.widget.AppCompatSeekBar
+        <com.google.android.material.slider.Slider
             android:id="@+id/edit_vertical_sensitive"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:max="200"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:progress="80" />
+            android:stepSize="1.0"
+            android:value="80.0"
+            android:valueFrom="0.0"
+            android:valueTo="200.0"
+            app:thumbHeight="24dp"
+            app:trackHeight="8dp" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/text_vertical_velocity_threshold"
@@ -44,15 +50,19 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
-        <androidx.appcompat.widget.AppCompatSeekBar
+        <com.google.android.material.slider.Slider
             android:id="@+id/edit_vertical_velocity_threshold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:max="100"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:progress="50" />
+            android:stepSize="1.0"
+            android:value="50.0"
+            android:valueFrom="0.0"
+            android:valueTo="100.0"
+            app:thumbHeight="24dp"
+            app:trackHeight="8dp" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/text_vertical_distance_threshold"
@@ -60,15 +70,19 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
-        <androidx.appcompat.widget.AppCompatSeekBar
+        <com.google.android.material.slider.Slider
             android:id="@+id/edit_vertical_distance_threshold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:max="100"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:progress="50" />
+            android:stepSize="1.0"
+            android:value="50.0"
+            android:valueFrom="0.0"
+            android:valueTo="100.0"
+            app:thumbHeight="24dp"
+            app:trackHeight="8dp" />
 
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="match_parent"
@@ -77,7 +91,8 @@
             android:gravity="center_horizontal"
             android:text="@string/slidr_horizontal_settings"
             android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
-            android:textSize="22sp" />
+            android:textColor="?colorPrimary"
+            android:textSize="18sp" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/text_horizontal_sensitive"
@@ -85,15 +100,19 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
-        <androidx.appcompat.widget.AppCompatSeekBar
+        <com.google.android.material.slider.Slider
             android:id="@+id/edit_horizontal_sensitive"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:max="200"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:progress="50" />
+            android:stepSize="1.0"
+            android:value="50.0"
+            android:valueFrom="0.0"
+            android:valueTo="200.0"
+            app:thumbHeight="24dp"
+            app:trackHeight="8dp" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/text_horizontal_velocity_threshold"
@@ -101,15 +120,19 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
-        <androidx.appcompat.widget.AppCompatSeekBar
+        <com.google.android.material.slider.Slider
             android:id="@+id/edit_horizontal_velocity_threshold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:max="100"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:progress="50" />
+            android:stepSize="1.0"
+            android:value="50.0"
+            android:valueFrom="0.0"
+            android:valueTo="100.0"
+            app:thumbHeight="24dp"
+            app:trackHeight="8dp" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/text_horizontal_distance_threshold"
@@ -117,14 +140,18 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
 
-        <androidx.appcompat.widget.AppCompatSeekBar
+        <com.google.android.material.slider.Slider
             android:id="@+id/edit_horizontal_distance_threshold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:max="100"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:progress="50" />
+            android:stepSize="1.0"
+            android:value="50.0"
+            android:valueFrom="0.0"
+            android:valueTo="100.0"
+            app:thumbHeight="24dp"
+            app:trackHeight="8dp" />
     </LinearLayout>
 </ScrollView>

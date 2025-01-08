@@ -16,7 +16,11 @@
 
 package de.maxr1998.modernpreferences.helpers
 
-import android.widget.SeekBar
+import android.os.Build
+import android.os.Bundle
+import android.os.Parcel
+import android.os.Parcelable
+import com.google.android.material.slider.Slider
 
 const val KEY_ROOT_SCREEN = "root"
 
@@ -25,18 +29,45 @@ const val KEY_ROOT_SCREEN = "root"
  */
 const val DISABLED_RESOURCE_ID = -1
 
-internal fun SeekBar.onSeek(callback: (Int, Boolean) -> Unit) {
-    setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-        @Suppress("EmptyFunctionBlock")
-        override fun onStartTrackingTouch(seekBar: SeekBar) {
-        }
+internal fun Slider.onSeek(callback: (Int, Boolean) -> Unit) {
+    addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
+        override fun onStartTrackingTouch(slider: Slider) {}
 
-        override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-            if (fromUser) callback(progress, false)
-        }
-
-        override fun onStopTrackingTouch(seekBar: SeekBar) {
-            callback(seekBar.progress, true)
+        override fun onStopTrackingTouch(slider: Slider) {
+            callback(slider.value.toInt(), true)
         }
     })
+
+    addOnChangeListener { slider, value, fromUser ->
+        if (fromUser) callback(value.toInt(), false)
+    }
+}
+
+internal inline fun <reified T : Parcelable> Parcel.readTypedObjectCompat(c: Parcelable.Creator<T>): T? {
+    return if (readInt() != 0) {
+        c.createFromParcel(this)
+    } else {
+        null
+    }
+}
+
+internal inline fun <reified T : Parcelable> Parcel.writeTypedObjectCompat(
+    parcel: T?,
+    parcelableFlags: Int
+) {
+    if (parcel != null) {
+        writeInt(1)
+        parcel.writeToParcel(this, parcelableFlags)
+    } else {
+        writeInt(0)
+    }
+}
+
+@Suppress("deprecation")
+internal inline fun <reified T : Parcelable> Bundle.getParcelableArrayListCompat(key: String): ArrayList<T>? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        getParcelableArrayList(key, T::class.java)
+    } else {
+        getParcelableArrayList(key)
+    }
 }

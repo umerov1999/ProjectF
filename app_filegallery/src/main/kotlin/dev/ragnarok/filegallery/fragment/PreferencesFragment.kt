@@ -14,18 +14,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.widget.SeekBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.materialswitch.MaterialSwitch
+import com.google.android.material.slider.Slider
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
@@ -814,6 +813,9 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                                 "OplusOS"
                             ).absolutePath || sel.absolutePath == File(
                                 Environment.getExternalStorageDirectory(),
+                                "ThemeStore"
+                            ).absolutePath || sel.absolutePath == File(
+                                Environment.getExternalStorageDirectory(),
                                 ".time"
                             ).absolutePath || sel.absolutePath == File(
                                 Environment.getExternalStorageDirectory(),
@@ -1019,57 +1021,30 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 view.findViewById(R.id.edit_invert_rotation)
             val fadeSaturation: MaterialSwitch =
                 view.findViewById(R.id.edit_fade_saturation)
-            val rotationSpeed = view.findViewById<AppCompatSeekBar>(R.id.edit_rotation_speed)
-            val zoom = view.findViewById<AppCompatSeekBar>(R.id.edit_zoom)
-            val blur = view.findViewById<AppCompatSeekBar>(R.id.edit_blur)
+            val rotationSpeed = view.findViewById<Slider>(R.id.edit_rotation_speed)
+            val zoom = view.findViewById<Slider>(R.id.edit_zoom)
+            val blur = view.findViewById<Slider>(R.id.edit_blur)
             val textRotationSpeed: MaterialTextView =
                 view.findViewById(R.id.text_rotation_speed)
             val textZoom: MaterialTextView = view.findViewById(R.id.text_zoom)
             val textBlur: MaterialTextView = view.findViewById(R.id.text_blur)
-            zoom.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
-                    textZoom.text = getString(R.string.rotate_scale, progress)
-                }
-
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-            })
-            rotationSpeed.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
-                    textRotationSpeed.text = getString(R.string.rotate_speed, progress)
-                }
-
-                override fun onStartTrackingTouch(seekBar: SeekBar) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar) {}
-            })
-            blur.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
-                    textBlur.text = getString(R.string.player_blur, progress)
-                }
-
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-            })
+            zoom.addOnChangeListener { slider, value, fromUser ->
+                textZoom.text = getString(R.string.rotate_scale, value.toInt())
+            }
+            rotationSpeed.addOnChangeListener { slider, value, fromUser ->
+                textRotationSpeed.text = getString(R.string.rotate_speed, value.toInt())
+            }
+            blur.addOnChangeListener { slider, value, fromUser ->
+                textBlur.text = getString(R.string.player_blur, value.toInt())
+            }
             val settings = Settings.get()
                 .main().playerCoverBackgroundSettings
             enabledRotation.isChecked = settings.enabled_rotation
             invertRotation.isChecked = settings.invert_rotation
             fadeSaturation.isChecked = settings.fade_saturation
-            blur.progress = settings.blur
-            rotationSpeed.progress = (settings.rotation_speed * 10).toInt()
-            zoom.progress = ((settings.zoom - 1) * 10).toInt()
+            blur.value = settings.blur.toFloat()
+            rotationSpeed.value = (settings.rotation_speed * 10).toInt().toFloat()
+            zoom.value = ((settings.zoom - 1) * 10).toInt().toFloat()
             textZoom.text =
                 getString(R.string.rotate_scale, ((settings.zoom - 1) * 10).toInt())
             textRotationSpeed.text =
@@ -1091,12 +1066,12 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 }
                 .setPositiveButton(R.string.button_ok) { _, _ ->
                     val st = PlayerCoverBackgroundSettings()
-                    st.blur = blur.progress
+                    st.blur = blur.value.toInt()
                     st.invert_rotation = invertRotation.isChecked
                     st.fade_saturation = fadeSaturation.isChecked
                     st.enabled_rotation = enabledRotation.isChecked
-                    st.rotation_speed = rotationSpeed.progress.toFloat() / 10
-                    st.zoom = zoom.progress.toFloat() / 10 + 1f
+                    st.rotation_speed = rotationSpeed.value / 10
+                    st.zoom = zoom.value / 10 + 1f
                     Settings.get()
                         .main().setPlayerCoverBackgroundSettings(st)
                     parentFragmentManager.setFragmentResult(
@@ -1172,151 +1147,99 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             val view = View.inflate(requireActivity(), R.layout.entry_slidr_settings, null)
 
             val verticalSensitive =
-                view.findViewById<AppCompatSeekBar>(R.id.edit_vertical_sensitive)
+                view.findViewById<Slider>(R.id.edit_vertical_sensitive)
             val horizontalSensitive =
-                view.findViewById<AppCompatSeekBar>(R.id.edit_horizontal_sensitive)
+                view.findViewById<Slider>(R.id.edit_horizontal_sensitive)
             val textHorizontalSensitive: MaterialTextView =
                 view.findViewById(R.id.text_horizontal_sensitive)
             val textVerticalSensitive: MaterialTextView =
                 view.findViewById(R.id.text_vertical_sensitive)
 
             val verticalVelocityThreshold =
-                view.findViewById<AppCompatSeekBar>(R.id.edit_vertical_velocity_threshold)
+                view.findViewById<Slider>(R.id.edit_vertical_velocity_threshold)
             val horizontalVelocityThreshold =
-                view.findViewById<AppCompatSeekBar>(R.id.edit_horizontal_velocity_threshold)
+                view.findViewById<Slider>(R.id.edit_horizontal_velocity_threshold)
             val textHorizontalVelocityThreshold: MaterialTextView =
                 view.findViewById(R.id.text_horizontal_velocity_threshold)
             val textVerticalVelocityThreshold: MaterialTextView =
                 view.findViewById(R.id.text_vertical_velocity_threshold)
 
             val verticalDistanceThreshold =
-                view.findViewById<AppCompatSeekBar>(R.id.edit_vertical_distance_threshold)
+                view.findViewById<Slider>(R.id.edit_vertical_distance_threshold)
             val horizontalDistanceThreshold =
-                view.findViewById<AppCompatSeekBar>(R.id.edit_horizontal_distance_threshold)
+                view.findViewById<Slider>(R.id.edit_horizontal_distance_threshold)
             val textHorizontalDistanceThreshold: MaterialTextView =
                 view.findViewById(R.id.text_horizontal_distance_threshold)
             val textVerticalDistanceThreshold: MaterialTextView =
                 view.findViewById(R.id.text_vertical_distance_threshold)
 
-            verticalSensitive.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
-                    if (fromUser && progress < 20) {
-                        verticalSensitive.progress = 20
-                        textVerticalSensitive.text = getString(R.string.slidr_sensitive, 20)
-                    } else {
-                        textVerticalSensitive.text = getString(R.string.slidr_sensitive, progress)
-                    }
+            verticalSensitive.addOnChangeListener { slider, value, fromUser ->
+                if (fromUser && value < 20) {
+                    verticalSensitive.value = 20.0f
+                    textVerticalSensitive.text = getString(R.string.slidr_sensitive, 20)
+                } else {
+                    textVerticalSensitive.text = getString(R.string.slidr_sensitive, value.toInt())
                 }
+            }
 
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-            })
-            horizontalSensitive.setOnSeekBarChangeListener(object :
-                SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
-                    if (fromUser && progress < 20) {
-                        horizontalSensitive.progress = 20
-                        textHorizontalSensitive.text = getString(R.string.slidr_sensitive, 20)
-                    } else {
-                        textHorizontalSensitive.text = getString(R.string.slidr_sensitive, progress)
-                    }
+            horizontalSensitive.addOnChangeListener { slider, value, fromUser ->
+                if (fromUser && value < 20) {
+                    horizontalSensitive.value = 20.0f
+                    textHorizontalSensitive.text = getString(R.string.slidr_sensitive, 20)
+                } else {
+                    textHorizontalSensitive.text =
+                        getString(R.string.slidr_sensitive, value.toInt())
                 }
+            }
 
-                override fun onStartTrackingTouch(seekBar: SeekBar) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar) {}
-            })
-            verticalVelocityThreshold.setOnSeekBarChangeListener(object :
-                SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
-                    if (fromUser && progress < 4) {
-                        verticalVelocityThreshold.progress = 4
-                        textVerticalVelocityThreshold.text =
-                            getString(R.string.slidr_velocity_threshold, 4)
-                    } else {
-                        textVerticalVelocityThreshold.text =
-                            getString(R.string.slidr_velocity_threshold, progress)
-                    }
+            verticalVelocityThreshold.addOnChangeListener { slider, value, fromUser ->
+                if (fromUser && value < 4) {
+                    verticalVelocityThreshold.value = 4.0f
+                    textVerticalVelocityThreshold.text =
+                        getString(R.string.slidr_velocity_threshold, 4)
+                } else {
+                    textVerticalVelocityThreshold.text =
+                        getString(R.string.slidr_velocity_threshold, value.toInt())
                 }
+            }
 
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-            })
-            horizontalVelocityThreshold.setOnSeekBarChangeListener(object :
-                SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
-                    if (fromUser && progress < 4) {
-                        horizontalVelocityThreshold.progress = 4
-                        textHorizontalVelocityThreshold.text =
-                            getString(R.string.slidr_velocity_threshold, 4)
-                    } else {
-                        textHorizontalVelocityThreshold.text =
-                            getString(R.string.slidr_velocity_threshold, progress)
-                    }
+            horizontalVelocityThreshold.addOnChangeListener { slider, value, fromUser ->
+                if (fromUser && value < 4) {
+                    horizontalVelocityThreshold.value = 4.0f
+                    textHorizontalVelocityThreshold.text =
+                        getString(R.string.slidr_velocity_threshold, 4)
+                } else {
+                    textHorizontalVelocityThreshold.text =
+                        getString(R.string.slidr_velocity_threshold, value.toInt())
                 }
+            }
 
-                override fun onStartTrackingTouch(seekBar: SeekBar) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar) {}
-            })
-            verticalDistanceThreshold.setOnSeekBarChangeListener(object :
-                SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
-                    if (fromUser && progress < 4) {
-                        verticalDistanceThreshold.progress = 4
-                        textVerticalDistanceThreshold.text =
-                            getString(R.string.slidr_distance_threshold, 4)
-                    } else {
-                        textVerticalDistanceThreshold.text =
-                            getString(R.string.slidr_distance_threshold, progress)
-                    }
+            verticalDistanceThreshold.addOnChangeListener { slider, value, fromUser ->
+                if (fromUser && value < 4) {
+                    verticalDistanceThreshold.value = 4.0f
+                    textVerticalDistanceThreshold.text =
+                        getString(R.string.slidr_distance_threshold, 4)
+                } else {
+                    textVerticalDistanceThreshold.text =
+                        getString(R.string.slidr_distance_threshold, value.toInt())
                 }
+            }
 
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-            })
-            horizontalDistanceThreshold.setOnSeekBarChangeListener(object :
-                SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
-                    if (fromUser && progress < 4) {
-                        horizontalDistanceThreshold.progress = 4
-                        textHorizontalDistanceThreshold.text =
-                            getString(R.string.slidr_distance_threshold, 4)
-                    } else {
-                        textHorizontalDistanceThreshold.text =
-                            getString(R.string.slidr_distance_threshold, progress)
-                    }
+            horizontalDistanceThreshold.addOnChangeListener { slider, value, fromUser ->
+                if (fromUser && value < 4) {
+                    horizontalDistanceThreshold.value = 4.0f
+                    textHorizontalDistanceThreshold.text =
+                        getString(R.string.slidr_distance_threshold, 4)
+                } else {
+                    textHorizontalDistanceThreshold.text =
+                        getString(R.string.slidr_distance_threshold, value.toInt())
                 }
+            }
 
-                override fun onStartTrackingTouch(seekBar: SeekBar) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar) {}
-            })
             val settings = Settings.get()
                 .main().slidrSettings
-            verticalSensitive.progress = (settings.vertical_sensitive * 100).toInt()
-            horizontalSensitive.progress = (settings.horizontal_sensitive * 100).toInt()
+            verticalSensitive.value = (settings.vertical_sensitive * 100).toInt().toFloat()
+            horizontalSensitive.value = (settings.horizontal_sensitive * 100).toInt().toFloat()
 
             textHorizontalSensitive.text = getString(
                 R.string.slidr_sensitive,
@@ -1328,10 +1251,10 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     (settings.vertical_sensitive * 100).toInt()
                 )
 
-            verticalVelocityThreshold.progress =
-                (settings.vertical_velocity_threshold * 10).toInt()
-            horizontalVelocityThreshold.progress =
-                (settings.horizontal_velocity_threshold * 10).toInt()
+            verticalVelocityThreshold.value =
+                (settings.vertical_velocity_threshold * 10).toInt().toFloat()
+            horizontalVelocityThreshold.value =
+                (settings.horizontal_velocity_threshold * 10).toInt().toFloat()
 
             textHorizontalVelocityThreshold.text = getString(
                 R.string.slidr_velocity_threshold,
@@ -1342,10 +1265,10 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 (settings.vertical_velocity_threshold * 10).toInt()
             )
 
-            verticalDistanceThreshold.progress =
-                (settings.vertical_distance_threshold * 100).toInt()
-            horizontalDistanceThreshold.progress =
-                (settings.horizontal_distance_threshold * 100).toInt()
+            verticalDistanceThreshold.value =
+                (settings.vertical_distance_threshold * 100).toInt().toFloat()
+            horizontalDistanceThreshold.value =
+                (settings.horizontal_distance_threshold * 100).toInt().toFloat()
 
             textHorizontalDistanceThreshold.text = getString(
                 R.string.slidr_distance_threshold,
@@ -1371,18 +1294,18 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 }
                 .setPositiveButton(R.string.button_ok) { _, _ ->
                     val st = SlidrSettings()
-                    st.horizontal_sensitive = horizontalSensitive.progress.toFloat() / 100
-                    st.vertical_sensitive = verticalSensitive.progress.toFloat() / 100
+                    st.horizontal_sensitive = horizontalSensitive.value.toInt().toFloat() / 100
+                    st.vertical_sensitive = verticalSensitive.value.toInt().toFloat() / 100
 
                     st.horizontal_velocity_threshold =
-                        horizontalVelocityThreshold.progress.toFloat() / 10
+                        horizontalVelocityThreshold.value.toInt().toFloat() / 10
                     st.vertical_velocity_threshold =
-                        verticalVelocityThreshold.progress.toFloat() / 10
+                        verticalVelocityThreshold.value.toInt().toFloat() / 10
 
                     st.horizontal_distance_threshold =
-                        horizontalDistanceThreshold.progress.toFloat() / 100
+                        horizontalDistanceThreshold.value.toInt().toFloat() / 100
                     st.vertical_distance_threshold =
-                        verticalDistanceThreshold.progress.toFloat() / 100
+                        verticalDistanceThreshold.value.toInt().toFloat() / 100
                     Settings.get()
                         .main().setSlidrSettings(st)
                     parentFragmentManager.setFragmentResult(

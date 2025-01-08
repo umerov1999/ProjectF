@@ -15,7 +15,6 @@ import de.maxr1998.modernpreferences.preferences.choice.MultiChoiceDialogPrefere
 import de.maxr1998.modernpreferences.preferences.choice.SelectionItem
 import de.maxr1998.modernpreferences.preferences.choice.SingleChoiceDialogPreference
 
-
 abstract class AbsPreferencesFragment : Fragment() {
     protected var preferencesAdapter: PreferencesAdapter? = null
     protected abstract val keyInstanceState: String

@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textview.MaterialTextView
 import com.squareup.picasso3.BitmapTarget
 import com.squareup.picasso3.Picasso
@@ -128,7 +127,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         }
         mHeaderHolder?.tvLastSeen?.text =
             UserInfoResolveUtil.getUserActivityLine(requireActivity(), user, true)
-        if (!user.canWritePrivateMessage) mHeaderHolder?.fabMessage?.setImageResource(R.drawable.close) else mHeaderHolder?.fabMessage?.setImageResource(
+        if (!user.canWritePrivateMessage) mHeaderHolder?.btnMessage?.setIconResource(R.drawable.close) else mHeaderHolder?.btnMessage?.setIconResource(
             R.drawable.email
         )
         val screenName = if (user.domain.nonNullNoEmpty()) "@" + user.domain else null
@@ -699,9 +698,8 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
         val bNarratives: TextView = root.findViewById(R.id.fragment_user_profile_bnarratives)
         val bClips: TextView = root.findViewById(R.id.fragment_user_profile_bclips)
         val bGifts: TextView = root.findViewById(R.id.fragment_user_profile_bgifts)
-        val fabMessage: FloatingActionButton =
-            root.findViewById(R.id.header_user_profile_fab_message)
-        val fabMoreInfo: FloatingActionButton = root.findViewById(R.id.info_btn)
+        val btnMessage: MaterialButton = root.findViewById(R.id.header_user_profile_btn_message)
+        val btnMoreInfo: MaterialButton = root.findViewById(R.id.info_btn)
         val bPrimaryAction: MaterialButton = root.findViewById(R.id.subscribe_btn)
         val bDonate: ThorVGLottieView = root.findViewById(R.id.donated_anim)
         val paganSymbol: ThorVGLottieView = root.findViewById(R.id.pagan_symbol)
@@ -729,13 +727,13 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
             tvStatus.setOnClickListener {
                 presenter?.fireStatusClick()
             }
-            fabMoreInfo.setOnClickListener {
+            btnMoreInfo.setOnClickListener {
                 presenter?.fireMoreInfoClick()
             }
             bPrimaryAction.setOnClickListener {
                 presenter?.firePrimaryActionsClick()
             }
-            fabMessage.setOnClickListener {
+            btnMessage.setOnClickListener {
                 presenter?.fireChatClick()
             }
             root.findViewById<View>(R.id.horiz_scroll).clipToOutline = true

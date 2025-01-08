@@ -91,15 +91,17 @@ class CollapsePreference(internal var screen: PreferenceScreen.Builder?, key: St
 
     fun collapse() {
         visible = true
-        for (i in preferences.indices)
+        for (i in preferences.indices) {
             preferences[i].collapsed = true
+        }
         parent?.requestRebind(screenPosition, 1 + preferences.size)
     }
 
     fun expand() {
         visible = false
-        for (i in preferences.indices)
+        for (i in preferences.indices) {
             preferences[i].collapsed = false
+        }
         parent?.requestRebind(screenPosition, 1 + preferences.size)
     }
 
