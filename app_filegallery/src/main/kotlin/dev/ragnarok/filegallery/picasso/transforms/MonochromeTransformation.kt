@@ -9,6 +9,7 @@ import android.graphics.Paint
 import android.graphics.Picture
 import android.graphics.Shader
 import android.os.Build
+import androidx.core.graphics.createBitmap
 import com.squareup.picasso3.RequestHandler
 import com.squareup.picasso3.Transformation
 
@@ -30,11 +31,8 @@ class MonochromeTransformation : Transformation {
             obj = Picture()
             canvas = obj.beginRecording(bitmapWidth, bitmapHeight)
         } else {
-            output = Bitmap.createBitmap(
-                bitmapWidth,
-                bitmapHeight,
-                source.config ?: Bitmap.Config.ARGB_8888
-            )
+            output =
+                createBitmap(bitmapWidth, bitmapHeight, source.config ?: Bitmap.Config.ARGB_8888)
             canvas = Canvas(output)
         }
         val matrix = ColorMatrix()

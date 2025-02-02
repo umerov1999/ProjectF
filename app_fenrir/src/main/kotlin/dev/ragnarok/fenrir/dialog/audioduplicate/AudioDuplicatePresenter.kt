@@ -2,10 +2,10 @@ package dev.ragnarok.fenrir.dialog.audioduplicate
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
-import android.net.Uri
 import android.os.Bundle
 import android.provider.BaseColumns
 import android.provider.MediaStore
+import androidx.core.net.toUri
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
 import dev.ragnarok.fenrir.getString
@@ -98,7 +98,7 @@ class AudioDuplicatePresenter(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 arrayOf(MediaStore.MediaColumns.DATA),
                 BaseColumns._ID + "=? ",
-                arrayOf(Uri.parse(url).lastPathSegment),
+                arrayOf(url.toUri().lastPathSegment),
                 null
             )
             if (cursor != null && cursor.moveToFirst()) {

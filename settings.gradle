@@ -1,4 +1,4 @@
 include ":app_fenrir", ":app_filegallery", ":fenrir_common", ":picasso3", ":firebase-installations", ":image", ":material", ":preference", ":recyclerview"
 include ":camera2"
 
-//include ":libfenrir"
+//include ":native"

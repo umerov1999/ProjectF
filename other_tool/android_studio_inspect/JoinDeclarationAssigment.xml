@@ -30,7 +30,10 @@
   <inspection_tool class="AndroidLintAppCompatCustomView" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintAppCompatResource" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintAppIndexingService" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintAppLinkSplitToWebAndCustom" enabled="false" level="ERROR" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintAppLinkUriRelativeFilterGroupError" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintAppLinkUrlError" enabled="false" level="ERROR" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintAppLinkWarning" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintApplySharedPref" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintAssertionSideEffect" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintAuthLeak" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -61,6 +64,7 @@
   <inspection_tool class="AndroidLintContentDescription" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintCredManMissingDal" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintCredentialDependency" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintCredentialManagerMisuse" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintCredentialManagerSignInWithGoogle" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintCustomPermissionTypo" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintCustomSplashScreen" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -147,6 +151,7 @@
   <inspection_tool class="AndroidLintIconXmlAndPng" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintIgnoreWithoutReason" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintIllegalResourceRef" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintImplicitSamInstance" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintImpliedQuantity" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintImpliedTouchscreenHardware" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintInOrMmUsage" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -219,6 +224,7 @@
   <inspection_tool class="AndroidLintMissingPermission" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintMissingPrefix" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintMissingQuantity" enabled="false" level="ERROR" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintMissingResourcesProperties" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintMissingSuperCall" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintMissingTranslation" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintMissingTvBanner" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -237,6 +243,7 @@
   <inspection_tool class="AndroidLintNetworkSecurityConfig" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintNewApi" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintNfcTechWhitespace" enabled="false" level="ERROR" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintNioDesugaring" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintNonConstantResourceId" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintNonResizeableActivity" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintNotConstructor" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -265,8 +272,10 @@
   <inspection_tool class="AndroidLintPermissionImpliesUnsupportedHardware" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintPictureInPictureIssue" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintPinSetExpiry" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintPlaySdkIndexDeprecated" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintPlaySdkIndexGenericIssues" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintPlaySdkIndexNonCompliant" enabled="false" level="ERROR" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintPlaySdkIndexVulnerability" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintPluralsCandidate" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintPrivateApi" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintPrivateResource" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -370,9 +379,11 @@
   <inspection_tool class="AndroidLintUnnecessaryRequiredFeature" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintUnprotectedSMSBroadcastReceiver" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintUnsafeDynamicallyLoadedCode" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintUnsafeImplicitIntentLaunch" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintUnsafeIntentLaunch" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintUnsafeNativeCodeLocation" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintUnsafeProtectedBroadcastReceiver" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintUnsanitizedFilenameFromContentProvider" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintUnspecifiedImmutableFlag" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintUnspecifiedRegisterReceiverFlag" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintUnsupportedChromeOsCameraSystemFeature" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -386,7 +397,9 @@
   <inspection_tool class="AndroidLintUseAlpha2" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintUseCheckPermission" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintUseCompoundDrawables" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintUseKtx" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintUseOfBundledGooglePlayServices" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintUseRequiresApi" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintUseSdkSuppress" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintUseSparseArrays" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintUseTomlInstead" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -432,6 +445,7 @@
   <inspection_tool class="AndroidLintWrongConstant" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintWrongFolder" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintWrongRegion" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintWrongSdkInt" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintWrongThread" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintWrongViewCast" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintXmlEscapeNeeded" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -599,6 +613,7 @@
   </inspection_tool>
   <inspection_tool class="DataProviderReturnType" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="DeclarativeUnresolvedReference" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="DeconstructionCanBeUsed" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="DefaultAnnotationParam" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="DefaultNotLastCaseInSwitch" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="DeferredResultUnused" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -875,7 +890,6 @@
   <inspection_tool class="IndexOfReplaceableByContains" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="InfiniteLoopStatement" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="InfinitePropertiesLabel" enabled="false" level="WARNING" enabled_by_default="false" />
-  <inspection_tool class="InfiniteRecursion" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="InfiniteTransitionLabel" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="InfixCallToOrdinary" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="InjectedReferences" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -900,6 +914,7 @@
   <inspection_tool class="IterableUsedAsVararg" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="IteratorHasNextCallsIteratorNext" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="JCenterRepository" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="JComponentDataProvider" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="JUnit3StyleTestMethodInJUnit4Class" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="JUnit5AssertionsConverter" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="JUnitMalformedDeclaration" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -943,6 +958,7 @@
   <inspection_tool class="JniParameters" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="JniRegisterNatives" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="JniSetField" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="JoinDeclarationAndAssignment" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="Json5StandardCompliance" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="JsonDuplicatePropertyKeys" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="JsonPathEvaluateUnknownKey" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -971,6 +987,7 @@
   <inspection_tool class="KotlinNoActualForExpect" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="KotlinObjectExtensionRegistration" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="KotlinObjectRegisteredAsExtension" enabled="false" level="ERROR" enabled_by_default="false" />
+  <inspection_tool class="KotlinOptionsToCompilerOptionsInGradleScript" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="KotlinRedundantDiagnosticSuppress" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="KotlinRedundantOverride" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="KotlinSealedInheritorsInJava" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -1069,6 +1086,7 @@
   <inspection_tool class="MismatchedLightServiceLevelAndCtor" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="MismatchedStringBuilderQueryUpdate" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="MismatchedStringCase" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="MisorderedAssertEqualsArguments" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="MissingAccessibleContext" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="MissingActionUpdateThread" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="MissingDeprecatedAnnotationOnScheduledForRemovalApi" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -1177,9 +1195,11 @@
   <inspection_tool class="PatternVariableHidesField" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="PatternVariablesCanBeReplacedWithCast" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="PlatformExtensionReceiverOfInline" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="PlayDynamicFilters" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="PluginXmlCapitalization" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="PluginXmlDynamicPlugin" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="PluginXmlExtensionRegistration" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="PluginXmlPluginLogo" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="PluginXmlValidity" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="PointlessArithmeticExpression" enabled="false" level="WARNING" enabled_by_default="false">
     <option name="m_ignoreExpressionsContainingConstants" value="true" />
@@ -1204,6 +1224,7 @@
   <inspection_tool class="PreviewMustBeTopLevelFunction" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="PreviewNeedsComposableAnnotation" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="PreviewNotSupportedInUnitTestFiles" enabled="false" level="ERROR" enabled_by_default="false" />
+  <inspection_tool class="PreviewParameterProviderOnFirstParameter" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="PreviewPickerAnnotation" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="PreviewShouldNotBeCalledRecursively" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="PrimitiveArrayArgumentToVariableArgMethod" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -1250,6 +1271,7 @@
   <inspection_tool class="RedundantFileCreation" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="RedundantGetter" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="RedundantIf" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+  <inspection_tool class="RedundantJavaTimeOperations" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="RedundantLabeledReturnOnLastExpressionInLambda" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="RedundantLabeledSwitchRuleCodeBlock" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="RedundantLambdaArrow" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
@@ -1522,6 +1544,7 @@
   <inspection_tool class="UElementAsPsi" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="UNCHECKED_WARNING" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="UNUSED_IMPORT" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="UastHintedVisitorAdapterHints" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="UnaryPlus" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="UnclearBinaryExpression" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="UnclearPrecedenceOfBinaryExpression" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -1587,6 +1610,7 @@
   <inspection_tool class="UnsatisfiedRange" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="UnspecifiedActionsPlace" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="UnstableApiUsage" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="UnsupportedCharacter" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="UnsupportedChronoFieldUnitCall" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="UnusedAssignment" enabled="false" level="WARNING" enabled_by_default="false">
     <option name="REPORT_PREFIX_EXPRESSIONS" value="false" />

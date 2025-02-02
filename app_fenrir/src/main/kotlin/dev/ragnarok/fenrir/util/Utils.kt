@@ -33,8 +33,11 @@ import android.view.WindowManager
 import android.widget.ImageView
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
+import androidx.core.content.edit
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.createBitmap
+import androidx.core.util.size
 import androidx.media3.common.MediaItem
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -549,7 +552,7 @@ object Utils {
     }
 
     fun safeCountOf(sparseArray: SparseArray<*>?): Int {
-        return sparseArray?.size() ?: 0
+        return sparseArray?.size ?: 0
     }
 
     fun safeCountOf(map: Map<*, *>?): Int {
@@ -957,8 +960,9 @@ object Utils {
                     hiddenDevice_id = (1..16).map { allowedChars.random() }
                         .joinToString("") + ":" + (1..32).map { allowedChars.random() }
                         .joinToString("")
-                    PreferenceScreen.getPreferences(context).edit()
-                        .putString("hidden_device_id", hiddenDevice_id).apply()
+                    PreferenceScreen.getPreferences(context).edit {
+                        putString("hidden_device_id", hiddenDevice_id)
+                    }
                 }
             }
             return hiddenDevice_id!!
@@ -971,8 +975,9 @@ object Utils {
                     device_id = (1..16).map { allowedChars.random() }
                         .joinToString("") + ":" + (1..32).map { allowedChars.random() }
                         .joinToString("")
-                    PreferenceScreen.getPreferences(context).edit()
-                        .putString("installation_id", device_id).apply()
+                    PreferenceScreen.getPreferences(context).edit {
+                        putString("installation_id", device_id)
+                    }
                 }
             }
             return device_id!!
@@ -1171,7 +1176,7 @@ object Utils {
                 color2 = "#FF4200"
             }
         }
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val bitmap = createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val gradient = LinearGradient(
             0f,
             0f,

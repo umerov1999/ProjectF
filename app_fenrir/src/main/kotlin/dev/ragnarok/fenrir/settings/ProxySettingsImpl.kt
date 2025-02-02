@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.settings
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.model.ProxyConfig
 import dev.ragnarok.fenrir.nonNullNoEmpty
@@ -27,9 +28,9 @@ class ProxySettingsImpl(context: Context) : IProxySettings {
         val set: MutableSet<String> =
             HashSet(preferences.getStringSet(KEY_LIST, HashSet(0)) ?: return)
         set.add(kJson.encodeToString(ProxyConfig.serializer(), config))
-        preferences.edit()
-            .putStringSet(KEY_LIST, set)
-            .apply()
+        preferences.edit {
+            putStringSet(KEY_LIST, set)
+        }
         addPublisher.myEmit(config)
     }
 
@@ -69,12 +70,12 @@ class ProxySettingsImpl(context: Context) : IProxySettings {
         }
 
     override fun setActive(config: ProxyConfig?) {
-        preferences.edit()
-            .putString(
+        preferences.edit {
+            putString(
                 KEY_ACTIVE,
                 if (config == null) null else kJson.encodeToString(ProxyConfig.serializer(), config)
             )
-            .apply()
+        }
         activePublisher.myEmit(wrap(config))
     }
 
@@ -94,17 +95,17 @@ class ProxySettingsImpl(context: Context) : IProxySettings {
         val set: MutableSet<String> =
             HashSet(preferences.getStringSet(KEY_LIST, HashSet(0)) ?: return)
         set.remove(kJson.encodeToString(ProxyConfig.serializer(), config))
-        preferences.edit()
-            .putStringSet(KEY_LIST, set)
-            .apply()
+        preferences.edit {
+            putStringSet(KEY_LIST, set)
+        }
         deletePublisher.myEmit(config)
     }
 
     private fun generateNextId(): Int {
         val next = preferences.getInt(KEY_NEXT_ID, 1)
-        preferences.edit()
-            .putInt(KEY_NEXT_ID, next + 1)
-            .apply()
+        preferences.edit {
+            putInt(KEY_NEXT_ID, next + 1)
+        }
         return next
     }
 

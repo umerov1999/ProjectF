@@ -546,7 +546,7 @@ public class TabLayout extends HorizontalScrollView {
       MaterialShapeDrawable materialShapeDrawable = new MaterialShapeDrawable();
       materialShapeDrawable.setFillColor(backgroundColorStateList);
       materialShapeDrawable.initializeElevationOverlay(context);
-      materialShapeDrawable.setElevation(ViewCompat.getElevation(this));
+      materialShapeDrawable.setElevation(getElevation());
       setBackground(materialShapeDrawable);
     }
 
@@ -2984,9 +2984,9 @@ public class TabLayout extends HorizontalScrollView {
               ? DrawableCompat.wrap(tab.getIcon()).mutate()
               : null;
       if (icon != null) {
-        DrawableCompat.setTintList(icon, tabIconTint);
+        icon.setTintList(tabIconTint);
         if (tabIconTintMode != null) {
-          DrawableCompat.setTintMode(icon, tabIconTintMode);
+          icon.setTintMode(tabIconTintMode);
         }
       }
 

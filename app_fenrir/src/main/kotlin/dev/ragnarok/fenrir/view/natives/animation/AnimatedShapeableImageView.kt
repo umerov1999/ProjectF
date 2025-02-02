@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Parcelable
 import android.util.AttributeSet
 import androidx.annotation.RawRes
+import androidx.core.content.withStyledAttributes
 import com.google.android.material.imageview.ShapeableImageView
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
@@ -32,8 +33,8 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : ShapeableImageView(context, attrs) {
     private val cache: AnimationNetworkCache = AnimationNetworkCache(context)
-    private val defaultWidth: Int
-    private val defaultHeight: Int
+    private var defaultWidth: Int = 100
+    private var defaultHeight: Int = 100
     private var animatedDrawable: AnimatedFileDrawable? = null
     private var attachedToWindow = false
     private var decoderCallback: OnDecoderInit? = null
@@ -392,11 +393,11 @@ open class AnimatedShapeableImageView @JvmOverloads constructor(
     }
 
     init {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.AnimatedShapeableImageView)
-        defaultWidth =
-            a.getDimension(R.styleable.AnimatedShapeableImageView_default_width, 100f).toInt()
-        defaultHeight =
-            a.getDimension(R.styleable.AnimatedShapeableImageView_default_height, 100f).toInt()
-        a.recycle()
+        context.withStyledAttributes(attrs, R.styleable.AnimatedShapeableImageView) {
+            defaultWidth =
+                getDimension(R.styleable.AnimatedShapeableImageView_default_width, 100f).toInt()
+            defaultHeight =
+                getDimension(R.styleable.AnimatedShapeableImageView_default_height, 100f).toInt()
+        }
     }
 }

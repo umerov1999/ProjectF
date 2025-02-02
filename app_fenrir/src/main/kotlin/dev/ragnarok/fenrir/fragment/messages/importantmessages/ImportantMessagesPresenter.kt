@@ -23,21 +23,23 @@ class ImportantMessagesPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun loadActualData(offset: Int) {
         actualDataLoading = true
         resolveRefreshingView()
-        actualDataDisposable.add(fInteractor.getImportantMessages(accountId, 50, offset, null)
-            .fromIOToMain({ data ->
-                onActualDataReceived(
-                    offset,
-                    data
-                )
-            }) { t -> onActualDataGetError(t) })
+        actualDataDisposable.add(
+            fInteractor.getImportantMessages(accountId, 50, offset, null)
+                .fromIOToMain({ data ->
+                    onActualDataReceived(
+                        offset,
+                        data
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     fun fireMessageRestoreClick(message: Message) {
         val id = message.getObjectId()
-        appendJob(fInteractor.restoreMessage(accountId, accountId, id)
-            .fromIOToMain({ onMessageRestoredSuccessfully(id) }) { t ->
-                showError(getCauseIfRuntime(t))
-            })
+        appendJob(
+            fInteractor.restoreMessage(accountId, accountId, id)
+                .fromIOToMain({ onMessageRestoredSuccessfully(id) }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
     }
 
     fun fireImportantMessageClick(message: Message, position: Int) {
@@ -108,16 +110,17 @@ class ImportantMessagesPresenter(accountId: Long, savedInstanceState: Bundle?) :
             }
         }
         if (ids.nonNullNoEmpty()) {
-            appendJob(fInteractor.deleteMessages(
-                accountId,
-                accountId,
-                ids,
-                forAll = false,
-                spam = false
-            )
-                .fromIOToMain({ onMessagesDeleteSuccessfully(ids) }) { t ->
-                    showError(getCauseIfRuntime(t))
-                })
+            appendJob(
+                fInteractor.deleteMessages(
+                    accountId,
+                    accountId,
+                    ids,
+                    forAll = false,
+                    spam = false
+                )
+                    .fromIOToMain({ onMessagesDeleteSuccessfully(ids) }) { t ->
+                        showError(getCauseIfRuntime(t))
+                    })
         }
     }
 
@@ -130,13 +133,14 @@ class ImportantMessagesPresenter(accountId: Long, savedInstanceState: Bundle?) :
             }
         }
         if (ids.nonNullNoEmpty()) {
-            appendJob(fInteractor.deleteMessages(
-                accountId, accountId, ids,
-                forAll = false, spam = true
-            )
-                .fromIOToMain({ onMessagesDeleteSuccessfully(ids) }) { t ->
-                    showError(getCauseIfRuntime(t))
-                })
+            appendJob(
+                fInteractor.deleteMessages(
+                    accountId, accountId, ids,
+                    forAll = false, spam = true
+                )
+                    .fromIOToMain({ onMessagesDeleteSuccessfully(ids) }) { t ->
+                        showError(getCauseIfRuntime(t))
+                    })
         }
     }
 
@@ -175,16 +179,17 @@ class ImportantMessagesPresenter(accountId: Long, savedInstanceState: Bundle?) :
             return
         }
         val msg = data[position]
-        appendJob(fInteractor.markAsImportant(
-            accountId,
-            msg.peerId,
-            setOf(msg.getObjectId()),
-            0
-        )
-            .fromIOToMain({
-                data.removeAt(position)
-                safeNotifyDataChanged()
-            }) { })
+        appendJob(
+            fInteractor.markAsImportant(
+                accountId,
+                msg.peerId,
+                setOf(msg.getObjectId()),
+                0
+            )
+                .fromIOToMain({
+                    data.removeAt(position)
+                    safeNotifyDataChanged()
+                }) { })
     }
 
     fun fireRefresh() {

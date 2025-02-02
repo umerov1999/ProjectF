@@ -65,16 +65,17 @@ class CommunityBlacklistPresenter(
     private fun request(startFrom: IntNextFrom) {
         if (loadingNow) return
         setLoadingNow(true)
-        appendJob(groupSettingsInteractor.getBanned(accountId, groupId, startFrom, COUNT)
-            .fromIOToMain(
-                {
-                    onBannedUsersReceived(
-                        startFrom,
-                        it.second,
-                        it.first
-                    )
-                }
-            ) { throwable -> onRequqestError(getCauseIfRuntime(throwable)) })
+        appendJob(
+            groupSettingsInteractor.getBanned(accountId, groupId, startFrom, COUNT)
+                .fromIOToMain(
+                    {
+                        onBannedUsersReceived(
+                            startFrom,
+                            it.second,
+                            it.first
+                        )
+                    }
+                ) { throwable -> onRequqestError(getCauseIfRuntime(throwable)) })
     }
 
     override fun onGuiCreated(viewHost: ICommunityBlacklistView) {
@@ -146,13 +147,14 @@ class CommunityBlacklistPresenter(
     }
 
     fun fireBannedRemoveClick(banned: Banned) {
-        appendJob(groupSettingsInteractor
-            .unban(accountId, groupId, banned.banned.ownerId)
-            .fromIOToMain({ onUnbanComplete() }) { throwable ->
-                onUnbanError(
-                    throwable
-                )
-            })
+        appendJob(
+            groupSettingsInteractor
+                .unban(accountId, groupId, banned.banned.ownerId)
+                .fromIOToMain({ onUnbanComplete() }) { throwable ->
+                    onUnbanError(
+                        throwable
+                    )
+                })
     }
 
     private fun onUnbanComplete() {
@@ -186,9 +188,10 @@ class CommunityBlacklistPresenter(
         val networker = networkInterfaces
         val repository = stores.owners()
         groupSettingsInteractor = GroupSettingsInteractor(networker, repository, owners)
-        appendJob(repository.observeBanActions()
-            .filter { it.groupId == groupId }
-            .sharedFlowToMain { onBanActionReceived(it) })
+        appendJob(
+            repository.observeBanActions()
+                .filter { it.groupId == groupId }
+                .sharedFlowToMain { onBanActionReceived(it) })
         requestDataAtStart()
     }
 }

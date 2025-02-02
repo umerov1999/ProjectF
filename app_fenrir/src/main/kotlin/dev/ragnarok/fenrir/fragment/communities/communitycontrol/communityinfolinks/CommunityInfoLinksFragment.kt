@@ -1,11 +1,11 @@
 package dev.ragnarok.fenrir.fragment.communities.communitycontrol.communityinfolinks
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -61,7 +61,7 @@ class CommunityInfoLinksFragment :
     }
 
     override fun openLink(link: String?) {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+        val intent = Intent(Intent.ACTION_VIEW, link?.toUri())
         startActivity(intent)
     }
 

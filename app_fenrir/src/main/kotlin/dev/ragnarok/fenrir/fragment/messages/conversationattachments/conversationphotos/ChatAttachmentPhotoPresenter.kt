@@ -85,20 +85,21 @@ class ChatAttachmentPhotoPresenter(peerId: Long, accountId: Long, savedInstanceS
             )
         } else {
             val source = TmpSource(fireTempDataUsage(), 0)
-            openGalleryDisposableHolder.add(Stores.instance
-                .tempStore()
-                .putTemporaryData(
-                    source.ownerId,
-                    source.sourceId,
-                    data,
-                    Serializers.PHOTOS_SERIALIZER
-                )
-                .fromIOToMain({
-                    onPhotosSavedToTmpStore(
-                        position,
-                        source
+            openGalleryDisposableHolder.add(
+                Stores.instance
+                    .tempStore()
+                    .putTemporaryData(
+                        source.ownerId,
+                        source.sourceId,
+                        data,
+                        Serializers.PHOTOS_SERIALIZER
                     )
-                }) { PersistentLogger.logThrowable("ChatAttachmentPhotoPresenter", it) })
+                    .fromIOToMain({
+                        onPhotosSavedToTmpStore(
+                            position,
+                            source
+                        )
+                    }) { PersistentLogger.logThrowable("ChatAttachmentPhotoPresenter", it) })
         }
     }
 

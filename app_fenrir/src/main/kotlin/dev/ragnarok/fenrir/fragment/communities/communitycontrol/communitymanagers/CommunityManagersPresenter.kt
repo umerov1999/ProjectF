@@ -88,12 +88,13 @@ class CommunityManagersPresenter(
     }
 
     private fun requestContacts() {
-        appendJob(interactor.getContacts(accountId, groupId.id)
-            .fromIOToMain({ contacts -> onContactsReceived(contacts) }) { throwable ->
-                onRequestError(
-                    throwable
-                )
-            })
+        appendJob(
+            interactor.getContacts(accountId, groupId.id)
+                .fromIOToMain({ contacts -> onContactsReceived(contacts) }) { throwable ->
+                    onRequestError(
+                        throwable
+                    )
+                })
     }
 
     private fun requestData() {
@@ -102,12 +103,13 @@ class CommunityManagersPresenter(
             requestContacts()
             return
         }
-        appendJob(interactor.getManagers(accountId, groupId.id)
-            .fromIOToMain({ managers -> onDataReceived(managers) }) { throwable ->
-                onRequestError(
-                    throwable
-                )
-            })
+        appendJob(
+            interactor.getManagers(accountId, groupId.id)
+                .fromIOToMain({ managers -> onDataReceived(managers) }) { throwable ->
+                    onRequestError(
+                        throwable
+                    )
+                })
     }
 
     override fun onGuiCreated(viewHost: ICommunityManagersView) {
@@ -159,21 +161,22 @@ class CommunityManagersPresenter(
 
     fun fireRemoveClick(manager: Manager) {
         val user = manager.user ?: return
-        appendJob(interactor.editManager(
-            accountId,
-            groupId.id,
-            user,
-            null,
-            false,
-            null,
-            null,
-            null
-        )
-            .fromIOToMain({ onRemoveComplete() }) { throwable ->
-                onRemoveError(
-                    getCauseIfRuntime(throwable)
-                )
-            })
+        appendJob(
+            interactor.editManager(
+                accountId,
+                groupId.id,
+                user,
+                null,
+                false,
+                null,
+                null,
+                null
+            )
+                .fromIOToMain({ onRemoveComplete() }) { throwable ->
+                    onRemoveError(
+                        getCauseIfRuntime(throwable)
+                    )
+                })
     }
 
     private fun onRemoveError(throwable: Throwable) {
@@ -211,11 +214,12 @@ class CommunityManagersPresenter(
     }
 
     init {
-        appendJob(stores
-            .owners()
-            .observeManagementChanges()
-            .filter { it.first == groupId.id }
-            .sharedFlowToMain { pair -> onManagerActionReceived(pair.second) })
+        appendJob(
+            stores
+                .owners()
+                .observeManagementChanges()
+                .filter { it.first == groupId.id }
+                .sharedFlowToMain { pair -> onManagerActionReceived(pair.second) })
         requestData()
     }
 }

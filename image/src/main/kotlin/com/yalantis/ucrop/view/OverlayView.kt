@@ -14,6 +14,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.IntDef
 import androidx.annotation.IntRange
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.withSave
 import com.yalantis.ucrop.callback.OverlayViewChangeListener
 import com.yalantis.ucrop.util.RectUtils
 import me.minetsh.imaging.R
@@ -374,14 +375,14 @@ class OverlayView @JvmOverloads constructor(
      */
     @Suppress("deprecation")
     private fun drawDimmedLayer(canvas: Canvas) {
-        canvas.save()
-        if (mCircleDimmedLayer) {
-            canvas.clipOutPath(mCircularPath)
-        } else {
-            canvas.clipOutRect(cropViewRect)
+        canvas.withSave {
+            if (mCircleDimmedLayer) {
+                clipOutPath(mCircularPath)
+            } else {
+                clipOutRect(cropViewRect)
+            }
+            drawColor(mDimmedColor)
         }
-        canvas.drawColor(mDimmedColor)
-        canvas.restore()
         if (mCircleDimmedLayer) { // Draw 1px stroke to fix antialias
             canvas.drawCircle(
                 cropViewRect.centerX(), cropViewRect.centerY(),
@@ -427,21 +428,21 @@ class OverlayView @JvmOverloads constructor(
             canvas.drawRect(cropViewRect, mCropFramePaint)
         }
         if (mFreestyleCropMode != FREESTYLE_CROP_MODE_DISABLE) {
-            canvas.save()
-            mTempRect.set(cropViewRect)
-            mTempRect.inset(
-                mCropRectCornerTouchAreaLineLength.toFloat(),
-                -mCropRectCornerTouchAreaLineLength.toFloat()
-            )
-            canvas.clipOutRect(mTempRect)
-            mTempRect.set(cropViewRect)
-            mTempRect.inset(
-                -mCropRectCornerTouchAreaLineLength.toFloat(),
-                mCropRectCornerTouchAreaLineLength.toFloat()
-            )
-            canvas.clipOutRect(mTempRect)
-            canvas.drawRect(cropViewRect, mCropFrameCornersPaint)
-            canvas.restore()
+            canvas.withSave {
+                mTempRect.set(cropViewRect)
+                mTempRect.inset(
+                    mCropRectCornerTouchAreaLineLength.toFloat(),
+                    -mCropRectCornerTouchAreaLineLength.toFloat()
+                )
+                clipOutRect(mTempRect)
+                mTempRect.set(cropViewRect)
+                mTempRect.inset(
+                    -mCropRectCornerTouchAreaLineLength.toFloat(),
+                    mCropRectCornerTouchAreaLineLength.toFloat()
+                )
+                clipOutRect(mTempRect)
+                drawRect(cropViewRect, mCropFrameCornersPaint)
+            }
         }
     }
 

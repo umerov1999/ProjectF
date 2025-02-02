@@ -28,13 +28,14 @@ class ShortedLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun loadActualData(offset: Int) {
         actualDataLoading = true
         resolveRefreshingView()
-        actualDataDisposable.add(fInteractor.getLastShortenedLinks(accountId, 10, offset)
-            .fromIOToMain({
-                onActualDataReceived(
-                    offset,
-                    it
-                )
-            }) { t -> onActualDataGetError(t) })
+        actualDataDisposable.add(
+            fInteractor.getLastShortenedLinks(accountId, 10, offset)
+                .fromIOToMain({
+                    onActualDataReceived(
+                        offset,
+                        it
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     private fun onActualDataGetError(t: Throwable) {
@@ -87,11 +88,12 @@ class ShortedLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun fireDelete(index: Int, link: ShortLink) {
-        actualDataDisposable.add(fInteractor.deleteFromLastShortened(accountId, link.key)
-            .fromIOToMain({
-                links.removeAt(index)
-                view?.notifyDataSetChanged()
-            }) { t -> onActualDataGetError(t) })
+        actualDataDisposable.add(
+            fInteractor.deleteFromLastShortened(accountId, link.key)
+                .fromIOToMain({
+                    links.removeAt(index)
+                    view?.notifyDataSetChanged()
+                }) { t -> onActualDataGetError(t) })
     }
 
     fun fireRefresh() {
@@ -105,28 +107,30 @@ class ShortedLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun fireShort() {
-        actualDataDisposable.add(fInteractor.getShortLink(accountId, mInput, 1)
-            .fromIOToMain({ data ->
-                data.setTimestamp(now())
-                data.setViews(0)
-                links.add(0, data)
-                view?.notifyDataSetChanged()
-                view?.updateLink(
-                    data.short_url
-                )
-            }) { t -> onActualDataGetError(t) })
+        actualDataDisposable.add(
+            fInteractor.getShortLink(accountId, mInput, 1)
+                .fromIOToMain({ data ->
+                    data.setTimestamp(now())
+                    data.setViews(0)
+                    links.add(0, data)
+                    view?.notifyDataSetChanged()
+                    view?.updateLink(
+                        data.short_url
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     fun fireValidate() {
-        actualDataDisposable.add(fInteractor.checkLink(accountId, mInput)
-            .fromIOToMain({ data ->
-                view?.updateLink(
-                    data.link
-                )
-                view?.showLinkStatus(
-                    data.status
-                )
-            }) { t -> onActualDataGetError(t) })
+        actualDataDisposable.add(
+            fInteractor.checkLink(accountId, mInput)
+                .fromIOToMain({ data ->
+                    view?.updateLink(
+                        data.link
+                    )
+                    view?.showLinkStatus(
+                        data.status
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     init {

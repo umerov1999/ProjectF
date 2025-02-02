@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.model
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.core.net.toUri
 import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.putBoolean
 
@@ -18,7 +19,7 @@ class LocalPhoto : Parcelable, Comparable<LocalPhoto>, ISelectable {
     constructor()
     internal constructor(parcel: Parcel) {
         imageId = parcel.readLong()
-        fullImageUri = Uri.parse(parcel.readString())
+        fullImageUri = parcel.readString()?.toUri()
         selected = parcel.getBoolean()
         index = parcel.readInt()
     }

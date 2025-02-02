@@ -9,7 +9,6 @@ import dev.ragnarok.fenrir.model.ProxyConfig
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import java.util.Locale
-import kotlin.String
 
 class ProxiesAdapter(data: MutableList<ProxyConfig>, private val actionListener: ActionListener) :
     RecyclerBindableAdapter<ProxyConfig, ProxiesAdapter.Holder>(data) {

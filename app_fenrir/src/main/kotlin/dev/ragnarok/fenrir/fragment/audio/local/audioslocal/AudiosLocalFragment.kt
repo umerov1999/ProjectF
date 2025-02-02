@@ -32,9 +32,10 @@ import dev.ragnarok.fenrir.view.MySearchView.OnAdditionalButtonClickListener
 class AudiosLocalFragment : BaseMvpFragment<AudiosLocalPresenter, IAudiosLocalView>(),
     MySearchView.OnQueryTextListener, DocsUploadAdapter.ActionListener,
     AudioLocalRecyclerAdapter.ClickListener, IAudiosLocalView {
-    private val requestReadPermission: DoRequestPermissions = requestPermissionsResultAbs(arrayOf(
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    ),
+    private val requestReadPermission: DoRequestPermissions = requestPermissionsResultAbs(
+        arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        ),
         {
             lazyPresenter {
                 firePrepared()
@@ -138,7 +139,8 @@ class AudiosLocalFragment : BaseMvpFragment<AudiosLocalPresenter, IAudiosLocalVi
     }
 
     override fun goToLocalAudioAlbums(selectedId: Int) {
-        LocalAudioAlbumsFragment.newInstance(selectedId,
+        LocalAudioAlbumsFragment.newInstance(
+            selectedId,
             object : LocalAudioAlbumsFragment.Listener {
                 override fun onSelected(bucket_id: Int) {
                     if (Settings.get().main().isRememberLocalAudioAlbum) {

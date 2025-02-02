@@ -46,17 +46,18 @@ class RequestsPresenter(accountId: Long, private val userId: Long, savedInstance
         }
         actualDataLoadingNow = true
         resolveRefreshingView()
-        actualDataDisposable.add(relationshipInteractor.getRequests(
-            accountId,
-            offset,
-            if (isNotFriendShow) 1000 else 200, true
-        )
-            .fromIOToMain({ users ->
-                onActualDataReceived(
-                    users,
-                    do_scan
-                )
-            }) { t -> onActualDataGetError(t) })
+        actualDataDisposable.add(
+            relationshipInteractor.getRequests(
+                accountId,
+                offset,
+                if (isNotFriendShow) 1000 else 200, true
+            )
+                .fromIOToMain({ users ->
+                    onActualDataReceived(
+                        users,
+                        do_scan
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     private fun onActualDataGetError(t: Throwable) {
@@ -134,12 +135,13 @@ class RequestsPresenter(accountId: Long, private val userId: Long, savedInstance
 
     private fun loadAllCachedData() {
         cacheLoadingNow = true
-        cacheDisposable.add(relationshipInteractor.getCachedRequests(accountId)
-            .fromIOToMain({ users -> onCachedDataReceived(users) }) { t ->
-                onCacheGetError(
-                    t
-                )
-            })
+        cacheDisposable.add(
+            relationshipInteractor.getCachedRequests(accountId)
+                .fromIOToMain({ users -> onCachedDataReceived(users) }) { t ->
+                    onCacheGetError(
+                        t
+                    )
+                })
     }
 
     private fun onCacheGetError(t: Throwable) {
@@ -227,12 +229,13 @@ class RequestsPresenter(accountId: Long, private val userId: Long, savedInstance
         } else {
             netSingle
         }
-        searchDisposable.add(single
-            .fromIOToMain({
-                onSearchDataReceived(
-                    it, query
-                )
-            }) { t -> onSearchError(t) })
+        searchDisposable.add(
+            single
+                .fromIOToMain({
+                    onSearchDataReceived(
+                        it, query
+                    )
+                }) { t -> onSearchError(t) })
     }
 
     private fun onSearchError(t: Throwable) {

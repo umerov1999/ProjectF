@@ -175,7 +175,8 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                 mCompositeDisposable.add(
                     MusicPlaybackController.tracksExist.findAllAudios(
                         this
-                    ).fromIOToMain({},
+                    ).fromIOToMain(
+                        {},
                         {
                             if (Settings.get().main().isDeveloper_mode) {
                                 createCustomToast(
@@ -187,15 +188,16 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                         })
                 )
             }
-            mCompositeDisposable.add(MusicPlaybackController.tracksExist.findAllTags()
-                .fromIOToMain(
-                    CoroutinesUtils.dummy()
-                ) {
-                    if (Settings.get().main().isDeveloper_mode) {
-                        createCustomToast(this, mViewFragment, mBottomNavigation)
-                            ?.showToastThrowable(it)
-                    }
-                })
+            mCompositeDisposable.add(
+                MusicPlaybackController.tracksExist.findAllTags()
+                    .fromIOToMain(
+                        CoroutinesUtils.dummy()
+                    ) {
+                        if (Settings.get().main().isDeveloper_mode) {
+                            createCustomToast(this, mViewFragment, mBottomNavigation)
+                                ?.showToastThrowable(it)
+                        }
+                    })
         }
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {

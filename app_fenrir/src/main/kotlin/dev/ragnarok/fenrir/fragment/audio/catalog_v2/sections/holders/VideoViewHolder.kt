@@ -14,7 +14,6 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.view.VideoServiceIcons.getIconByType
-import kotlin.String
 
 class VideoViewHolder(itemView: View) : IViewHolder(itemView) {
     val card: View = itemView.findViewById(R.id.card_view)

@@ -20,7 +20,7 @@
 
 #Camera2
 -keep public class androidx.camera.camera2.Camera2Config$DefaultProvider { *; }
--keep,allowobfuscation,allowshrinking class ** implements androidx.camera.core.impl.Quirk
+-keep,allowshrinking class ** extends androidx.camera.core.impl.Quirk
 
 
 #Firebase Installation

@@ -54,18 +54,19 @@ class AllFriendsPresenter(accountId: Long, private val userId: Long, savedInstan
     private fun requestActualData(do_scan: Boolean) {
         actualDataLoadingNow = true
         resolveRefreshingView()
-        actualDataDisposable.add(relationshipInteractor.getActualFriendsList(
-            accountId,
-            userId,
-            if (isNotFriendShow) null else 200,
-            offset
-        )
-            .fromIOToMain({ users ->
-                onActualDataReceived(
-                    users,
-                    do_scan
-                )
-            }) { t -> onActualDataGetError(t) })
+        actualDataDisposable.add(
+            relationshipInteractor.getActualFriendsList(
+                accountId,
+                userId,
+                if (isNotFriendShow) null else 200,
+                offset
+            )
+                .fromIOToMain({ users ->
+                    onActualDataReceived(
+                        users,
+                        do_scan
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     private fun onActualDataGetError(t: Throwable) {
@@ -140,12 +141,13 @@ class AllFriendsPresenter(accountId: Long, private val userId: Long, savedInstan
 
     private fun loadAllCachedData() {
         cacheLoadingNow = true
-        cacheDisposable.add(relationshipInteractor.getCachedFriends(accountId, userId)
-            .fromIOToMain({ users -> onCachedDataReceived(users) }) { t ->
-                onCacheGetError(
-                    t
-                )
-            })
+        cacheDisposable.add(
+            relationshipInteractor.getCachedFriends(accountId, userId)
+                .fromIOToMain({ users -> onCachedDataReceived(users) }) { t ->
+                    onCacheGetError(
+                        t
+                    )
+                })
     }
 
     private fun onCacheGetError(t: Throwable) {
@@ -235,14 +237,15 @@ class AllFriendsPresenter(accountId: Long, private val userId: Long, savedInstan
         } else {
             netSingle
         }
-        searchDisposable.add(single
-            .fromIOToMain({
-                onSearchDataReceived(
-                    offset,
-                    it.first,
-                    it.second
-                )
-            }) { t -> onSearchError(t) })
+        searchDisposable.add(
+            single
+                .fromIOToMain({
+                    onSearchDataReceived(
+                        offset,
+                        it.first,
+                        it.second
+                    )
+                }) { t -> onSearchError(t) })
     }
 
     private fun onSearchError(t: Throwable) {

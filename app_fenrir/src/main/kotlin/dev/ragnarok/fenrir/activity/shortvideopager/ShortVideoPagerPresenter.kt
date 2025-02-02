@@ -273,22 +273,23 @@ class ShortVideoPagerPresenter(
         }
         mShortVideos[mCurrentIndex].let {
             val add = !it.isUserLikes
-            appendJob(interactor.likeOrDislike(
-                accountId,
-                it.ownerId,
-                it.id,
-                it.accessKey,
-                add
-            )
-                .fromIOToMain(
-                    { pair ->
-                        onLikesResponse(
-                            pair.first,
-                            pair.second,
-                            mCurrentIndex
-                        )
-                    }
-                ) { throwable -> onLikeError(Utils.getCauseIfRuntime(throwable)) })
+            appendJob(
+                interactor.likeOrDislike(
+                    accountId,
+                    it.ownerId,
+                    it.id,
+                    it.accessKey,
+                    add
+                )
+                    .fromIOToMain(
+                        { pair ->
+                            onLikesResponse(
+                                pair.first,
+                                pair.second,
+                                mCurrentIndex
+                            )
+                        }
+                    ) { throwable -> onLikeError(Utils.getCauseIfRuntime(throwable)) })
         }
     }
 

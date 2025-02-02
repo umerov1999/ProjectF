@@ -47,13 +47,14 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
     private fun loadActualData(offset: Int) {
         actualDataLoading = true
         resolveRefreshingView()
-        appendJob(fInteractor.getPlaylists(accountId, owner_id, offset, GET_COUNT)
-            .fromIOToMain({ data ->
-                onActualDataReceived(
-                    offset,
-                    data
-                )
-            }) { t -> onActualDataGetError(t) })
+        appendJob(
+            fInteractor.getPlaylists(accountId, owner_id, offset, GET_COUNT)
+                .fromIOToMain({ data ->
+                    onActualDataReceived(
+                        offset,
+                        data
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     internal fun onActualDataGetError(t: Throwable) {
@@ -100,17 +101,18 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
                 actualDataLoading = true
                 resolveRefreshingView()
                 if (ids.size == 1) {
-                    appendJob(fInteractor.getPlaylistById(
-                        accountId,
-                        ids[0],
-                        owner_id,
-                        null
-                    )
-                        .fromIOToMain({
-                            addon.clear()
-                            addon.add(it)
-                            loadActualData(0)
-                        }) { loadActualData(0) })
+                    appendJob(
+                        fInteractor.getPlaylistById(
+                            accountId,
+                            ids[0],
+                            owner_id,
+                            null
+                        )
+                            .fromIOToMain({
+                                addon.clear()
+                                addon.add(it)
+                                loadActualData(0)
+                            }) { loadActualData(0) })
                 } else {
                     val code = StringBuilder()
                     val code_addon = StringBuilder("return [")
@@ -128,12 +130,13 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
                     }
                     code_addon.append("];")
                     code.append(code_addon)
-                    appendJob(fInteractor.getPlaylistsCustom(accountId, code.toString())
-                        .fromIOToMain({
-                            addon.clear()
-                            addon.addAll(it)
-                            loadActualData(0)
-                        }) { loadActualData(0) })
+                    appendJob(
+                        fInteractor.getPlaylistsCustom(accountId, code.toString())
+                            .fromIOToMain({
+                                addon.clear()
+                                addon.addAll(it)
+                                loadActualData(0)
+                            }) { loadActualData(0) })
                 }
             } else {
                 loadActualData(0)
@@ -186,20 +189,21 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
     }
 
     fun onDelete(index: Int, album: AudioPlaylist) {
-        appendJob(fInteractor.deletePlaylist(accountId, album.id, album.owner_id)
-            .fromIOToMain({
-                playlists.removeAt(index)
-                view?.notifyItemRemoved(
-                    index
-                )
-                view?.customToast?.showToast(
-                    R.string.success
-                )
-            }) { throwable ->
-                showError(
-                    throwable
-                )
-            })
+        appendJob(
+            fInteractor.deletePlaylist(accountId, album.id, album.owner_id)
+                .fromIOToMain({
+                    playlists.removeAt(index)
+                    view?.notifyItemRemoved(
+                        index
+                    )
+                    view?.customToast?.showToast(
+                        R.string.success
+                    )
+                }) { throwable ->
+                    showError(
+                        throwable
+                    )
+                })
     }
 
     fun onEdit(context: Context, album: AudioPlaylist) {
@@ -211,13 +215,14 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
             .setCancelable(true)
             .setView(root)
             .setPositiveButton(R.string.button_ok) { _, _ ->
-                appendJob(fInteractor.editPlaylist(
-                    accountId, album.owner_id, album.id,
-                    root.findViewById<TextInputEditText>(R.id.edit_title).text.toString(),
-                    root.findViewById<TextInputEditText>(R.id.edit_description).text.toString()
-                ).fromIOToMain({ fireRefresh() }) { t ->
-                    showError(getCauseIfRuntime(t))
-                })
+                appendJob(
+                    fInteractor.editPlaylist(
+                        accountId, album.owner_id, album.id,
+                        root.findViewById<TextInputEditText>(R.id.edit_title).text.toString(),
+                        root.findViewById<TextInputEditText>(R.id.edit_description).text.toString()
+                    ).fromIOToMain({ fireRefresh() }) { t ->
+                        showError(getCauseIfRuntime(t))
+                    })
             }
             .setNegativeButton(R.string.button_cancel, null)
             .show()
@@ -239,43 +244,45 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
             .setCancelable(true)
             .setView(root)
             .setPositiveButton(R.string.button_ok) { _, _ ->
-                appendJob(fInteractor.createPlaylist(
-                    accountId, owner_id,
-                    root.findViewById<TextInputEditText>(R.id.edit_title).text.toString(),
-                    root.findViewById<TextInputEditText>(R.id.edit_description).text.toString()
-                ).fromIOToMain({ playlist -> doInsertPlaylist(playlist) }) { t ->
-                    showError(getCauseIfRuntime(t))
-                })
+                appendJob(
+                    fInteractor.createPlaylist(
+                        accountId, owner_id,
+                        root.findViewById<TextInputEditText>(R.id.edit_title).text.toString(),
+                        root.findViewById<TextInputEditText>(R.id.edit_description).text.toString()
+                    ).fromIOToMain({ playlist -> doInsertPlaylist(playlist) }) { t ->
+                        showError(getCauseIfRuntime(t))
+                    })
             }
             .setNegativeButton(R.string.button_cancel, null)
             .show()
     }
 
     fun onAdd(album: AudioPlaylist, clone: Boolean) {
-        appendJob((if (clone) fInteractor.clonePlaylist(
-            accountId,
-            album.id,
-            album.owner_id
-        ) else fInteractor.followPlaylist(
-            accountId,
-            album.id,
-            album.owner_id,
-            album.access_key
-        ))
-            .fromIOToMain({
-                view?.customToast?.showToast(
-                    R.string.success
-                )
-                if (clone && isValueAssigned(
-                        album.id,
-                        Settings.get().main().servicePlaylist
+        appendJob(
+            (if (clone) fInteractor.clonePlaylist(
+                accountId,
+                album.id,
+                album.owner_id
+            ) else fInteractor.followPlaylist(
+                accountId,
+                album.id,
+                album.owner_id,
+                album.access_key
+            ))
+                .fromIOToMain({
+                    view?.customToast?.showToast(
+                        R.string.success
                     )
-                ) {
-                    fireRefresh()
-                }
-            }) { throwable ->
-                showError(throwable)
-            })
+                    if (clone && isValueAssigned(
+                            album.id,
+                            Settings.get().main().servicePlaylist
+                        )
+                    ) {
+                        fireRefresh()
+                    }
+                }) { throwable ->
+                    showError(throwable)
+                })
     }
 
     fun fireAudiosSelected(audios: List<Audio>) {
@@ -284,21 +291,22 @@ class AudioPlaylistsPresenter(accountId: Long, val owner_id: Long, savedInstance
             targets.add(AccessIdPair(i.id, i.ownerId, i.accessKey))
         }
         pending_to_add?.let { o ->
-            appendJob(fInteractor.addToPlaylist(
-                accountId,
-                o.owner_id,
-                o.id,
-                targets
-            )
-                .fromIOToMain({
-                    view?.customToast?.showToast(
-                        R.string.success
-                    )
-                }) { throwable ->
-                    showError(
-                        throwable
-                    )
-                })
+            appendJob(
+                fInteractor.addToPlaylist(
+                    accountId,
+                    o.owner_id,
+                    o.id,
+                    targets
+                )
+                    .fromIOToMain({
+                        view?.customToast?.showToast(
+                            R.string.success
+                        )
+                    }) { throwable ->
+                        showError(
+                            throwable
+                        )
+                    })
         }
         pending_to_add = null
     }

@@ -91,17 +91,18 @@ class GroupWallPresenter(
     }
 
     private fun requestActualFullInfo() {
-        appendJob(ownersRepository.getFullCommunityInfo(
-            accountId,
-            abs(ownerId),
-            IOwnersRepository.MODE_NET
-        )
-            .fromIOToMain({
-                onFullInfoReceived(
-                    it.first,
-                    it.second
-                )
-            }) { t -> onDetailsGetError(t) })
+        appendJob(
+            ownersRepository.getFullCommunityInfo(
+                accountId,
+                abs(ownerId),
+                IOwnersRepository.MODE_NET
+            )
+                .fromIOToMain({
+                    onFullInfoReceived(
+                        it.first,
+                        it.second
+                    )
+                }) { t -> onDetailsGetError(t) })
     }
 
     private fun onFullInfoReceived(community: Community?, details: CommunityDetails?) {
@@ -200,18 +201,20 @@ class GroupWallPresenter(
 
     private fun leaveCommunity() {
         val groupId = abs(ownerId)
-        appendJob(communitiesInteractor.leave(accountId, groupId)
-            .fromIOToMain({ onLeaveResult() }) { t ->
-                showError(getCauseIfRuntime(t))
-            })
+        appendJob(
+            communitiesInteractor.leave(accountId, groupId)
+                .fromIOToMain({ onLeaveResult() }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
     }
 
     private fun joinCommunity() {
         val groupId = abs(ownerId)
-        appendJob(communitiesInteractor.join(accountId, groupId)
-            .fromIOToMain({ onJoinResult() }) { t ->
-                showError(getCauseIfRuntime(t))
-            })
+        appendJob(
+            communitiesInteractor.join(accountId, groupId)
+                .fromIOToMain({ onJoinResult() }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
     }
 
     fun fireHeaderPhotosClick() {
@@ -504,29 +507,35 @@ class GroupWallPresenter(
     }
 
     fun fireSubscribe() {
-        appendJob(wallsRepository.subscribe(accountId, ownerId)
-            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(
+            wallsRepository.subscribe(accountId, ownerId)
+                .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
 
-        appendJob(storiesInteractor.subscribe(accountId, ownerId)
-            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(
+            storiesInteractor.subscribe(accountId, ownerId)
+                .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     fun fireUnSubscribe() {
-        appendJob(wallsRepository.unsubscribe(accountId, ownerId)
-            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(
+            wallsRepository.unsubscribe(accountId, ownerId)
+                .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
 
-        appendJob(storiesInteractor.unsubscribe(accountId, ownerId)
-            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(
+            storiesInteractor.unsubscribe(accountId, ownerId)
+                .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     fun fireAddToBookmarksClick() {
-        appendJob(faveInteractor.addPage(accountId, ownerId)
-            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(
+            faveInteractor.addPage(accountId, ownerId)
+                .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     fun fireRemoveFromBookmarks() {
-        appendJob(faveInteractor.removePage(accountId, ownerId, false)
-            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(
+            faveInteractor.removePage(accountId, ownerId, false)
+                .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     fun fireMentions() {
@@ -574,20 +583,21 @@ class GroupWallPresenter(
     }
 
     override fun searchStory(ByName: Boolean) {
-        appendJob(storiesInteractor.searchStories(
-            accountId,
-            if (ByName) community.fullName else null,
-            if (ByName) null else ownerId
-        )
-            .fromIOToMain {
-                if (it.nonNullNoEmpty()) {
-                    stories.clear()
-                    stories.addAll(it)
-                    view?.updateStory(
-                        stories
-                    )
-                }
-            })
+        appendJob(
+            storiesInteractor.searchStories(
+                accountId,
+                if (ByName) community.fullName else null,
+                if (ByName) null else ownerId
+            )
+                .fromIOToMain {
+                    if (it.nonNullNoEmpty()) {
+                        stories.clear()
+                        stories.addAll(it)
+                        view?.updateStory(
+                            stories
+                        )
+                    }
+                })
     }
 
     override fun getOwner(): Owner {

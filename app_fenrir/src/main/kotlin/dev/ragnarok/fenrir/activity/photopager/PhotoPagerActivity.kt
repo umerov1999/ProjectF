@@ -27,6 +27,7 @@ import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
+import androidx.core.util.size
 import androidx.core.view.MenuProvider
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.doOnPreDraw
@@ -419,7 +420,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         val view = findViewById<View>(R.id.photo_size)
         val current = photoSizeFromPrefs
         val popupMenu = PopupMenu(this, view)
-        for (i in 0 until SIZES.size()) {
+        for (i in 0 until SIZES.size) {
             val key = SIZES.keyAt(i)
             val value = SIZES[key]
             addPhotoSizeToMenu(popupMenu, key, value, current)

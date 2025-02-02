@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.StatFs
 import android.provider.MediaStore
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import com.squareup.picasso3.BitmapSafeResize
 import com.squareup.picasso3.Picasso
 import dev.ragnarok.fenrir.Constants
@@ -138,22 +139,22 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
             }
             when (type) {
                 Content_Local.PHOTO -> return ContentUris.withAppendedId(
-                    Uri.parse("content://media/external/images/media/"),
+                    "content://media/external/images/media/".toUri(),
                     id
                 )
 
                 Content_Local.VIDEO -> return ContentUris.withAppendedId(
-                    Uri.parse("content://media/external/videos/media/"),
+                    "content://media/external/videos/media/".toUri(),
                     id
                 )
 
                 Content_Local.AUDIO -> return ContentUris.withAppendedId(
-                    Uri.parse("content://media/external/audios/media/"),
+                    "content://media/external/audios/media/".toUri(),
                     id
                 )
             }
             return ContentUris.withAppendedId(
-                Uri.parse("content://media/external/images/media/"),
+                "content://media/external/images/media/".toUri(),
                 id
             )
         }

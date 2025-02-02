@@ -34,18 +34,19 @@ class NarrativesPresenter(
     private fun request(offset: Int) {
         netLoadingNow = true
         resolveRefreshingView()
-        netDisposable.add(storiesInteractor.getNarratives(
-            accountId,
-            owner_id,
-            null,
-            null
-        )
-            .fromIOToMain({ products ->
-                onNetDataReceived(
-                    offset,
-                    products
-                )
-            }) { t -> onNetDataGetError(t) })
+        netDisposable.add(
+            storiesInteractor.getNarratives(
+                accountId,
+                owner_id,
+                null,
+                null
+            )
+                .fromIOToMain({ products ->
+                    onNetDataReceived(
+                        offset,
+                        products
+                    )
+                }) { t -> onNetDataGetError(t) })
     }
 
     private fun onNetDataGetError(t: Throwable) {

@@ -59,12 +59,13 @@ class RepostPresenter(
     fun fireReadyClick() {
         setPublishingNow(true)
         val body = getTextBody()
-        appendJob(walls.repost(accountId, post.vkid, post.ownerId, targetGroupId, body)
-            .fromIOToMain({ onPublishComplete() }) { throwable ->
-                onPublishError(
-                    throwable
-                )
-            })
+        appendJob(
+            walls.repost(accountId, post.vkid, post.ownerId, targetGroupId, body)
+                .fromIOToMain({ onPublishComplete() }) { throwable ->
+                    onPublishError(
+                        throwable
+                    )
+                })
     }
 
     init {

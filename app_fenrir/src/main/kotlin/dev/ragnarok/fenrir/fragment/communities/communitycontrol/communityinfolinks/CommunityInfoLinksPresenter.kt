@@ -42,21 +42,22 @@ class CommunityInfoLinksPresenter(
 
     private fun requestLinks() {
         setLoadingNow(true)
-        appendJob(networker.vkDefault(accountId)
-            .groups()
-            .getById(listOf(groupId.id), null, null, "links")
-            .map { dtos ->
-                if (dtos.groups.isNullOrEmpty()) {
-                    throw NotFoundException()
+        appendJob(
+            networker.vkDefault(accountId)
+                .groups()
+                .getById(listOf(groupId.id), null, null, "links")
+                .map { dtos ->
+                    if (dtos.groups.isNullOrEmpty()) {
+                        throw NotFoundException()
+                    }
+                    val links = dtos.groups?.get(0)?.links
+                    links ?: emptyList()
                 }
-                val links = dtos.groups?.get(0)?.links
-                links ?: emptyList()
-            }
-            .fromIOToMain({ onLinksReceived(it) }) { throwable ->
-                onRequestError(
-                    throwable
-                )
-            })
+                .fromIOToMain({ onLinksReceived(it) }) { throwable ->
+                    onRequestError(
+                        throwable
+                    )
+                })
     }
 
     private fun onRequestError(throwable: Throwable) {

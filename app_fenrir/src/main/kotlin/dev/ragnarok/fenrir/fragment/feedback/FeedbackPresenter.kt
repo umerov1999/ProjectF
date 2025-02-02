@@ -46,18 +46,19 @@ class FeedbackPresenter(accountId: Long, savedInstanceState: Bundle?) :
         netLoadingStartFrom = startFrom
         resolveLoadMoreFooter()
         resolveSwipeRefreshLoadingView()
-        netDisposable.add(feedbackInteractor.getActualFeedbacks(
-            accountId,
-            COUNT_PER_REQUEST,
-            startFrom
-        )
-            .fromIOToMain({
-                onActualDataReceived(
-                    startFrom,
-                    it.first,
-                    it.second
-                )
-            }) { t -> onActualDataGetError(t) })
+        netDisposable.add(
+            feedbackInteractor.getActualFeedbacks(
+                accountId,
+                COUNT_PER_REQUEST,
+                startFrom
+            )
+                .fromIOToMain({
+                    onActualDataReceived(
+                        startFrom,
+                        it.first,
+                        it.second
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     private fun onActualDataGetError(t: Throwable) {
@@ -117,8 +118,9 @@ class FeedbackPresenter(accountId: Long, savedInstanceState: Bundle?) :
 
     private fun loadAllFromDb() {
         cacheLoadingNow = true
-        cacheDisposable.add(feedbackInteractor.getCachedFeedbacks(accountId)
-            .fromIOToMain({ onCachedDataReceived(it) }) { obj -> obj.printStackTrace() })
+        cacheDisposable.add(
+            feedbackInteractor.getCachedFeedbacks(accountId)
+                .fromIOToMain({ onCachedDataReceived(it) }) { obj -> obj.printStackTrace() })
     }
 
     private fun onCachedDataReceived(feedbacks: List<Feedback>) {

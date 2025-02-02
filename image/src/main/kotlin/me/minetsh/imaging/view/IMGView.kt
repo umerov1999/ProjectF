@@ -24,6 +24,9 @@ import android.view.ScaleGestureDetector.OnScaleGestureListener
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.withSave
+import androidx.core.graphics.withTranslation
 import me.minetsh.imaging.core.IMGImage
 import me.minetsh.imaging.core.IMGMode
 import me.minetsh.imaging.core.IMGPath
@@ -180,50 +183,50 @@ class IMGView @JvmOverloads constructor(
     }
 
     private fun onDrawImages(canvas: Canvas) {
-        canvas.save()
+        canvas.withSave {
 
-        // clip 中心旋转
-        val clipFrame = mImage.getClipFrame()
-        canvas.rotate(mImage.getRotate(), clipFrame.centerX(), clipFrame.centerY())
+            // clip 中心旋转
+            val clipFrame = mImage.getClipFrame()
+            rotate(mImage.getRotate(), clipFrame.centerX(), clipFrame.centerY())
 
-        // 图片
-        mImage.onDrawImage(canvas)
+            // 图片
+            mImage.onDrawImage(this)
 
-        // 马赛克
-        if (!mImage.isMosaicEmpty || mImage.getMode() == IMGMode.MOSAIC && !mPen.isEmpty) {
-            val count = mImage.onDrawMosaicsPath(canvas)
-            if (mImage.getMode() == IMGMode.MOSAIC && !mPen.isEmpty) {
-                mDoodlePaint.strokeWidth = IMGPath.BASE_MOSAIC_WIDTH
-                canvas.save()
-                val frame = mImage.getClipFrame()
-                canvas.rotate(-mImage.getRotate(), frame.centerX(), frame.centerY())
-                canvas.translate(scrollX.toFloat(), scrollY.toFloat())
-                canvas.drawPath(mPen.path, mDoodlePaint)
-                canvas.restore()
+            // 马赛克
+            if (!mImage.isMosaicEmpty || mImage.getMode() == IMGMode.MOSAIC && !mPen.isEmpty) {
+                val count = mImage.onDrawMosaicsPath(this)
+                if (mImage.getMode() == IMGMode.MOSAIC && !mPen.isEmpty) {
+                    mDoodlePaint.strokeWidth = IMGPath.BASE_MOSAIC_WIDTH
+                    withSave {
+                        val frame = mImage.getClipFrame()
+                        rotate(-mImage.getRotate(), frame.centerX(), frame.centerY())
+                        translate(scrollX.toFloat(), scrollY.toFloat())
+                        drawPath(mPen.path, mDoodlePaint)
+                    }
+                }
+                mImage.onDrawMosaic(this, count)
             }
-            mImage.onDrawMosaic(canvas, count)
-        }
 
-        // 涂鸦
-        mImage.onDrawDoodles(canvas)
-        if (mImage.getMode() === IMGMode.DOODLE && !mPen.isEmpty) {
-            mDoodlePaint.color = mPen.color
-            mDoodlePaint.strokeWidth = IMGPath.BASE_DOODLE_WIDTH * mImage.getScale()
-            canvas.save()
-            val frame = mImage.getClipFrame()
-            canvas.rotate(-mImage.getRotate(), frame.centerX(), frame.centerY())
-            canvas.translate(scrollX.toFloat(), scrollY.toFloat())
-            canvas.drawPath(mPen.path, mDoodlePaint)
-            canvas.restore()
-        }
+            // 涂鸦
+            mImage.onDrawDoodles(this)
+            if (mImage.getMode() === IMGMode.DOODLE && !mPen.isEmpty) {
+                mDoodlePaint.color = mPen.color
+                mDoodlePaint.strokeWidth = IMGPath.BASE_DOODLE_WIDTH * mImage.getScale()
+                withSave {
+                    val frame = mImage.getClipFrame()
+                    rotate(-mImage.getRotate(), frame.centerX(), frame.centerY())
+                    translate(scrollX.toFloat(), scrollY.toFloat())
+                    drawPath(mPen.path, mDoodlePaint)
+                }
+            }
 
-        // TODO
-        if (mImage.isFreezing()) {
-            // 文字贴片
-            mImage.onDrawStickers(canvas)
+            // TODO
+            if (mImage.isFreezing()) {
+                // 文字贴片
+                mImage.onDrawStickers(this)
+            }
+            mImage.onDrawShade(this)
         }
-        mImage.onDrawShade(canvas)
-        canvas.restore()
 
         // TODO
         if (!mImage.isFreezing()) {
@@ -234,10 +237,9 @@ class IMGView @JvmOverloads constructor(
 
         // 裁剪
         if (mImage.getMode() == IMGMode.CLIP) {
-            canvas.save()
-            canvas.translate(scrollX.toFloat(), scrollY.toFloat())
-            mImage.onDrawClip(canvas)
-            canvas.restore()
+            canvas.withTranslation(scrollX.toFloat(), scrollY.toFloat()) {
+                mImage.onDrawClip(this)
+            }
         }
     }
 
@@ -254,9 +256,10 @@ class IMGView @JvmOverloads constructor(
         // 缩放基画布
         m.setScale(scale, scale, frame.left, frame.top)
         m.mapRect(frame)
-        val bitmap = Bitmap.createBitmap(
+        val bitmap = createBitmap(
             frame.width().roundToInt(),
-            frame.height().roundToInt(), Bitmap.Config.ARGB_8888
+            frame.height().roundToInt(),
+            Bitmap.Config.ARGB_8888
         )
         val canvas = Canvas(bitmap)
 

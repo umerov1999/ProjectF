@@ -65,16 +65,17 @@ class PhotoAlbumsPresenter(
         if (isMy) {
             return
         }
-        appendJob(ownersRepository.getBaseOwnerInfo(
-            accountId,
-            mOwnerId,
-            IOwnersRepository.MODE_ANY
-        )
-            .fromIOToMain({ owner -> onOwnerInfoReceived(owner) }) { t ->
-                onOwnerGetError(
-                    t
-                )
-            })
+        appendJob(
+            ownersRepository.getBaseOwnerInfo(
+                accountId,
+                mOwnerId,
+                IOwnersRepository.MODE_ANY
+            )
+                .fromIOToMain({ owner -> onOwnerInfoReceived(owner) }) { t ->
+                    onOwnerGetError(
+                        t
+                    )
+                })
     }
 
     private fun onOwnerGetError(t: Throwable) {
@@ -90,12 +91,13 @@ class PhotoAlbumsPresenter(
     private fun refreshFromNet() {
         netLoadingNow = true
         resolveProgressView()
-        netDisposable.add(photosInteractor.getActualAlbums(accountId, mOwnerId, COUNT, offset)
-            .fromIOToMain({
-                onActualAlbumsReceived(
-                    it
-                )
-            }) { t -> onActualAlbumsGetError(t) })
+        netDisposable.add(
+            photosInteractor.getActualAlbums(accountId, mOwnerId, COUNT, offset)
+                .fromIOToMain({
+                    onActualAlbumsReceived(
+                        it
+                    )
+                }) { t -> onActualAlbumsGetError(t) })
     }
 
     private fun onActualAlbumsGetError(t: Throwable) {
@@ -137,8 +139,9 @@ class PhotoAlbumsPresenter(
     }
 
     private fun loadAllFromDb() {
-        cacheDisposable.add(photosInteractor.getCachedAlbums(accountId, mOwnerId)
-            .fromIOToMain({ onCachedDataReceived(it) }) { })
+        cacheDisposable.add(
+            photosInteractor.getCachedAlbums(accountId, mOwnerId)
+                .fromIOToMain({ onCachedDataReceived(it) }) { })
     }
 
     private fun onCachedDataReceived(albums: List<PhotoAlbum>) {
@@ -170,14 +173,15 @@ class PhotoAlbumsPresenter(
     private fun doAlbumRemove(album: PhotoAlbum) {
         val albumId = album.getObjectId()
         val ownerId = album.ownerId
-        appendJob(photosInteractor.removedAlbum(
-            accountId,
-            album.ownerId,
-            album.getObjectId()
-        )
-            .fromIOToMain({ onAlbumRemoved(albumId, ownerId) }) { t ->
-                showError(getCauseIfRuntime(t))
-            })
+        appendJob(
+            photosInteractor.removedAlbum(
+                accountId,
+                album.ownerId,
+                album.getObjectId()
+            )
+                .fromIOToMain({ onAlbumRemoved(albumId, ownerId) }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
     }
 
     private fun onAlbumRemoved(albumId: Int, ownerId: Long) {
@@ -264,22 +268,23 @@ class PhotoAlbumsPresenter(
         album.privacyComment?.let {
             privacies[1] = it
         }
-        appendJob(utilsInteractor
-            .createFullPrivacies(accountId, privacies)
-            .fromIOToMain({ full ->
-                val editor = PhotoAlbumEditor.create()
-                    .setPrivacyView(full[0])
-                    .setPrivacyComment(full[1])
-                    .setTitle(album.title)
-                    .setDescription(album.description)
-                    .setCommentsDisabled(album.commentsDisabled)
-                    .setUploadByAdminsOnly(album.uploadByAdminsOnly)
-                view?.goToAlbumEditing(
-                    accountId,
-                    album,
-                    editor
-                )
-            }) { obj -> obj.printStackTrace() })
+        appendJob(
+            utilsInteractor
+                .createFullPrivacies(accountId, privacies)
+                .fromIOToMain({ full ->
+                    val editor = PhotoAlbumEditor.create()
+                        .setPrivacyView(full[0])
+                        .setPrivacyComment(full[1])
+                        .setTitle(album.title)
+                        .setDescription(album.description)
+                        .setCommentsDisabled(album.commentsDisabled)
+                        .setUploadByAdminsOnly(album.uploadByAdminsOnly)
+                    view?.goToAlbumEditing(
+                        accountId,
+                        album,
+                        editor
+                    )
+                }) { obj -> obj.printStackTrace() })
     }
 
     class AdditionalParams {

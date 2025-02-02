@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.fragment.base.holder
 
 import android.util.SparseArray
+import androidx.core.util.size
 import java.lang.ref.WeakReference
 
 class SharedHolders<T : IdentificableHolder>(supportManyHoldersForEntity: Boolean) {
@@ -18,7 +19,7 @@ class SharedHolders<T : IdentificableHolder>(supportManyHoldersForEntity: Boolea
     }
 
     fun findHolderByHolderId(holderId: Int): T? {
-        for (i in 0 until cache.size()) {
+        for (i in 0 until cache.size) {
             val key = cache.keyAt(i)
             val holders: Set<WeakReference<T>> = cache[key]
             for (reference in holders) {
@@ -34,7 +35,7 @@ class SharedHolders<T : IdentificableHolder>(supportManyHoldersForEntity: Boolea
     fun put(entityId: Int, holder: T) {
         //Logger.d(TAG, "TRY to put holder, entityId: " + entityId);
         var success = false
-        for (i in 0 until cache.size()) {
+        for (i in 0 until cache.size) {
             val key = cache.keyAt(i)
             val holders = cache[key]
             val mustHaveInThisSet = entityId == key

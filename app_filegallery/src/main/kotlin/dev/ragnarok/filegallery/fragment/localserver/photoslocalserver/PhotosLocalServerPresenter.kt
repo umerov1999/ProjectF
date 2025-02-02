@@ -40,13 +40,14 @@ class PhotosLocalServerPresenter :
     private fun loadActualData(offset: Int) {
         actualDataLoading = true
         resolveRefreshingView()
-        appendJob(fInteractor.getPhotos(offset, GET_COUNT, reverse)
-            .fromIOToMain({
-                onActualDataReceived(
-                    offset,
-                    it
-                )
-            }) { onActualDataGetError(it) })
+        appendJob(
+            fInteractor.getPhotos(offset, GET_COUNT, reverse)
+                .fromIOToMain({
+                    onActualDataReceived(
+                        offset,
+                        it
+                    )
+                }) { onActualDataGetError(it) })
     }
 
     private fun onActualDataGetError(t: Throwable) {
@@ -117,21 +118,22 @@ class PhotosLocalServerPresenter :
     private fun doSearch() {
         actualDataLoading = true
         resolveRefreshingView()
-        appendJob(fInteractor.searchPhotos(
-            search_at.getQuery(),
-            search_at.getOffset(),
-            SEARCH_COUNT,
-            reverse
-        )
-            .fromIOToMain({
-                onSearched(
-                    FindAt(
-                        search_at.getQuery() ?: return@fromIOToMain,
-                        search_at.getOffset() + SEARCH_COUNT,
-                        it.size < SEARCH_COUNT
-                    ), it
-                )
-            }) { onActualDataGetError(it) })
+        appendJob(
+            fInteractor.searchPhotos(
+                search_at.getQuery(),
+                search_at.getOffset(),
+                SEARCH_COUNT,
+                reverse
+            )
+                .fromIOToMain({
+                    onSearched(
+                        FindAt(
+                            search_at.getQuery() ?: return@fromIOToMain,
+                            search_at.getOffset() + SEARCH_COUNT,
+                            it.size < SEARCH_COUNT
+                        ), it
+                    )
+                }) { onActualDataGetError(it) })
     }
 
     private fun onSearched(search_at: FindAt, data: List<Photo>) {
@@ -163,8 +165,9 @@ class PhotosLocalServerPresenter :
             return
         }
         actualDataDisposable.cancel()
-        actualDataDisposable.set(delayTaskFlow(WEB_SEARCH_DELAY.toLong())
-            .toMain { doSearch() })
+        actualDataDisposable.set(
+            delayTaskFlow(WEB_SEARCH_DELAY.toLong())
+                .toMain { doSearch() })
     }
 
     fun fireSearchRequestChanged(q: String?) {

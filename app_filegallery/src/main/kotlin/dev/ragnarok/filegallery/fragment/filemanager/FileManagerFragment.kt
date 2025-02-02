@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toFile
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -237,7 +238,10 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
         musicButton?.setOnClickListener {
             val curr = MusicPlaybackController.currentAudio
             if (curr != null && curr.isLocal) {
-                if (presenter?.scrollTo(Uri.parse(curr.url).toFile().absolutePath) != true) {
+                if (presenter?.scrollTo(
+                        curr.url?.toUri()?.toFile()?.absolutePath.toString()
+                    ) != true
+                ) {
                     customToast?.showToastError(R.string.audio_not_found)
                 }
             } else customToast?.showToastError(R.string.null_audio)

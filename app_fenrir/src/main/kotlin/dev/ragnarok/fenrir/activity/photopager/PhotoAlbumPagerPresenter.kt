@@ -101,12 +101,13 @@ class PhotoAlbumPagerPresenter : PhotoPagerPresenter {
 
     private fun loadDataFromDatabase(source: TmpSource) {
         changeLoadingNowState(true)
-        appendJob(Stores.instance
-            .tempStore()
-            .getTemporaryData(source.ownerId, source.sourceId, Serializers.PHOTOS_SERIALIZER)
-            .fromIOToMain({ onInitialLoadingFinished(it) }) {
-                PersistentLogger.logThrowable("PhotoAlbumPagerPresenter", it)
-            })
+        appendJob(
+            Stores.instance
+                .tempStore()
+                .getTemporaryData(source.ownerId, source.sourceId, Serializers.PHOTOS_SERIALIZER)
+                .fromIOToMain({ onInitialLoadingFinished(it) }) {
+                    PersistentLogger.logThrowable("PhotoAlbumPagerPresenter", it)
+                })
     }
 
     private fun onInitialLoadingFinished(photos: List<Photo>) {
@@ -126,51 +127,55 @@ class PhotoAlbumPagerPresenter : PhotoPagerPresenter {
         if (!canLoad) return
         changeLoadingNowState(true)
         if (mAlbumId != -9001 && mAlbumId != -9000 && mAlbumId != -311) {
-            appendJob(photosInteractor[accountId, mOwnerId, mAlbumId, COUNT_PER_LOAD, mPhotos.size, !invertPhotoRev]
-                .fromIOToMain({ onActualPhotosReceived(it) }) { t ->
-                    onActualDataGetError(
-                        t
-                    )
-                })
+            appendJob(
+                photosInteractor[accountId, mOwnerId, mAlbumId, COUNT_PER_LOAD, mPhotos.size, !invertPhotoRev]
+                    .fromIOToMain({ onActualPhotosReceived(it) }) { t ->
+                        onActualDataGetError(
+                            t
+                        )
+                    })
         } else if (mAlbumId == -9000) {
-            appendJob(photosInteractor.getUsersPhoto(
-                accountId,
-                mOwnerId,
-                1,
-                if (invertPhotoRev) 1 else 0,
-                mPhotos.size,
-                COUNT_PER_LOAD
-            )
-                .fromIOToMain({ onActualPhotosReceived(it) }) { t ->
-                    onActualDataGetError(
-                        t
-                    )
-                })
+            appendJob(
+                photosInteractor.getUsersPhoto(
+                    accountId,
+                    mOwnerId,
+                    1,
+                    if (invertPhotoRev) 1 else 0,
+                    mPhotos.size,
+                    COUNT_PER_LOAD
+                )
+                    .fromIOToMain({ onActualPhotosReceived(it) }) { t ->
+                        onActualDataGetError(
+                            t
+                        )
+                    })
         } else if (mAlbumId == -9001) {
-            appendJob(photosInteractor.getAll(
-                accountId,
-                mOwnerId,
-                1,
-                1,
-                mPhotos.size,
-                COUNT_PER_LOAD
-            )
-                .fromIOToMain({ onActualPhotosReceived(it) }) {
-                    onActualDataGetError(
-                        it
-                    )
-                })
+            appendJob(
+                photosInteractor.getAll(
+                    accountId,
+                    mOwnerId,
+                    1,
+                    1,
+                    mPhotos.size,
+                    COUNT_PER_LOAD
+                )
+                    .fromIOToMain({ onActualPhotosReceived(it) }) {
+                        onActualDataGetError(
+                            it
+                        )
+                    })
         } else {
-            appendJob(localServerInteractor.getPhotos(
-                mPhotos.size,
-                COUNT_PER_LOAD,
-                invertPhotoRev
-            )
-                .fromIOToMain({ onActualPhotosReceived(it) }) {
-                    onActualDataGetError(
-                        it
-                    )
-                })
+            appendJob(
+                localServerInteractor.getPhotos(
+                    mPhotos.size,
+                    COUNT_PER_LOAD,
+                    invertPhotoRev
+                )
+                    .fromIOToMain({ onActualPhotosReceived(it) }) {
+                        onActualDataGetError(
+                            it
+                        )
+                    })
         }
     }
 

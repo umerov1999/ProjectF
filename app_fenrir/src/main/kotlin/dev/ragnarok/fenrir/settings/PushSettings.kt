@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.settings
 
 import android.content.Context
+import androidx.core.content.edit
 import de.maxr1998.modernpreferences.PreferenceScreen.Companion.getPreferences
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.settings.ISettings.IPushSettings
@@ -13,9 +14,9 @@ internal class PushSettings(context: Context) : IPushSettings {
             target.add(kJson.encodeToString(VKPushRegistration.serializer(), registration))
         }
         getPreferences(app)
-            .edit()
-            .putStringSet(KEY_REGISTERED, target)
-            .apply()
+            .edit {
+                putStringSet(KEY_REGISTERED, target)
+            }
     }
 
     override val registrations: List<VKPushRegistration>

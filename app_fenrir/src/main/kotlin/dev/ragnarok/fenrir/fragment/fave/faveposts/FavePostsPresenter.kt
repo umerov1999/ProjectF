@@ -77,14 +77,15 @@ class FavePostsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun requestActual(offset: Int) {
         setRequestNow(true)
         val newOffset = offset + COUNT
-        appendJob(faveInteractor.getPosts(accountId, COUNT, offset)
-            .fromIOToMain({ posts ->
-                onActualDataReceived(
-                    offset,
-                    newOffset,
-                    posts
-                )
-            }) { throwable -> onActualDataGetError(throwable) })
+        appendJob(
+            faveInteractor.getPosts(accountId, COUNT, offset)
+                .fromIOToMain({ posts ->
+                    onActualDataReceived(
+                        offset,
+                        newOffset,
+                        posts
+                    )
+                }) { throwable -> onActualDataGetError(throwable) })
     }
 
     private fun onActualDataGetError(throwable: Throwable) {
@@ -112,8 +113,9 @@ class FavePostsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     private fun loadCachedData() {
-        cacheCompositeDisposable.add(faveInteractor.getCachedPosts(accountId)
-            .fromIOToMain({ posts -> onCachedDataReceived(posts) }) { obj -> obj.printStackTrace() })
+        cacheCompositeDisposable.add(
+            faveInteractor.getCachedPosts(accountId)
+                .fromIOToMain({ posts -> onCachedDataReceived(posts) }) { obj -> obj.printStackTrace() })
     }
 
     private fun onCachedDataReceived(posts: List<Post>) {
@@ -146,16 +148,18 @@ class FavePostsPresenter(accountId: Long, savedInstanceState: Bundle?) :
         ) {
             return
         }
-        appendJob(wallInteractor.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
-            .fromIOToMain(dummy()) { t -> onLikeError(t) })
+        appendJob(
+            wallInteractor.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
+                .fromIOToMain(dummy()) { t -> onLikeError(t) })
     }
 
     fun firePostDelete(index: Int, post: Post) {
-        appendJob(faveInteractor.removePost(accountId, post.ownerId, post.vkid)
-            .fromIOToMain({
-                posts.removeAt(index)
-                view?.notifyDataSetChanged()
-            }) { throwable -> onActualDataGetError(throwable) })
+        appendJob(
+            faveInteractor.removePost(accountId, post.ownerId, post.vkid)
+                .fromIOToMain({
+                    posts.removeAt(index)
+                    view?.notifyDataSetChanged()
+                }) { throwable -> onActualDataGetError(throwable) })
     }
 
     private fun onLikeError(t: Throwable) {
@@ -167,8 +171,9 @@ class FavePostsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     init {
-        appendJob(wallInteractor.observeMinorChanges()
-            .sharedFlowToMain { onPostUpdate(it) })
+        appendJob(
+            wallInteractor.observeMinorChanges()
+                .sharedFlowToMain { onPostUpdate(it) })
         loadCachedData()
     }
 }

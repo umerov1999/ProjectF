@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.settings
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import de.maxr1998.modernpreferences.PreferenceScreen.Companion.getPreferences
 import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.Constants
@@ -50,9 +51,9 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
         set(accountId) {
             if (current == accountId) return
             getPreferences(app)
-                .edit()
-                .putLong(KEY_CURRENT, accountId)
-                .apply()
+                .edit {
+                    putLong(KEY_CURRENT, accountId)
+                }
             fireAccountChange()
         }
 
@@ -62,9 +63,9 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
         accounts.remove(accountId)
         val tmpStore = fetchAccountsFromPrefs()
         tmpStore.remove(accountId)
-        preferences.edit()
-            .putStringSet(KEY_ACCOUNT_UIDS, makeAccountsToPrefs(tmpStore))
-            .apply()
+        preferences.edit {
+            putStringSet(KEY_ACCOUNT_UIDS, makeAccountsToPrefs(tmpStore))
+        }
         var firstUserAccountId: Long? = null
         if (accountId == currentAccountId) {
             val accountIds = registered
@@ -80,13 +81,13 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
                 }
             }
             if (firstUserAccountId != null) {
-                preferences.edit()
-                    .putLong(KEY_CURRENT, firstUserAccountId)
-                    .apply()
+                preferences.edit {
+                    putLong(KEY_CURRENT, firstUserAccountId)
+                }
             } else {
-                preferences.edit()
-                    .remove(KEY_CURRENT)
-                    .apply()
+                preferences.edit {
+                    remove(KEY_CURRENT)
+                }
             }
         }
         notifyAboutRegisteredChanges()
@@ -97,14 +98,14 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
     override fun registerAccountId(accountId: Long, setCurrent: Boolean) {
         val preferences = getPreferences(app)
         accounts.add(accountId)
-        val editor = preferences.edit()
-        val tmpStore = fetchAccountsFromPrefs()
-        tmpStore.add(accountId)
-        editor.putStringSet(KEY_ACCOUNT_UIDS, makeAccountsToPrefs(tmpStore))
-        if (setCurrent) {
-            editor.putLong(KEY_CURRENT, accountId)
+        preferences.edit {
+            val tmpStore = fetchAccountsFromPrefs()
+            tmpStore.add(accountId)
+            putStringSet(KEY_ACCOUNT_UIDS, makeAccountsToPrefs(tmpStore))
+            if (setCurrent) {
+                putLong(KEY_CURRENT, accountId)
+            }
         }
-        editor.apply()
         notifyAboutRegisteredChanges()
         if (setCurrent) {
             fireAccountChange()
@@ -114,15 +115,15 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
     override fun storeAccessToken(accountId: Long, accessToken: String?) {
         accessToken ?: return
         tokens[accountId] = accessToken
-        preferences.edit()
-            .putString(tokenKeyFor(accountId), accessToken)
-            .apply()
+        preferences.edit {
+            putString(tokenKeyFor(accountId), accessToken)
+        }
     }
 
     override fun storeLogin(accountId: Long, loginCombo: String?) {
-        preferences.edit()
-            .putString(loginKeyFor(accountId), loginCombo)
-            .apply()
+        preferences.edit {
+            putString(loginKeyFor(accountId), loginCombo)
+        }
     }
 
     override fun storeDevice(accountId: Long, deviceName: String?) {
@@ -131,9 +132,9 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
             return
         }
         devices[accountId] = deviceName
-        preferences.edit()
-            .putString(deviceKeyFor(accountId), deviceName)
-            .apply()
+        preferences.edit {
+            putString(deviceKeyFor(accountId), deviceName)
+        }
     }
 
     override fun getLogin(accountId: Long): String? {
@@ -142,9 +143,9 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
 
     override fun storeTokenType(accountId: Long, @AccountType type: Int) {
         types[accountId] = type
-        preferences.edit()
-            .putInt(typeAccKeyFor(accountId), type)
-            .apply()
+        preferences.edit {
+            putInt(typeAccKeyFor(accountId), type)
+        }
     }
 
     override fun getAccessToken(accountId: Long): String? {
@@ -184,29 +185,29 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
 
     override fun removeAccessToken(accountId: Long) {
         tokens.remove(accountId)
-        preferences.edit()
-            .remove(tokenKeyFor(accountId))
-            .apply()
+        preferences.edit {
+            remove(tokenKeyFor(accountId))
+        }
     }
 
     override fun removeType(accountId: Long) {
         types.remove(accountId)
-        preferences.edit()
-            .remove(typeAccKeyFor(accountId))
-            .apply()
+        preferences.edit {
+            remove(typeAccKeyFor(accountId))
+        }
     }
 
     override fun removeLogin(accountId: Long) {
-        preferences.edit()
-            .remove(loginKeyFor(accountId))
-            .apply()
+        preferences.edit {
+            remove(loginKeyFor(accountId))
+        }
     }
 
     override fun removeDevice(accountId: Long) {
         devices.remove(accountId)
-        preferences.edit()
-            .remove(deviceKeyFor(accountId))
-            .apply()
+        preferences.edit {
+            remove(deviceKeyFor(accountId))
+        }
     }
 
     private fun makeAccountsToPrefs(data: HashSet<Long>): HashSet<String> {
@@ -271,11 +272,12 @@ internal class AccountsSettings @SuppressLint("UseSparseArrays") constructor(con
             }
         }
         set(settings) {
-            getPreferences(app).edit()
-                .putString(
+            getPreferences(app).edit {
+                putString(
                     "anonym_token_json",
                     kJson.encodeToString(AnonymToken.serializer(), settings)
-                ).apply()
+                )
+            }
         }
 
     companion object {

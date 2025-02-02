@@ -12,6 +12,7 @@ import android.webkit.MimeTypeMap
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
 import androidx.work.Data
 import androidx.work.ForegroundInfo
@@ -167,7 +168,7 @@ object DownloadWorkUtils {
 
     @Suppress("DEPRECATION")
     private fun toExternalDownloader(context: Context, url: String, file: DownloadInfo) {
-        val downloadRequest = DownloadManager.Request(Uri.parse(url))
+        val downloadRequest = DownloadManager.Request(url.toUri())
         downloadRequest.allowScanningByMediaScanner()
         downloadRequest.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
         downloadRequest.setDescription(file.buildFilename())

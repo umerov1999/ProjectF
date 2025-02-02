@@ -1,8 +1,8 @@
 package dev.ragnarok.fenrir.fragment.audio.local.audioslocal
 
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
+import androidx.core.net.toUri
 import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.db.Stores
@@ -50,23 +50,29 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun firePrepared() {
-        appendJob(uploadManager[accountId, destination]
-            .fromIOToMain { data -> onUploadsDataReceived(data) })
-        appendJob(uploadManager.observeAdding()
-            .sharedFlowToMain { added -> onUploadsAdded(added) })
-        appendJob(uploadManager.observeDeleting(true)
-            .sharedFlowToMain { ids -> onUploadDeleted(ids) })
-        appendJob(uploadManager.observeResults()
-            .filter {
-                destination.compareTo(
-                    it.first.destination
-                ) || remotePlay.compareTo(it.first.destination)
-            }
-            .sharedFlowToMain { pair -> onUploadResults(pair) })
-        appendJob(uploadManager.observeStatus()
-            .sharedFlowToMain { upload -> onUploadStatusUpdate(upload) })
-        appendJob(uploadManager.observeProgress()
-            .sharedFlowToMain { updates -> onProgressUpdates(updates) })
+        appendJob(
+            uploadManager[accountId, destination]
+                .fromIOToMain { data -> onUploadsDataReceived(data) })
+        appendJob(
+            uploadManager.observeAdding()
+                .sharedFlowToMain { added -> onUploadsAdded(added) })
+        appendJob(
+            uploadManager.observeDeleting(true)
+                .sharedFlowToMain { ids -> onUploadDeleted(ids) })
+        appendJob(
+            uploadManager.observeResults()
+                .filter {
+                    destination.compareTo(
+                        it.first.destination
+                    ) || remotePlay.compareTo(it.first.destination)
+                }
+                .sharedFlowToMain { pair -> onUploadResults(pair) })
+        appendJob(
+            uploadManager.observeStatus()
+                .sharedFlowToMain { upload -> onUploadStatusUpdate(upload) })
+        appendJob(
+            uploadManager.observeProgress()
+                .sharedFlowToMain { updates -> onProgressUpdates(updates) })
         fireRefresh()
     }
 
@@ -160,23 +166,25 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun requestList() {
         setLoadingNow(true)
         if (bucket_id == 0) {
-            audioListDisposable.add(Stores.instance
-                .localMedia()
-                .getAudios(accountId)
-                .fromIOToMain({ onListReceived(it) }) { t ->
-                    onListGetError(
-                        t
-                    )
-                })
+            audioListDisposable.add(
+                Stores.instance
+                    .localMedia()
+                    .getAudios(accountId)
+                    .fromIOToMain({ onListReceived(it) }) { t ->
+                        onListGetError(
+                            t
+                        )
+                    })
         } else {
-            audioListDisposable.add(Stores.instance
-                .localMedia()
-                .getAudios(accountId, bucket_id.toLong())
-                .fromIOToMain({ onListReceived(it) }) { t ->
-                    onListGetError(
-                        t
-                    )
-                })
+            audioListDisposable.add(
+                Stores.instance
+                    .localMedia()
+                    .getAudios(accountId, bucket_id.toLong())
+                    .fromIOToMain({ onListReceived(it) }) { t ->
+                        onListGetError(
+                            t
+                        )
+                    })
         }
     }
 
@@ -224,14 +232,14 @@ class AudiosLocalPresenter(accountId: Long, savedInstanceState: Bundle?) :
     fun fireFileForUploadSelected(file: String?) {
         val intent = UploadIntent(accountId, destination)
             .setAutoCommit(true)
-            .setFileUri(Uri.parse(file))
+            .setFileUri(file?.toUri())
         uploadManager.enqueue(listOf(intent))
     }
 
     fun fireFileForRemotePlaySelected(file: String?) {
         val intent = UploadIntent(accountId, remotePlay)
             .setAutoCommit(true)
-            .setFileUri(Uri.parse(file))
+            .setFileUri(file?.toUri())
         uploadManager.enqueue(listOf(intent))
     }
 

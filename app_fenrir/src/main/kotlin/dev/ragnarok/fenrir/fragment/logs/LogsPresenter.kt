@@ -51,12 +51,13 @@ class LogsPresenter(savedInstanceState: Bundle?) :
     private fun loadAll() {
         val type = selectedType
         setLoading(true)
-        appendJob(store.getLogAll(type)
-            .fromIOToMain({ events -> onDataReceived(events) }) { throwable ->
-                onDataReceiveError(
-                    getCauseIfRuntime(throwable)
-                )
-            })
+        appendJob(
+            store.getLogAll(type)
+                .fromIOToMain({ events -> onDataReceived(events) }) { throwable ->
+                    onDataReceiveError(
+                        getCauseIfRuntime(throwable)
+                    )
+                })
     }
 
     private fun onDataReceiveError(throwable: Throwable) {

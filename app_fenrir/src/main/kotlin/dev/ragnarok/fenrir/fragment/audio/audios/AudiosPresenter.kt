@@ -111,13 +111,14 @@ class AudiosPresenter(
 
     private fun requestList(offset: Int, album_id: Int?) {
         setLoadingNow(true)
-        audioListDisposable.add(audioInteractor[accountId, album_id, ownerId, offset, GET_COUNT, accessKey]
-            .fromIOToMain({
-                onListReceived(
-                    offset,
-                    it
-                )
-            }) { t -> onListGetError(t) })
+        audioListDisposable.add(
+            audioInteractor[accountId, album_id, ownerId, offset, GET_COUNT, accessKey]
+                .fromIOToMain({
+                    onListReceived(
+                        offset,
+                        it
+                    )
+                }) { t -> onListGetError(t) })
     }
 
     private fun onListReceived(offset: Int, data: List<Audio>) {
@@ -249,49 +250,52 @@ class AudiosPresenter(
             searcher.reset()
         } else {
             if (playlistId != null && playlistId != 0) {
-                audioListDisposable.add(audioInteractor.getPlaylistById(
-                    accountId,
-                    playlistId,
-                    ownerId,
-                    accessKey
-                )
-                    .fromIOToMain({ t -> loadedPlaylist(t) }) { t ->
-                        showError(
-                            getCauseIfRuntime(t)
-                        )
-                    })
+                audioListDisposable.add(
+                    audioInteractor.getPlaylistById(
+                        accountId,
+                        playlistId,
+                        ownerId,
+                        accessKey
+                    )
+                        .fromIOToMain({ t -> loadedPlaylist(t) }) { t ->
+                            showError(
+                                getCauseIfRuntime(t)
+                            )
+                        })
             }
             requestList(0, playlistId)
         }
     }
 
     fun onDelete(album: AudioPlaylist) {
-        audioListDisposable.add(audioInteractor.deletePlaylist(
-            accountId,
-            album.id,
-            album.owner_id
-        )
-            .fromIOToMain({
-                view?.customToast?.showToast(
-                    R.string.success
-                )
-            }) { throwable ->
-                showError(throwable)
-            })
+        audioListDisposable.add(
+            audioInteractor.deletePlaylist(
+                accountId,
+                album.id,
+                album.owner_id
+            )
+                .fromIOToMain({
+                    view?.customToast?.showToast(
+                        R.string.success
+                    )
+                }) { throwable ->
+                    showError(throwable)
+                })
     }
 
     fun onAdd(album: AudioPlaylist) {
-        audioListDisposable.add(audioInteractor.followPlaylist(
-            accountId,
-            album.id,
-            album.owner_id,
-            album.access_key
-        )
-            .fromIOToMain({
-                view?.customToast?.showToast(R.string.success)
-            }) { throwable ->
-                showError(throwable)
-            })
+        audioListDisposable.add(
+            audioInteractor.followPlaylist(
+                accountId,
+                album.id,
+                album.owner_id,
+                album.access_key
+            )
+                .fromIOToMain({
+                    view?.customToast?.showToast(R.string.success)
+                }) { throwable ->
+                    showError(throwable)
+                })
     }
 
     fun fireScrollToEnd() {
@@ -313,15 +317,16 @@ class AudiosPresenter(
             .setCancelable(true)
             .setView(root)
             .setPositiveButton(R.string.button_ok) { _, _ ->
-                audioListDisposable.add(audioInteractor.edit(
-                    accountId,
-                    audio.ownerId,
-                    audio.id,
-                    root.findViewById<TextInputEditText>(R.id.edit_artist).text.toString(),
-                    root.findViewById<TextInputEditText>(R.id.edit_title).text.toString()
-                ).fromIOToMain({ fireRefresh() }) { t ->
-                    showError(getCauseIfRuntime(t))
-                })
+                audioListDisposable.add(
+                    audioInteractor.edit(
+                        accountId,
+                        audio.ownerId,
+                        audio.id,
+                        root.findViewById<TextInputEditText>(R.id.edit_artist).text.toString(),
+                        root.findViewById<TextInputEditText>(R.id.edit_title).text.toString()
+                    ).fromIOToMain({ fireRefresh() }) { t ->
+                        showError(getCauseIfRuntime(t))
+                    })
             }
             .setNegativeButton(R.string.button_cancel, null)
             .show()

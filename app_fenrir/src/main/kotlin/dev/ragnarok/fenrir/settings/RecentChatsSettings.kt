@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.settings
 
 import android.content.Context
+import androidx.core.content.edit
 import de.maxr1998.modernpreferences.PreferenceScreen.Companion.getPreferences
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.model.drawer.RecentChat
@@ -32,9 +33,9 @@ internal class RecentChatsSettings(app: Context) : IRecentChats {
             target.add(kJson.encodeToString(RecentChat.serializer(), item))
         }
         getPreferences(app)
-            .edit()
-            .putStringSet(recentChatKeyFor(accountId), target)
-            .apply()
+            .edit {
+                putStringSet(recentChatKeyFor(accountId), target)
+            }
     }
 
     companion object {

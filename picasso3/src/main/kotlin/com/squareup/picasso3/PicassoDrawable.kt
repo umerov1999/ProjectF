@@ -28,6 +28,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.SystemClock
 import android.widget.ImageView
+import androidx.core.graphics.withRotation
 import com.squareup.picasso3.Picasso.LoadedFrom
 import com.squareup.picasso3.Picasso.LoadedFrom.MEMORY
 import com.squareup.picasso3.RequestHandler.Result
@@ -73,30 +74,28 @@ internal class PicassoDrawable(
 
     private fun applyRotationAndDraw(canvas: Canvas) {
         if (rotate > 0f && intrinsicWidth > 0 && intrinsicHeight > 0) {
-            canvas.save()
-            canvas.rotate(rotate, intrinsicWidth / 2f, intrinsicHeight / 2f)
+            canvas.withRotation(rotate, intrinsicWidth / 2f, intrinsicHeight / 2f) {
+                val cosR = cos(Math.toRadians(rotate.toDouble())).toFloat()
+                val sinR = sin(Math.toRadians(rotate.toDouble())).toFloat()
 
-            val cosR = cos(Math.toRadians(rotate.toDouble())).toFloat()
-            val sinR = sin(Math.toRadians(rotate.toDouble())).toFloat()
+                val ssx = evaluate(
+                    abs(cosR),
+                    intrinsicHeight.toFloat(), intrinsicWidth.toFloat()
+                ) / intrinsicWidth.toFloat()
 
-            val ssx = evaluate(
-                abs(cosR),
-                intrinsicHeight.toFloat(), intrinsicWidth.toFloat()
-            ) / intrinsicWidth.toFloat()
+                val ssy = evaluate(
+                    abs(sinR),
+                    intrinsicHeight.toFloat(), intrinsicWidth.toFloat()
+                ) / intrinsicHeight.toFloat()
 
-            val ssy = evaluate(
-                abs(sinR),
-                intrinsicHeight.toFloat(), intrinsicWidth.toFloat()
-            ) / intrinsicHeight.toFloat()
+                scale(
+                    if (intrinsicWidth > intrinsicHeight) ssx else ssy,
+                    if (intrinsicHeight > intrinsicWidth) ssy else ssx,
+                    intrinsicWidth / 2f, intrinsicHeight / 2f
+                )
 
-            canvas.scale(
-                if (intrinsicWidth > intrinsicHeight) ssx else ssy,
-                if (intrinsicHeight > intrinsicWidth) ssy else ssx,
-                intrinsicWidth / 2f, intrinsicHeight / 2f
-            )
-
-            super.draw(canvas)
-            canvas.restore()
+                super.draw(this)
+            }
         } else {
             super.draw(canvas)
         }

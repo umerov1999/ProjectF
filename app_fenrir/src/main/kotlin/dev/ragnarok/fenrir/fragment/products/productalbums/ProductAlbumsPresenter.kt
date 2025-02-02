@@ -34,18 +34,19 @@ class ProductAlbumsPresenter(
     private fun request(offset: Int) {
         netLoadingNow = true
         resolveRefreshingView()
-        netDisposable.add(ownerInteractor.getMarketAlbums(
-            accountId,
-            owner_id,
-            (offset - 1).coerceAtLeast(0),
-            COUNT_PER_REQUEST
-        )
-            .fromIOToMain({ products ->
-                onNetDataReceived(
-                    offset,
-                    products
-                )
-            }) { t -> onNetDataGetError(t) })
+        netDisposable.add(
+            ownerInteractor.getMarketAlbums(
+                accountId,
+                owner_id,
+                (offset - 1).coerceAtLeast(0),
+                COUNT_PER_REQUEST
+            )
+                .fromIOToMain({ products ->
+                    onNetDataReceived(
+                        offset,
+                        products
+                    )
+                }) { t -> onNetDataGetError(t) })
     }
 
     private fun onNetDataGetError(t: Throwable) {

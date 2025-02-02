@@ -38,12 +38,13 @@ class FaveArticlesPresenter(accountId: Long, savedInstanceState: Bundle?) :
 
     private fun loadCachedData() {
         cacheLoadingNow = true
-        cacheDisposable.add(faveInteractor.getCachedArticles(accountId)
-            .fromIOToMain({ articles -> onCachedDataReceived(articles) }) { t ->
-                onCacheGetError(
-                    t
-                )
-            })
+        cacheDisposable.add(
+            faveInteractor.getCachedArticles(accountId)
+                .fromIOToMain({ articles -> onCachedDataReceived(articles) }) { t ->
+                    onCacheGetError(
+                        t
+                    )
+                })
     }
 
     private fun onCacheGetError(t: Throwable) {
@@ -67,13 +68,14 @@ class FaveArticlesPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun request(offset: Int) {
         netLoadingNow = true
         resolveRefreshingView()
-        netDisposable.add(faveInteractor.getArticles(accountId, COUNT_PER_REQUEST, offset)
-            .fromIOToMain({ articles ->
-                onNetDataReceived(
-                    offset,
-                    articles
-                )
-            }) { t -> onNetDataGetError(t) })
+        netDisposable.add(
+            faveInteractor.getArticles(accountId, COUNT_PER_REQUEST, offset)
+                .fromIOToMain({ articles ->
+                    onNetDataReceived(
+                        offset,
+                        articles
+                    )
+                }) { t -> onNetDataGetError(t) })
     }
 
     private fun onNetDataGetError(t: Throwable) {
@@ -127,11 +129,12 @@ class FaveArticlesPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun fireArticleDelete(index: Int, article: Article) {
-        appendJob(faveInteractor.removeArticle(accountId, article.ownerId, article.id)
-            .fromIOToMain({
-                mArticles.removeAt(index)
-                view?.notifyDataSetChanged()
-            }) { t -> onNetDataGetError(t) })
+        appendJob(
+            faveInteractor.removeArticle(accountId, article.ownerId, article.id)
+                .fromIOToMain({
+                    mArticles.removeAt(index)
+                    view?.notifyDataSetChanged()
+                }) { t -> onNetDataGetError(t) })
     }
 
     fun fireArticleClick(article: Article) {

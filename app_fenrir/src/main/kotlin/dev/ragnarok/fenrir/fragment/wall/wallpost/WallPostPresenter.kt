@@ -94,12 +94,13 @@ class WallPostPresenter(
             return
         }
         setLoadingPostNow(true)
-        appendJob(wallInteractor.getById(accountId, ownerId, postId)
-            .fromIOToMain({ post -> onActualPostReceived(post) }) { t ->
-                onLoadPostInfoError(
-                    t
-                )
-            })
+        appendJob(
+            wallInteractor.getById(accountId, ownerId, postId)
+                .fromIOToMain({ post -> onActualPostReceived(post) }) { t ->
+                    onLoadPostInfoError(
+                        t
+                    )
+                })
     }
 
     private fun onLoadPostInfoError(t: Throwable) {
@@ -261,15 +262,16 @@ class WallPostPresenter(
             return
         }
         if (post != null) {
-            appendJob(wallInteractor.like(
-                accountId,
-                ownerId,
-                postId,
-                !(post ?: return).isUserLikes
-            )
-                .fromIOToMain(dummy()) { t ->
-                    showError(t)
-                })
+            appendJob(
+                wallInteractor.like(
+                    accountId,
+                    ownerId,
+                    postId,
+                    !(post ?: return).isUserLikes
+                )
+                    .fromIOToMain(dummy()) { t ->
+                        showError(t)
+                    })
         } else {
             view?.showPostNotReadyToast()
         }
@@ -278,15 +280,17 @@ class WallPostPresenter(
     fun fireBookmark() {
         post?.let { pPost ->
             if (!pPost.isFavorite) {
-                appendJob(faveInteractor.addPost(accountId, ownerId, postId, null)
-                    .fromIOToMain({ onPostAddedToBookmarks() }) { t ->
-                        showError(getCauseIfRuntime(t))
-                    })
+                appendJob(
+                    faveInteractor.addPost(accountId, ownerId, postId, null)
+                        .fromIOToMain({ onPostAddedToBookmarks() }) { t ->
+                            showError(getCauseIfRuntime(t))
+                        })
             } else {
-                appendJob(faveInteractor.removePost(accountId, ownerId, postId)
-                    .fromIOToMain({ onPostAddedToBookmarks() }) { t ->
-                        showError(getCauseIfRuntime(t))
-                    })
+                appendJob(
+                    faveInteractor.removePost(accountId, ownerId, postId)
+                        .fromIOToMain({ onPostAddedToBookmarks() }) { t ->
+                            showError(getCauseIfRuntime(t))
+                        })
             }
         }
     }
@@ -313,10 +317,11 @@ class WallPostPresenter(
             ownerId,
             postId
         ) else wallInteractor.restore(accountId, ownerId, postId)
-        appendJob(completable
-            .fromIOToMain({ onDeleteOrRestoreComplete(delete) }) { t ->
-                showError(getCauseIfRuntime(t))
-            })
+        appendJob(
+            completable
+                .fromIOToMain({ onDeleteOrRestoreComplete(delete) }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
     }
 
     private fun onDeleteOrRestoreComplete(deleted: Boolean) {
@@ -334,10 +339,11 @@ class WallPostPresenter(
     }
 
     private fun pinOrUnpin(pin: Boolean) {
-        appendJob(wallInteractor.pinUnpin(accountId, ownerId, postId, pin)
-            .fromIOToMain({ onPinOrUnpinComplete(pin) }) { t ->
-                showError(getCauseIfRuntime(t))
-            })
+        appendJob(
+            wallInteractor.pinUnpin(accountId, ownerId, postId, pin)
+                .fromIOToMain({ onPinOrUnpinComplete(pin) }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
     }
 
     private fun onPinOrUnpinComplete(pinned: Boolean) {
@@ -371,16 +377,17 @@ class WallPostPresenter(
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.report)
             .setItems(items) { dialog, item ->
-                appendJob(wallInteractor.reportPost(accountId, ownerId, postId, item)
-                    .fromIOToMain({ p ->
-                        if (p == 1) view?.customToast?.showToast(
-                            R.string.success
-                        ) else view?.customToast?.showToast(
-                            R.string.error
-                        )
-                    }) { t ->
-                        showError(getCauseIfRuntime(t))
-                    })
+                appendJob(
+                    wallInteractor.reportPost(accountId, ownerId, postId, item)
+                        .fromIOToMain({ p ->
+                            if (p == 1) view?.customToast?.showToast(
+                                R.string.success
+                            ) else view?.customToast?.showToast(
+                                R.string.error
+                            )
+                        }) { t ->
+                            showError(getCauseIfRuntime(t))
+                        })
                 dialog.dismiss()
             }
             .show()
@@ -458,11 +465,13 @@ class WallPostPresenter(
             loadActualPostInfo()
         }
         loadOwnerInfoIfNeed()
-        appendJob(wallInteractor.observeMinorChanges()
-            .filter { it.ownerId == ownerId && it.postId == postId }
-            .sharedFlowToMain { onPostUpdate(it) })
-        appendJob(wallInteractor.observeChanges()
-            .filter { postId == it.vkid && it.ownerId == ownerId }
-            .sharedFlowToMain { onPostChanged(it) })
+        appendJob(
+            wallInteractor.observeMinorChanges()
+                .filter { it.ownerId == ownerId && it.postId == postId }
+                .sharedFlowToMain { onPostUpdate(it) })
+        appendJob(
+            wallInteractor.observeChanges()
+                .filter { postId == it.vkid && it.ownerId == ownerId }
+                .sharedFlowToMain { onPostChanged(it) })
     }
 }

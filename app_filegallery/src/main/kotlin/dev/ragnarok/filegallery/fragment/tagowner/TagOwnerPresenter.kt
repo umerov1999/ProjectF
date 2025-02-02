@@ -21,7 +21,8 @@ class TagOwnerPresenter :
     private fun loadActualData() {
         appendJob(
             storage.getTagOwners()
-                .fromIOToMain({ onActualDataReceived(it) },
+                .fromIOToMain(
+                    { onActualDataReceived(it) },
                     { t -> onActualDataGetError(t) })
         )
     }

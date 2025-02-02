@@ -109,10 +109,11 @@ class WallSearchPresenter(
         ) {
             return
         }
-        appendJob(walls.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
-            .fromIOToMain(dummy()) { t ->
-                showError(t)
-            })
+        appendJob(
+            walls.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
+                .fromIOToMain(dummy()) { t ->
+                    showError(t)
+                })
     }
 
     companion object {
@@ -120,7 +121,8 @@ class WallSearchPresenter(
     }
 
     init {
-        appendJob(walls.observeMinorChanges()
-            .sharedFlowToMain { onPostMinorUpdates(it) })
+        appendJob(
+            walls.observeMinorChanges()
+                .sharedFlowToMain { onPostMinorUpdates(it) })
     }
 }

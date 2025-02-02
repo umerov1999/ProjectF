@@ -9,6 +9,7 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.LinearLayout
 import androidx.annotation.ColorInt
+import androidx.core.content.withStyledAttributes
 import dev.ragnarok.filegallery.R
 
 class RoundCornerLinearView : LinearLayout {
@@ -46,36 +47,36 @@ class RoundCornerLinearView : LinearLayout {
 
     private fun initializeAttributes(context: Context, attrs: AttributeSet?) {
         if (attrs != null) {
-            val array = context.obtainStyledAttributes(attrs, R.styleable.RoundCornerLinearView)
-            radius_top_left = array.getDimension(
-                R.styleable.RoundCornerLinearView_radius_top_left,
-                dp2px(DEFAULT_RADIUS)
-            )
-            radius_top_right = array.getDimension(
-                R.styleable.RoundCornerLinearView_radius_top_right,
-                dp2px(DEFAULT_RADIUS)
-            )
-            radius_bottom_left = array.getDimension(
-                R.styleable.RoundCornerLinearView_radius_bottom_left,
-                dp2px(DEFAULT_RADIUS)
-            )
-            radius_bottom_right = array.getDimension(
-                R.styleable.RoundCornerLinearView_radius_bottom_right,
-                dp2px(DEFAULT_RADIUS)
-            )
-            viewColor =
-                array.getColor(R.styleable.RoundCornerLinearView_view_color, DEFAULT_VIEW_COLOR)
-            viewAlpha =
-                array.getInt(R.styleable.RoundCornerLinearView_view_alpha, DEFAULT_VIEW_ALPHA)
-            isStroke = array.getBoolean(
-                R.styleable.RoundCornerLinearView_view_is_stroke,
-                DEFAULT_IS_STROKE
-            )
-            strokeWidth = array.getDimension(
-                R.styleable.RoundCornerLinearView_view_stroke_width,
-                dp2px(DEFAULT_STROKE_WIDTH)
-            )
-            array.recycle()
+            context.withStyledAttributes(attrs, R.styleable.RoundCornerLinearView) {
+                radius_top_left = getDimension(
+                    R.styleable.RoundCornerLinearView_radius_top_left,
+                    dp2px(DEFAULT_RADIUS)
+                )
+                radius_top_right = getDimension(
+                    R.styleable.RoundCornerLinearView_radius_top_right,
+                    dp2px(DEFAULT_RADIUS)
+                )
+                radius_bottom_left = getDimension(
+                    R.styleable.RoundCornerLinearView_radius_bottom_left,
+                    dp2px(DEFAULT_RADIUS)
+                )
+                radius_bottom_right = getDimension(
+                    R.styleable.RoundCornerLinearView_radius_bottom_right,
+                    dp2px(DEFAULT_RADIUS)
+                )
+                viewColor =
+                    getColor(R.styleable.RoundCornerLinearView_view_color, DEFAULT_VIEW_COLOR)
+                viewAlpha =
+                    getInt(R.styleable.RoundCornerLinearView_view_alpha, DEFAULT_VIEW_ALPHA)
+                isStroke = getBoolean(
+                    R.styleable.RoundCornerLinearView_view_is_stroke,
+                    DEFAULT_IS_STROKE
+                )
+                strokeWidth = getDimension(
+                    R.styleable.RoundCornerLinearView_view_stroke_width,
+                    dp2px(DEFAULT_STROKE_WIDTH)
+                )
+            }
         }
     }
 

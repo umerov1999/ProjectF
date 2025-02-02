@@ -48,20 +48,21 @@ class VotersPresenter(
     private fun requestActualData() {
         actualDataLoading = true
         resolveRefreshingView()
-        actualDataDisposable.add(pollsInteractor.getVoters(
-            accountId,
-            ownerId,
-            pollId,
-            if (isBoard) 1 else 0,
-            listOf(answerId),
-            offset,
-            200
-        )
-            .fromIOToMain({ users -> onDataReceived(users) }) { t ->
-                onDataGetError(
-                    t
-                )
-            })
+        actualDataDisposable.add(
+            pollsInteractor.getVoters(
+                accountId,
+                ownerId,
+                pollId,
+                if (isBoard) 1 else 0,
+                listOf(answerId),
+                offset,
+                200
+            )
+                .fromIOToMain({ users -> onDataReceived(users) }) { t ->
+                    onDataGetError(
+                        t
+                    )
+                })
     }
 
     private fun onDataGetError(t: Throwable) {

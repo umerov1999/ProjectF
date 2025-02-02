@@ -97,7 +97,6 @@ import dev.ragnarok.fenrir.view.VP2NestedRecyclerView
 import dev.ragnarok.fenrir.view.WeakViewAnimatorAdapter
 import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import java.lang.ref.WeakReference
-import kotlin.String
 
 class CatalogV2SectionAdapter(
     data: MutableList<AbsModel>,

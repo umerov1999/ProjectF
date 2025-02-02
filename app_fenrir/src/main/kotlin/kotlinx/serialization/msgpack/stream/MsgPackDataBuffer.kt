@@ -3,7 +3,6 @@ package kotlinx.serialization.msgpack.stream
 import com.google.common.math.IntMath.mod
 import dev.ragnarok.fenrir.module.BufferWriteNative
 import okio.BufferedSource
-import kotlin.collections.isNotEmpty
 
 abstract class MsgPackDataOutputBuffer : MsgPackDataBuffer {
     abstract fun add(byte: Byte): Boolean

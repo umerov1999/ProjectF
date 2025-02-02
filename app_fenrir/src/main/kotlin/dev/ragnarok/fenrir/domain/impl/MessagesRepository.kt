@@ -248,33 +248,34 @@ class MessagesRepository(
     private fun onUploadSuccess(upload: Upload) {
         val accountId = upload.accountId
         val messagesId = upload.destination.id
-        compositeJob.add(uploadManager[accountId, upload.destination]
-            .flatMapConcat { uploads ->
-                if (uploads.isNotEmpty()) {
-                    toFlow(false)
-                } else {
-                    storages.messages().getMessageStatus(accountId, messagesId)
-                        .flatMapConcat { status ->
-                            if (status != MessageStatus.WAITING_FOR_UPLOAD) {
-                                toFlow(false)
-                            } else {
-                                changeMessageStatus(
-                                    accountId,
-                                    messagesId,
-                                    MessageStatus.QUEUE,
-                                    null, null
-                                ).map {
-                                    true
+        compositeJob.add(
+            uploadManager[accountId, upload.destination]
+                .flatMapConcat { uploads ->
+                    if (uploads.isNotEmpty()) {
+                        toFlow(false)
+                    } else {
+                        storages.messages().getMessageStatus(accountId, messagesId)
+                            .flatMapConcat { status ->
+                                if (status != MessageStatus.WAITING_FOR_UPLOAD) {
+                                    toFlow(false)
+                                } else {
+                                    changeMessageStatus(
+                                        accountId,
+                                        messagesId,
+                                        MessageStatus.QUEUE,
+                                        null, null
+                                    ).map {
+                                        true
+                                    }
                                 }
                             }
-                        }
+                    }
                 }
-            }
-            .fromScopeToMain(senderScheduler) {
-                if (it) {
-                    runSendingQueue()
+                .fromScopeToMain(senderScheduler) {
+                    if (it) {
+                        runSendingQueue()
+                    }
                 }
-            }
         )
     }
 
@@ -1191,43 +1192,44 @@ class MessagesRepository(
                         val dbid = entity.id
                         val peerId = entity.peerId
                         changeMessageStatus(accountId, dbid, MessageStatus.SENDING, null, null)
-                            .andThen(internalSend(accountId, entity)
-                                .flatMapConcat { vkid ->
-                                    val patch = PeerPatch(entity.peerId)
-                                        .withLastMessage(vkid.message_id)
-                                        .withUnreadCount(0)
-                                    changeMessageStatus(
-                                        accountId,
-                                        dbid,
-                                        MessageStatus.SENT,
-                                        vkid.message_id,
-                                        vkid.conversation_message_id
-                                    )
-                                        .andThen(
-                                            applyPeerUpdatesAndPublish(
-                                                accountId,
-                                                listOf(patch)
-                                            )
+                            .andThen(
+                                internalSend(accountId, entity)
+                                    .flatMapConcat { vkid ->
+                                        val patch = PeerPatch(entity.peerId)
+                                            .withLastMessage(vkid.message_id)
+                                            .withUnreadCount(0)
+                                        changeMessageStatus(
+                                            accountId,
+                                            dbid,
+                                            MessageStatus.SENT,
+                                            vkid.message_id,
+                                            vkid.conversation_message_id
                                         )
-                                        .map {
-                                            SentMsg(
-                                                dbid,
-                                                vkid.message_id,
-                                                peerId,
-                                                vkid.conversation_message_id,
-                                                accountId
+                                            .andThen(
+                                                applyPeerUpdatesAndPublish(
+                                                    accountId,
+                                                    listOf(patch)
+                                                )
                                             )
-                                        }
-                                }
-                                .catch {
-                                    changeMessageStatus(
-                                        accountId,
-                                        dbid,
-                                        MessageStatus.ERROR,
-                                        null, null
-                                    ).syncSingleSafe()
-                                    throw it
-                                })
+                                            .map {
+                                                SentMsg(
+                                                    dbid,
+                                                    vkid.message_id,
+                                                    peerId,
+                                                    vkid.conversation_message_id,
+                                                    accountId
+                                                )
+                                            }
+                                    }
+                                    .catch {
+                                        changeMessageStatus(
+                                            accountId,
+                                            dbid,
+                                            MessageStatus.ERROR,
+                                            null, null
+                                        ).syncSingleSafe()
+                                        throw it
+                                    })
                     }
                 }
             }

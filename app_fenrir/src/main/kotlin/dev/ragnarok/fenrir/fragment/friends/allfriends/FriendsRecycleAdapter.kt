@@ -20,7 +20,6 @@ import dev.ragnarok.fenrir.util.UserInfoResolveUtil
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.util.ViewUtils.getOnlineIcon
-import kotlin.String
 
 class FriendsRecycleAdapter(private var data: List<UsersPart>, private val context: Context) :
     RecyclerView.Adapter<FriendsRecycleAdapter.Holder>() {

@@ -13,7 +13,6 @@ import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayedFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
-import kotlin.String
 
 class InputWallOffsetDialog internal constructor(
     private val context: Context,

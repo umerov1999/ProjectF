@@ -2,8 +2,12 @@ package dev.ragnarok.fenrir.model
 
 import android.os.Parcel
 import android.os.Parcelable
-import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.api.model.VKApiPost
+import dev.ragnarok.fenrir.getBoolean
+import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.putBoolean
+import dev.ragnarok.fenrir.readTypedObjectCompat
+import dev.ragnarok.fenrir.writeTypedObjectCompat
 
 class Post : AbsModel, Cloneable {
     var dbid = 0

@@ -22,6 +22,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.VectorDrawable
+import androidx.core.graphics.createBitmap
 
 @SuppressLint("NewApi")
 internal fun Drawable.toBitmap(): Bitmap {
@@ -33,7 +34,7 @@ internal fun Drawable.toBitmap(): Bitmap {
 }
 
 internal fun VectorDrawable.toBitmap(): Bitmap {
-    val bitmap = Bitmap.createBitmap(intrinsicWidth, intrinsicHeight, Bitmap.Config.ARGB_8888)
+    val bitmap = createBitmap(intrinsicWidth, intrinsicHeight, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
     setBounds(0, 0, canvas.width, canvas.height)
     draw(canvas)

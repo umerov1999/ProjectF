@@ -3,11 +3,11 @@ package dev.ragnarok.fenrir.settings
 import android.app.Activity
 import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
+import androidx.core.graphics.drawable.toDrawable
 import com.squareup.picasso3.Transformation
 import de.maxr1998.modernpreferences.PreferenceScreen.Companion.getPreferences
 import dev.ragnarok.fenrir.R
@@ -68,7 +68,7 @@ object CurrentTheme {
             )
         }
         val color = getColorFromAttrs(R.attr.messages_background_color, activity, Color.WHITE)
-        return ColorDrawable(color)
+        return color.toDrawable()
     }
 
     fun getChatBackground(activity: Activity): Drawable? {

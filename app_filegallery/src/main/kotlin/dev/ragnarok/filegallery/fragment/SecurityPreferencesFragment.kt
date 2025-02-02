@@ -124,16 +124,17 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
 
                 override fun onQueryTextChange(newText: String?): Boolean {
                     sleepDataDisposable.cancel()
-                    sleepDataDisposable.set(delayTaskFlow(SEARCH_DELAY.toLong())
-                        .toMain {
-                            if (newText.nonNullNoEmpty() && newText.trimmedNonNullNoEmpty()) {
-                                preferencesAdapter?.findPreferences(
-                                    requireActivity(),
-                                    newText,
-                                    root
-                                )
-                            }
-                        })
+                    sleepDataDisposable.set(
+                        delayTaskFlow(SEARCH_DELAY.toLong())
+                            .toMain {
+                                if (newText.nonNullNoEmpty() && newText.trimmedNonNullNoEmpty()) {
+                                    preferencesAdapter?.findPreferences(
+                                        requireActivity(),
+                                        newText,
+                                        root
+                                    )
+                                }
+                            })
                     return false
                 }
             })

@@ -383,8 +383,9 @@ class MusicPlaybackService : Service() {
     private fun scheduleDelayedShutdown() {
         shutdownDelayedDisposable.cancel()
         if (Constants.IS_DEBUG) Log.v(TAG, "Scheduling shutdown in $IDLE_DELAY ms")
-        shutdownDelayedDisposable.set(delayTaskFlow(IDLE_DELAY.toLong())
-            .toMain { terminate() })
+        shutdownDelayedDisposable.set(
+            delayTaskFlow(IDLE_DELAY.toLong())
+                .toMain { terminate() })
     }
 
     private fun cancelShutdown() {
@@ -1050,15 +1051,16 @@ class MusicPlaybackService : Service() {
                 )
             }
             if (audio.url.isNullOrEmpty() || "https://vk.com/mp3/audio_api_unavailable.mp3" == audio.url) {
-                compositeJob.add(audioInteractor.getById(
-                    accountId,
-                    listOf(audio)
-                )
-                    .fromIOToMain({ remoteUrl -> setDataSource(remoteUrl[0].url) }) {
-                        setDataSource(
-                            audio.url
-                        )
-                    })
+                compositeJob.add(
+                    audioInteractor.getById(
+                        accountId,
+                        listOf(audio)
+                    )
+                        .fromIOToMain({ remoteUrl -> setDataSource(remoteUrl[0].url) }) {
+                            setDataSource(
+                                audio.url
+                            )
+                        })
             } else {
                 setDataSource(audio.url)
             }

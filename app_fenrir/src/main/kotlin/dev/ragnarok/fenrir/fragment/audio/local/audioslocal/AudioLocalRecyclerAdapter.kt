@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.media.MediaMetadataRetriever
-import android.net.Uri
 import android.provider.BaseColumns
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -14,6 +13,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
@@ -76,7 +76,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 arrayOf(MediaStore.MediaColumns.DATA),
                 BaseColumns._ID + "=? ",
-                arrayOf(Uri.parse(url).lastPathSegment),
+                arrayOf(url.toUri().lastPathSegment),
                 null
             )
             if (cursor != null && cursor.moveToFirst()) {
@@ -104,7 +104,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 arrayOf(MediaStore.MediaColumns.DATA),
                 BaseColumns._ID + "=? ",
-                arrayOf(Uri.parse(url).lastPathSegment),
+                arrayOf(url.toUri().lastPathSegment),
                 null
             )
             if (cursor != null && cursor.moveToFirst()) {
@@ -283,14 +283,16 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                 }
 
                 AudioLocalOption.delete_item_audio -> try {
-                    if (mContext.getContentResolver()
-                            .delete(Uri.parse(audio.url), null, null) == 1
-                    ) {
-                        CustomSnackbars.createCustomSnackbars(view)
-                            ?.setDurationSnack(Snackbar.LENGTH_LONG)
-                            ?.coloredSnack(R.string.success, "#AA48BE2D".toColor())
-                            ?.show()
-                        mClickListener?.onDelete(position)
+                    audio.url?.toUri()?.let { ur ->
+                        if (mContext.contentResolver
+                                .delete(ur, null, null) == 1
+                        ) {
+                            CustomSnackbars.createCustomSnackbars(view)
+                                ?.setDurationSnack(Snackbar.LENGTH_LONG)
+                                ?.coloredSnack(R.string.success, "#AA48BE2D".toColor())
+                                ?.show()
+                            mClickListener?.onDelete(position)
+                        }
                     }
                 } catch (e: Exception) {
                     createCustomToast(mContext).showToastError(e.localizedMessage)

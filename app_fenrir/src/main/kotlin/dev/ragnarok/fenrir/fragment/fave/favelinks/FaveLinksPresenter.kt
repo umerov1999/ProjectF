@@ -39,13 +39,14 @@ class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun loadActual(offset: Int) {
         actualLoading = true
         resolveRefreshingView()
-        actualDisposable.add(faveInteractor.getLinks(accountId, COUNT, offset)
-            .fromIOToMain({
-                onActualDataReceived(
-                    it,
-                    offset
-                )
-            }) { t -> onActualGetError(t) })
+        actualDisposable.add(
+            faveInteractor.getLinks(accountId, COUNT, offset)
+                .fromIOToMain({
+                    onActualDataReceived(
+                        it,
+                        offset
+                    )
+                }) { t -> onActualGetError(t) })
     }
 
     private fun onActualGetError(t: Throwable) {
@@ -133,10 +134,11 @@ class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
 
     fun fireDeleteClick(link: FaveLink) {
         val id = link.id ?: return
-        appendJob(faveInteractor.removeLink(accountId, id)
-            .fromIOToMain({ onLinkRemoved(accountId, id) }) { t ->
-                showError(getCauseIfRuntime(t))
-            })
+        appendJob(
+            faveInteractor.removeLink(accountId, id)
+                .fromIOToMain({ onLinkRemoved(accountId, id) }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
     }
 
     private fun onLinkRemoved(accountId: Long, id: String) {
@@ -159,14 +161,15 @@ class FaveLinksPresenter(accountId: Long, savedInstanceState: Bundle?) :
             .setCancelable(true)
             .setView(root)
             .setPositiveButton(R.string.button_ok) { _, _ ->
-                actualDisposable.add(faveInteractor.addLink(
-                    accountId,
-                    root.findViewById<TextInputEditText>(R.id.edit_link).text.toString()
-                        .trim()
-                )
-                    .fromIOToMain({ fireRefresh() }) { t ->
-                        showError(getCauseIfRuntime(t))
-                    })
+                actualDisposable.add(
+                    faveInteractor.addLink(
+                        accountId,
+                        root.findViewById<TextInputEditText>(R.id.edit_link).text.toString()
+                            .trim()
+                    )
+                        .fromIOToMain({ fireRefresh() }) { t ->
+                            showError(getCauseIfRuntime(t))
+                        })
             }
             .setNegativeButton(R.string.button_cancel, null)
             .show()

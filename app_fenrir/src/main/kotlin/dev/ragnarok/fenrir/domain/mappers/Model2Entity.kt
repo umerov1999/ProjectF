@@ -163,9 +163,10 @@ object Model2Entity {
             .setKeyboard(buildKeyboardEntity(message.keyboard))
             .setConversationMessageId(message.conversation_message_id)
             .setReactionId(message.reaction_id)
-            .setReactions(mapAll(
-                message.reactions
-            ) { buildReactionEntity(it) })
+            .setReactions(
+                mapAll(
+                    message.reactions
+                ) { buildReactionEntity(it) })
     }
 
     private fun buildEntityAttachments(attachments: Attachments): List<DboEntity> {
@@ -641,9 +642,10 @@ object Model2Entity {
             )
         }
         dbo.setAttachments(post.attachments?.let { buildEntityAttachments(it) })
-        dbo.setCopyHierarchy(mapAll(
-            post.getCopyHierarchy()
-        ) { buildPostDbo(it) })
+        dbo.setCopyHierarchy(
+            mapAll(
+                post.getCopyHierarchy()
+            ) { buildPostDbo(it) })
         return dbo
     }
 

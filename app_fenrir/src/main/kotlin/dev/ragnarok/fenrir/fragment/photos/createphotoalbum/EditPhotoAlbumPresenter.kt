@@ -124,18 +124,19 @@ class EditPhotoAlbumPresenter : AccountDependencyPresenter<IEditPhotoAlbumView> 
             }?.let { appendJob(it) }
         } else {
             val groupId = if (ownerId < 0) abs(ownerId) else null
-            appendJob(api.createAlbum(
-                title,
-                groupId,
-                description,
-                null,
-                null,
-                uploadsByAdminsOnly,
-                commentsDisabled
-            )
-                .fromIOToMain({ album -> view?.goToAlbum(accountId, album) }) { t ->
-                    showError(getCauseIfRuntime(t))
-                })
+            appendJob(
+                api.createAlbum(
+                    title,
+                    groupId,
+                    description,
+                    null,
+                    null,
+                    uploadsByAdminsOnly,
+                    commentsDisabled
+                )
+                    .fromIOToMain({ album -> view?.goToAlbum(accountId, album) }) { t ->
+                        showError(getCauseIfRuntime(t))
+                    })
         }
     }
 

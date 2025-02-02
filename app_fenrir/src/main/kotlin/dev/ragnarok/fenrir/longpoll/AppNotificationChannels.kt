@@ -6,6 +6,7 @@ import android.content.Context
 import android.media.AudioAttributes
 import android.net.Uri
 import android.os.Build
+import androidx.core.net.toUri
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.settings.Settings
 
@@ -15,15 +16,15 @@ object AppNotificationChannels {
     const val DOWNLOAD_CHANNEL_ID = "download_channel"
 
     private fun getFeedbackRingtoneUri(context: Context): Uri {
-        return Uri.parse("android.resource://" + context.packageName + "/" + R.raw.feedback_sound)
+        return ("android.resource://" + context.packageName + "/" + R.raw.feedback_sound).toUri()
     }
 
     private fun getNewPostRingtoneUri(context: Context): Uri {
-        return Uri.parse("android.resource://" + context.packageName + "/" + R.raw.new_post_sound)
+        return ("android.resource://" + context.packageName + "/" + R.raw.new_post_sound).toUri()
     }
 
     private fun getNotificationRingtone(context: Context): Uri {
-        return Uri.parse("android.resource://" + context.packageName + "/" + R.raw.notification_sound)
+        return ("android.resource://" + context.packageName + "/" + R.raw.notification_sound).toUri()
     }
 
     private val ATTRIBUTES = AudioAttributes.Builder()

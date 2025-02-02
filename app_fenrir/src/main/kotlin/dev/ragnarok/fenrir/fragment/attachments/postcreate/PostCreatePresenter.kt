@@ -189,37 +189,43 @@ class PostCreatePresenter(
         }
 
     private fun setupAttachmentsListening() {
-        appendJob(attachmentsRepository.observeAdding()
-            .filter { filterAttachmentEvents(it) }
-            .sharedFlowToMain { onRepositoryAttachmentsAdded(it.attachments) })
-        appendJob(attachmentsRepository.observeRemoving()
-            .filter { filterAttachmentEvents(it) }
-            .sharedFlowToMain { onRepositoryAttachmentsRemoved(it) })
+        appendJob(
+            attachmentsRepository.observeAdding()
+                .filter { filterAttachmentEvents(it) }
+                .sharedFlowToMain { onRepositoryAttachmentsAdded(it.attachments) })
+        appendJob(
+            attachmentsRepository.observeRemoving()
+                .filter { filterAttachmentEvents(it) }
+                .sharedFlowToMain { onRepositoryAttachmentsRemoved(it) })
     }
 
     private fun setupUploadListening() {
-        appendJob(uploadManager.observeDeleting(true)
-            .sharedFlowToMain {
-                onUploadObjectRemovedFromQueue(
-                    it
-                )
-            })
-        appendJob(uploadManager.observeProgress()
-            .sharedFlowToMain { onUploadProgressUpdate(it) })
-        appendJob(uploadManager.observeStatus()
-            .sharedFlowToMain {
-                onUploadStatusUpdate(
-                    it
-                )
-            })
-        appendJob(uploadManager.observeAdding()
-            .sharedFlowToMain {
-                onUploadQueueUpdates(
-                    it
-                ) { t ->
-                    isUploadToThis(t)
-                }
-            })
+        appendJob(
+            uploadManager.observeDeleting(true)
+                .sharedFlowToMain {
+                    onUploadObjectRemovedFromQueue(
+                        it
+                    )
+                })
+        appendJob(
+            uploadManager.observeProgress()
+                .sharedFlowToMain { onUploadProgressUpdate(it) })
+        appendJob(
+            uploadManager.observeStatus()
+                .sharedFlowToMain {
+                    onUploadStatusUpdate(
+                        it
+                    )
+                })
+        appendJob(
+            uploadManager.observeAdding()
+                .sharedFlowToMain {
+                    onUploadQueueUpdates(
+                        it
+                    ) { t ->
+                        isUploadToThis(t)
+                    }
+                })
     }
 
     private fun isUploadToThis(upload: Upload): Boolean {
@@ -229,22 +235,24 @@ class PostCreatePresenter(
     }
 
     private fun restoreEditingWallPostFromDbAsync() {
-        appendJob(walls
-            .getEditingPost(accountId, ownerId, editingType, false)
-            .fromIOToMain({ post -> onPostRestored(post) }) { obj -> obj.printStackTrace() })
+        appendJob(
+            walls
+                .getEditingPost(accountId, ownerId, editingType, false)
+                .fromIOToMain({ post -> onPostRestored(post) }) { obj -> obj.printStackTrace() })
     }
 
     private fun restoreEditingAttachmentsAsync(postDbid: Int) {
-        appendJob(attachmentsSingle(postDbid)
-            .zip(
-                uploadsSingle(postDbid)
-            ) { first, second ->
-                combine(
-                    first,
-                    second
-                )
-            }
-            .fromIOToMain({ onAttachmentsRestored(it) }) { obj -> obj.printStackTrace() })
+        appendJob(
+            attachmentsSingle(postDbid)
+                .zip(
+                    uploadsSingle(postDbid)
+                ) { first, second ->
+                    combine(
+                        first,
+                        second
+                    )
+                }
+                .fromIOToMain({ onAttachmentsRestored(it) }) { obj -> obj.printStackTrace() })
     }
 
     private fun onPostRestored(post: Post) {
@@ -449,14 +457,15 @@ class PostCreatePresenter(
     fun fireReadyClick() {
         val pPost = post ?: return
         val destination = UploadDestination.forPost(pPost.dbid, ownerId)
-        appendJob(uploadManager[accountId, destination]
-            .fromIOToMain({
-                if (it.isNotEmpty()) {
-                    view?.showError(R.string.wait_until_file_upload_is_complete)
-                } else {
-                    doPost()
-                }
-            }) { it.printStackTrace() })
+        appendJob(
+            uploadManager[accountId, destination]
+                .fromIOToMain({
+                    if (it.isNotEmpty()) {
+                        view?.showError(R.string.wait_until_file_upload_is_complete)
+                    } else {
+                        doPost()
+                    }
+                }) { it.printStackTrace() })
     }
 
     private fun doPost() {
@@ -465,13 +474,14 @@ class PostCreatePresenter(
         changePublishingNowState(true)
         val fromGroup = super.fromGroup.get()
         val showSigner = addSignature.get()
-        appendJob(walls
-            .post(accountId, pPost, fromGroup, showSigner)
-            .fromIOToMain({ onPostPublishSuccess() }) { t ->
-                onPostPublishError(
-                    t
-                )
-            })
+        appendJob(
+            walls
+                .post(accountId, pPost, fromGroup, showSigner)
+                .fromIOToMain({ onPostPublishSuccess() }) { t ->
+                    onPostPublishError(
+                        t
+                    )
+                })
     }
 
     private fun onPostPublishSuccess() {

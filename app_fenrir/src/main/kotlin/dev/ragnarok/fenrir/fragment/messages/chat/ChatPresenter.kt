@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
@@ -244,19 +245,22 @@ class ChatPresenter(
 
         val attachmentsRepository = Includes.attachmentsRepository
 
-        appendJob(attachmentsRepository
-            .observeAdding()
-            .filter(predicate)
-            .sharedFlowToMain { onRepositoryAttachmentsAdded(it.attachments.size) })
+        appendJob(
+            attachmentsRepository
+                .observeAdding()
+                .filter(predicate)
+                .sharedFlowToMain { onRepositoryAttachmentsAdded(it.attachments.size) })
 
-        appendJob(attachmentsRepository
-            .observeRemoving()
-            .filter(predicate)
-            .sharedFlowToMain { onRepositoryAttachmentsRemoved() })
+        appendJob(
+            attachmentsRepository
+                .observeRemoving()
+                .filter(predicate)
+                .sharedFlowToMain { onRepositoryAttachmentsRemoved() })
 
-        appendJob(messagesRepository
-            .observeMessageUpdates()
-            .sharedFlowToMain { onMessagesUpdate(it) })
+        appendJob(
+            messagesRepository
+                .observeMessageUpdates()
+                .sharedFlowToMain { onMessagesUpdate(it) })
 
         recordingLookup = Lookup(1000)
             .also {
@@ -272,18 +276,19 @@ class ChatPresenter(
                 .sharedFlowToMain { onLongpollKeepAliveRequest() }
         )
 
-        appendJob(Processors.realtimeMessages
-            .observeResults()
-            .filter { result -> result.accountId == messagesOwnerId }
-            .sharedFlowToMain { result ->
-                for (msg in result.data) {
-                    val m = msg.message
+        appendJob(
+            Processors.realtimeMessages
+                .observeResults()
+                .filter { result -> result.accountId == messagesOwnerId }
+                .sharedFlowToMain { result ->
+                    for (msg in result.data) {
+                        val m = msg.message
 
-                    if (m != null && peerId == m.peerId) {
-                        onRealtimeMessageReceived(m)
+                        if (m != null && peerId == m.peerId) {
+                            onRealtimeMessageReceived(m)
+                        }
                     }
-                }
-            })
+                })
 
         appendJob(
             uploadManager.observeAdding()
@@ -315,12 +320,14 @@ class ChatPresenter(
                 .sharedFlowToMain { onPeerUpdate(it) }
         )
 
-        appendJob(Repository.owners.observeUpdates()
-            .sharedFlowToMain { onUserUpdates(it) })
+        appendJob(
+            Repository.owners.observeUpdates()
+                .sharedFlowToMain { onUserUpdates(it) })
 
-        appendJob(messagesRepository.observeTextWrite()
-            .flatMapConcat { it.asFlow() }
-            .sharedFlowToMain { onUserWriteInDialog(it) })
+        appendJob(
+            messagesRepository.observeTextWrite()
+                .flatMapConcat { it.asFlow() }
+                .sharedFlowToMain { onUserWriteInDialog(it) })
 
         updateSubtitle()
     }
@@ -410,7 +417,8 @@ class ChatPresenter(
     fun removeDialog() {
         appendJob(
             messagesRepository.deleteDialog(accountId, peerId)
-                .fromIOToMain({ onDialogRemovedSuccessfully(accountId) },
+                .fromIOToMain(
+                    { onDialogRemovedSuccessfully(accountId) },
                     { t -> showError(view, t) })
         )
     }
@@ -556,7 +564,7 @@ class ChatPresenter(
     fun fireNewChatPhotoSelected(file: String) {
         val intent = UploadIntent(accountId, UploadDestination.forChatPhoto(Peer.toChatId(peerId)))
             .setAutoCommit(true)
-            .setFileUri(Uri.parse(file))
+            .setFileUri(file.toUri())
             .setSize(Upload.IMAGE_SIZE_FULL)
         uploadManager.enqueue(listOf(intent))
     }
@@ -2668,7 +2676,7 @@ class ChatPresenter(
             val destination = UploadDestination.forMessage(message.getObjectId())
             val intent = UploadIntent(accountId, destination)
                 .setAutoCommit(false)
-                .setFileUri(Uri.parse(file)).setSize(imageSize)
+                .setFileUri(file?.toUri()).setSize(imageSize)
             uploadManager.enqueue(listOf(intent))
         }
     }
@@ -2679,7 +2687,7 @@ class ChatPresenter(
                 UploadDestination.forMessage(message.getObjectId(), MessageMethod.VIDEO)
             val intent = UploadIntent(accountId, destination)
                 .setAutoCommit(false)
-                .setFileUri(Uri.parse(file))
+                .setFileUri(file?.toUri())
             uploadManager.enqueue(listOf(intent))
         }
     }
@@ -2690,7 +2698,7 @@ class ChatPresenter(
                 UploadDestination.forMessage(message.getObjectId(), MessageMethod.AUDIO)
             val intent = UploadIntent(accountId, destination)
                 .setAutoCommit(false)
-                .setFileUri(Uri.parse(file))
+                .setFileUri(file?.toUri())
             uploadManager.enqueue(listOf(intent))
         }
     }
@@ -2740,7 +2748,7 @@ class ChatPresenter(
 
             val intents = UploadIntent(accountId, destination).apply {
                 pAutoCommit = false
-                pFileUri = Uri.parse(video.data.toString())
+                pFileUri = video.data.toString().toUri()
             }
 
             uploadManager.enqueue(listOf(intents))

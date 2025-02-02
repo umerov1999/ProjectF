@@ -20,12 +20,13 @@ class LocalVideosPresenter(savedInstanceState: Bundle?) :
     private fun loadData() {
         if (mLoadingNow) return
         changeLoadingState(true)
-        appendJob(Stores.instance
-            .localMedia()
-            .videos
-            .fromIOToMain({ onDataLoaded(it) }) {
-                onLoadError()
-            })
+        appendJob(
+            Stores.instance
+                .localMedia()
+                .videos
+                .fromIOToMain({ onDataLoaded(it) }) {
+                    onLoadError()
+                })
     }
 
     fun fireSearchRequestChanged(q: String?, force: Boolean) {

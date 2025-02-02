@@ -11,6 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.addZoomableView
+import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.getZoomableViewTag
+import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.skipLayout
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min

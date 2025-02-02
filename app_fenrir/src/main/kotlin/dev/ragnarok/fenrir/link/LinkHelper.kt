@@ -6,11 +6,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
-import android.net.Uri
 import android.os.Build
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService
+import androidx.core.net.toUri
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.api.model.AccessIdPair
@@ -424,7 +424,7 @@ object LinkHelper {
 
     private fun getCustomTabsPackages(context: Context): ArrayList<ResolveInfo> {
         val pm = context.packageManager
-        val activityIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com"))
+        val activityIntent = Intent(Intent.ACTION_VIEW, "http://www.example.com".toUri())
         val resolvedActivityList =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) pm.queryIntentActivities(
                 activityIntent,
@@ -459,7 +459,7 @@ object LinkHelper {
             customTabsIntent.intent.setPackage(getCustomTabsPackages(context)[0].resolvePackageName)
         }
         try {
-            customTabsIntent.launchUrl(context, Uri.parse(url))
+            url?.toUri()?.let { customTabsIntent.launchUrl(context, it) }
         } catch (e: Exception) {
             e.printStackTrace()
             openLinkInBrowserInternal(context, Settings.get().accounts().current, url)

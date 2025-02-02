@@ -30,12 +30,13 @@ class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
     }
 
     private fun requestData() {
-        appendJob(pInteractor.getShortcutAll()
-            .fromIOToMain({ onDataReceived(it) }) { t ->
-                onDataGetError(
-                    t
-                )
-            })
+        appendJob(
+            pInteractor.getShortcutAll()
+                .fromIOToMain({ onDataReceived(it) }) { t ->
+                    onDataGetError(
+                        t
+                    )
+                })
     }
 
     private fun onDataGetError(t: Throwable) {

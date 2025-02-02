@@ -6,7 +6,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -15,6 +14,7 @@ import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
 import dev.ragnarok.fenrir.EmojiconHandler.addEmojis
 import dev.ragnarok.fenrir.R
@@ -211,7 +211,7 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
                             when (option.id) {
                                 1 -> {
                                     val intent = Intent()
-                                    intent.data = Uri.parse(url)
+                                    intent.data = url.toUri()
                                     intent.action = Intent.ACTION_VIEW
                                     intent.component = ComponentName(
                                         AppPrefs.revanced?.first.orEmpty(),
@@ -223,7 +223,7 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
                                 2 -> {
                                     if (AppPrefs.isNewPipeInstalled(context)) {
                                         val intent = Intent()
-                                        intent.data = Uri.parse(url)
+                                        intent.data = url.toUri()
                                         intent.action = Intent.ACTION_VIEW
                                         intent.component = ComponentName(
                                             "org.schabi.newpipe",
@@ -240,7 +240,7 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
 
                                 3 -> {
                                     val intent = Intent()
-                                    intent.data = Uri.parse(url)
+                                    intent.data = url.toUri()
                                     intent.action = Intent.ACTION_VIEW
                                     intent.component = ComponentName(
                                         "com.google.android.youtube",
@@ -250,7 +250,7 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
                                 }
 
                                 4 -> {
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                                    val intent = Intent(Intent.ACTION_VIEW, url.toUri())
                                     context.startActivity(intent)
                                 }
                             }

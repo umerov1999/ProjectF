@@ -470,6 +470,10 @@ public class NavigationRailView extends NavigationBarView {
       }
       // Measure properly with the max child width
       minWidthSpec = makeExpandedWidthMeasureSpec(widthMeasureSpec, getMaxChildWidth());
+      // If the active indicator is match_parent, it should be notified to update its width
+      if (getItemActiveIndicatorExpandedWidth() == MATCH_PARENT) {
+        getNavigationRailMenuView().updateActiveIndicator(MeasureSpec.getSize(minWidthSpec));
+      }
     }
     super.onMeasure(minWidthSpec, heightMeasureSpec);
     // If the content container is measured to be less than the measured height of the nav rail,
@@ -741,7 +745,7 @@ public class NavigationRailView extends NavigationBarView {
   @Override
   public boolean onTouchEvent(@NonNull MotionEvent event) {
     super.onTouchEvent(event);
-    // Consume all events to avoid views under the BottomNavigationView from receiving touch events.
+    // Consume all events to avoid views under the NavigationRailView from receiving touch events.
     return true;
   }
 }

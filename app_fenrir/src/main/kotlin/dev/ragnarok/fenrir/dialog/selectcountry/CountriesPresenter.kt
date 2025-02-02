@@ -70,12 +70,13 @@ class CountriesPresenter(private val accountId: Long, savedInstanceState: Bundle
 
     private fun requestData() {
         setLoadingNow(true)
-        appendJob(databaseInteractor.getCountries(accountId, false)
-            .fromIOToMain({ countries -> onDataReceived(countries) }) { t ->
-                onDataGetError(
-                    t
-                )
-            })
+        appendJob(
+            databaseInteractor.getCountries(accountId, false)
+                .fromIOToMain({ countries -> onDataReceived(countries) }) { t ->
+                    onDataGetError(
+                        t
+                    )
+                })
     }
 
     fun fireCountryClick(country: Country) {

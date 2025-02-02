@@ -22,17 +22,18 @@ class PollPresenter(accountId: Long, private var mPoll: Poll, savedInstanceState
     private fun refreshPollData() {
         if (loadingNow) return
         setLoadingNow(true)
-        appendJob(pollInteractor.getPollById(
-            accountId,
-            mPoll.ownerId,
-            mPoll.id,
-            mPoll.isBoard
-        )
-            .fromIOToMain({ poll -> onPollInfoUpdated(poll) }) { t ->
-                onLoadingError(
-                    t
-                )
-            })
+        appendJob(
+            pollInteractor.getPollById(
+                accountId,
+                mPoll.ownerId,
+                mPoll.id,
+                mPoll.isBoard
+            )
+                .fromIOToMain({ poll -> onPollInfoUpdated(poll) }) { t ->
+                    onLoadingError(
+                        t
+                    )
+                })
     }
 
     private fun onLoadingError(t: Throwable) {
@@ -112,10 +113,11 @@ class PollPresenter(accountId: Long, private var mPoll: Poll, savedInstanceState
         if (loadingNow) return
         val voteIds: Set<Long> = HashSet(mTempCheckedId)
         setLoadingNow(true)
-        appendJob(pollInteractor.addVote(accountId, mPoll, voteIds)
-            .fromIOToMain({ onPollInfoUpdated(it) }) {
-                onLoadingError(it)
-            })
+        appendJob(
+            pollInteractor.addVote(accountId, mPoll, voteIds)
+                .fromIOToMain({ onPollInfoUpdated(it) }) {
+                    onLoadingError(it)
+                })
     }
 
     private val isVoted: Boolean
@@ -137,12 +139,13 @@ class PollPresenter(accountId: Long, private var mPoll: Poll, savedInstanceState
     private fun removeVote() {
         val answerId = mPoll.myAnswerIds?.get(0) ?: return
         setLoadingNow(true)
-        appendJob(pollInteractor.removeVote(accountId, mPoll, answerId)
-            .fromIOToMain({ poll -> onPollInfoUpdated(poll) }) { t ->
-                onLoadingError(
-                    t
-                )
-            })
+        appendJob(
+            pollInteractor.removeVote(accountId, mPoll, answerId)
+                .fromIOToMain({ poll -> onPollInfoUpdated(poll) }) { t ->
+                    onLoadingError(
+                        t
+                    )
+                })
     }
 
     companion object {

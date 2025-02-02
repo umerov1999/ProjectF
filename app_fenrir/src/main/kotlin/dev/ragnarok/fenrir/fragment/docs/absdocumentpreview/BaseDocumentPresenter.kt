@@ -27,19 +27,21 @@ open class BaseDocumentPresenter<V : IBasicDocumentView>(
     protected fun addYourself(document: Document) {
         val docId = document.id
         val ownerId = document.ownerId
-        appendJob(docsInteractor.add(accountId, docId, ownerId, document.accessKey)
-            .fromIOToMain({
-                onDocAddedSuccessfully()
-            }) {
-                showError(getCauseIfRuntime(it))
-            })
+        appendJob(
+            docsInteractor.add(accountId, docId, ownerId, document.accessKey)
+                .fromIOToMain({
+                    onDocAddedSuccessfully()
+                }) {
+                    showError(getCauseIfRuntime(it))
+                })
     }
 
     protected fun delete(id: Int, ownerId: Long) {
-        appendJob(docsInteractor.delete(accountId, id, ownerId)
-            .fromIOToMain({
-                onDocDeleteSuccessfully()
-            }) { t -> onDocDeleteError(t) })
+        appendJob(
+            docsInteractor.delete(accountId, id, ownerId)
+                .fromIOToMain({
+                    onDocDeleteSuccessfully()
+                }) { t -> onDocDeleteError(t) })
     }
 
     private fun onDocDeleteError(t: Throwable) {

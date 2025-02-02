@@ -8,7 +8,6 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.Message
 import androidx.annotation.WorkerThread
-import kotlin.concurrent.Volatile
 
 abstract class IntentService(private val mName: String) : Service() {
     @Volatile

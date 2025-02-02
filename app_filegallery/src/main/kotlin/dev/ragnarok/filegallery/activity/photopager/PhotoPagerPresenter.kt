@@ -9,12 +9,12 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.os.Build
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_CONNECTION
 import androidx.core.net.toFile
+import androidx.core.net.toUri
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.squareup.picasso3.BitmapTarget
 import com.squareup.picasso3.Picasso
@@ -143,7 +143,7 @@ open class PhotoPagerPresenter internal constructor(
 
     private fun getCustomTabsPackages(context: Context): ArrayList<ResolveInfo> {
         val pm = context.packageManager
-        val activityIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com"))
+        val activityIntent = Intent(Intent.ACTION_VIEW, "http://www.example.com".toUri())
         val resolvedActivityList =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) pm.queryIntentActivities(
                 activityIntent,
@@ -181,7 +181,7 @@ open class PhotoPagerPresenter internal constructor(
             customTabsIntent.intent.setPackage(getCustomTabsPackages(context)[0].resolvePackageName)
         }
         try {
-            customTabsIntent.launchUrl(context, Uri.parse(url))
+            url?.toUri()?.let { customTabsIntent.launchUrl(context, it) }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -275,8 +275,8 @@ open class PhotoPagerPresenter internal constructor(
         )
     }
 
-    val currentFile: String
-        get() = Uri.parse(mPhotos[currentIndex].photo_url).toFile().absolutePath
+    val currentFile: String?
+        get() = mPhotos[currentIndex].photo_url?.toUri()?.toFile()?.absolutePath
 
     init {
         AssertUtils.requireNonNull(mPhotos, "'mPhotos' not initialized")

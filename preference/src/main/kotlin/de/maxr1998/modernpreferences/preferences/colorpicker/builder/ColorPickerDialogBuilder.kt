@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.res.Configuration
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.text.InputFilter
 import android.text.InputFilter.AllCaps
 import android.text.InputFilter.LengthFilter
@@ -15,6 +14,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.graphics.drawable.toDrawable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import de.maxr1998.modernpreferences.R
@@ -227,7 +227,7 @@ class ColorPickerDialogBuilder private constructor(context: Context, theme: Int 
             pickerContainer.addView(colorPreview)
             if (initialColor.isEmpty()) {
                 val colorImage = View.inflate(context, R.layout.color_selector, null) as ImageView
-                colorImage.setImageDrawable(ColorDrawable(Color.WHITE))
+                colorImage.setImageDrawable(Color.WHITE.toDrawable())
             } else {
                 var i = 0
                 while (i < initialColor.size && i < pickerCount) {
@@ -235,7 +235,7 @@ class ColorPickerDialogBuilder private constructor(context: Context, theme: Int 
                     val colorLayout =
                         View.inflate(context, R.layout.color_selector, null) as LinearLayout
                     val colorImage = colorLayout.findViewById<ImageView>(R.id.image_preview)
-                    colorImage.setImageDrawable(ColorDrawable(initialColor[i]!!))
+                    colorImage.setImageDrawable(initialColor[i]?.toDrawable())
                     colorPreview.addView(colorLayout)
                     i++
                 }

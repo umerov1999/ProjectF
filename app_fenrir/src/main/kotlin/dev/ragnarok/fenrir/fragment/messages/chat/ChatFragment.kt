@@ -694,7 +694,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             rootView.visibility = View.VISIBLE
         }
 
-        fun isVisible(): Boolean = rootView.visibility == View.VISIBLE
+        fun isVisible(): Boolean = rootView.isVisible
 
         fun hide() {
             if (Settings.get().main().isMessages_menu_down) {

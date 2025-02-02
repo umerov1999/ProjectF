@@ -28,43 +28,46 @@ class FeedbackVKOfficialPresenter(accountId: Long, savedInstanceState: Bundle?) 
     private fun loadActualData(offset: Int) {
         actualDataLoading = true
         resolveRefreshingView()
-        actualDataDisposable.add(fInteractor.getActualFeedbacksOfficial(accountId, COUNT, offset)
-            .fromIOToMain({ data ->
-                onActualDataReceived(
-                    offset,
-                    data
-                )
-            }) { t -> onActualDataGetError(t) })
+        actualDataDisposable.add(
+            fInteractor.getActualFeedbacksOfficial(accountId, COUNT, offset)
+                .fromIOToMain({ data ->
+                    onActualDataReceived(
+                        offset,
+                        data
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     private fun loadCachedData() {
         actualDataLoading = true
         resolveRefreshingView()
-        actualDataDisposable.add(fInteractor.getCachedFeedbacksOfficial(accountId)
-            .fromIOToMain({ data ->
-                onCachedDataReceived(
-                    data
-                )
-                loadActualData(0)
-            }) {
-                actualDataLoading = false
-                resolveRefreshingView()
-                it.printStackTrace()
-                loadActualData(0)
-            })
+        actualDataDisposable.add(
+            fInteractor.getCachedFeedbacksOfficial(accountId)
+                .fromIOToMain({ data ->
+                    onCachedDataReceived(
+                        data
+                    )
+                    loadActualData(0)
+                }) {
+                    actualDataLoading = false
+                    resolveRefreshingView()
+                    it.printStackTrace()
+                    loadActualData(0)
+                })
     }
 
     fun hideNotification(position: Int, query: String?) {
         if (Utils.isHiddenAccount(accountId)) {
             return
         }
-        actualDataDisposable.add(fInteractor.hide(accountId, query)
-            .fromIOToMain({
-                pages.items?.removeAt(position)
-                view?.notifyItemRemoved(
-                    position
-                )
-            }) { t -> onActualDataGetError(t) })
+        actualDataDisposable.add(
+            fInteractor.hide(accountId, query)
+                .fromIOToMain({
+                    pages.items?.removeAt(position)
+                    view?.notifyItemRemoved(
+                        position
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     private fun onActualDataGetError(t: Throwable) {

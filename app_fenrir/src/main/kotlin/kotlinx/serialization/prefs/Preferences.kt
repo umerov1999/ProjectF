@@ -5,6 +5,7 @@
 package kotlinx.serialization.prefs
 
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.SerializationStrategy
@@ -83,11 +84,12 @@ sealed class Preferences(internal val configuration: PreferenceConfiguration) : 
      */
     fun <T> encode(serializer: SerializationStrategy<T>, tag: String, value: T) {
         maybeExecuteSynchronized {
-            val editor = configuration.sharedPreferences.edit()
-            val encoder = PreferenceEncoder(this, editor, configuration.sharedPreferences)
-            encoder.pushInitialTag(tag)
-            encoder.encodeSerializableValue(serializer, value)
-            editor.apply()
+            val prefs = this
+            configuration.sharedPreferences.edit {
+                val encoder = PreferenceEncoder(prefs, this, configuration.sharedPreferences)
+                encoder.pushInitialTag(tag)
+                encoder.encodeSerializableValue(serializer, value)
+            }
         }
     }
 

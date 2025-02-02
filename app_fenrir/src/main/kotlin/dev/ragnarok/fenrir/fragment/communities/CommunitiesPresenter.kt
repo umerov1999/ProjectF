@@ -52,18 +52,19 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
     private fun requestActualData(do_scan: Boolean) {
         actualLoadingNow = true
         resolveRefreshing()
-        actualDisposable.add(communitiesInteractor.getActual(
-            accountId,
-            userId,
-            if (isNotFriendShow) 1000 else 200,
-            offset, true
-        )
-            .fromIOToMain({ communities ->
-                onActualDataReceived(
-                    communities,
-                    do_scan
-                )
-            }) { t -> onActualDataGetError(t) })
+        actualDisposable.add(
+            communitiesInteractor.getActual(
+                accountId,
+                userId,
+                if (isNotFriendShow) 1000 else 200,
+                offset, true
+            )
+                .fromIOToMain({ communities ->
+                    onActualDataReceived(
+                        communities,
+                        do_scan
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     override fun onGuiResumed() {
@@ -133,12 +134,13 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
 
     private fun loadCachedData() {
         cacheLoadingNow = true
-        cacheDisposable.add(communitiesInteractor.getCachedData(accountId, userId)
-            .fromIOToMain({ communities -> onCachedDataReceived(communities) }) { t ->
-                onCacheGetError(
-                    t
-                )
-            })
+        cacheDisposable.add(
+            communitiesInteractor.getCachedData(accountId, userId)
+                .fromIOToMain({ communities -> onCachedDataReceived(communities) }) { t ->
+                    onCacheGetError(
+                        t
+                    )
+                })
     }
 
     private val isSearchNow: Boolean
@@ -263,8 +265,9 @@ class CommunitiesPresenter(accountId: Long, private val userId: Long, savedInsta
     }
 
     fun fireUnsubscribe(community: Community) {
-        actualDisposable.add(communitiesInteractor.leave(accountId, community.id)
-            .fromIOToMain({ fireRefresh() }) { t -> onSearchError(t) })
+        actualDisposable.add(
+            communitiesInteractor.leave(accountId, community.id)
+                .fromIOToMain({ fireRefresh() }) { t -> onSearchError(t) })
     }
 
     fun fireCommunityLongClick(community: Community): Boolean {

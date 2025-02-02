@@ -28,7 +28,6 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonObjectSerializer
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.modules.SerializersModule
-import kotlin.collections.set
 
 @JsonFriendModuleApi
 fun <T> writeJson(json: Json, value: T, serializer: SerializationStrategy<T>): JsonElement {

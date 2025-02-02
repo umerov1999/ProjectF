@@ -43,20 +43,21 @@ class NotReadMessagesPresenter(
     }
 
     private fun initRequest() {
-        appendJob(messagesInteractor.getPeerMessages(
-            accountId,
-            peer.id,
-            COUNT,
-            -COUNT / 2,
-            mFocusMessageId,
-            cacheData = false,
-            rev = false
-        )
-            .fromIOToMain({ messages -> onInitDataLoaded(messages) }) { t ->
-                onDataGetError(
-                    t
-                )
-            })
+        appendJob(
+            messagesInteractor.getPeerMessages(
+                accountId,
+                peer.id,
+                COUNT,
+                -COUNT / 2,
+                mFocusMessageId,
+                cacheData = false,
+                rev = false
+            )
+                .fromIOToMain({ messages -> onInitDataLoaded(messages) }) { t ->
+                    onDataGetError(
+                        t
+                    )
+                })
     }
 
     private fun onDataGetError(t: Throwable) {
@@ -80,14 +81,15 @@ class NotReadMessagesPresenter(
     }
 
     private fun deleteSentImpl(ids: Collection<Int>) {
-        appendJob(messagesInteractor.deleteMessages(
-            accountId, peer.id, ids,
-            forAll = false,
-            spam = false
-        )
-            .fromIOToMain(dummy()) { t ->
-                showError(t)
-            })
+        appendJob(
+            messagesInteractor.deleteMessages(
+                accountId, peer.id, ids,
+                forAll = false,
+                spam = false
+            )
+                .fromIOToMain(dummy()) { t ->
+                    showError(t)
+                })
     }
 
     fun fireFooterLoadMoreClick() {
@@ -103,20 +105,21 @@ class NotReadMessagesPresenter(
         val firstMessageId = firstMessageId
         loadingState.headerLoading()
         val targetMessageId = firstMessageId
-        appendJob(messagesInteractor.getPeerMessages(
-            accountId,
-            peer.id,
-            COUNT,
-            -COUNT,
-            targetMessageId,
-            cacheData = false,
-            rev = false
-        )
-            .fromIOToMain({ onDownDataLoaded(it) }) { t ->
-                onDownDataGetError(
-                    t
-                )
-            })
+        appendJob(
+            messagesInteractor.getPeerMessages(
+                accountId,
+                peer.id,
+                COUNT,
+                -COUNT,
+                targetMessageId,
+                cacheData = false,
+                rev = false
+            )
+                .fromIOToMain({ onDownDataLoaded(it) }) { t ->
+                    onDownDataGetError(
+                        t
+                    )
+                })
     }
 
     override fun onActionModeDeleteClick() {
@@ -128,16 +131,17 @@ class NotReadMessagesPresenter(
             }
         }
         if (ids.nonNullNoEmpty()) {
-            appendJob(messagesInteractor.deleteMessages(
-                accountId,
-                peer.id,
-                ids,
-                forAll = false,
-                spam = false
-            )
-                .fromIOToMain({ onMessagesDeleteSuccessfully(ids) }) { t ->
-                    showError(getCauseIfRuntime(t))
-                })
+            appendJob(
+                messagesInteractor.deleteMessages(
+                    accountId,
+                    peer.id,
+                    ids,
+                    forAll = false,
+                    spam = false
+                )
+                    .fromIOToMain({ onMessagesDeleteSuccessfully(ids) }) { t ->
+                        showError(getCauseIfRuntime(t))
+                    })
         }
     }
 
@@ -150,13 +154,14 @@ class NotReadMessagesPresenter(
             }
         }
         if (ids.nonNullNoEmpty()) {
-            appendJob(messagesInteractor.deleteMessages(
-                accountId, peer.id, ids,
-                forAll = false, spam = true
-            )
-                .fromIOToMain({ onMessagesDeleteSuccessfully(ids) }) { t ->
-                    showError(getCauseIfRuntime(t))
-                })
+            appendJob(
+                messagesInteractor.deleteMessages(
+                    accountId, peer.id, ids,
+                    forAll = false, spam = true
+                )
+                    .fromIOToMain({ onMessagesDeleteSuccessfully(ids) }) { t ->
+                        showError(getCauseIfRuntime(t))
+                    })
         }
     }
 
@@ -165,20 +170,21 @@ class NotReadMessagesPresenter(
         val lastMessageId = lastMessageId ?: return
         loadingState.footerLoading()
         val targetLastMessageId = lastMessageId
-        appendJob(messagesInteractor.getPeerMessages(
-            accountId,
-            peer.id,
-            COUNT,
-            0,
-            targetLastMessageId,
-            cacheData = false,
-            rev = false
-        )
-            .fromIOToMain({ onUpDataLoaded(it) }) { t ->
-                onUpDataGetError(
-                    t
-                )
-            })
+        appendJob(
+            messagesInteractor.getPeerMessages(
+                accountId,
+                peer.id,
+                COUNT,
+                0,
+                targetLastMessageId,
+                cacheData = false,
+                rev = false
+            )
+                .fromIOToMain({ onUpDataLoaded(it) }) { t ->
+                    onUpDataGetError(
+                        t
+                    )
+                })
     }
 
     private val lastMessageId: Int?
@@ -199,10 +205,11 @@ class NotReadMessagesPresenter(
 
     fun fireMessageRestoreClick(message: Message) {
         val id = message.getObjectId()
-        appendJob(messagesInteractor.restoreMessage(accountId, peer.id, id)
-            .fromIOToMain({ onMessageRestoredSuccessfully(id) }) { t ->
-                showError(getCauseIfRuntime(t))
-            })
+        appendJob(
+            messagesInteractor.restoreMessage(accountId, peer.id, id)
+                .fromIOToMain({ onMessageRestoredSuccessfully(id) }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
     }
 
     private fun onMessageRestoredSuccessfully(id: Int) {
@@ -285,21 +292,23 @@ class NotReadMessagesPresenter(
         if (!message.isOut && message.originalId > lastReadId.incoming) {
             lastReadId.incoming = message.originalId
             view?.notifyDataChanged()
-            appendJob(messagesInteractor.markAsRead(accountId, peer.id, message.originalId)
-                .fromIOToMain({
-                    appendJob(messagesInteractor.getConversationSingle(
-                        accountId,
-                        peer.id, Mode.NET
-                    )
-                        .fromIOToMain({ e ->
-                            unreadCount = e.unreadCount
-                            resolveUnreadCount()
-                        }) { s ->
-                            showError(s)
-                        })
-                }) { t ->
-                    showError(t)
-                })
+            appendJob(
+                messagesInteractor.markAsRead(accountId, peer.id, message.originalId)
+                    .fromIOToMain({
+                        appendJob(
+                            messagesInteractor.getConversationSingle(
+                                accountId,
+                                peer.id, Mode.NET
+                            )
+                                .fromIOToMain({ e ->
+                                    unreadCount = e.unreadCount
+                                    resolveUnreadCount()
+                                }) { s ->
+                                    showError(s)
+                                })
+                    }) { t ->
+                        showError(t)
+                    })
             return true
         }
         return false

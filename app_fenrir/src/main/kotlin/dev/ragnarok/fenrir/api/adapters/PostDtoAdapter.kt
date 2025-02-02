@@ -1,7 +1,10 @@
 package dev.ragnarok.fenrir.api.adapters
 
-import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.CommentsDto
+import dev.ragnarok.fenrir.api.model.VKApiAttachments
+import dev.ragnarok.fenrir.api.model.VKApiPost
 import dev.ragnarok.fenrir.api.model.VKApiPost.Type.DONUT
+import dev.ragnarok.fenrir.api.model.VKApiPostSource
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero

@@ -144,8 +144,9 @@ class LocalJsonToChatPresenter(
         isLoading = true
         resolveRefreshingView()
         val accountId = super.accountId
-        actualDataDisposable.add(fInteractor.getMessagesFromLocalJSon(accountId, context)
-            .fromIOToMain({ onActualDataReceived(it) }) { onActualDataGetError(it) })
+        actualDataDisposable.add(
+            fInteractor.getMessagesFromLocalJSon(accountId, context)
+                .fromIOToMain({ onActualDataReceived(it) }) { onActualDataGetError(it) })
     }
 
     private fun onActualDataGetError(t: Throwable) {

@@ -105,7 +105,7 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:$swiperefreshlayoutVersion")
     implementation("androidx.browser:browser:$browserVersion")
     implementation("androidx.exifinterface:exifinterface:$exifinterfaceVersion")
-    //implementation project(":libfenrir")
+    //implementation project(":native")
     implementation project(":picasso3")
     implementation project(":recyclerview")
     implementation project(":material")

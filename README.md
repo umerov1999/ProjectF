@@ -8,9 +8,9 @@
 
 <b>Инструкция по сборке:</b>
 Требуется:
-  1) Android Studio Ladybug Feature Drop 2024.2.2 или выше. Kotlin 2.1.*
+  1) Android Studio Meerkat 2024.3.1 или выше. Kotlin 2.1.*
   2) Android SDK 35
-  3) Android NDK 28.0.12674087
+  3) Android NDK 28.0.12916984
   
   Если не работает музыка в Fenrir Kate, обновите kate_receipt_gms_token в app.build_config.
   Взять токен можно из Kate Mobile Extra Mod

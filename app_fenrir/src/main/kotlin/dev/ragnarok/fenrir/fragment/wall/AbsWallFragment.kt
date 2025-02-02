@@ -335,10 +335,11 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
                     when (i) {
                         0 -> {
                             if (!isMy) {
-                                presenter?.updateToStory(AbsApi.join(
-                                    listOf(AccessIdPair(item.id, item.ownerId, item.accessKey)),
-                                    ","
-                                ) { AccessIdPair.format(it) })
+                                presenter?.updateToStory(
+                                    AbsApi.join(
+                                        listOf(AccessIdPair(item.id, item.ownerId, item.accessKey)),
+                                        ","
+                                    ) { AccessIdPair.format(it) })
                                 requestUploadStory()
                             } else {
                                 MaterialAlertDialogBuilder(

@@ -43,14 +43,15 @@ class FeedBannedPresenter(
     private fun requestActualData() {
         actualDataLoading = true
         resolveRefreshingView()
-        actualDataDisposable.add(feedInteractor.getBanned(
-            accountId
-        )
-            .fromIOToMain({ users -> onDataReceived(users) }) { t ->
-                onDataGetError(
-                    t
-                )
-            })
+        actualDataDisposable.add(
+            feedInteractor.getBanned(
+                accountId
+            )
+                .fromIOToMain({ users -> onDataReceived(users) }) { t ->
+                    onDataGetError(
+                        t
+                    )
+                })
     }
 
     private fun onDataGetError(t: Throwable) {

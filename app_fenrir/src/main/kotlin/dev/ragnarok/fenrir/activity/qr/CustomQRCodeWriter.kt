@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import androidx.core.graphics.createBitmap
 import com.google.zxing.EncodeHintType
 import com.google.zxing.WriterException
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
@@ -74,7 +75,7 @@ class CustomQRCodeWriter {
         val multiple = (outputWidth / qrWidth).coerceAtMost(outputHeight / qrHeight)
         val padding = 16
         val size = multiple * inputWidth + padding * 2
-        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val bitmap = createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         canvas.drawColor(-0x1)
         val blackPaint = Paint(Paint.ANTI_ALIAS_FLAG)

@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.picasso
 import android.content.Context
 import android.net.Uri
 import android.os.Build
+import androidx.core.net.toUri
 import androidx.exifinterface.media.ExifInterface
 import com.squareup.picasso3.BitmapUtils.decodeStream
 import com.squareup.picasso3.Picasso
@@ -33,10 +34,8 @@ class PicassoFullLocalRequestHandler(val context: Context) : RequestHandler() {
     }
 
     override fun load(picasso: Picasso, request: Request, callback: Callback) {
-        val requestUri = Uri.parse(
-            checkNotNull(request.uri) { "request.uri == null" }.toString()
-                .replace("full_", "")
-        )
+        val requestUri = checkNotNull(request.uri) { "request.uri == null" }.toString()
+            .replace("full_", "").toUri()
         try {
             val i = context.contentResolver.openInputStream(requestUri) ?: return
             val bitmap = decodeStream(i.source(), request)

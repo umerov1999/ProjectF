@@ -54,19 +54,20 @@ class PhotoAllCommentPresenter(
     private fun request(offset: Int) {
         netLoadingNow = true
         resolveRefreshingView()
-        netDisposable.add(photosInteractor.getAllComments(
-            accountId,
-            owner_id,
-            null,
-            offset,
-            COUNT_PER_REQUEST
-        )
-            .fromIOToMain({
-                onNetDataReceived(
-                    offset,
-                    it
-                )
-            }) { t -> onNetDataGetError(t) })
+        netDisposable.add(
+            photosInteractor.getAllComments(
+                accountId,
+                owner_id,
+                null,
+                offset,
+                COUNT_PER_REQUEST
+            )
+                .fromIOToMain({
+                    onNetDataReceived(
+                        offset,
+                        it
+                    )
+                }) { t -> onNetDataGetError(t) })
     }
 
     private fun onNetDataGetError(t: Throwable) {
@@ -129,20 +130,21 @@ class PhotoAllCommentPresenter(
     }
 
     fun fireGoPhotoClick(comment: Comment) {
-        appendJob(photosInteractor.getPhotosByIds(
-            accountId,
-            listOf(AccessIdPairModel(comment.commented.sourceId, owner_id, null))
-        )
-            .fromIOToMain({
-                view?.openSimplePhotoGallery(
-                    accountId,
-                    ArrayList(it),
-                    0,
-                    false
-                )
-            }) { t ->
-                showError(getCauseIfRuntime(t))
-            })
+        appendJob(
+            photosInteractor.getPhotosByIds(
+                accountId,
+                listOf(AccessIdPairModel(comment.commented.sourceId, owner_id, null))
+            )
+                .fromIOToMain({
+                    view?.openSimplePhotoGallery(
+                        accountId,
+                        ArrayList(it),
+                        0,
+                        false
+                    )
+                }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
     }
 
     private fun likeInternal(add: Boolean, comment: Comment) {
@@ -152,10 +154,11 @@ class PhotoAllCommentPresenter(
         ) {
             return
         }
-        appendJob(interactor.like(accountId, comment.commented, comment.getObjectId(), add)
-            .fromIOToMain(dummy()) { t ->
-                showError(t)
-            })
+        appendJob(
+            interactor.like(accountId, comment.commented, comment.getObjectId(), add)
+                .fromIOToMain(dummy()) { t ->
+                    showError(t)
+                })
     }
 
     fun fireReport(comment: Comment, context: Context) {

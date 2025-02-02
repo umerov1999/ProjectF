@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.util
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import androidx.core.graphics.scale
 
 object CoverSafeResize {
     private var maxResolution = -1
@@ -43,7 +44,7 @@ object CoverSafeResize {
         if (mWidth <= 0 || mHeight <= 0) {
             return bitmap
         }
-        val tmp = Bitmap.createScaledBitmap(bitmap, mWidth, mHeight, true)
+        val tmp = bitmap.scale(mWidth, mHeight)
         bitmap.recycle()
         return tmp
     }

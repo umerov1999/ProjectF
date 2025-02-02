@@ -1,7 +1,15 @@
 package dev.ragnarok.fenrir.api.adapters
 
-import dev.ragnarok.fenrir.api.model.*
-import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse.*
+import dev.ragnarok.fenrir.api.model.CommentsDto
+import dev.ragnarok.fenrir.api.model.VKApiPhoto
+import dev.ragnarok.fenrir.api.model.VKApiPost
+import dev.ragnarok.fenrir.api.model.VKApiTopic
+import dev.ragnarok.fenrir.api.model.VKApiVideo
+import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse.Dto
+import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse.PhotoDto
+import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse.PostDto
+import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse.TopicDto
+import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse.VideoDto
 import dev.ragnarok.fenrir.kJson
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject

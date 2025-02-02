@@ -1,6 +1,11 @@
 package dev.ragnarok.fenrir.api.adapters
 
-import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.VKApiAttachments
+import dev.ragnarok.fenrir.api.model.VKApiAudio
+import dev.ragnarok.fenrir.api.model.VKApiNews
+import dev.ragnarok.fenrir.api.model.VKApiPhoto
+import dev.ragnarok.fenrir.api.model.VKApiPost
+import dev.ragnarok.fenrir.api.model.VKApiVideo
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero

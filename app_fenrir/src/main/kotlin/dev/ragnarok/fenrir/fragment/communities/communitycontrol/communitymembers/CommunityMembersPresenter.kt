@@ -51,17 +51,18 @@ class CommunityMembersPresenter(
     private fun request(do_scan: Boolean) {
         netLoadingNow = true
         resolveRefreshingView()
-        netDisposable.add(relationshipInteractor.getGroupMembers(
-            accountId,
-            group_id,
-            offset,
-            if (isNotFriendShow) 1000 else COUNT_PER_REQUEST, filter
-        )
-            .fromIOToMain({
-                onNetDataReceived(
-                    it, do_scan
-                )
-            }) { t -> onNetDataGetError(t) })
+        netDisposable.add(
+            relationshipInteractor.getGroupMembers(
+                accountId,
+                group_id,
+                offset,
+                if (isNotFriendShow) 1000 else COUNT_PER_REQUEST, filter
+            )
+                .fromIOToMain({
+                    onNetDataReceived(
+                        it, do_scan
+                    )
+                }) { t -> onNetDataGetError(t) })
     }
 
     private fun onNetDataGetError(t: Throwable) {
@@ -149,15 +150,16 @@ class CommunityMembersPresenter(
     }
 
     private fun loadAllCachedData() {
-        netDisposable.add(relationshipInteractor.getCachedGroupMembers(accountId, group_id)
-            .fromIOToMain({
-                mMembers.clear()
-                mMembers.addAll(it)
-                view?.notifyDataSetChanged()
-                requestAtLast(mMembers.isNotEmpty())
-            }) {
-                requestAtLast(false)
-            })
+        netDisposable.add(
+            relationshipInteractor.getCachedGroupMembers(accountId, group_id)
+                .fromIOToMain({
+                    mMembers.clear()
+                    mMembers.addAll(it)
+                    view?.notifyDataSetChanged()
+                    requestAtLast(mMembers.isNotEmpty())
+                }) {
+                    requestAtLast(false)
+                })
     }
 
     companion object {

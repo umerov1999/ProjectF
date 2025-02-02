@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.util
 
+import androidx.core.content.edit
 import de.maxr1998.modernpreferences.PreferenceScreen
 import dev.ragnarok.fenrir.Includes
 
@@ -17,7 +18,7 @@ object HelperSimple {
         val app = Includes.provideApplicationContext()
         val ret = PreferenceScreen.getPreferences(app).getInt(key, 0)
         if (ret < count) {
-            PreferenceScreen.getPreferences(app).edit().putInt(key, ret + 1).apply()
+            PreferenceScreen.getPreferences(app).edit { putInt(key, ret + 1) }
             return true
         }
         return false

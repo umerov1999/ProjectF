@@ -51,19 +51,20 @@ class ArtistSearchPresenter(
     }
 
     fun onAdd(album: AudioPlaylist) {
-        appendJob(audioInteractor.followPlaylist(
-            accountId,
-            album.id,
-            album.owner_id,
-            album.access_key
-        )
-            .fromIOToMain({
-                view?.customToast?.showToast(R.string.success)
-            }) { throwable ->
-                showError(
-                    throwable
-                )
-            })
+        appendJob(
+            audioInteractor.followPlaylist(
+                accountId,
+                album.id,
+                album.owner_id,
+                album.access_key
+            )
+                .fromIOToMain({
+                    view?.customToast?.showToast(R.string.success)
+                }) { throwable ->
+                    showError(
+                        throwable
+                    )
+                })
     }
 
     override fun canSearch(criteria: ArtistSearchCriteria?): Boolean {

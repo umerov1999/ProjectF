@@ -92,9 +92,10 @@ class NewsFeedSearchPresenter(
         ) {
             return
         }
-        appendJob(walls.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
-            .fromIOToMain(dummy()) { t ->
-                showError(t)
-            })
+        appendJob(
+            walls.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
+                .fromIOToMain(dummy()) { t ->
+                    showError(t)
+                })
     }
 }

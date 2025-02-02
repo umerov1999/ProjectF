@@ -3,14 +3,30 @@ package dev.ragnarok.fenrir.api.adapters
 import dev.ragnarok.fenrir.api.model.VKApiConversation
 import dev.ragnarok.fenrir.api.model.VKApiMessage
 import dev.ragnarok.fenrir.api.model.VKApiReaction
-import dev.ragnarok.fenrir.api.model.longpoll.*
+import dev.ragnarok.fenrir.api.model.longpoll.AbsLongpollEvent
+import dev.ragnarok.fenrir.api.model.longpoll.AddMessageUpdate
+import dev.ragnarok.fenrir.api.model.longpoll.BadgeCountChangeUpdate
+import dev.ragnarok.fenrir.api.model.longpoll.InputMessagesSetReadUpdate
+import dev.ragnarok.fenrir.api.model.longpoll.MessageFlagsResetUpdate
+import dev.ragnarok.fenrir.api.model.longpoll.MessageFlagsSetUpdate
+import dev.ragnarok.fenrir.api.model.longpoll.OutputMessagesSetReadUpdate
+import dev.ragnarok.fenrir.api.model.longpoll.ReactionEventType
+import dev.ragnarok.fenrir.api.model.longpoll.ReactionMessageChangeUpdate
+import dev.ragnarok.fenrir.api.model.longpoll.UserIsOfflineUpdate
+import dev.ragnarok.fenrir.api.model.longpoll.UserIsOnlineUpdate
+import dev.ragnarok.fenrir.api.model.longpoll.WriteTextInDialogUpdate
 import dev.ragnarok.fenrir.api.util.VKStringUtils
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.Utils
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonPrimitive
 import java.util.Collections
 
 class LongpollUpdateDtoAdapter : AbsDtoAdapter<AbsLongpollEvent?>("AbsLongpollEvent?") {

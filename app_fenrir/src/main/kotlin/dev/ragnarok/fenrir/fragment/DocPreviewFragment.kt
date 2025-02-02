@@ -334,8 +334,9 @@ class DocPreviewFragment : BaseFragment(), MenuProvider {
     private fun doAddYourSelf() {
         val docsInteractor = InteractorFactory.createDocsInteractor()
         val accessKey = document?.accessKey
-        appendJob(docsInteractor.add(accountId, documentId, ownerId, accessKey)
-            .fromIOToMain({ onDocumentAdded() }) { t -> onDocAddError(t) })
+        appendJob(
+            docsInteractor.add(accountId, documentId, ownerId, accessKey)
+                .fromIOToMain({ onDocumentAdded() }) { t -> onDocAddError(t) })
     }
 
     private fun onDocAddError(t: Throwable) {

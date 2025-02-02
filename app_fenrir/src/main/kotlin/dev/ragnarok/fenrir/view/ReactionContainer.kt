@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.view.isNotEmpty
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.model.ReactionWithAsset
@@ -59,7 +60,7 @@ class ReactionContainer : RowLayout {
         listener: ReactionClicked?
     ) {
         if (reactionsData.isNullOrEmpty()) {
-            if (childCount > 0) {
+            if (isNotEmpty()) {
                 removeAllViews()
             }
             visibility = GONE

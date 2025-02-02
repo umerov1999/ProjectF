@@ -31,12 +31,13 @@ class MarketViewPresenter(
         setLoadingNow(true)
         val ids: Collection<AccessIdPair> =
             listOf(AccessIdPair(mMarket.id, mMarket.owner_id, mMarket.access_key))
-        appendJob(ownerInteractor.getMarketById(accountId, ids)
-            .fromIOToMain({ market -> onMarketInfoUpdated(market) }) { t ->
-                onLoadingError(
-                    t
-                )
-            })
+        appendJob(
+            ownerInteractor.getMarketById(accountId, ids)
+                .fromIOToMain({ market -> onMarketInfoUpdated(market) }) { t ->
+                    onLoadingError(
+                        t
+                    )
+                })
     }
 
     private fun onLoadingError(t: Throwable) {
@@ -108,20 +109,22 @@ class MarketViewPresenter(
 
     fun fireFaveClick() {
         if (!mMarket.isIs_favorite) {
-            appendJob(faveInteractor.addProduct(
-                accountId,
-                mMarket.id,
-                mMarket.owner_id,
-                mMarket.access_key
-            )
-                .fromIOToMain({ onFaveSuccess() }) { t -> onLoadingError(t) })
+            appendJob(
+                faveInteractor.addProduct(
+                    accountId,
+                    mMarket.id,
+                    mMarket.owner_id,
+                    mMarket.access_key
+                )
+                    .fromIOToMain({ onFaveSuccess() }) { t -> onLoadingError(t) })
         } else {
-            appendJob(faveInteractor.removeProduct(accountId, mMarket.id, mMarket.owner_id)
-                .fromIOToMain({ onFaveSuccess() }) { t ->
-                    onLoadingError(
-                        t
-                    )
-                })
+            appendJob(
+                faveInteractor.removeProduct(accountId, mMarket.id, mMarket.owner_id)
+                    .fromIOToMain({ onFaveSuccess() }) { t ->
+                        onLoadingError(
+                            t
+                        )
+                    })
         }
     }
 

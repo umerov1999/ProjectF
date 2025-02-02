@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.settings
 
 import android.content.Context
+import androidx.core.content.edit
 import de.maxr1998.modernpreferences.PreferenceScreen.Companion.getPreferences
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.model.DrawerCategory
@@ -39,11 +40,12 @@ internal class SideDrawerSettings(context: Context) : ISideDrawerSettings {
             return kJson.decodeFromString(ListSerializer(DrawerCategory.serializer()), tmp)
         }
         set(list) {
-            getPreferences(app).edit().putString(
-                "side_navigation_menu_order",
-                kJson.encodeToString(ListSerializer(DrawerCategory.serializer()), list)
-            )
-                .apply()
+            getPreferences(app).edit {
+                putString(
+                    "side_navigation_menu_order",
+                    kJson.encodeToString(ListSerializer(DrawerCategory.serializer()), list)
+                )
+            }
             publishSubject.myEmit(list)
         }
 
@@ -51,9 +53,11 @@ internal class SideDrawerSettings(context: Context) : ISideDrawerSettings {
         get() = publishSubject
 
     override fun reset() {
-        getPreferences(app).edit().remove(
-            "side_navigation_menu_order"
-        ).apply()
+        getPreferences(app).edit {
+            remove(
+                "side_navigation_menu_order"
+            )
+        }
         publishSubject.myEmit(makeDefaults())
     }
 }

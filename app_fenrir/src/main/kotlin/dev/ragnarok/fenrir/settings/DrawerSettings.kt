@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.settings
 
 import android.content.Context
+import androidx.core.content.edit
 import de.maxr1998.modernpreferences.PreferenceScreen
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.model.DrawerCategory
@@ -35,11 +36,12 @@ internal class DrawerSettings(context: Context) : IDrawerSettings {
             return kJson.decodeFromString(ListSerializer(DrawerCategory.serializer()), tmp)
         }
         set(list) {
-            PreferenceScreen.getPreferences(app).edit().putString(
-                "navigation_menu_order",
-                kJson.encodeToString(ListSerializer(DrawerCategory.serializer()), list)
-            )
-                .apply()
+            PreferenceScreen.getPreferences(app).edit {
+                putString(
+                    "navigation_menu_order",
+                    kJson.encodeToString(ListSerializer(DrawerCategory.serializer()), list)
+                )
+            }
             publishSubject.myEmit(list)
         }
 
@@ -47,9 +49,11 @@ internal class DrawerSettings(context: Context) : IDrawerSettings {
         get() = publishSubject
 
     override fun reset() {
-        PreferenceScreen.getPreferences(app).edit().remove(
-            "navigation_menu_order"
-        ).apply()
+        PreferenceScreen.getPreferences(app).edit {
+            remove(
+                "navigation_menu_order"
+            )
+        }
         publishSubject.myEmit(makeDefaults())
     }
 }

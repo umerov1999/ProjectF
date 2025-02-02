@@ -1,6 +1,10 @@
 package dev.ragnarok.fenrir.api.adapters
 
-import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.VKApiAttachments
+import dev.ragnarok.fenrir.api.model.VKApiAudioMessage
+import dev.ragnarok.fenrir.api.model.VKApiConversation
+import dev.ragnarok.fenrir.api.model.VKApiMessage
+import dev.ragnarok.fenrir.api.model.VKApiReaction
 import dev.ragnarok.fenrir.api.model.interfaces.VKApiAttachment
 import dev.ragnarok.fenrir.api.util.VKStringUtils
 import dev.ragnarok.fenrir.kJson

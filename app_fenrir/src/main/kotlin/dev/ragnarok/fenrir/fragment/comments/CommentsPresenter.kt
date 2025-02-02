@@ -92,16 +92,17 @@ class CommentsPresenter(
     private var loadingAvailableAuthorsNow = false
     private fun loadAuthorData() {
         val accountId = authorId
-        appendJob(ownersRepository.getBaseOwnerInfo(
-            accountId,
-            authorId,
-            IOwnersRepository.MODE_ANY
-        )
-            .fromIOToMain({ owner -> onAuthorDataReceived(owner) }) { t ->
-                onAuthorDataGetError(
-                    t
-                )
-            })
+        appendJob(
+            ownersRepository.getBaseOwnerInfo(
+                accountId,
+                authorId,
+                IOwnersRepository.MODE_ANY
+            )
+                .fromIOToMain({ owner -> onAuthorDataReceived(owner) }) { t ->
+                    onAuthorDataGetError(
+                        t
+                    )
+                })
     }
 
     private fun resolveAuthorAvatarView() {
@@ -173,18 +174,19 @@ class CommentsPresenter(
             )
             return
         }
-        stickersWordsDisplayDisposable.set(stickersInteractor.getKeywordsStickers(
-            authorId,
-            s.trim()
-        )
-            .delayedFlow(500)
-            .fromIOToMain({
-                view?.updateStickers(
-                    it
-                )
-            }) { u ->
-                showError(u)
-            })
+        stickersWordsDisplayDisposable.set(
+            stickersInteractor.getKeywordsStickers(
+                authorId,
+                s.trim()
+            )
+                .delayedFlow(500)
+                .fromIOToMain({
+                    view?.updateStickers(
+                        it
+                    )
+                }) { u ->
+                    showError(u)
+                })
     }
 
     private fun onAttachmentRemoveEvent() {
@@ -258,12 +260,13 @@ class CommentsPresenter(
             }
         }
         setLoadingState(LoadingState.INITIAL)
-        actualLoadingDisposable.add(single
-            .fromIOToMain({ bundle -> onInitialDataReceived(bundle) }) { throwable ->
-                onInitialDataError(
-                    throwable
-                )
-            })
+        actualLoadingDisposable.add(
+            single
+                .fromIOToMain({ bundle -> onInitialDataReceived(bundle) }) { throwable ->
+                    onInitialDataError(
+                        throwable
+                    )
+                })
     }
 
     private fun onInitialDataError(throwable: Throwable) {
@@ -276,19 +279,20 @@ class CommentsPresenter(
         val first = firstCommentInList ?: return
         val accountId = authorId
         setLoadingState(LoadingState.UP)
-        actualLoadingDisposable.add(interactor.getCommentsPortion(
-            accountId,
-            commented,
-            1,
-            COUNT,
-            first.getObjectId(),
-            CommentThread,
-            false,
-            "desc"
-        )
-            .fromIOToMain(
-                { bundle -> onCommentsPortionPortionReceived(bundle) }
-            ) { throwable -> onCommentPortionError(getCauseIfRuntime(throwable)) })
+        actualLoadingDisposable.add(
+            interactor.getCommentsPortion(
+                accountId,
+                commented,
+                1,
+                COUNT,
+                first.getObjectId(),
+                CommentThread,
+                false,
+                "desc"
+            )
+                .fromIOToMain(
+                    { bundle -> onCommentsPortionPortionReceived(bundle) }
+                ) { throwable -> onCommentPortionError(getCauseIfRuntime(throwable)) })
     }
 
     private fun loadDown() {
@@ -296,19 +300,20 @@ class CommentsPresenter(
         val last = lastCommentInList ?: return
         val accountId = authorId
         setLoadingState(LoadingState.DOWN)
-        actualLoadingDisposable.add(interactor.getCommentsPortion(
-            accountId,
-            commented,
-            0,
-            COUNT,
-            last.getObjectId(),
-            CommentThread,
-            false,
-            "asc"
-        )
-            .fromIOToMain(
-                { bundle -> onCommentsPortionPortionReceived(bundle) }
-            ) { throwable -> onCommentPortionError(getCauseIfRuntime(throwable)) })
+        actualLoadingDisposable.add(
+            interactor.getCommentsPortion(
+                accountId,
+                commented,
+                0,
+                COUNT,
+                last.getObjectId(),
+                CommentThread,
+                false,
+                "asc"
+            )
+                .fromIOToMain(
+                    { bundle -> onCommentsPortionPortionReceived(bundle) }
+                ) { throwable -> onCommentPortionError(getCauseIfRuntime(throwable)) })
     }
 
     private fun onCommentPortionError(throwable: Throwable) {
@@ -561,18 +566,19 @@ class CommentsPresenter(
         val older = firstCommentInList
         val accountId = authorId
         view?.displayDeepLookingCommentProgress()
-        deepLookingHolder.add(interactor.getAllCommentsRange(
-            accountId,
-            commented,
-            older?.getObjectId() ?: 0,
-            commentId
-        )
-            .fromIOToMain({ comments ->
-                onDeepCommentLoadingResponse(
-                    commentId,
-                    comments
-                )
-            }) { throwable -> onDeepCommentLoadingError(throwable) })
+        deepLookingHolder.add(
+            interactor.getAllCommentsRange(
+                accountId,
+                commented,
+                older?.getObjectId() ?: 0,
+                commentId
+            )
+                .fromIOToMain({ comments ->
+                    onDeepCommentLoadingResponse(
+                        commentId,
+                        comments
+                    )
+                }) { throwable -> onDeepCommentLoadingError(throwable) })
     }
 
     private fun onDeepCommentLoadingError(throwable: Throwable) {
@@ -683,19 +689,20 @@ class CommentsPresenter(
         MaterialAlertDialogBuilder(context)
             .setTitle(R.string.report)
             .setItems(items) { dialog, item ->
-                appendJob(interactor.reportComment(
-                    authorId, comment.fromId, comment.getObjectId(), item
-                )
-                    .fromIOToMain({ p ->
-                        if (p == 1) view?.customToast?.showToast(
-                            R.string.success
-                        )
-                        else view?.customToast?.showToast(
-                            R.string.error
-                        )
-                    }) { t ->
-                        showError(getCauseIfRuntime(t))
-                    })
+                appendJob(
+                    interactor.reportComment(
+                        authorId, comment.fromId, comment.getObjectId(), item
+                    )
+                        .fromIOToMain({ p ->
+                            if (p == 1) view?.customToast?.showToast(
+                                R.string.success
+                            )
+                            else view?.customToast?.showToast(
+                                R.string.error
+                            )
+                        }) { t ->
+                            showError(getCauseIfRuntime(t))
+                        })
                 dialog.dismiss()
             }
             .show()
@@ -739,12 +746,13 @@ class CommentsPresenter(
         if (intent.replyToComment == null && CommentThread != null) intent.setReplyToComment(
             CommentThread
         )
-        appendJob(interactor.send(accountId, commented, CommentThread, intent)
-            .fromIOToMain({ onNormalSendResponse() }) { t ->
-                onSendError(
-                    t
-                )
-            })
+        appendJob(
+            interactor.send(accountId, commented, CommentThread, intent)
+                .fromIOToMain({ onNormalSendResponse() }) { t ->
+                    onSendError(
+                        t
+                    )
+                })
     }
 
     private fun sendQuickComment(intent: CommentIntent) {
@@ -753,12 +761,13 @@ class CommentsPresenter(
             CommentThread
         )
         val accountId = authorId
-        appendJob(interactor.send(accountId, commented, CommentThread, intent)
-            .fromIOToMain({ onQuickSendResponse() }) { t ->
-                onSendError(
-                    t
-                )
-            })
+        appendJob(
+            interactor.send(accountId, commented, CommentThread, intent)
+                .fromIOToMain({ onQuickSendResponse() }) { t ->
+                    onSendError(
+                        t
+                    )
+                })
     }
 
     private fun onSendError(t: Throwable) {
@@ -849,10 +858,11 @@ class CommentsPresenter(
 
     private fun deleteRestoreInternal(commentId: Int, delete: Boolean) {
         val accountId = authorId
-        appendJob(interactor.deleteRestore(accountId, commented, commentId, delete)
-            .fromIOToMain(dummy()) { t ->
-                showError(t)
-            })
+        appendJob(
+            interactor.deleteRestore(accountId, commented, commentId, delete)
+                .fromIOToMain(dummy()) { t ->
+                    showError(t)
+                })
     }
 
     fun fireCommentEditClick(comment: Comment) {
@@ -876,10 +886,11 @@ class CommentsPresenter(
             return
         }
         val accountId = authorId
-        appendJob(interactor.like(accountId, comment.commented, comment.getObjectId(), add)
-            .fromIOToMain(dummy()) { t ->
-                showError(t)
-            })
+        appendJob(
+            interactor.like(accountId, comment.commented, comment.getObjectId(), add)
+                .fromIOToMain(dummy()) { t ->
+                    showError(t)
+                })
     }
 
     fun fireCommentRestoreClick(commentId: Int) {
@@ -990,10 +1001,11 @@ class CommentsPresenter(
             ids.add(commented.sourceOwnerId)
             ownersRepository.findBaseOwnersDataAsList(accountId, ids, IOwnersRepository.MODE_ANY)
         }
-        appendJob(single
-            .fromIOToMain({ owners -> onAvailableAuthorsReceived(owners) }) {
-                onAvailableAuthorsGetError()
-            })
+        appendJob(
+            single
+                .fromIOToMain({ owners -> onAvailableAuthorsReceived(owners) }) {
+                    onAvailableAuthorsGetError()
+                })
     }
 
     private fun onAvailableAuthorsGetError() {
@@ -1171,19 +1183,22 @@ class CommentsPresenter(
         this.CommentThread = commentThread
         data = ArrayList()
         val attachmentsRepository = attachmentsRepository
-        appendJob(attachmentsRepository
-            .observeAdding()
-            .filter { filterAttachmentEvent(it) }
-            .sharedFlowToMain { onAttachmentAddEvent(it) })
-        appendJob(attachmentsRepository
-            .observeRemoving()
-            .filter { filterAttachmentEvent(it) }
-            .sharedFlowToMain { onAttachmentRemoveEvent() })
-        appendJob(stores
-            .comments()
-            .observeMinorUpdates()
-            .filter { it.commented == commented }
-            .sharedFlowToMain { update -> onCommentMinorUpdate(update) })
+        appendJob(
+            attachmentsRepository
+                .observeAdding()
+                .filter { filterAttachmentEvent(it) }
+                .sharedFlowToMain { onAttachmentAddEvent(it) })
+        appendJob(
+            attachmentsRepository
+                .observeRemoving()
+                .filter { filterAttachmentEvent(it) }
+                .sharedFlowToMain { onAttachmentRemoveEvent() })
+        appendJob(
+            stores
+                .comments()
+                .observeMinorUpdates()
+                .filter { it.commented == commented }
+                .sharedFlowToMain { update -> onCommentMinorUpdate(update) })
         restoreDraftCommentSync()
         loadAuthorData()
         if (focusToComment == null && commentThread == null) {

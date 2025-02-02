@@ -59,17 +59,18 @@ class AudiosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun loadActualData(offset: Int) {
         actualDataLoading = true
         resolveRefreshingView()
-        appendJob((if (discography) fInteractor.getDiscography(
-            offset,
-            GET_COUNT,
-            reverse
-        ) else fInteractor.getAudios(offset, GET_COUNT, reverse))
-            .fromIOToMain({
-                onActualDataReceived(
-                    offset,
-                    it
-                )
-            }) { t -> onActualDataGetError(t) })
+        appendJob(
+            (if (discography) fInteractor.getDiscography(
+                offset,
+                GET_COUNT,
+                reverse
+            ) else fInteractor.getAudios(offset, GET_COUNT, reverse))
+                .fromIOToMain({
+                    onActualDataReceived(
+                        offset,
+                        it
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     private fun onActualDataGetError(t: Throwable) {
@@ -135,26 +136,27 @@ class AudiosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun doSearch() {
         actualDataLoading = true
         resolveRefreshingView()
-        appendJob((if (discography) fInteractor.searchDiscography(
-            search_at.getQuery(),
-            search_at.getOffset(),
-            SEARCH_COUNT,
-            reverse
-        ) else fInteractor.searchAudios(
-            search_at.getQuery(),
-            search_at.getOffset(),
-            SEARCH_COUNT,
-            reverse
-        ))
-            .fromIOToMain({
-                onSearched(
-                    FindAt(
-                        search_at.getQuery(),
-                        search_at.getOffset() + SEARCH_COUNT,
-                        it.size < SEARCH_COUNT
-                    ), it
-                )
-            }) { t -> onActualDataGetError(t) })
+        appendJob(
+            (if (discography) fInteractor.searchDiscography(
+                search_at.getQuery(),
+                search_at.getOffset(),
+                SEARCH_COUNT,
+                reverse
+            ) else fInteractor.searchAudios(
+                search_at.getQuery(),
+                search_at.getOffset(),
+                SEARCH_COUNT,
+                reverse
+            ))
+                .fromIOToMain({
+                    onSearched(
+                        FindAt(
+                            search_at.getQuery(),
+                            search_at.getOffset() + SEARCH_COUNT,
+                            it.size < SEARCH_COUNT
+                        ), it
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     private fun onSearched(search_at: FindAt, data: List<Audio>) {

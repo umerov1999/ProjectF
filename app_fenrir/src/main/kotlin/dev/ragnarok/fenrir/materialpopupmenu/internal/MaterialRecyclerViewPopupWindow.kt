@@ -9,6 +9,7 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.PopupWindow
 import androidx.annotation.FloatRange
+import androidx.core.content.withStyledAttributes
 import androidx.core.widget.PopupWindowCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -31,8 +32,8 @@ internal class MaterialRecyclerViewPopupWindow(
     private var dropDownGravity: Int,
     private val fixedContentWidthInPx: Int,
     private val calculateHeightOfAnchorView: Boolean,
-    dropDownVerticalOffset: Int,
-    dropDownHorizontalOffset: Int,
+    private var dropDownVerticalOffset: Int,
+    private var dropDownHorizontalOffset: Int,
     customAnimation: PopupAnimation?
 ) {
 
@@ -43,10 +44,6 @@ internal class MaterialRecyclerViewPopupWindow(
     }
 
     private var dropDownWidth = ViewGroup.LayoutParams.WRAP_CONTENT
-
-    private var dropDownVerticalOffset = 0
-
-    private var dropDownHorizontalOffset = 0
 
     private val tempRect = Rect()
 
@@ -62,17 +59,17 @@ internal class MaterialRecyclerViewPopupWindow(
         context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     }
 
-    private val backgroundDimEnabled: Boolean
+    private var backgroundDimEnabled: Boolean = false
 
-    private val backgroundDimAmount: Float
+    private var backgroundDimAmount: Float = DEFAULT_BACKGROUND_DIM_AMOUNT
 
-    private val popupPaddingBottom: Int
+    private var popupPaddingBottom: Int = 0
 
-    private val popupPaddingStart: Int
+    private var popupPaddingStart: Int = 0
 
-    private val popupPaddingEnd: Int
+    private var popupPaddingEnd: Int = 0
 
-    private val popupPaddingTop: Int
+    private var popupPaddingTop: Int = 0
 
     init {
         popup.inputMethodMode = PopupWindow.INPUT_METHOD_NEEDED
@@ -81,35 +78,38 @@ internal class MaterialRecyclerViewPopupWindow(
         popupMaxWidth = context.resources.getDimensionPixelSize(R.dimen.mpm_popup_menu_max_width)
         popupMinWidth = context.resources.getDimensionPixelSize(R.dimen.mpm_popup_menu_min_width)
         popupWidthUnit = context.resources.getDimensionPixelSize(R.dimen.mpm_popup_menu_width_unit)
-        val a = context.obtainStyledAttributes(null, R.styleable.MaterialRecyclerViewPopupWindow)
-        this.dropDownHorizontalOffset =
-            if (dropDownHorizontalOffset != DISABLED_INT) dropDownHorizontalOffset else a.getDimensionPixelOffset(
-                R.styleable.MaterialRecyclerViewPopupWindow_android_dropDownHorizontalOffset, 0
+        context.withStyledAttributes(null, R.styleable.MaterialRecyclerViewPopupWindow) {
+            dropDownHorizontalOffset =
+                if (dropDownHorizontalOffset != DISABLED_INT) dropDownHorizontalOffset else getDimensionPixelOffset(
+                    R.styleable.MaterialRecyclerViewPopupWindow_android_dropDownHorizontalOffset, 0
+                )
+            dropDownVerticalOffset =
+                if (dropDownVerticalOffset != DISABLED_INT) dropDownVerticalOffset else getDimensionPixelOffset(
+                    R.styleable.MaterialRecyclerViewPopupWindow_android_dropDownVerticalOffset, 0
+                )
+            backgroundDimEnabled = getBoolean(
+                R.styleable.MaterialRecyclerViewPopupWindow_android_backgroundDimEnabled,
+                false
             )
-        this.dropDownVerticalOffset =
-            if (dropDownVerticalOffset != DISABLED_INT) dropDownVerticalOffset else a.getDimensionPixelOffset(
-                R.styleable.MaterialRecyclerViewPopupWindow_android_dropDownVerticalOffset, 0
+            backgroundDimAmount = getFloat(
+                R.styleable.MaterialRecyclerViewPopupWindow_android_backgroundDimAmount,
+                DEFAULT_BACKGROUND_DIM_AMOUNT
             )
-        backgroundDimEnabled = a.getBoolean(
-            R.styleable.MaterialRecyclerViewPopupWindow_android_backgroundDimEnabled,
-            false
-        )
-        backgroundDimAmount = a.getFloat(
-            R.styleable.MaterialRecyclerViewPopupWindow_android_backgroundDimAmount,
-            DEFAULT_BACKGROUND_DIM_AMOUNT
-        )
-        popupPaddingBottom = a.getDimensionPixelSize(
-            R.styleable.MaterialRecyclerViewPopupWindow_mpm_paddingBottom,
-            0
-        )
-        popupPaddingStart =
-            a.getDimensionPixelSize(R.styleable.MaterialRecyclerViewPopupWindow_mpm_paddingStart, 0)
-        popupPaddingEnd =
-            a.getDimensionPixelSize(R.styleable.MaterialRecyclerViewPopupWindow_mpm_paddingEnd, 0)
-        popupPaddingTop =
-            a.getDimensionPixelSize(R.styleable.MaterialRecyclerViewPopupWindow_mpm_paddingTop, 0)
+            popupPaddingBottom = getDimensionPixelSize(
+                R.styleable.MaterialRecyclerViewPopupWindow_mpm_paddingBottom,
+                0
+            )
+            popupPaddingStart =
+                getDimensionPixelSize(
+                    R.styleable.MaterialRecyclerViewPopupWindow_mpm_paddingStart,
+                    0
+                )
+            popupPaddingEnd =
+                getDimensionPixelSize(R.styleable.MaterialRecyclerViewPopupWindow_mpm_paddingEnd, 0)
+            popupPaddingTop =
+                getDimensionPixelSize(R.styleable.MaterialRecyclerViewPopupWindow_mpm_paddingTop, 0)
 
-        a.recycle()
+        }
 
         if (fixedContentWidthInPx != 0) {
             updateContentWidth(fixedContentWidthInPx)

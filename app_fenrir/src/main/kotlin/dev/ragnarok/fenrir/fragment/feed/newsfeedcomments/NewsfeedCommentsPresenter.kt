@@ -37,19 +37,20 @@ class NewsfeedCommentsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     private fun load(startFrom: String?) {
-        appendJob(interactor.getNewsfeedComments(
-            accountId,
-            10,
-            startFrom,
-            "post,photo,video,topic"
-        )
-            .fromIOToMain({
-                onDataReceived(
-                    startFrom,
-                    it.second,
-                    it.first
-                )
-            }) { throwable -> onRequestError(throwable) })
+        appendJob(
+            interactor.getNewsfeedComments(
+                accountId,
+                10,
+                startFrom,
+                "post,photo,video,topic"
+            )
+                .fromIOToMain({
+                    onDataReceived(
+                        startFrom,
+                        it.second,
+                        it.first
+                    )
+                }) { throwable -> onRequestError(throwable) })
     }
 
     private fun loadNext() {

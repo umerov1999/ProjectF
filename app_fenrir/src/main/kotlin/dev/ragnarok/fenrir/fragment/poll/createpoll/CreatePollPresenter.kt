@@ -68,21 +68,22 @@ class CreatePollPresenter(
         val backgroundId =
             if (backgroundsPollList[selectedBackgroundPoll].id == -1 && backgroundsPollList[selectedBackgroundPoll].name == "default") null else backgroundsPollList[selectedBackgroundPoll].id
         setCreationNow(true)
-        appendJob(pollInteractor.createPoll(
-            accountId,
-            mQuestion,
-            mAnonymous,
-            mMultiply,
-            mDisableUnvote,
-            backgroundId,
-            mOwnerId,
-            nonEmptyOptions
-        )
-            .fromIOToMain({ onPollCreated(it) }) { t ->
-                onPollCreateError(
-                    t
-                )
-            })
+        appendJob(
+            pollInteractor.createPoll(
+                accountId,
+                mQuestion,
+                mAnonymous,
+                mMultiply,
+                mDisableUnvote,
+                backgroundId,
+                mOwnerId,
+                nonEmptyOptions
+            )
+                .fromIOToMain({ onPollCreated(it) }) { t ->
+                    onPollCreateError(
+                        t
+                    )
+                })
     }
 
     private fun onPollCreateError(t: Throwable) {

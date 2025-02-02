@@ -121,19 +121,20 @@ class CommentEditPresenter(
         val commented = orig.commented
         val commentId = orig.getObjectId()
         val body = getTextBody()
-        appendJob(commentsInteractor.edit(
-            accountId,
-            commented,
-            commentId,
-            body,
-            CommentThread,
-            models
-        )
-            .fromIOToMain({ comment -> onEditComplete(comment) }) { t ->
-                onEditError(
-                    t
-                )
-            })
+        appendJob(
+            commentsInteractor.edit(
+                accountId,
+                commented,
+                commentId,
+                body,
+                CommentThread,
+                models
+            )
+                .fromIOToMain({ comment -> onEditComplete(comment) }) { t ->
+                    onEditError(
+                        t
+                    )
+                })
     }
 
     private fun onEditError(t: Throwable) {
@@ -185,29 +186,35 @@ class CommentEditPresenter(
             setTextBody(orig.text)
             initialPopulateEntries()
         }
-        appendJob(uploadManager[accountId, destination]
-            .fromIOToMain { uploads -> onUploadsReceived(uploads) })
-        appendJob(uploadManager.observeAdding()
-            .sharedFlowToMain { it ->
-                onUploadQueueUpdates(
-                    it
-                ) { it.accountId == accountId && destination.compareTo(it.destination) }
-            })
-        appendJob(uploadManager.observeDeleting(false)
-            .sharedFlowToMain {
-                onUploadObjectRemovedFromQueue(
-                    it
-                )
-            })
-        appendJob(uploadManager.observeStatus()
-            .sharedFlowToMain {
-                onUploadStatusUpdate(
-                    it
-                )
-            })
-        appendJob(uploadManager.observeProgress()
-            .sharedFlowToMain { onUploadProgressUpdate(it) })
-        appendJob(uploadManager.observeResults()
-            .sharedFlowToMain { onUploadsQueueChanged(it) })
+        appendJob(
+            uploadManager[accountId, destination]
+                .fromIOToMain { uploads -> onUploadsReceived(uploads) })
+        appendJob(
+            uploadManager.observeAdding()
+                .sharedFlowToMain { it ->
+                    onUploadQueueUpdates(
+                        it
+                    ) { it.accountId == accountId && destination.compareTo(it.destination) }
+                })
+        appendJob(
+            uploadManager.observeDeleting(false)
+                .sharedFlowToMain {
+                    onUploadObjectRemovedFromQueue(
+                        it
+                    )
+                })
+        appendJob(
+            uploadManager.observeStatus()
+                .sharedFlowToMain {
+                    onUploadStatusUpdate(
+                        it
+                    )
+                })
+        appendJob(
+            uploadManager.observeProgress()
+                .sharedFlowToMain { onUploadProgressUpdate(it) })
+        appendJob(
+            uploadManager.observeResults()
+                .sharedFlowToMain { onUploadsQueueChanged(it) })
     }
 }

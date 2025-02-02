@@ -78,13 +78,14 @@ class FavePhotoPagerPresenter : PhotoPagerPresenter {
         val photo = mPhotos[index]
         val forUpdate =
             listOf(AccessIdPairModel(photo.getObjectId(), photo.ownerId, photo.accessKey))
-        appendJob(photosInteractor.getPhotosByIds(accountId, forUpdate)
-            .fromIOToMain({ photos ->
-                onPhotoUpdateReceived(
-                    photos,
-                    index
-                )
-            }) { t -> onRefreshFailed(index, t) })
+        appendJob(
+            photosInteractor.getPhotosByIds(accountId, forUpdate)
+                .fromIOToMain({ photos ->
+                    onPhotoUpdateReceived(
+                        photos,
+                        index
+                    )
+                }) { t -> onRefreshFailed(index, t) })
     }
 
     private fun onRefreshFailed(index: Int, t: Throwable) {

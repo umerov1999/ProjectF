@@ -269,17 +269,18 @@ open class CropImageView @JvmOverloads constructor(
                 deltaScale = deltaScale * currentScale - currentScale
             }
             if (animate) {
-                post(WrapCropBoundsRunnable(
-                    this,
-                    mImageToWrapCropBoundsAnimDuration,
-                    currentX,
-                    currentY,
-                    deltaX,
-                    deltaY,
-                    currentScale,
-                    deltaScale,
-                    willImageWrapCropBoundsAfterTranslate
-                ).also { mWrapCropBoundsRunnable = it })
+                post(
+                    WrapCropBoundsRunnable(
+                        this,
+                        mImageToWrapCropBoundsAnimDuration,
+                        currentX,
+                        currentY,
+                        deltaX,
+                        deltaY,
+                        currentScale,
+                        deltaScale,
+                        willImageWrapCropBoundsAfterTranslate
+                    ).also { mWrapCropBoundsRunnable = it })
             } else {
                 postTranslate(deltaX, deltaY)
                 if (!willImageWrapCropBoundsAfterTranslate) {
@@ -394,10 +395,11 @@ open class CropImageView @JvmOverloads constructor(
         }
         val oldScale = currentScale
         val deltaScale = scaleF - oldScale
-        post(ZoomImageToPosition(
-            this,
-            durationMs, oldScale, deltaScale, centerX, centerY
-        ).also { mZoomImageToPositionRunnable = it })
+        post(
+            ZoomImageToPosition(
+                this,
+                durationMs, oldScale, deltaScale, centerX, centerY
+            ).also { mZoomImageToPositionRunnable = it })
     }
 
     private fun calculateImageScaleBounds() {

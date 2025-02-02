@@ -5,7 +5,7 @@ import dev.ragnarok.filegallery.util.Utils
 import java.util.Locale
 
 object Constants {
-    const val DATABASE_VERSION = 1
+    const val DATABASE_VERSION = 2
 
     const val PICASSO_TAG = "picasso_tag"
     const val EXPORT_SETTINGS_FORMAT = 1

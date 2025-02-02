@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.RelativeLayout
+import androidx.core.view.isGone
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.PostImage
 import dev.ragnarok.fenrir.view.mozaik.MatrixCalculator.Libra
@@ -86,7 +87,7 @@ class MozaikLayout : RelativeLayout {
             for (p in photos.indices) {
                 val image = photos[p]
                 val parent = getChildAt(p)
-                if (parent.visibility == GONE) {
+                if (parent.isGone) {
                     continue
                 }
                 if (image.position == null) {
@@ -157,7 +158,7 @@ class MozaikLayout : RelativeLayout {
             for (p in photos.indices) {
                 val postImage = photos[p]
                 val parent = getChildAt(p)
-                if (parent.visibility == GONE) {
+                if (parent.isGone) {
                     continue
                 }
                 if (postImage.position == null) {

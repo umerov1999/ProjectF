@@ -11,6 +11,9 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import android.util.Log
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.scale
+import androidx.core.graphics.withSave
 import me.minetsh.imaging.core.clip.IMGClip
 import me.minetsh.imaging.core.clip.IMGClipWindow
 import me.minetsh.imaging.core.homing.IMGHoming
@@ -102,7 +105,7 @@ class IMGImage {
     private var mMosaicPaint: Paint? = null
     private var mShadePaint: Paint? = null
 
-    val DEFAULT_IMAGE: Bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888)
+    val DEFAULT_IMAGE: Bitmap = createBitmap(100, 100, Bitmap.Config.ARGB_8888)
 
     init {
         mShade.fillType = Path.FillType.WINDING
@@ -256,7 +259,7 @@ class IMGImage {
                 mMosaicPaint?.setXfermode(PorterDuffXfermode(PorterDuff.Mode.SRC_IN))
             }
             mImage?.let {
-                mMosaicImage = Bitmap.createScaledBitmap(it, w, h, false)
+                mMosaicImage = it.scale(w, h, false)
             }
         }
     }
@@ -485,14 +488,14 @@ class IMGImage {
     fun onDrawMosaicsPath(canvas: Canvas): Int {
         val layerCount = canvas.saveLayer(mFrame, null)
         if (!isMosaicEmpty) {
-            canvas.save()
-            val scale: Float = getScale()
-            canvas.translate(mFrame.left, mFrame.top)
-            canvas.scale(scale, scale)
-            for (path in mMosaics) {
-                path.onDrawMosaic(canvas, mPaint)
+            canvas.withSave {
+                val scale: Float = getScale()
+                translate(mFrame.left, mFrame.top)
+                scale(scale, scale)
+                for (path in mMosaics) {
+                    path.onDrawMosaic(this, mPaint)
+                }
             }
-            canvas.restore()
         }
         return layerCount
     }
@@ -504,14 +507,14 @@ class IMGImage {
 
     fun onDrawDoodles(canvas: Canvas) {
         if (!isDoodleEmpty) {
-            canvas.save()
-            val scale: Float = getScale()
-            canvas.translate(mFrame.left, mFrame.top)
-            canvas.scale(scale, scale)
-            for (path in mDoodles) {
-                path.onDrawDoodle(canvas, mPaint)
+            canvas.withSave {
+                val scale: Float = getScale()
+                translate(mFrame.left, mFrame.top)
+                scale(scale, scale)
+                for (path in mDoodles) {
+                    path.onDrawDoodle(this, mPaint)
+                }
             }
-            canvas.restore()
         }
     }
 
@@ -523,21 +526,21 @@ class IMGImage {
 
     fun onDrawStickers(canvas: Canvas) {
         if (mBackStickers.isEmpty()) return
-        canvas.save()
-        for (sticker in mBackStickers) {
-            if (!sticker.isShowing()) {
-                val tPivotX = sticker.getX() + sticker.getPivotX()
-                val tPivotY = sticker.getY() + sticker.getPivotY()
-                canvas.save()
-                M.setTranslate(sticker.getX(), sticker.getY())
-                M.postScale(sticker.getScale(), sticker.getScale(), tPivotX, tPivotY)
-                M.postRotate(sticker.getRotation(), tPivotX, tPivotY)
-                canvas.concat(M)
-                sticker.onSticker(canvas)
-                canvas.restore()
+        canvas.withSave {
+            for (sticker in mBackStickers) {
+                if (!sticker.isShowing()) {
+                    val tPivotX = sticker.getX() + sticker.getPivotX()
+                    val tPivotY = sticker.getY() + sticker.getPivotY()
+                    withSave {
+                        M.setTranslate(sticker.getX(), sticker.getY())
+                        M.postScale(sticker.getScale(), sticker.getScale(), tPivotX, tPivotY)
+                        M.postRotate(sticker.getRotation(), tPivotX, tPivotY)
+                        concat(M)
+                        sticker.onSticker(this)
+                    }
+                }
             }
         }
-        canvas.restore()
     }
 
     fun onDrawShade(canvas: Canvas) {

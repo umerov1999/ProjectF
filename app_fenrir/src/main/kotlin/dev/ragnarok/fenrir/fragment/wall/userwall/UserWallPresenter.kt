@@ -133,17 +133,18 @@ class UserWallPresenter(
     }
 
     private fun requestActualFullInfo() {
-        appendJob(ownersRepository.getFullUserInfo(
-            accountId,
-            ownerId,
-            IOwnersRepository.MODE_NET
-        )
-            .fromIOToMain({
-                onFullInfoReceived(
-                    it.first,
-                    it.second
-                )
-            }) { t -> onDetailsGetError(t) })
+        appendJob(
+            ownersRepository.getFullUserInfo(
+                accountId,
+                ownerId,
+                IOwnersRepository.MODE_NET
+            )
+                .fromIOToMain({
+                    onFullInfoReceived(
+                        it.first,
+                        it.second
+                    )
+                }) { t -> onDetailsGetError(t) })
     }
 
     private fun onFullInfoReceived(user: User?, details: UserDetails?) {
@@ -423,19 +424,21 @@ class UserWallPresenter(
     }
 
     fun fireDeleteFromFriends() {
-        appendJob(relationshipInteractor.deleteFriends(accountId, ownerId)
-            .fromIOToMain({ responseCode -> onFriendsDeleteResult(responseCode) }) { t ->
-                showError(getCauseIfRuntime(t))
-            })
+        appendJob(
+            relationshipInteractor.deleteFriends(accountId, ownerId)
+                .fromIOToMain({ responseCode -> onFriendsDeleteResult(responseCode) }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
     }
 
     fun fireNewStatusEntered(newValue: String?) {
-        appendJob(accountInteractor.changeStatus(accountId, newValue)
-            .fromIOToMain({ onStatusChanged(newValue) }) { t ->
-                showError(
-                    getCauseIfRuntime(t)
-                )
-            })
+        appendJob(
+            accountInteractor.changeStatus(accountId, newValue)
+                .fromIOToMain({ onStatusChanged(newValue) }) { t ->
+                    showError(
+                        getCauseIfRuntime(t)
+                    )
+                })
     }
 
     private fun onStatusChanged(status: String?) {
@@ -468,36 +471,43 @@ class UserWallPresenter(
     }
 
     fun fireAddToBookmarks() {
-        appendJob(faveInteractor.addPage(accountId, ownerId)
-            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(
+            faveInteractor.addPage(accountId, ownerId)
+                .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     fun fireRemoveFromBookmarks() {
-        appendJob(faveInteractor.removePage(accountId, ownerId, true)
-            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(
+            faveInteractor.removePage(accountId, ownerId, true)
+                .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     fun fireSubscribe() {
-        appendJob(wallsRepository.subscribe(accountId, ownerId)
-            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(
+            wallsRepository.subscribe(accountId, ownerId)
+                .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
 
-        appendJob(storiesInteractor.subscribe(accountId, ownerId)
-            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(
+            storiesInteractor.subscribe(accountId, ownerId)
+                .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     fun fireUnSubscribe() {
-        appendJob(wallsRepository.unsubscribe(accountId, ownerId)
-            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(
+            wallsRepository.unsubscribe(accountId, ownerId)
+                .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
 
-        appendJob(storiesInteractor.unsubscribe(accountId, ownerId)
-            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(
+            storiesInteractor.unsubscribe(accountId, ownerId)
+                .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     private fun executeAddToFriendsRequest(text: String?, follow: Boolean) {
-        appendJob(relationshipInteractor.addFriend(accountId, ownerId, text, follow)
-            .fromIOToMain({ resultCode -> onAddFriendResult(resultCode) }) { t ->
-                showError(getCauseIfRuntime(t))
-            })
+        appendJob(
+            relationshipInteractor.addFriend(accountId, ownerId, text, follow)
+                .fromIOToMain({ resultCode -> onAddFriendResult(resultCode) }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
     }
 
     private fun onFriendsDeleteResult(responseCode: Int) {
@@ -539,12 +549,13 @@ class UserWallPresenter(
 
     private fun prepareUserAvatarsAndShow() {
         setLoadingAvatarPhotosNow(true)
-        appendJob(photosInteractor[accountId, ownerId, -6, 100, 0, true]
-            .fromIOToMain({ photos -> DisplayUserProfileAlbum(photos) }) { t ->
-                onAvatarAlbumPrepareFailed(
-                    t
-                )
-            })
+        appendJob(
+            photosInteractor[accountId, ownerId, -6, 100, 0, true]
+                .fromIOToMain({ photos -> DisplayUserProfileAlbum(photos) }) { t ->
+                    onAvatarAlbumPrepareFailed(
+                        t
+                    )
+                })
     }
 
     private fun onAvatarAlbumPrepareFailed(t: Throwable) {
@@ -709,17 +720,18 @@ class UserWallPresenter(
             .setTitle(R.string.report)
             .setItems(items) { dialog, item ->
                 val report = values[item].toString()
-                appendJob(ownersRepository.report(accountId, ownerId, report, null)
-                    .fromIOToMain({ p ->
-                        if (p == 1) view?.customToast?.showToast(
-                            R.string.success
-                        )
-                        else view?.customToast?.showToast(
-                            R.string.error
-                        )
-                    }) { t ->
-                        showError(getCauseIfRuntime(t))
-                    })
+                appendJob(
+                    ownersRepository.report(accountId, ownerId, report, null)
+                        .fromIOToMain({ p ->
+                            if (p == 1) view?.customToast?.showToast(
+                                R.string.success
+                            )
+                            else view?.customToast?.showToast(
+                                R.string.error
+                            )
+                        }) { t ->
+                            showError(getCauseIfRuntime(t))
+                        })
                 dialog.dismiss()
             }
             .show()
@@ -756,20 +768,21 @@ class UserWallPresenter(
     }
 
     override fun searchStory(ByName: Boolean) {
-        appendJob(storiesInteractor.searchStories(
-            accountId,
-            if (ByName) user.fullName else null,
-            if (ByName) null else ownerId
-        )
-            .fromIOToMain({
-                if (it.nonNullNoEmpty()) {
-                    stories.clear()
-                    stories.addAll(it)
-                    view?.updateStory(
-                        stories
-                    )
-                }
-            }) { })
+        appendJob(
+            storiesInteractor.searchStories(
+                accountId,
+                if (ByName) user.fullName else null,
+                if (ByName) null else ownerId
+            )
+                .fromIOToMain({
+                    if (it.nonNullNoEmpty()) {
+                        stories.clear()
+                        stories.addAll(it)
+                        view?.updateStory(
+                            stories
+                        )
+                    }
+                }) { })
     }
 
     override fun getOwner(): Owner {

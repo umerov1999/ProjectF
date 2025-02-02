@@ -243,12 +243,13 @@ class TagDirAdapter(context: Context, private var data: List<TagDir>) :
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
-        mPlayerDisposable.set(MusicPlaybackController.observeServiceBinding()
-            .sharedFlowToMain {
-                onServiceBindEvent(
-                    it
-                )
-            })
+        mPlayerDisposable.set(
+            MusicPlaybackController.observeServiceBinding()
+                .sharedFlowToMain {
+                    onServiceBindEvent(
+                        it
+                    )
+                })
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {

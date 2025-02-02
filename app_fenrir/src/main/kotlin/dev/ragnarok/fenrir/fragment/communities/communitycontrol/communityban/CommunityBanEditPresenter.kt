@@ -166,20 +166,21 @@ class CommunityBanEditPresenter : AccountDependencyPresenter<ICommunityBanEditVi
         val ownerId = currentBanned().ownerId
         val endDate = blockFor.unblockingDate
         val endDateUnixtime = if (endDate != null) endDate.time / 1000 else null
-        appendJob(interactor.ban(
-            accountId,
-            groupId,
-            ownerId,
-            endDateUnixtime,
-            reason,
-            comment,
-            showCommentToUser
-        )
-            .fromIOToMain({ onAddBanComplete() }) { throwable ->
-                onAddBanError(
-                    getCauseIfRuntime(throwable)
-                )
-            })
+        appendJob(
+            interactor.ban(
+                accountId,
+                groupId,
+                ownerId,
+                endDateUnixtime,
+                reason,
+                comment,
+                showCommentToUser
+            )
+                .fromIOToMain({ onAddBanComplete() }) { throwable ->
+                    onAddBanError(
+                        getCauseIfRuntime(throwable)
+                    )
+                })
     }
 
     private fun onAddBanComplete() {

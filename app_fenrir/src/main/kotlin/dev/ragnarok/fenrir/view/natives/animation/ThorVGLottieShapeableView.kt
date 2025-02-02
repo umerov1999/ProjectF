@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Parcelable
 import android.util.AttributeSet
 import androidx.annotation.RawRes
+import androidx.core.content.withStyledAttributes
 import com.google.android.material.imageview.ShapeableImageView
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
@@ -347,15 +348,14 @@ class ThorVGLottieShapeableView @JvmOverloads constructor(
     }
 
     init {
-        @SuppressLint("CustomViewStyleable") val a =
-            context.obtainStyledAttributes(attrs, R.styleable.ThorVGLottieView)
-        rawResTmp = a.getResourceId(R.styleable.ThorVGLottieView_fromRes, 0)
-        if (rawResTmp == 0) {
-            rawResTmp = null
+        context.withStyledAttributes(attrs, R.styleable.ThorVGLottieView) {
+            rawResTmp = getResourceId(R.styleable.ThorVGLottieView_fromRes, 0)
+            if (rawResTmp == 0) {
+                rawResTmp = null
+            }
+            repeatTmp = getBoolean(R.styleable.ThorVGLottieView_loopAnimation, false)
+            repeatModeTmp = getInt(R.styleable.ThorVGLottieView_loopMode, RESTART)
         }
-        repeatTmp = a.getBoolean(R.styleable.ThorVGLottieView_loopAnimation, false)
-        repeatModeTmp = a.getInt(R.styleable.ThorVGLottieView_loopMode, RESTART)
-        a.recycle()
         if (FenrirNative.isNativeLoaded && rawResTmp != null) {
             loadedFrom = LoadedFrom.RES
             isPlaying = true

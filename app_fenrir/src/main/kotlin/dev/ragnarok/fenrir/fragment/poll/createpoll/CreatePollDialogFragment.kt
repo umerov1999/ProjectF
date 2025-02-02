@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
+import androidx.core.view.isGone
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -85,7 +86,7 @@ class CreatePollDialogFragment :
                         }
                         if (it.getChildAt(i + 1) is TextInputLayout) {
                             val next = it.getChildAt(i + 1) as TextInputLayout
-                            if (next.visibility == View.GONE) {
+                            if (next.isGone) {
                                 next.visibility = View.VISIBLE
                             }
                         }

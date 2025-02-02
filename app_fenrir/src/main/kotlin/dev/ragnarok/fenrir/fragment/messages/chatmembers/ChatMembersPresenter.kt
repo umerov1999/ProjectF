@@ -83,12 +83,13 @@ class ChatMembersPresenter(accountId: Long, private val chatId: Long, savedInsta
 
     private fun requestData() {
         setRefreshing(true)
-        appendJob(messagesInteractor.getChatUsers(accountId, chatId)
-            .fromIOToMain({ onDataReceived(it) }) { t ->
-                onDataGetError(
-                    t
-                )
-            })
+        appendJob(
+            messagesInteractor.getChatUsers(accountId, chatId)
+                .fromIOToMain({ onDataReceived(it) }) { t ->
+                    onDataGetError(
+                        t
+                    )
+                })
     }
 
     private fun onDataGetError(t: Throwable) {
@@ -126,10 +127,11 @@ class ChatMembersPresenter(accountId: Long, private val chatId: Long, savedInsta
 
     fun fireUserDeleteConfirmed(user: AppChatUser) {
         val userId = user.member?.ownerId ?: return
-        appendJob(messagesInteractor.removeChatMember(accountId, chatId, userId)
-            .fromIOToMain({ onUserRemoved(userId) }) { t ->
-                showError(getCauseIfRuntime(t))
-            })
+        appendJob(
+            messagesInteractor.removeChatMember(accountId, chatId, userId)
+                .fromIOToMain({ onUserRemoved(userId) }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
     }
 
     private fun onUserRemoved(id: Long) {
@@ -156,12 +158,13 @@ class ChatMembersPresenter(accountId: Long, private val chatId: Long, savedInsta
             }
         }
         if (usersData.nonNullNoEmpty()) {
-            appendJob(messagesInteractor.addChatUsers(accountId, chatId, usersData)
-                .fromIOToMain({ onChatUsersAdded(it) }) { t ->
-                    onChatUsersAddError(
-                        t
-                    )
-                })
+            appendJob(
+                messagesInteractor.addChatUsers(accountId, chatId, usersData)
+                    .fromIOToMain({ onChatUsersAdded(it) }) { t ->
+                        onChatUsersAddError(
+                            t
+                        )
+                    })
         }
     }
 
@@ -189,8 +192,9 @@ class ChatMembersPresenter(accountId: Long, private val chatId: Long, savedInsta
     }
 
     fun fireAdminToggleClick(isAdmin: Boolean, ownerId: Long) {
-        appendJob(messagesInteractor.setMemberRole(accountId, chatId, ownerId, isAdmin)
-            .fromIOToMain({ fireRefresh() }) { t -> onChatUsersAddError(t) })
+        appendJob(
+            messagesInteractor.setMemberRole(accountId, chatId, ownerId, isAdmin)
+                .fromIOToMain({ fireRefresh() }) { t -> onChatUsersAddError(t) })
     }
 
     init {

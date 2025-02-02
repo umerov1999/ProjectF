@@ -1,9 +1,9 @@
 package dev.ragnarok.filegallery.fragment.filemanager
 
 import android.annotation.SuppressLint
-import android.net.Uri
 import android.os.Environment
 import android.os.Parcelable
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.LinearLayoutManager_SavedState
 import dev.ragnarok.fenrir.module.parcel.ParcelFlags
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
@@ -754,7 +754,7 @@ class FileManagerPresenter(
     fun fireFileForRemotePlaySelected(audioPath: String) {
         val intent = UploadIntent(remotePlay)
             .setAutoCommit(true)
-            .setFileUri(Uri.parse(audioPath))
+            .setFileUri(audioPath.toUri())
         uploadManager.enqueue(listOf(intent))
     }
 
@@ -784,34 +784,40 @@ class FileManagerPresenter(
     init {
         loadFiles(back = false, caches = true, fromCache = false)
 
-        appendJob(uploadManager[remotePlay]
-            .fromIOToMain { data -> onUploadsDataReceived(data) })
-        appendJob(uploadManager.observeAdding()
-            .sharedFlowToMain {
-                onUploadsAdded(it)
-            })
-        appendJob(uploadManager.observeDeleting(true)
-            .sharedFlowToMain {
-                onUploadDeleted(it)
-            })
-        appendJob(uploadManager.observeResults()
-            .filter {
-                remotePlay.compareTo(
-                    it.first.destination
-                ) || remotePlay.compareTo(it.first.destination)
-            }
-            .sharedFlowToMain {
-                onUploadResults(it)
-            })
+        appendJob(
+            uploadManager[remotePlay]
+                .fromIOToMain { data -> onUploadsDataReceived(data) })
+        appendJob(
+            uploadManager.observeAdding()
+                .sharedFlowToMain {
+                    onUploadsAdded(it)
+                })
+        appendJob(
+            uploadManager.observeDeleting(true)
+                .sharedFlowToMain {
+                    onUploadDeleted(it)
+                })
+        appendJob(
+            uploadManager.observeResults()
+                .filter {
+                    remotePlay.compareTo(
+                        it.first.destination
+                    ) || remotePlay.compareTo(it.first.destination)
+                }
+                .sharedFlowToMain {
+                    onUploadResults(it)
+                })
 
-        appendJob(uploadManager.observeStatus()
-            .sharedFlowToMain {
-                onUploadStatusUpdate(it)
-            })
+        appendJob(
+            uploadManager.observeStatus()
+                .sharedFlowToMain {
+                    onUploadStatusUpdate(it)
+                })
 
-        appendJob(uploadManager.observeProgress()
-            .sharedFlowToMain {
-                onProgressUpdates(it)
-            })
+        appendJob(
+            uploadManager.observeProgress()
+                .sharedFlowToMain {
+                    onProgressUpdates(it)
+                })
     }
 }

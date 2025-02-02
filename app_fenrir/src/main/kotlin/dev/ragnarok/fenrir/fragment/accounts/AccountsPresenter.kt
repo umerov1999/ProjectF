@@ -125,25 +125,26 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
         if (!refresh) {
             view?.isLoading(true)
         }
-        appendJob(accountsInteractor
-            .getAll(refresh)
-            .fromIOToMain({
-                view?.isLoading(false)
-                val sz = mData.size
-                mData.clear()
-                view?.notifyItemRangeRemoved(0, sz)
-                mData.addAll(it)
-                view?.notifyItemRangeInserted(0, it.size)
-                view?.resolveEmptyText(mData.isEmpty())
-                if (mData.isEmpty()) {
-                    view?.invalidateMenu()
-                    if (Constants.DEFAULT_ACCOUNT_TYPE == AccountType.KATE) {
-                        view?.startLoginViaWeb()
-                    } else {
-                        view?.startDirectLogin()
+        appendJob(
+            accountsInteractor
+                .getAll(refresh)
+                .fromIOToMain({
+                    view?.isLoading(false)
+                    val sz = mData.size
+                    mData.clear()
+                    view?.notifyItemRangeRemoved(0, sz)
+                    mData.addAll(it)
+                    view?.notifyItemRangeInserted(0, it.size)
+                    view?.resolveEmptyText(mData.isEmpty())
+                    if (mData.isEmpty()) {
+                        view?.invalidateMenu()
+                        if (Constants.DEFAULT_ACCOUNT_TYPE == AccountType.KATE) {
+                            view?.startLoginViaWeb()
+                        } else {
+                            view?.startDirectLogin()
+                        }
                     }
-                }
-            }) { view?.isLoading(false) })
+                }) { view?.isLoading(false) })
     }
 
     private fun indexOf(uid: Long): Int {
@@ -840,20 +841,21 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
         if (Utils.isOfficialVKCurrent && Settings.get()
                 .accounts().anonymToken.expired_at <= Calendar.getInstance().time.time / 1000
         ) {
-            appendJob(networker.vkDirectAuth().get_anonym_token(
-                Constants.API_ID,
-                Constants.API_ID,
-                Constants.SECRET,
-                Constants.AUTH_API_VERSION,
-                Utils.getDeviceId(
-                    Constants.DEFAULT_ACCOUNT_TYPE,
-                    provideApplicationContext()
-                )
-            ).fromIOToMain {
-                if (it.token.nonNullNoEmpty() && it.expired_at > Calendar.getInstance().time.time / 1000) {
-                    Settings.get().accounts().anonymToken = AnonymToken().set(it)
-                }
-            })
+            appendJob(
+                networker.vkDirectAuth().get_anonym_token(
+                    Constants.API_ID,
+                    Constants.API_ID,
+                    Constants.SECRET,
+                    Constants.AUTH_API_VERSION,
+                    Utils.getDeviceId(
+                        Constants.DEFAULT_ACCOUNT_TYPE,
+                        provideApplicationContext()
+                    )
+                ).fromIOToMain {
+                    if (it.token.nonNullNoEmpty() && it.expired_at > Calendar.getInstance().time.time / 1000) {
+                        Settings.get().accounts().anonymToken = AnonymToken().set(it)
+                    }
+                })
         }
     }
 }

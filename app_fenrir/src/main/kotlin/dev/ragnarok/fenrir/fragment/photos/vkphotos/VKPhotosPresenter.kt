@@ -223,51 +223,54 @@ class VKPhotosPresenter(
     private fun requestActualData(offset: Int) {
         setRequestNow(true)
         if (albumId != -9001 && albumId != -9000) {
-            appendJob(interactor[accountId, ownerId, albumId, COUNT, offset, !invertPhotoRev]
-                .map { t ->
-                    val wrap = wrappersOf(t)
-                    MusicPlaybackController.tracksExist.markExistPhotos(wrap)
-                    wrap
-                }
-                .fromIOToMain({ photos ->
-                    onActualPhotosReceived(
-                        offset,
-                        photos
-                    )
-                }) { t -> onActualDataGetError(t) })
+            appendJob(
+                interactor[accountId, ownerId, albumId, COUNT, offset, !invertPhotoRev]
+                    .map { t ->
+                        val wrap = wrappersOf(t)
+                        MusicPlaybackController.tracksExist.markExistPhotos(wrap)
+                        wrap
+                    }
+                    .fromIOToMain({ photos ->
+                        onActualPhotosReceived(
+                            offset,
+                            photos
+                        )
+                    }) { t -> onActualDataGetError(t) })
         } else if (albumId == -9000) {
-            appendJob(interactor.getUsersPhoto(
-                accountId,
-                ownerId,
-                1,
-                if (invertPhotoRev) 1 else 0,
-                offset,
-                COUNT
-            )
-                .map { t ->
-                    val wrap = wrappersOf(t)
-                    MusicPlaybackController.tracksExist.markExistPhotos(wrap)
-                    wrap
-                }
-                .fromIOToMain({ photos ->
-                    onActualPhotosReceived(
-                        offset,
-                        photos
-                    )
-                }) { t -> onActualDataGetError(t) })
+            appendJob(
+                interactor.getUsersPhoto(
+                    accountId,
+                    ownerId,
+                    1,
+                    if (invertPhotoRev) 1 else 0,
+                    offset,
+                    COUNT
+                )
+                    .map { t ->
+                        val wrap = wrappersOf(t)
+                        MusicPlaybackController.tracksExist.markExistPhotos(wrap)
+                        wrap
+                    }
+                    .fromIOToMain({ photos ->
+                        onActualPhotosReceived(
+                            offset,
+                            photos
+                        )
+                    }) { t -> onActualDataGetError(t) })
         } else {
-            appendJob(interactor.getAll(accountId, ownerId, 1, 1, offset, COUNT)
-                .map { t ->
-                    val wrap = wrappersOf(t)
-                    MusicPlaybackController.tracksExist.markExistPhotos(wrap)
-                    wrap
-                }
-                .fromIOToMain({ photos ->
-                    onActualPhotosReceived(
-                        offset,
-                        photos
-                    )
-                }) { t -> onActualDataGetError(t) })
+            appendJob(
+                interactor.getAll(accountId, ownerId, 1, 1, offset, COUNT)
+                    .map { t ->
+                        val wrap = wrappersOf(t)
+                        MusicPlaybackController.tracksExist.markExistPhotos(wrap)
+                        wrap
+                    }
+                    .fromIOToMain({ photos ->
+                        onActualPhotosReceived(
+                            offset,
+                            photos
+                        )
+                    }) { t -> onActualDataGetError(t) })
         }
     }
 
@@ -307,16 +310,17 @@ class VKPhotosPresenter(
     }
 
     private fun loadInitialData() {
-        cacheDisposable.add(interactor.getAllCachedData(accountId, ownerId, albumId, invertPhotoRev)
-            .zip(
-                uploadManager[accountId, destination]
-            ) { first, second ->
-                Pair.create(
-                    first,
-                    second
-                )
-            }
-            .fromIOToMain { data -> onInitialDataReceived(data) })
+        cacheDisposable.add(
+            interactor.getAllCachedData(accountId, ownerId, albumId, invertPhotoRev)
+                .zip(
+                    uploadManager[accountId, destination]
+                ) { first, second ->
+                    Pair.create(
+                        first,
+                        second
+                    )
+                }
+                .fromIOToMain { data -> onInitialDataReceived(data) })
     }
 
     fun updateInfo(position: Int, ptr: Long) {
@@ -467,23 +471,24 @@ class VKPhotosPresenter(
             }
             val finalIndex = Index
             val source = TmpSource(fireTempDataUsage(), 0)
-            appendJob(Stores.instance
-                .tempStore()
-                .putTemporaryData(
-                    source.ownerId,
-                    source.sourceId,
-                    photos_ret,
-                    Serializers.PHOTOS_SERIALIZER
-                )
-                .fromIOToMain({
-                    view?.displayGallery(
-                        accountId,
-                        albumId,
-                        ownerId,
-                        source,
-                        finalIndex
+            appendJob(
+                Stores.instance
+                    .tempStore()
+                    .putTemporaryData(
+                        source.ownerId,
+                        source.sourceId,
+                        photos_ret,
+                        Serializers.PHOTOS_SERIALIZER
                     )
-                }) { obj -> obj.printStackTrace() })
+                    .fromIOToMain({
+                        view?.displayGallery(
+                            accountId,
+                            albumId,
+                            ownerId,
+                            source,
+                            finalIndex
+                        )
+                    }) { obj -> obj.printStackTrace() })
         } else {
             appendJob(
                 flow {
@@ -604,16 +609,21 @@ class VKPhotosPresenter(
             this.owner = ownerWrapper?.owner
         }
         loadInitialData()
-        appendJob(uploadManager.observeAdding()
-            .sharedFlowToMain { onUploadQueueAdded(it) })
-        appendJob(uploadManager.observeDeleting(true)
-            .sharedFlowToMain { onUploadsRemoved(it) })
-        appendJob(uploadManager.observeResults()
-            .sharedFlowToMain { onUploadResults(it) })
-        appendJob(uploadManager.observeStatus()
-            .sharedFlowToMain { onUploadStatusUpdate(it) })
-        appendJob(uploadManager.observeProgress()
-            .sharedFlowToMain { onUploadProgressUpdate(it) })
+        appendJob(
+            uploadManager.observeAdding()
+                .sharedFlowToMain { onUploadQueueAdded(it) })
+        appendJob(
+            uploadManager.observeDeleting(true)
+                .sharedFlowToMain { onUploadsRemoved(it) })
+        appendJob(
+            uploadManager.observeResults()
+                .sharedFlowToMain { onUploadResults(it) })
+        appendJob(
+            uploadManager.observeStatus()
+                .sharedFlowToMain { onUploadStatusUpdate(it) })
+        appendJob(
+            uploadManager.observeProgress()
+                .sharedFlowToMain { onUploadProgressUpdate(it) })
         refreshOwnerInfoIfNeed()
         refreshAlbumInfoIfNeed()
     }

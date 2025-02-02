@@ -49,13 +49,14 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun loadActualData(offset: Int) {
         actualDataLoading = true
         resolveRefreshingView()
-        appendJob(fInteractor.getPhotos(offset, GET_COUNT, reverse)
-            .fromIOToMain({
-                onActualDataReceived(
-                    offset,
-                    it
-                )
-            }) { t -> onActualDataGetError(t) })
+        appendJob(
+            fInteractor.getPhotos(offset, GET_COUNT, reverse)
+                .fromIOToMain({
+                    onActualDataReceived(
+                        offset,
+                        it
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     private fun onActualDataGetError(t: Throwable) {
@@ -121,21 +122,22 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun doSearch() {
         actualDataLoading = true
         resolveRefreshingView()
-        appendJob(fInteractor.searchPhotos(
-            search_at.getQuery(),
-            search_at.getOffset(),
-            SEARCH_COUNT,
-            reverse
-        )
-            .fromIOToMain({
-                onSearched(
-                    FindAt(
-                        search_at.getQuery(),
-                        search_at.getOffset() + SEARCH_COUNT,
-                        it.size < SEARCH_COUNT
-                    ), it
-                )
-            }) { t -> onActualDataGetError(t) })
+        appendJob(
+            fInteractor.searchPhotos(
+                search_at.getQuery(),
+                search_at.getOffset(),
+                SEARCH_COUNT,
+                reverse
+            )
+                .fromIOToMain({
+                    onSearched(
+                        FindAt(
+                            search_at.getQuery(),
+                            search_at.getOffset() + SEARCH_COUNT,
+                            it.size < SEARCH_COUNT
+                        ), it
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     private fun onSearched(search_at: FindAt, data: List<Photo>) {
@@ -218,24 +220,25 @@ class PhotosLocalServerPresenter(accountId: Long, savedInstanceState: Bundle?) :
             }
             val finalIndex = Index
             val source = TmpSource(fireTempDataUsage(), 0)
-            appendJob(Stores.instance
-                .tempStore()
-                .putTemporaryData(
-                    source.ownerId,
-                    source.sourceId,
-                    photos,
-                    Serializers.PHOTOS_SERIALIZER
-                )
-                .fromIOToMain({
-                    view?.displayGallery(
-                        accountId,
-                        -311,
-                        accountId,
-                        source,
-                        finalIndex,
-                        reverse
+            appendJob(
+                Stores.instance
+                    .tempStore()
+                    .putTemporaryData(
+                        source.ownerId,
+                        source.sourceId,
+                        photos,
+                        Serializers.PHOTOS_SERIALIZER
                     )
-                }) { obj -> obj.printStackTrace() })
+                    .fromIOToMain({
+                        view?.displayGallery(
+                            accountId,
+                            -311,
+                            accountId,
+                            source,
+                            finalIndex,
+                            reverse
+                        )
+                    }) { obj -> obj.printStackTrace() })
         } else {
             appendJob(
                 flow {

@@ -247,7 +247,8 @@ class GroupSettingsInteractor(
     }
 
     private fun createFromDto(category: PublicCategory): IdOption {
-        return IdOption(category.id, category.name,
+        return IdOption(
+            category.id, category.name,
             category.subtypes_list?.let { createFromDtos(it) })
     }
 

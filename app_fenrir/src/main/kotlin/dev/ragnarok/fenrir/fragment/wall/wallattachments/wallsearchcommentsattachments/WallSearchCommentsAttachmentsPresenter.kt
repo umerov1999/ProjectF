@@ -40,17 +40,18 @@ class WallSearchCommentsAttachmentsPresenter(
     private fun loadActualData() {
         actualDataLoading = true
         resolveRefreshingView()
-        actualDataDisposable.add(interactor.getCommentsNoCache(
-            accountId,
-            owner_id,
-            posts[index],
-            offset
-        )
-            .fromIOToMain({ onActualDataReceived(it) }) {
-                onActualDataGetError(
-                    it
-                )
-            })
+        actualDataDisposable.add(
+            interactor.getCommentsNoCache(
+                accountId,
+                owner_id,
+                posts[index],
+                offset
+            )
+                .fromIOToMain({ onActualDataReceived(it) }) {
+                    onActualDataGetError(
+                        it
+                    )
+                })
     }
 
     private fun onActualDataGetError(t: Throwable) {

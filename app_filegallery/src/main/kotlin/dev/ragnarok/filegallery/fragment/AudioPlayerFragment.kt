@@ -298,8 +298,9 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
             )
         }
 
-        appendJob(MusicPlaybackController.observeServiceBinding()
-            .sharedFlowToMain { onServiceBindEvent(it) }
+        appendJob(
+            MusicPlaybackController.observeServiceBinding()
+                .sharedFlowToMain { onServiceBindEvent(it) }
         )
         return root
     }

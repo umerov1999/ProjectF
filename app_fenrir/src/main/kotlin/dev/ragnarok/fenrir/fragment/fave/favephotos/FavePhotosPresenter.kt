@@ -42,12 +42,13 @@ class FavePhotosPresenter(accountId: Long, savedInstanceState: Bundle?) :
 
     private fun loadAllCachedData() {
         cacheLoadingNow = true
-        cacheDisposable.add(faveInteractor.getCachedPhotos(accountId)
-            .fromIOToMain({ photos -> onCachedDataReceived(photos) }) { t ->
-                onCacheGetError(
-                    t
-                )
-            })
+        cacheDisposable.add(
+            faveInteractor.getCachedPhotos(accountId)
+                .fromIOToMain({ photos -> onCachedDataReceived(photos) }) { t ->
+                    onCacheGetError(
+                        t
+                    )
+                })
     }
 
     private fun onCacheGetError(t: Throwable) {
@@ -75,13 +76,14 @@ class FavePhotosPresenter(accountId: Long, savedInstanceState: Bundle?) :
 
     private fun request(offset: Int) {
         setRequestNow(true)
-        netDisposable.add(faveInteractor.getPhotos(accountId, COUNT_PER_REQUEST, offset)
-            .fromIOToMain({ photos ->
-                onActualDataReceived(
-                    offset,
-                    photos
-                )
-            }) { t -> onActualDataGetError(t) })
+        netDisposable.add(
+            faveInteractor.getPhotos(accountId, COUNT_PER_REQUEST, offset)
+                .fromIOToMain({ photos ->
+                    onActualDataReceived(
+                        offset,
+                        photos
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     private fun onActualDataGetError(t: Throwable) {

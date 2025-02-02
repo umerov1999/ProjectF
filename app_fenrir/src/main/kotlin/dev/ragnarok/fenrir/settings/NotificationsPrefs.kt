@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.settings
 
 import android.content.Context
+import androidx.core.content.edit
 import de.maxr1998.modernpreferences.PreferenceScreen.Companion.getPreferences
 import dev.ragnarok.fenrir.settings.ISettings.INotificationSettings
 import java.util.Collections
@@ -29,10 +30,10 @@ class NotificationsPrefs internal constructor(context: Context) : INotificationS
         val preferences = getPreferences(app)
         silentPeers.add(keyFor(aid, peerid))
         silentTypes[keyFor(aid, peerid)] = silent
-        preferences.edit()
-            .putBoolean(keyFor(aid, peerid), silent)
-            .putStringSet(KEY_PEERS_UIDS, silentPeers)
-            .apply()
+        preferences.edit {
+            putBoolean(keyFor(aid, peerid), silent)
+                .putStringSet(KEY_PEERS_UIDS, silentPeers)
+        }
     }
 
     override fun isSilentPeer(aid: Long, peerId: Long): Boolean {
@@ -45,13 +46,13 @@ class NotificationsPrefs internal constructor(context: Context) : INotificationS
     override fun resetAll() {
         val preferences = getPreferences(app)
         for (i in silentPeers) {
-            preferences.edit().remove(i).apply()
+            preferences.edit { remove(i) }
         }
         silentPeers.clear()
         silentTypes.clear()
-        preferences.edit()
-            .putStringSet(KEY_PEERS_UIDS, silentPeers)
-            .apply()
+        preferences.edit {
+            putStringSet(KEY_PEERS_UIDS, silentPeers)
+        }
     }
 
     override fun resetAccount(aid: Long) {
@@ -60,12 +61,12 @@ class NotificationsPrefs internal constructor(context: Context) : INotificationS
             if (i.contains(keyForAccount(aid))) {
                 silentPeers.remove(i)
                 silentTypes.remove(i)
-                preferences.edit().remove(i).apply()
+                preferences.edit { remove(i) }
             }
         }
-        preferences.edit()
-            .putStringSet(KEY_PEERS_UIDS, silentPeers)
-            .apply()
+        preferences.edit {
+            putStringSet(KEY_PEERS_UIDS, silentPeers)
+        }
     }
 
     companion object {

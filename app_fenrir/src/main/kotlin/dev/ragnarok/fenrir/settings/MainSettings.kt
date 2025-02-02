@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Environment
+import androidx.core.content.edit
 import de.maxr1998.modernpreferences.PreferenceScreen.Companion.getPreferences
 import dev.ragnarok.fenrir.BuildConfig
 import dev.ragnarok.fenrir.Constants
@@ -82,8 +83,9 @@ internal class MainSettings(context: Context) : IMainSettings {
             }
         }
         set(uploadImgSize) {
-            getPreferences(app).edit().putString(KEY_IMAGE_SIZE, uploadImgSize?.toString() ?: "0")
-                .apply()
+            getPreferences(app).edit {
+                putString(KEY_IMAGE_SIZE, uploadImgSize?.toString() ?: "0")
+            }
         }
 
     override val uploadImageSizePref: Int
@@ -175,9 +177,9 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override fun setPrefDisplayImageSize(@PhotoSize size: Int) {
         getPreferences(app)
-            .edit()
-            .putInt("pref_display_photo_size", size)
-            .apply()
+            .edit {
+                putInt("pref_display_photo_size", size)
+            }
     }
 
     override val isOpenUrlInternal: Int
@@ -242,9 +244,9 @@ internal class MainSettings(context: Context) : IMainSettings {
         for (i in ownerChangesMonitor) {
             ownerChangesMonitorSet.add(i.toString())
         }
-        preferences.edit()
-            .putStringSet("owner_changes_monitor_uids", ownerChangesMonitorSet)
-            .apply()
+        preferences.edit {
+            putStringSet("owner_changes_monitor_uids", ownerChangesMonitorSet)
+        }
     }
 
     override fun removeOwnerInChangesMonitor(ownerId: Long) {
@@ -254,29 +256,29 @@ internal class MainSettings(context: Context) : IMainSettings {
         for (i in ownerChangesMonitor) {
             ownerChangesMonitorSet.add(i.toString())
         }
-        preferences.edit()
-            .putStringSet("owner_changes_monitor_uids", ownerChangesMonitorSet)
-            .apply()
+        preferences.edit {
+            putStringSet("owner_changes_monitor_uids", ownerChangesMonitorSet)
+        }
     }
 
     override fun resetAllChangesMonitor() {
         val preferences = getPreferences(app)
         ownerChangesMonitor.clear()
-        preferences.edit()
-            .putStringSet("owner_changes_monitor_uids", HashSet<String>())
-            .apply()
+        preferences.edit {
+            putStringSet("owner_changes_monitor_uids", HashSet<String>())
+        }
     }
 
     override fun resetAllUserNameChanges() {
         val preferences = getPreferences(app)
         for (i in userNameChangesKeys) {
-            preferences.edit().remove(i).apply()
+            preferences.edit { remove(i) }
         }
         userNameChangesKeys.clear()
         userNameChangesTypes.clear()
-        preferences.edit()
-            .putStringSet(KEY_USERNAME_UIDS, userNameChangesKeys)
-            .apply()
+        preferences.edit {
+            putStringSet(KEY_USERNAME_UIDS, userNameChangesKeys)
+        }
     }
 
     override fun setUserNameChanges(userId: Long, name: String?) {
@@ -284,17 +286,17 @@ internal class MainSettings(context: Context) : IMainSettings {
         if (name.isNullOrEmpty()) {
             userNameChangesKeys.remove(keyForUserNameChanges(userId))
             userNameChangesTypes.remove(keyForUserNameChanges(userId))
-            preferences.edit()
-                .remove(keyForUserNameChanges(userId))
-                .putStringSet(KEY_USERNAME_UIDS, userNameChangesKeys)
-                .apply()
+            preferences.edit {
+                remove(keyForUserNameChanges(userId))
+                    .putStringSet(KEY_USERNAME_UIDS, userNameChangesKeys)
+            }
         } else {
             userNameChangesKeys.add(keyForUserNameChanges(userId))
             userNameChangesTypes[keyForUserNameChanges(userId)] = name
-            preferences.edit()
-                .putString(keyForUserNameChanges(userId), name)
-                .putStringSet(KEY_USERNAME_UIDS, userNameChangesKeys)
-                .apply()
+            preferences.edit {
+                putString(keyForUserNameChanges(userId), name)
+                    .putStringSet(KEY_USERNAME_UIDS, userNameChangesKeys)
+            }
         }
     }
 
@@ -315,22 +317,22 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override fun setFeedSourceIds(accountId: Long, sourceIds: String?) {
         getPreferences(app)
-            .edit()
-            .putString("source_ids$accountId", sourceIds)
-            .apply()
+            .edit {
+                putString("source_ids$accountId", sourceIds)
+            }
     }
 
     override fun storeFeedScrollState(accountId: Long, state: String?) {
         if (state != null) {
             getPreferences(app)
-                .edit()
-                .putString(KEY_JSON_STATE + accountId, state)
-                .apply()
+                .edit {
+                    putString(KEY_JSON_STATE + accountId, state)
+                }
         } else {
             getPreferences(app)
-                .edit()
-                .remove(KEY_JSON_STATE + accountId)
-                .apply()
+                .edit {
+                    remove(KEY_JSON_STATE + accountId)
+                }
         }
     }
 
@@ -345,9 +347,9 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override fun storeFeedNextFrom(accountId: Long, nextFrom: String?) {
         getPreferences(app)
-            .edit()
-            .putString("next_from$accountId", nextFrom)
-            .apply()
+            .edit {
+                putString("next_from$accountId", nextFrom)
+            }
     }
 
     override val isAudioBroadcastActive: Boolean
@@ -359,9 +361,9 @@ internal class MainSettings(context: Context) : IMainSettings {
         get() {
             val descNow = isCommentsDesc
             getPreferences(app)
-                .edit()
-                .putBoolean("comments_desc", !descNow)
-                .apply()
+                .edit {
+                    putBoolean("comments_desc", !descNow)
+                }
             return !descNow
         }
 
@@ -369,7 +371,7 @@ internal class MainSettings(context: Context) : IMainSettings {
         get() = getPreferences(app).getBoolean("keep_longpoll", false)
 
     override fun setDisableErrorFCM(en: Boolean) {
-        getPreferences(app).edit().putBoolean("disable_error_fcm", en).apply()
+        getPreferences(app).edit { putBoolean("disable_error_fcm", en) }
     }
 
     override val isDisabledErrorFCM: Boolean
@@ -427,7 +429,7 @@ internal class MainSettings(context: Context) : IMainSettings {
             )!!
                 .trim().toInt()
             if (v < 60000) {
-                getPreferences(app).edit().putString("lifecycle_music_service", "60000").apply()
+                getPreferences(app).edit { putString("lifecycle_music_service", "60000") }
                 v = 60000
             }
             v
@@ -528,7 +530,7 @@ internal class MainSettings(context: Context) : IMainSettings {
         get() = getPreferences(app).getLong("last_audio_sync", -1)
 
     override fun set_last_audio_sync(time: Long) {
-        getPreferences(app).edit().putLong("last_audio_sync", time).apply()
+        getPreferences(app).edit { putLong("last_audio_sync", time) }
     }
 
     override fun get_last_sticker_sets_sync(accountId: Long): Long {
@@ -536,7 +538,7 @@ internal class MainSettings(context: Context) : IMainSettings {
     }
 
     override fun set_last_sticker_sets_sync(accountId: Long, time: Long) {
-        getPreferences(app).edit().putLong("last_sticker_sets_sync_$accountId", time).apply()
+        getPreferences(app).edit { putLong("last_sticker_sets_sync_$accountId", time) }
     }
 
     override fun get_last_sticker_sets_custom_sync(accountId: Long): Long {
@@ -544,7 +546,7 @@ internal class MainSettings(context: Context) : IMainSettings {
     }
 
     override fun set_last_sticker_sets_custom_sync(accountId: Long, time: Long) {
-        getPreferences(app).edit().putLong("last_sticker_sets_sync_custom_$accountId", time).apply()
+        getPreferences(app).edit { putLong("last_sticker_sets_sync_custom_$accountId", time) }
     }
 
     override fun get_last_sticker_keywords_sync(accountId: Long): Long {
@@ -556,27 +558,27 @@ internal class MainSettings(context: Context) : IMainSettings {
     }
 
     override fun set_last_sticker_keywords_sync(accountId: Long, time: Long) {
-        getPreferences(app).edit().putLong("last_sticker_keywords_sync_$accountId", time).apply()
+        getPreferences(app).edit { putLong("last_sticker_keywords_sync_$accountId", time) }
     }
 
     override fun set_last_reaction_assets_sync(accountId: Long, time: Long) {
-        getPreferences(app).edit().putLong("last_reaction_assets_sync_$accountId", time).apply()
+        getPreferences(app).edit { putLong("last_reaction_assets_sync_$accountId", time) }
     }
 
     override fun del_last_sticker_sets_sync(accountId: Long) {
-        getPreferences(app).edit().remove("last_sticker_sets_sync_$accountId").apply()
+        getPreferences(app).edit { remove("last_sticker_sets_sync_$accountId") }
     }
 
     override fun del_last_sticker_sets_custom_sync(accountId: Long) {
-        getPreferences(app).edit().remove("last_sticker_sets_sync_custom_$accountId").apply()
+        getPreferences(app).edit { remove("last_sticker_sets_sync_custom_$accountId") }
     }
 
     override fun del_last_sticker_keywords_sync(accountId: Long) {
-        getPreferences(app).edit().remove("last_sticker_keywords_sync_$accountId").apply()
+        getPreferences(app).edit { remove("last_sticker_keywords_sync_$accountId") }
     }
 
     override fun del_last_reaction_assets_sync(accountId: Long) {
-        getPreferences(app).edit().remove("last_reaction_assets_sync_$accountId").apply()
+        getPreferences(app).edit { remove("last_reaction_assets_sync_$accountId") }
     }
 
     override val is_notification_force_link: Boolean
@@ -592,8 +594,9 @@ internal class MainSettings(context: Context) : IMainSettings {
             val ret =
                 getPreferences(app).getInt("app_stored_version", 0) == BuildConfig.VERSION_CODE
             if (!ret) {
-                getPreferences(app).edit().putInt("app_stored_version", BuildConfig.VERSION_CODE)
-                    .apply()
+                getPreferences(app).edit {
+                    putInt("app_stored_version", BuildConfig.VERSION_CODE)
+                }
             }
             return ret
         }
@@ -604,7 +607,7 @@ internal class MainSettings(context: Context) : IMainSettings {
             if (ret.isNullOrEmpty() || !File(ret).exists()) {
                 ret =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).absolutePath
-                getPreferences(app).edit().putString("music_dir", ret).apply()
+                getPreferences(app).edit { putString("music_dir", ret) }
             }
             return ret!!
         }
@@ -615,7 +618,7 @@ internal class MainSettings(context: Context) : IMainSettings {
             if (ret.isNullOrEmpty() || !File(ret).exists()) {
                 ret =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).absolutePath + "/Fenrir"
-                getPreferences(app).edit().putString("photo_dir", ret).apply()
+                getPreferences(app).edit { putString("photo_dir", ret) }
             }
             return ret
         }
@@ -626,7 +629,7 @@ internal class MainSettings(context: Context) : IMainSettings {
             if (ret.isNullOrEmpty() || !File(ret).exists()) {
                 ret =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).absolutePath + "/Fenrir"
-                getPreferences(app).edit().putString("video_dir", ret).apply()
+                getPreferences(app).edit { putString("video_dir", ret) }
             }
             return ret
         }
@@ -637,7 +640,7 @@ internal class MainSettings(context: Context) : IMainSettings {
             if (ret.isNullOrEmpty() || !File(ret).exists()) {
                 ret =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/Fenrir"
-                getPreferences(app).edit().putString("docs_dir", ret).apply()
+                getPreferences(app).edit { putString("docs_dir", ret) }
             }
             return ret
         }
@@ -648,7 +651,7 @@ internal class MainSettings(context: Context) : IMainSettings {
             if (ret.isNullOrEmpty() || !File(ret).exists()) {
                 ret =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath + "/Fenrir_Stickers"
-                getPreferences(app).edit().putString("sticker_dir", ret).apply()
+                getPreferences(app).edit { putString("sticker_dir", ret) }
             }
             return ret
         }
@@ -690,10 +693,12 @@ internal class MainSettings(context: Context) : IMainSettings {
     override val isInstant_photo_display: Boolean
         get() {
             if (!getPreferences(app).contains("instant_photo_display")) {
-                getPreferences(app).edit().putBoolean(
-                    "instant_photo_display",
-                    FenrirNative.isNativeLoaded && FileUtils.threadsCount > 4
-                ).apply()
+                getPreferences(app).edit {
+                    putBoolean(
+                        "instant_photo_display",
+                        FenrirNative.isNativeLoaded && FileUtils.threadsCount > 4
+                    )
+                }
             }
             return getPreferences(app).getBoolean("instant_photo_display", false)
         }
@@ -710,25 +715,25 @@ internal class MainSettings(context: Context) : IMainSettings {
     override var isDisable_likes: Boolean
         get() = getPreferences(app).getBoolean("disable_likes", false)
         set(disabled) {
-            getPreferences(app).edit().putBoolean("disable_likes", disabled).apply()
+            getPreferences(app).edit { putBoolean("disable_likes", disabled) }
         }
     override var isRememberLocalAudioAlbum: Boolean
         get() = getPreferences(app).getBoolean("remember_local_audio_album", false)
         set(remember) {
             if (!remember) {
-                getPreferences(app).edit().remove("current_local_audio_album").apply()
+                getPreferences(app).edit { remove("current_local_audio_album") }
             }
-            getPreferences(app).edit().putBoolean("remember_local_audio_album", remember).apply()
+            getPreferences(app).edit { putBoolean("remember_local_audio_album", remember) }
         }
     override var currentLocalAudioAlbum: Int
         get() = getPreferences(app).getInt("current_local_audio_album", 0)
         set(current) {
-            getPreferences(app).edit().putInt("current_local_audio_album", current).apply()
+            getPreferences(app).edit { putInt("current_local_audio_album", current) }
         }
     override var isDisable_notifications: Boolean
         get() = getPreferences(app).getBoolean("disable_notifications", false)
         set(disabled) {
-            getPreferences(app).edit().putBoolean("disable_notifications", disabled).apply()
+            getPreferences(app).edit { putBoolean("disable_notifications", disabled) }
         }
     override val isNative_parcel_photo: Boolean
         get() = getPreferences(app).getBoolean("native_parcel_photo", true)
@@ -751,7 +756,7 @@ internal class MainSettings(context: Context) : IMainSettings {
     override var isInvertPhotoRev: Boolean
         get() = getPreferences(app).getBoolean("invert_photo_rev", false)
         set(rev) {
-            getPreferences(app).edit().putBoolean("invert_photo_rev", rev).apply()
+            getPreferences(app).edit { putBoolean("invert_photo_rev", rev) }
         }
     override var localServer: LocalServerSettings
         get() {
@@ -763,11 +768,12 @@ internal class MainSettings(context: Context) : IMainSettings {
             }
         }
         set(settings) {
-            getPreferences(app).edit().putString(
-                "local_media_server",
-                kJson.encodeToString(LocalServerSettings.serializer(), settings)
-            )
-                .apply()
+            getPreferences(app).edit {
+                putString(
+                    "local_media_server",
+                    kJson.encodeToString(LocalServerSettings.serializer(), settings)
+                )
+            }
         }
     override var playerCoverBackgroundSettings: PlayerCoverBackgroundSettings
         get() {
@@ -779,11 +785,12 @@ internal class MainSettings(context: Context) : IMainSettings {
             }
         }
         set(settings) {
-            getPreferences(app).edit()
-                .putString(
+            getPreferences(app).edit {
+                putString(
                     "player_background_settings_json",
                     kJson.encodeToString(PlayerCoverBackgroundSettings.serializer(), settings)
-                ).apply()
+                )
+            }
         }
     override var slidrSettings: SlidrSettings
         get() {
@@ -795,11 +802,12 @@ internal class MainSettings(context: Context) : IMainSettings {
             }
         }
         set(settings) {
-            getPreferences(app).edit().putString(
-                "slidr_settings_json",
-                kJson.encodeToString(SlidrSettings.serializer(), settings)
-            )
-                .apply()
+            getPreferences(app).edit {
+                putString(
+                    "slidr_settings_json",
+                    kJson.encodeToString(SlidrSettings.serializer(), settings)
+                )
+            }
         }
 
     override var catalogV2ListSort: List<Int>
@@ -819,11 +827,12 @@ internal class MainSettings(context: Context) : IMainSettings {
             }
         }
         set(settings) {
-            getPreferences(app).edit().putString(
-                "catalog_v2_list_json",
-                kJson.encodeToString(ListSerializer(Int.serializer()), settings)
-            )
-                .apply()
+            getPreferences(app).edit {
+                putString(
+                    "catalog_v2_list_json",
+                    kJson.encodeToString(ListSerializer(Int.serializer()), settings)
+                )
+            }
         }
 
     @get:Lang
@@ -870,7 +879,7 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override fun nextCustomChannelNotif() {
         val vl = customChannelNotif
-        getPreferences(app).edit().putInt("custom_notification_channel", vl + 1).apply()
+        getPreferences(app).edit { putInt("custom_notification_channel", vl + 1) }
     }
 
     override val videoExt: Set<String>
@@ -899,10 +908,12 @@ internal class MainSettings(context: Context) : IMainSettings {
     override val picassoDispatcher: Int
         get() = try {
             if (!getPreferences(app).contains("picasso_dispatcher")) {
-                getPreferences(app).edit().putString(
-                    "picasso_dispatcher",
-                    if (FenrirNative.isNativeLoaded && FileUtils.threadsCount > 4) "1" else "0"
-                ).apply()
+                getPreferences(app).edit {
+                    putString(
+                        "picasso_dispatcher",
+                        if (FenrirNative.isNativeLoaded && FileUtils.threadsCount > 4) "1" else "0"
+                    )
+                }
             }
             getPreferences(app).getString("picasso_dispatcher", "0")!!
                 .trim().toInt()

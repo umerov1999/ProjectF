@@ -79,20 +79,21 @@ class ConversationMultiAttachmentsPresenter(
     private fun loadActualData(offset: Int) {
         actualDataLoading = true
         resolveRefreshingView()
-        actualDataDisposable.add(messagesRepository.getPeerMessages(
-            accountId,
-            peerID,
-            100,
-            offset,
-            null,
-            cacheData = false, rev = false
-        )
-            .fromIOToMain({ data ->
-                onActualDataReceived(
-                    offset,
-                    data
-                )
-            }) { t -> onActualDataGetError(t) })
+        actualDataDisposable.add(
+            messagesRepository.getPeerMessages(
+                accountId,
+                peerID,
+                100,
+                offset,
+                null,
+                cacheData = false, rev = false
+            )
+                .fromIOToMain({ data ->
+                    onActualDataReceived(
+                        offset,
+                        data
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     private fun onActualDataGetError(t: Throwable) {
@@ -423,10 +424,11 @@ class ConversationMultiAttachmentsPresenter(
     }
 
     fun firePostRestoreClick(post: Post) {
-        appendJob(fInteractor.restore(accountId, post.ownerId, post.vkid)
-            .fromIOToMain(dummy()) { t ->
-                showError(t)
-            })
+        appendJob(
+            fInteractor.restore(accountId, post.ownerId, post.vkid)
+                .fromIOToMain(dummy()) { t ->
+                    showError(t)
+                })
     }
 
     fun fireLikeLongClick(post: Post) {
@@ -454,10 +456,11 @@ class ConversationMultiAttachmentsPresenter(
         ) {
             return
         }
-        appendJob(fInteractor.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
-            .fromIOToMain(dummy()) { t ->
-                showError(t)
-            })
+        appendJob(
+            fInteractor.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
+                .fromIOToMain(dummy()) { t ->
+                    showError(t)
+                })
     }
 
     init {

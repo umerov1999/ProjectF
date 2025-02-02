@@ -340,7 +340,7 @@ abstract class AbsMessageListPresenter<V : IBasicMessageListView> internal const
         }
         message.fwd?.nonNullNoEmpty {
             for (i in it) {
-                tmpPosition = checkForwardedMessageForAudio(toFirst, position, audiosList, i)
+                tmpPosition = checkForwardedMessageForAudio(toFirst, tmpPosition, audiosList, i)
             }
         }
         return tmpPosition

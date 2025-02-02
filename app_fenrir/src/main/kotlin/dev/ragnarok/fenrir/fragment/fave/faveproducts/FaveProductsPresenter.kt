@@ -39,12 +39,13 @@ class FaveProductsPresenter(accountId: Long, savedInstanceState: Bundle?) :
 
     private fun loadCachedData() {
         cacheLoadingNow = true
-        cacheDisposable.add(faveInteractor.getCachedProducts(accountId)
-            .fromIOToMain({ markets -> onCachedDataReceived(markets) }) { t ->
-                onCacheGetError(
-                    t
-                )
-            })
+        cacheDisposable.add(
+            faveInteractor.getCachedProducts(accountId)
+                .fromIOToMain({ markets -> onCachedDataReceived(markets) }) { t ->
+                    onCacheGetError(
+                        t
+                    )
+                })
     }
 
     private fun onCacheGetError(t: Throwable) {
@@ -68,13 +69,14 @@ class FaveProductsPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun request(offset: Int) {
         netLoadingNow = true
         resolveRefreshingView()
-        netDisposable.add(faveInteractor.getProducts(accountId, COUNT, offset)
-            .fromIOToMain({ products ->
-                onNetDataReceived(
-                    offset,
-                    products
-                )
-            }) { t -> onNetDataGetError(t) })
+        netDisposable.add(
+            faveInteractor.getProducts(accountId, COUNT, offset)
+                .fromIOToMain({ products ->
+                    onNetDataReceived(
+                        offset,
+                        products
+                    )
+                }) { t -> onNetDataGetError(t) })
     }
 
     private fun onNetDataGetError(t: Throwable) {

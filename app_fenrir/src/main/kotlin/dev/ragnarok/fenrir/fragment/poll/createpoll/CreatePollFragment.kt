@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
+import androidx.core.view.isGone
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.materialswitch.MaterialSwitch
@@ -84,7 +85,7 @@ class CreatePollFragment : BaseMvpFragment<CreatePollPresenter, ICreatePollView>
                         }
                         if (it.getChildAt(i + 1) is TextInputLayout) {
                             val next = it.getChildAt(i + 1) as TextInputLayout
-                            if (next.visibility == View.GONE) {
+                            if (next.isGone) {
                                 next.visibility = View.VISIBLE
                             }
                         }

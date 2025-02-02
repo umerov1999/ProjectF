@@ -27,6 +27,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.core.content.edit
+import androidx.core.view.isNotEmpty
 import androidx.core.view.isVisible
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_LONG
 import com.google.android.material.snackbar.Snackbar
@@ -357,7 +358,7 @@ open class Preference(key: String) : AbstractPreference(key) {
             holder.badge?.isVisible = false
         }
         holder.widgetFrame?.apply {
-            isVisible = childCount > 0 && this@Preference !is SeekBarPreference
+            isVisible = isNotEmpty() && this@Preference !is SeekBarPreference
         }
         holder.itemView.isVisible = true
         if (highlightOnNextBind.getAndSet(false)) {

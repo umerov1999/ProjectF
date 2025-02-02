@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.provider.BaseColumns
+import androidx.core.database.sqlite.transaction
 import dev.ragnarok.fenrir.db.TempDataHelper
 import dev.ragnarok.fenrir.db.column.AudiosColumns
 import dev.ragnarok.fenrir.db.column.LogsColumns
@@ -74,10 +75,9 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         return flow {
             val start = System.currentTimeMillis()
             val db = helper.writableDatabase
-            db.beginTransaction()
-            try {
+            db.transaction {
                 // clear
-                db.delete(
+                delete(
                     TempDataColumns.TABLENAME,
                     TempDataColumns.OWNER_ID + " = ? AND " + TempDataColumns.SOURCE_ID + " = ?",
                     arrayOf(ownerId.toString(), sourceId.toString())
@@ -90,13 +90,8 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                     cv.put(TempDataColumns.OWNER_ID, ownerId)
                     cv.put(TempDataColumns.SOURCE_ID, sourceId)
                     cv.put(TempDataColumns.DATA, serializer.serialize(t))
-                    db.insert(TempDataColumns.TABLENAME, null, cv)
+                    insert(TempDataColumns.TABLENAME, null, cv)
                 }
-                if (!isActive()) {
-                    db.setTransactionSuccessful()
-                }
-            } finally {
-                db.endTransaction()
             }
             log("TempDataStorage.put", start, "count: " + data.size)
             emit(true)
@@ -144,27 +139,11 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
             emptyTaskFlow()
         } else flow {
             val db = helper.writableDatabase
-            db.beginTransaction()
-            if (!isActive()) {
-                db.endTransaction()
-            } else {
-                db.delete(
-                    SearchRequestColumns.TABLENAME,
-                    SearchRequestColumns.QUERY + " = ?", arrayOf(queryClean)
-                )
-                try {
-                    val cv = ContentValues()
-                    cv.put(SearchRequestColumns.SOURCE_ID, sourceId)
-                    cv.put(SearchRequestColumns.QUERY, queryClean)
-                    db.insert(SearchRequestColumns.TABLENAME, null, cv)
-                    if (isActive()) {
-                        db.setTransactionSuccessful()
-                    }
-                } finally {
-                    db.endTransaction()
-                }
-                emit(true)
-            }
+            val cv = ContentValues()
+            cv.put(SearchRequestColumns.SOURCE_ID, sourceId)
+            cv.put(SearchRequestColumns.QUERY, queryClean)
+            db.insert(SearchRequestColumns.TABLENAME, null, cv)
+            emit(true)
         }
     }
 
@@ -183,55 +162,33 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
     override fun addShortcut(action: String, cover: String, name: String): Flow<Boolean> {
         return flow {
             val db = helper.writableDatabase
-            db.beginTransaction()
-            if (!isActive()) {
-                db.endTransaction()
-            } else {
-                db.delete(
-                    ShortcutsColumns.TABLENAME,
-                    ShortcutsColumns.ACTION + " = ?", arrayOf(action)
-                )
-                try {
-                    val cv = ContentValues()
-                    cv.put(ShortcutsColumns.ACTION, action)
-                    cv.put(ShortcutsColumns.NAME, name)
-                    cv.put(ShortcutsColumns.COVER, cover)
-                    db.insert(ShortcutsColumns.TABLENAME, null, cv)
-                    if (isActive()) {
-                        db.setTransactionSuccessful()
-                    }
-                } finally {
-                    db.endTransaction()
-                }
-                emit(true)
-            }
+            db.delete(
+                ShortcutsColumns.TABLENAME,
+                ShortcutsColumns.ACTION + " = ?", arrayOf(action)
+            )
+            val cv = ContentValues()
+            cv.put(ShortcutsColumns.ACTION, action)
+            cv.put(ShortcutsColumns.NAME, name)
+            cv.put(ShortcutsColumns.COVER, cover)
+            db.insert(ShortcutsColumns.TABLENAME, null, cv)
+            emit(true)
         }
     }
 
     override fun addShortcuts(list: List<ShortcutStored>): Flow<Boolean> {
         return flow {
             val db = helper.writableDatabase
-            db.beginTransaction()
-            if (!isActive()) {
-                db.endTransaction()
-            } else {
-                try {
-                    for (i in list) {
-                        db.delete(
-                            ShortcutsColumns.TABLENAME,
-                            ShortcutsColumns.ACTION + " = ?", arrayOf(i.action)
-                        )
-                        val cv = ContentValues()
-                        cv.put(ShortcutsColumns.ACTION, i.action)
-                        cv.put(ShortcutsColumns.NAME, i.name)
-                        cv.put(ShortcutsColumns.COVER, i.cover)
-                        db.insert(ShortcutsColumns.TABLENAME, null, cv)
-                    }
-                    if (isActive()) {
-                        db.setTransactionSuccessful()
-                    }
-                } finally {
-                    db.endTransaction()
+            db.transaction {
+                for (i in list) {
+                    delete(
+                        ShortcutsColumns.TABLENAME,
+                        ShortcutsColumns.ACTION + " = ?", arrayOf(i.action)
+                    )
+                    val cv = ContentValues()
+                    cv.put(ShortcutsColumns.ACTION, i.action)
+                    cv.put(ShortcutsColumns.NAME, i.name)
+                    cv.put(ShortcutsColumns.COVER, i.cover)
+                    insert(ShortcutsColumns.TABLENAME, null, cv)
                 }
                 emit(true)
             }
@@ -244,29 +201,19 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
     ): Flow<Boolean> {
         return flow {
             val db = helper.writableDatabase
-            db.beginTransaction()
-            if (!isActive()) {
-                db.endTransaction()
-            } else {
-                try {
-                    db.delete(
-                        ReactionsColumns.TABLENAME,
-                        ReactionsColumns.ACCOUNT_ID + " = ?", arrayOf(accountId.toString())
-                    )
-                    for (i in list) {
-                        val cv = ContentValues()
-                        cv.put(ReactionsColumns.REACTION_ID, i.reaction_id)
-                        cv.put(ReactionsColumns.ACCOUNT_ID, accountId)
-                        cv.put(ReactionsColumns.BIG_ANIMATION, i.big_animation)
-                        cv.put(ReactionsColumns.SMALL_ANIMATION, i.small_animation)
-                        cv.put(ReactionsColumns.STATIC, i.static)
-                        db.insert(ReactionsColumns.TABLENAME, null, cv)
-                    }
-                    if (isActive()) {
-                        db.setTransactionSuccessful()
-                    }
-                } finally {
-                    db.endTransaction()
+            db.transaction {
+                delete(
+                    ReactionsColumns.TABLENAME,
+                    ReactionsColumns.ACCOUNT_ID + " = ?", arrayOf(accountId.toString())
+                )
+                for (i in list) {
+                    val cv = ContentValues()
+                    cv.put(ReactionsColumns.REACTION_ID, i.reaction_id)
+                    cv.put(ReactionsColumns.ACCOUNT_ID, accountId)
+                    cv.put(ReactionsColumns.BIG_ANIMATION, i.big_animation)
+                    cv.put(ReactionsColumns.SMALL_ANIMATION, i.small_animation)
+                    cv.put(ReactionsColumns.STATIC, i.static)
+                    insert(ReactionsColumns.TABLENAME, null, cv)
                 }
                 emit(true)
             }
@@ -302,17 +249,9 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         Settings.get().main().del_last_reaction_assets_sync(accountId)
         return flow {
             val db = TempDataHelper.helper.writableDatabase
-            db.beginTransaction()
-            try {
-                val whereDel = ReactionsColumns.ACCOUNT_ID + " = ?"
-                db.delete(ReactionsColumns.TABLENAME, whereDel, arrayOf(accountId.toString()))
-                db.setTransactionSuccessful()
-                db.endTransaction()
-                emit(true)
-            } catch (exception: Exception) {
-                db.endTransaction()
-                throw exception
-            }
+            val whereDel = ReactionsColumns.ACCOUNT_ID + " = ?"
+            db.delete(ReactionsColumns.TABLENAME, whereDel, arrayOf(accountId.toString()))
+            emit(true)
         }
     }
 
@@ -411,60 +350,51 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
     override fun addAudios(sourceOwner: Long, list: List<Audio>, clear: Boolean): Flow<Boolean> {
         return flow {
             val db = helper.writableDatabase
-            db.beginTransaction()
-            if (!isActive()) {
-                db.endTransaction()
-            } else {
+            db.transaction {
                 Settings.get().main().set_last_audio_sync(System.currentTimeMillis() / 1000L)
-                try {
-                    if (clear) {
-                        db.delete(
-                            AudiosColumns.TABLENAME,
-                            AudiosColumns.SOURCE_OWNER_ID + " = ?", arrayOf(sourceOwner.toString())
-                        )
-                    }
-                    for (i in list) {
-                        val cv = ContentValues()
-                        cv.put(AudiosColumns.SOURCE_OWNER_ID, sourceOwner)
-                        cv.put(AudiosColumns.AUDIO_ID, i.id)
-                        cv.put(AudiosColumns.AUDIO_OWNER_ID, i.ownerId)
-                        cv.put(AudiosColumns.ARTIST, i.artist)
-                        cv.put(AudiosColumns.TITLE, i.title)
-                        cv.put(AudiosColumns.DURATION, i.duration)
-                        cv.put(AudiosColumns.URL, i.url)
-                        cv.put(AudiosColumns.LYRICS_ID, i.lyricsId)
-                        cv.put(AudiosColumns.DATE, i.date)
-                        cv.put(AudiosColumns.ALBUM_ID, i.albumId)
-                        cv.put(AudiosColumns.ALBUM_OWNER_ID, i.album_owner_id)
-                        cv.put(AudiosColumns.ALBUM_ACCESS_KEY, i.album_access_key)
-                        cv.put(AudiosColumns.GENRE, i.genre)
-                        cv.put(AudiosColumns.DELETED, i.isDeleted)
-                        cv.put(AudiosColumns.ACCESS_KEY, i.accessKey)
-                        cv.put(AudiosColumns.THUMB_IMAGE_BIG, i.thumb_image_big)
-                        cv.put(AudiosColumns.THUMB_IMAGE_VERY_BIG, i.thumb_image_very_big)
-                        cv.put(AudiosColumns.THUMB_IMAGE_LITTLE, i.thumb_image_little)
-                        cv.put(AudiosColumns.ALBUM_TITLE, i.album_title)
-                        i.main_artists.ifNonNull({
-                            cv.put(
-                                AudiosColumns.MAIN_ARTISTS,
-                                MsgPack.encodeToByteArrayEx(
-                                    MapSerializer(
-                                        String.serializer(),
-                                        String.serializer()
-                                    ), it
-                                )
+                if (clear) {
+                    delete(
+                        AudiosColumns.TABLENAME,
+                        AudiosColumns.SOURCE_OWNER_ID + " = ?",
+                        arrayOf(sourceOwner.toString())
+                    )
+                }
+                for (i in list) {
+                    val cv = ContentValues()
+                    cv.put(AudiosColumns.SOURCE_OWNER_ID, sourceOwner)
+                    cv.put(AudiosColumns.AUDIO_ID, i.id)
+                    cv.put(AudiosColumns.AUDIO_OWNER_ID, i.ownerId)
+                    cv.put(AudiosColumns.ARTIST, i.artist)
+                    cv.put(AudiosColumns.TITLE, i.title)
+                    cv.put(AudiosColumns.DURATION, i.duration)
+                    cv.put(AudiosColumns.URL, i.url)
+                    cv.put(AudiosColumns.LYRICS_ID, i.lyricsId)
+                    cv.put(AudiosColumns.DATE, i.date)
+                    cv.put(AudiosColumns.ALBUM_ID, i.albumId)
+                    cv.put(AudiosColumns.ALBUM_OWNER_ID, i.album_owner_id)
+                    cv.put(AudiosColumns.ALBUM_ACCESS_KEY, i.album_access_key)
+                    cv.put(AudiosColumns.GENRE, i.genre)
+                    cv.put(AudiosColumns.DELETED, i.isDeleted)
+                    cv.put(AudiosColumns.ACCESS_KEY, i.accessKey)
+                    cv.put(AudiosColumns.THUMB_IMAGE_BIG, i.thumb_image_big)
+                    cv.put(AudiosColumns.THUMB_IMAGE_VERY_BIG, i.thumb_image_very_big)
+                    cv.put(AudiosColumns.THUMB_IMAGE_LITTLE, i.thumb_image_little)
+                    cv.put(AudiosColumns.ALBUM_TITLE, i.album_title)
+                    i.main_artists.ifNonNull({
+                        cv.put(
+                            AudiosColumns.MAIN_ARTISTS,
+                            MsgPack.encodeToByteArrayEx(
+                                MapSerializer(
+                                    String.serializer(),
+                                    String.serializer()
+                                ), it
                             )
-                        }, {
-                            cv.putNull(AudiosColumns.MAIN_ARTISTS)
-                        })
-                        cv.put(AudiosColumns.IS_HQ, i.isHq)
-                        db.insert(AudiosColumns.TABLENAME, null, cv)
-                    }
-                    if (isActive()) {
-                        db.setTransactionSuccessful()
-                    }
-                } finally {
-                    db.endTransaction()
+                        )
+                    }, {
+                        cv.putNull(AudiosColumns.MAIN_ARTISTS)
+                    })
+                    cv.put(AudiosColumns.IS_HQ, i.isHq)
+                    insert(AudiosColumns.TABLENAME, null, cv)
                 }
                 emit(true)
             }

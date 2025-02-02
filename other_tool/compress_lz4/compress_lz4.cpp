@@ -107,6 +107,6 @@ int main(int argc, char* argv[]) {
 	for (int i = 1; i < argc; i++) {
 		work(argv[i]);
 	}
-	cout << "Copyright (c) Umerov Artem, 2024" << endl;
+	cout << "Copyright (c) Umerov Artem, 2025" << endl;
 	return 0;
 }

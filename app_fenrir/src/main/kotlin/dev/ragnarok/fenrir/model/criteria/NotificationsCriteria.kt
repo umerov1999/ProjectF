@@ -17,7 +17,7 @@ class NotificationsCriteria(val accountId: Long) : Criteria() {
 
     override fun hashCode(): Int {
         var result = accountId.hashCode()
-        result = 31 * result + if (range != null) range.hashCode() else 0
+        result = 31 * result + (range?.hashCode() ?: 0)
         return result
     }
 }

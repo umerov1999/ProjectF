@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import androidx.annotation.DimenRes
+import androidx.core.graphics.createBitmap
 import de.maxr1998.modernpreferences.R
 
 abstract class AbsCustomSlider : View {
@@ -71,7 +72,7 @@ abstract class AbsCustomSlider : View {
             width = getWidth()
             height = getHeight()
         }
-        bar = Bitmap.createBitmap(
+        bar = createBitmap(
             (width - barOffsetX * 2).coerceAtLeast(1),
             barHeight,
             Bitmap.Config.ARGB_8888
@@ -79,7 +80,7 @@ abstract class AbsCustomSlider : View {
         barCanvas = Canvas(bar ?: return)
         if (bitmap == null || bitmap?.width != width || bitmap?.height != height) {
             if (bitmap != null) bitmap?.recycle()
-            bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            bitmap = createBitmap(width, height, Bitmap.Config.ARGB_8888)
             bitmapCanvas = Canvas(bitmap ?: return)
         }
     }

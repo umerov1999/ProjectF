@@ -6,8 +6,8 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.net.Uri
 import androidx.core.app.NotificationCompat
+import androidx.core.net.toUri
 import com.google.firebase.messaging.RemoteMessage
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.MainActivity
@@ -41,7 +41,8 @@ class NewPostPushMessage {
             matcher.group(1)?.let {
                 val app = context.applicationContext
                 getRx(app, accountId, it.toLong())
-                    .fromScopeToMain(INSTANCE,
+                    .fromScopeToMain(
+                        INSTANCE,
                         { ownerInfo ->
                             notifyImpl(
                                 app,
@@ -70,7 +71,7 @@ class NewPostPushMessage {
         builder.priority = NotificationCompat.PRIORITY_HIGH
         val intent = Intent(context, MainActivity::class.java)
         intent.action = Intent.ACTION_VIEW
-        intent.data = Uri.parse(url)
+        intent.data = url?.toUri()
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         val contentIntent = PendingIntent.getActivity(
             context,

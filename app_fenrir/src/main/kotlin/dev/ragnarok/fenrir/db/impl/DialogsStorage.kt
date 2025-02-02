@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.database.Cursor
 import android.provider.BaseColumns
+import androidx.core.content.edit
 import dev.ragnarok.fenrir.api.model.VKApiChat
 import dev.ragnarok.fenrir.db.FenrirContentProvider
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getDialogsContentUriFor
@@ -326,9 +327,9 @@ internal class DialogsStorage(base: AppStorages) : AbsStorage(base), IDialogsSto
 
     override fun setUnreadDialogsCount(accountId: Long, unreadCount: Int) {
         synchronized(this) {
-            preferences.edit()
-                .putInt(unreadKeyFor(accountId), unreadCount)
-                .apply()
+            preferences.edit {
+                putInt(unreadKeyFor(accountId), unreadCount)
+            }
         }
         unreadDialogsCounter.myEmit(Pair(accountId, unreadCount))
     }

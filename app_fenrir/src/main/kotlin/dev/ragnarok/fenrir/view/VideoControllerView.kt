@@ -8,7 +8,6 @@ import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -207,24 +206,26 @@ class VideoControllerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
 
     private fun queueNextRefresh(timeMs: Long) {
         mRefreshDisposable.cancel()
-        mRefreshDisposable.set(delayTaskFlow(timeMs)
-            .toMain {
-                val pos = setProgress()
-                if (!mDragging && isShowing && mPlayer?.isPlaying == true) {
-                    queueNextRefresh(1000 - pos % 1000)
-                }
-            })
+        mRefreshDisposable.set(
+            delayTaskFlow(timeMs)
+                .toMain {
+                    val pos = setProgress()
+                    if (!mDragging && isShowing && mPlayer?.isPlaying == true) {
+                        queueNextRefresh(1000 - pos % 1000)
+                    }
+                })
     }
 
     private fun queueHide() {
         mHideDisposable.cancel()
-        mHideDisposable.set(delayTaskFlow(15000)
-            .toMain {
-                if (!mDragging && isShowing && mPlayer?.isPlaying == true) {
-                    mPlayer?.hideActionBar()
-                    hide()
-                }
-            })
+        mHideDisposable.set(
+            delayTaskFlow(15000)
+                .toMain {
+                    if (!mDragging && isShowing && mPlayer?.isPlaying == true) {
+                        mPlayer?.hideActionBar()
+                        hide()
+                    }
+                })
     }
 
     fun show() {

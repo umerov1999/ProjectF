@@ -16,6 +16,7 @@ import android.graphics.drawable.Drawable
 import android.os.SystemClock
 import android.view.View
 import androidx.annotation.ColorInt
+import androidx.core.graphics.withRotation
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.api.model.PlayerCoverBackgroundSettings
 import dev.ragnarok.fenrir.settings.Settings
@@ -66,13 +67,12 @@ class AudioPlayerBackgroundDrawable(
         rDest.top = bounds.top - (pMaxDst - bounds.height()) / 2
         rDest.bottom = bounds.bottom + (pMaxDst - bounds.height()) / 2
         if (targetRotation != 0f) {
-            canvas.save()
-            canvas.rotate(
+            canvas.withRotation(
                 targetRotation, bounds.left + bounds.width().toFloat() / 2, bounds.height()
                     .toFloat() / 2
-            )
-            canvas.drawBitmap(bitmap, rBmp, rDest, paint)
-            canvas.restore()
+            ) {
+                drawBitmap(bitmap, rBmp, rDest, paint)
+            }
         } else {
             canvas.drawBitmap(bitmap, rBmp, rDest, paint)
         }

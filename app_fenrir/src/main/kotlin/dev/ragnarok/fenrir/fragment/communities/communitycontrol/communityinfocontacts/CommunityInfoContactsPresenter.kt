@@ -84,12 +84,13 @@ class CommunityInfoContactsPresenter(
     }
 
     private fun requestContacts() {
-        appendJob(interactor.getContacts(accountId, groupId.id)
-            .fromIOToMain({ contacts -> onContactsReceived(contacts) }) { throwable ->
-                onRequestError(
-                    throwable
-                )
-            })
+        appendJob(
+            interactor.getContacts(accountId, groupId.id)
+                .fromIOToMain({ contacts -> onContactsReceived(contacts) }) { throwable ->
+                    onRequestError(
+                        throwable
+                    )
+                })
     }
 
     private fun requestData() {
@@ -98,12 +99,13 @@ class CommunityInfoContactsPresenter(
             requestContacts()
             return
         }
-        appendJob(interactor.getManagers(accountId, groupId.id)
-            .fromIOToMain({ managers -> onDataReceived(managers) }) { throwable ->
-                onRequestError(
-                    throwable
-                )
-            })
+        appendJob(
+            interactor.getManagers(accountId, groupId.id)
+                .fromIOToMain({ managers -> onDataReceived(managers) }) { throwable ->
+                    onRequestError(
+                        throwable
+                    )
+                })
     }
 
     override fun onGuiCreated(viewHost: ICommunityInfoContactsView) {
@@ -151,11 +153,12 @@ class CommunityInfoContactsPresenter(
     }
 
     init {
-        appendJob(stores
-            .owners()
-            .observeManagementChanges()
-            .filter { it.first == groupId.id }
-            .sharedFlowToMain { pair -> onManagerActionReceived(pair.second) })
+        appendJob(
+            stores
+                .owners()
+                .observeManagementChanges()
+                .filter { it.first == groupId.id }
+                .sharedFlowToMain { pair -> onManagerActionReceived(pair.second) })
         requestData()
     }
 }

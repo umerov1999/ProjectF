@@ -210,8 +210,7 @@ internal class StreamingJsonEncoder(
         // If we're inside encodeInline().encodeSerializableValue, we should preserve the forceQuoting state
         // inside the composer, but not in the encoder (otherwise we'll get into `if (forceQuoting) encodeString(value.toString())` part
         // and unsigned numbers would be encoded incorrectly)
-        return if (composer is T) composer
-        else composerCreator(composer.writer, forceQuoting)
+        return composer as? T ?: composerCreator(composer.writer, forceQuoting)
     }
 
     override fun encodeNull() {

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.isNotEmpty
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder.OnAttachmentsActionCallback
@@ -36,7 +37,7 @@ class PhotosViewHelper internal constructor(
     @SuppressLint("SetTextI18n")
     fun displayVideos(videos: List<PostImage>, container: ViewGroup) {
         if (videos.isEmpty()) {
-            if (container.childCount > 0) {
+            if (container.isNotEmpty()) {
                 container.removeAllViews()
             }
             container.visibility = View.GONE
@@ -139,7 +140,7 @@ class PhotosViewHelper internal constructor(
 
     fun displayPhotos(photos: List<PostImage>, container: ViewGroup) {
         if (photos.isEmpty()) {
-            if (container.childCount > 0) {
+            if (container.isNotEmpty()) {
                 container.removeAllViews()
             }
             container.visibility = View.GONE

@@ -1,5 +1,6 @@
 package dev.ragnarok.filegallery.util
 
+import androidx.core.content.edit
 import de.maxr1998.modernpreferences.PreferenceScreen
 import dev.ragnarok.filegallery.Includes
 
@@ -9,21 +10,26 @@ class StepArrayList<T>(list: List<T>, private val key: String? = null) : ArrayLi
         if (isEmpty()) {
             return null
         }
+        val curVl = get(currentItem)
         currentItem++
-        if (currentItem >= size - 1) {
+        if (currentItem >= size) {
             currentItem = 0
         }
         key?.let {
-            PreferenceScreen.getPreferences(Includes.provideApplicationContext()).edit()
-                .putInt(key, currentItem).apply()
+            PreferenceScreen.getPreferences(Includes.provideApplicationContext()).edit {
+                putInt(key, currentItem)
+            }
         }
-        return get(currentItem)
+        return curVl
     }
 
     init {
         key?.let {
             currentItem =
                 PreferenceScreen.getPreferences(Includes.provideApplicationContext()).getInt(key, 0)
+            if (currentItem >= size) {
+                currentItem = 0
+            }
         }
     }
 }

@@ -72,44 +72,47 @@ class AudiosRecommendationPresenter(
 
     private fun getListByGenre(foreign: Boolean, genre: Int) {
         setLoadingNow(true)
-        audioListDisposable.add(audioInteractor.getPopular(
-            accountId,
-            if (foreign) 1 else 0,
-            genre,
-            REC_COUNT
-        )
-            .fromIOToMain({ onEndlessListReceived(it) }) { t ->
-                onListGetError(
-                    t
-                )
-            })
+        audioListDisposable.add(
+            audioInteractor.getPopular(
+                accountId,
+                if (foreign) 1 else 0,
+                genre,
+                REC_COUNT
+            )
+                .fromIOToMain({ onEndlessListReceived(it) }) { t ->
+                    onListGetError(
+                        t
+                    )
+                })
     }
 
     private val recommendations: Unit
         get() {
             setLoadingNow(true)
             if (option_menu_id != 0) {
-                audioListDisposable.add(audioInteractor.getRecommendationsByAudio(
-                    accountId,
-                    ownerId.toString() + "_" + option_menu_id,
-                    REC_COUNT
-                )
-                    .fromIOToMain({ onEndlessListReceived(it) }) {
-                        onListGetError(
-                            it
-                        )
-                    })
+                audioListDisposable.add(
+                    audioInteractor.getRecommendationsByAudio(
+                        accountId,
+                        ownerId.toString() + "_" + option_menu_id,
+                        REC_COUNT
+                    )
+                        .fromIOToMain({ onEndlessListReceived(it) }) {
+                            onListGetError(
+                                it
+                            )
+                        })
             } else {
-                audioListDisposable.add(audioInteractor.getRecommendations(
-                    accountId,
-                    ownerId,
-                    REC_COUNT
-                )
-                    .fromIOToMain({ onEndlessListReceived(it) }) { t ->
-                        onListGetError(
-                            t
-                        )
-                    })
+                audioListDisposable.add(
+                    audioInteractor.getRecommendations(
+                        accountId,
+                        ownerId,
+                        REC_COUNT
+                    )
+                        .fromIOToMain({ onEndlessListReceived(it) }) { t ->
+                            onListGetError(
+                                t
+                            )
+                        })
             }
         }
 

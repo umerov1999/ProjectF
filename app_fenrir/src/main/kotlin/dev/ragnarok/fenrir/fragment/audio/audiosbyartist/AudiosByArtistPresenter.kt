@@ -56,19 +56,20 @@ class AudiosByArtistPresenter(
 
     private fun requestList(offset: Int) {
         setLoadingNow(true)
-        audioListDisposable.add(audioInteractor.getAudiosByArtist(
-            accountId,
-            artist,
-            offset,
-            GET_COUNT
-        )
-            .fromIOToMain({
-                if (offset == 0) {
-                    onListReceived(it)
-                } else {
-                    onNextListReceived(it)
-                }
-            }) { t -> onListGetError(t) })
+        audioListDisposable.add(
+            audioInteractor.getAudiosByArtist(
+                accountId,
+                artist,
+                offset,
+                GET_COUNT
+            )
+                .fromIOToMain({
+                    if (offset == 0) {
+                        onListReceived(it)
+                    } else {
+                        onNextListReceived(it)
+                    }
+                }) { t -> onListGetError(t) })
     }
 
     private fun onNextListReceived(next: List<Audio>) {
@@ -164,21 +165,22 @@ class AudiosByArtistPresenter(
     }
 
     fun onAdd(album: AudioPlaylist) {
-        audioListDisposable.add(audioInteractor.followPlaylist(
-            accountId,
-            album.id,
-            album.owner_id,
-            album.access_key
-        )
-            .fromIOToMain({
-                view?.customToast?.showToast(
-                    R.string.success
-                )
-            }) { throwable ->
-                showError(
-                    throwable
-                )
-            })
+        audioListDisposable.add(
+            audioInteractor.followPlaylist(
+                accountId,
+                album.id,
+                album.owner_id,
+                album.access_key
+            )
+                .fromIOToMain({
+                    view?.customToast?.showToast(
+                        R.string.success
+                    )
+                }) { throwable ->
+                    showError(
+                        throwable
+                    )
+                })
     }
 
     fun fireScrollToEnd() {

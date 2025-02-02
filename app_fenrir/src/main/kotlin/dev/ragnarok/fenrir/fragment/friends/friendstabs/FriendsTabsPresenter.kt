@@ -23,12 +23,13 @@ class FriendsTabsPresenter(
     private var counters: FriendsCounters? = null
     private var owner: Owner? = null
     private fun requestOwnerInfo() {
-        appendJob(ownersRepository.getBaseOwnerInfo(
-            accountId,
-            userId,
-            IOwnersRepository.MODE_ANY
-        )
-            .fromIOToMain { owner -> onOwnerInfoReceived(owner) })
+        appendJob(
+            ownersRepository.getBaseOwnerInfo(
+                accountId,
+                userId,
+                IOwnersRepository.MODE_ANY
+            )
+                .fromIOToMain { owner -> onOwnerInfoReceived(owner) })
     }
 
     fun fireFriendsBirthday() {
@@ -47,12 +48,13 @@ class FriendsTabsPresenter(
     }
 
     private fun requestCounters() {
-        appendJob(relationshipInteractor.getFriendsCounters(accountId, userId)
-            .fromIOToMain({ counters -> onCountersReceived(counters) }) { t ->
-                onCountersGetError(
-                    t
-                )
-            })
+        appendJob(
+            relationshipInteractor.getFriendsCounters(accountId, userId)
+                .fromIOToMain({ counters -> onCountersReceived(counters) }) { t ->
+                    onCountersGetError(
+                        t
+                    )
+                })
     }
 
     override fun onGuiResumed() {

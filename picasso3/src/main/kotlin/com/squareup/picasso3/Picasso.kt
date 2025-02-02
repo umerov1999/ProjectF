@@ -26,6 +26,7 @@ import android.widget.ImageView
 import android.widget.RemoteViews
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
+import androidx.core.net.toUri
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.squareup.picasso3.MemoryPolicy.Companion.shouldReadFromMemoryCache
@@ -291,7 +292,7 @@ class Picasso internal constructor(
             return RequestCreator(this, null, 0)
         }
         require(path.isNotBlank()) { "Path must not be empty." }
-        return load(Uri.parse(path))
+        return load(path.toUri())
     }
 
     /**
@@ -355,7 +356,7 @@ class Picasso internal constructor(
      */
     fun invalidate(path: String?) {
         if (path != null) {
-            invalidate(Uri.parse(path))
+            invalidate(path.toUri())
         }
     }
 

@@ -107,11 +107,12 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
 
     private fun queueNextRefresh() {
         mRefreshDisposable.cancel()
-        mRefreshDisposable.set(delayTaskFlow(500)
-            .toMain {
-                refreshCurrentTime()
-                queueNextRefresh()
-            }
+        mRefreshDisposable.set(
+            delayTaskFlow(500)
+                .toMain {
+                    refreshCurrentTime()
+                    queueNextRefresh()
+                }
         )
     }
 
@@ -235,14 +236,16 @@ class MiniPlayerView : FrameLayout, CustomSeekBar.CustomSeekBarListener {
         mAccountId = Settings.get()
             .accounts()
             .current
-        mAccountDisposable.set(Settings.get()
-            .accounts()
-            .observeChanges
-            .sharedFlowToMain { mAccountId = it })
+        mAccountDisposable.set(
+            Settings.get()
+                .accounts()
+                .observeChanges
+                .sharedFlowToMain { mAccountId = it })
         refreshCurrentTime()
         queueNextRefresh()
-        mPlayerDisposable.set(MusicPlaybackController.observeServiceBinding()
-            .sharedFlowToMain { onServiceBindEvent(it) })
+        mPlayerDisposable.set(
+            MusicPlaybackController.observeServiceBinding()
+                .sharedFlowToMain { onServiceBindEvent(it) })
     }
 
     override fun onDetachedFromWindow() {

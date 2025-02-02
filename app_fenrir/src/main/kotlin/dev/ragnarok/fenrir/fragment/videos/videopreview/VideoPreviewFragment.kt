@@ -6,7 +6,6 @@ import android.content.ClipboardManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
@@ -18,6 +17,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.core.view.MenuProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.squareup.picasso3.Transformation
@@ -212,7 +212,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
                 .showToastError(R.string.error_video_playback_is_not_possible)
             return
         }
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
         startActivity(intent)
     }
 
@@ -807,7 +807,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
 
     private fun playDirectVkLinkInExternalPlayer(url: String) {
         val intent = Intent(Intent.ACTION_VIEW)
-        intent.setDataAndType(Uri.parse(url), "video/mp4")
+        intent.setDataAndType(url.toUri(), "video/mp4")
         startActivity(intent)
     }
 
@@ -818,7 +818,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
     private fun playWithCoub(video: Video) {
         val outerLink = video.externalLink
         val intent = Intent()
-        intent.data = Uri.parse(outerLink)
+        intent.data = outerLink?.toUri()
         intent.action = Intent.ACTION_VIEW
         intent.component = ComponentName("com.coub.android", "com.coub.android.ui.ViewCoubActivity")
         startActivity(intent)
@@ -827,7 +827,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
     private fun playWithNewPipe(video: Video) {
         val outerLink = video.externalLink
         val intent = Intent()
-        intent.data = Uri.parse(outerLink)
+        intent.data = outerLink?.toUri()
         intent.action = Intent.ACTION_VIEW
         intent.component = ComponentName("org.schabi.newpipe", "org.schabi.newpipe.RouterActivity")
         startActivity(intent)
@@ -836,7 +836,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
     private fun playWithYoutube(video: Video) {
         val outerLink = video.externalLink
         val intent = Intent()
-        intent.data = Uri.parse(outerLink)
+        intent.data = outerLink?.toUri()
         intent.action = Intent.ACTION_VIEW
         intent.component = ComponentName(
             "com.google.android.youtube",
@@ -848,7 +848,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
     private fun playWithYoutubeReVanced(video: Video) {
         val outerLink = video.externalLink
         val intent = Intent()
-        intent.data = Uri.parse(outerLink)
+        intent.data = outerLink?.toUri()
         intent.action = Intent.ACTION_VIEW
         intent.component = ComponentName(
             AppPrefs.revanced?.first.orEmpty(),

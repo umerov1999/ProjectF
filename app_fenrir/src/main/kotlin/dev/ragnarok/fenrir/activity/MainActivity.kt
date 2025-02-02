@@ -25,6 +25,7 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.get
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -410,11 +411,12 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         mCompositeJob.add(
             proxySettings
                 .observeActive.sharedFlowToMain { stop() })
-        mCompositeJob.add(Stores.instance
-            .dialogs()
-            .observeUnreadDialogsCount()
-            .filter { it.first == mAccountId }
-            .sharedFlowToMain { updateMessagesBagde(it.second) })
+        mCompositeJob.add(
+            Stores.instance
+                .dialogs()
+                .observeUnreadDialogsCount()
+                .filter { it.first == mAccountId }
+                .sharedFlowToMain { updateMessagesBagde(it.second) })
         bindToAudioPlayService()
         setContentView(mainContentView)
         mAccountId = Settings.get()
@@ -482,15 +484,17 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             } else {
                 if (mainActivityTransform == MainActivityTransforms.MAIN) {
                     checkFCMRegistration(false)
-                    mCompositeJob.add(MusicPlaybackController.tracksExist.findAllAudios(this)
-                        .andThen(
-                            InteractorFactory.createStickersInteractor().placeToStickerCache(this)
-                        )
-                        .fromIOToMain(dummy()) { t ->
-                            if (Settings.get().main().isDeveloper_mode) {
-                                createCustomToast(this).showToastThrowable(t)
-                            }
-                        })
+                    mCompositeJob.add(
+                        MusicPlaybackController.tracksExist.findAllAudios(this)
+                            .andThen(
+                                InteractorFactory.createStickersInteractor()
+                                    .placeToStickerCache(this)
+                            )
+                            .fromIOToMain(dummy()) { t ->
+                                if (Settings.get().main().isDeveloper_mode) {
+                                    createCustomToast(this).showToastThrowable(t)
+                                }
+                            })
                     Settings.get().main().last_audio_sync.let {
                         if (it > 0 && (System.currentTimeMillis() / 1000L) - it > 900) {
                             Settings.get().main().set_last_audio_sync(-1)
@@ -568,8 +572,9 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             removeNotificationsBadge()
             return
         }
-        mCompositeJob.add(CountersInteractor(networkInterfaces).getApiCounters(account)
-            .fromIOToMain({ counters -> updateNotificationsBadge(counters) }) { removeNotificationsBadge() })
+        mCompositeJob.add(
+            CountersInteractor(networkInterfaces).getApiCounters(account)
+                .fromIOToMain({ counters -> updateNotificationsBadge(counters) }) { removeNotificationsBadge() })
     }
 
     override fun onPause() {
@@ -697,15 +702,16 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     ) { _, option ->
                         when (option.id) {
                             0 -> {
-                                mCompositeJob.add(InteractorFactory.createAccountInteractor()
-                                    .setOffline(
-                                        Settings.get().accounts().current
-                                    )
-                                    .fromIOToMain({ onSetOffline(it) }) {
-                                        onSetOffline(
-                                            false
+                                mCompositeJob.add(
+                                    InteractorFactory.createAccountInteractor()
+                                        .setOffline(
+                                            Settings.get().accounts().current
                                         )
-                                    })
+                                        .fromIOToMain({ onSetOffline(it) }) {
+                                            onSetOffline(
+                                                false
+                                            )
+                                        })
                             }
 
                             1 -> {
@@ -727,27 +733,28 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                             }
 
                             2 -> {
-                                mCompositeJob.add(InteractorFactory.createStoriesInteractor()
-                                    .getStories(
-                                        Settings.get().accounts().current,
-                                        null
-                                    )
-                                    .fromIOToMain({
-                                        if (it.isEmpty()) {
-                                            createCustomToast(this@MainActivity).showToastError(
-                                                R.string.list_is_empty
-                                            )
-                                        }
-                                        PlaceFactory.getHistoryVideoPreviewPlace(
-                                            mAccountId,
-                                            ArrayList(it),
-                                            0
-                                        ).tryOpenWith(this@MainActivity)
-                                    }) {
-                                        createCustomToast(this@MainActivity).showToastThrowable(
-                                            it
+                                mCompositeJob.add(
+                                    InteractorFactory.createStoriesInteractor()
+                                        .getStories(
+                                            Settings.get().accounts().current,
+                                            null
                                         )
-                                    })
+                                        .fromIOToMain({
+                                            if (it.isEmpty()) {
+                                                createCustomToast(this@MainActivity).showToastError(
+                                                    R.string.list_is_empty
+                                                )
+                                            }
+                                            PlaceFactory.getHistoryVideoPreviewPlace(
+                                                mAccountId,
+                                                ArrayList(it),
+                                                0
+                                            ).tryOpenWith(this@MainActivity)
+                                        }) {
+                                            createCustomToast(this@MainActivity).showToastThrowable(
+                                                it
+                                            )
+                                        })
                             }
 
                             3 -> {
@@ -1250,19 +1257,19 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         navigationView?.selectPage(sectionDrawerItem)
         if (mBottomNavigation != null) {
             when (sectionDrawerItem.section) {
-                AbsNavigationView.PAGE_FEED -> mBottomNavigation?.menu?.getItem(0)?.isChecked =
+                AbsNavigationView.PAGE_FEED -> mBottomNavigation?.menu?.get(0)?.isChecked =
                     true
 
-                AbsNavigationView.PAGE_SEARCH -> mBottomNavigation?.menu?.getItem(1)?.isChecked =
+                AbsNavigationView.PAGE_SEARCH -> mBottomNavigation?.menu?.get(1)?.isChecked =
                     true
 
-                AbsNavigationView.PAGE_DIALOGS -> mBottomNavigation?.menu?.getItem(2)?.isChecked =
+                AbsNavigationView.PAGE_DIALOGS -> mBottomNavigation?.menu?.get(2)?.isChecked =
                     true
 
-                AbsNavigationView.PAGE_NOTIFICATION -> mBottomNavigation?.menu?.getItem(3)?.isChecked =
+                AbsNavigationView.PAGE_NOTIFICATION -> mBottomNavigation?.menu?.get(3)?.isChecked =
                     true
 
-                else -> mBottomNavigation?.menu?.getItem(4)?.isChecked = true
+                else -> mBottomNavigation?.menu?.get(4)?.isChecked = true
             }
         }
         mCurrentFrontSection = sectionDrawerItem

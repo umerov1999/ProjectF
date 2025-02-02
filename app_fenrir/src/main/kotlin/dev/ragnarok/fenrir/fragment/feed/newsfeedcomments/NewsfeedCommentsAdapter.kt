@@ -46,7 +46,6 @@ import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.view.AspectRatioImageView
 import dev.ragnarok.fenrir.view.VideoServiceIcons.getIconByType
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
-import kotlin.String
 
 class NewsfeedCommentsAdapter(
     private val context: Context, private var data: List<NewsfeedComment>,

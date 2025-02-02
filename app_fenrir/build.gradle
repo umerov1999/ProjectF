@@ -133,7 +133,7 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging:$firebaseMessagingVersion") {
         exclude group: "com.google.firebase", module: "firebase-installations"
     }
-    //implementation project(":libfenrir")
+    //implementation project(":native")
     implementation project(":fenrir_common")
     implementation project(":firebase-installations")
     implementation project(":picasso3")

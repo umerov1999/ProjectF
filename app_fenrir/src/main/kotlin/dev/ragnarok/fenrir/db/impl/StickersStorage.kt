@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.db.impl
 import android.content.ContentValues
 import android.database.Cursor
 import android.provider.BaseColumns
+import androidx.core.database.sqlite.transaction
 import dev.ragnarok.fenrir.db.TempDataHelper
 import dev.ragnarok.fenrir.db.column.StickerSetsColumns
 import dev.ragnarok.fenrir.db.column.StickerSetsCustomColumns
@@ -32,21 +33,15 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
         return flow {
             val start = System.currentTimeMillis()
             val db = TempDataHelper.helper.writableDatabase
-            db.beginTransaction()
-            try {
+            db.transaction {
                 val whereDel = StickerSetsColumns.ACCOUNT_ID + " = ?"
                 db.delete(StickerSetsColumns.TABLENAME, whereDel, arrayOf(accountId.toString()))
                 for ((i, entity) in sets.withIndex()) {
                     db.insert(StickerSetsColumns.TABLENAME, null, createCv(accountId, entity, i))
                 }
-                db.setTransactionSuccessful()
-                db.endTransaction()
-                emit(true)
-            } catch (exception: Exception) {
-                db.endTransaction()
-                throw exception
             }
             log("StickersStorage.storeStickerSets", start, "count: " + safeCountOf(sets))
+            emit(true)
         }
     }
 
@@ -57,8 +52,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
         return flow {
             val start = System.currentTimeMillis()
             val db = TempDataHelper.helper.writableDatabase
-            db.beginTransaction()
-            try {
+            db.transaction {
                 val whereDel = StickerSetsCustomColumns.ACCOUNT_ID + " = ?"
                 db.delete(
                     StickerSetsCustomColumns.TABLENAME,
@@ -72,14 +66,9 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
                         createCvCustom(accountId, entity, i)
                     )
                 }
-                db.setTransactionSuccessful()
-                db.endTransaction()
-                emit(true)
-            } catch (exception: Exception) {
-                db.endTransaction()
-                throw exception
             }
             log("StickersStorage.storeStickerSetsCustom", start, "count: " + safeCountOf(sets))
+            emit(true)
         }
     }
 
@@ -89,8 +78,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
         Settings.get().main().del_last_sticker_keywords_sync(accountId)
         return flow {
             val db = TempDataHelper.helper.writableDatabase
-            db.beginTransaction()
-            try {
+            db.transaction {
                 val whereDel = StickerSetsColumns.ACCOUNT_ID + " = ?"
                 db.delete(StickerSetsColumns.TABLENAME, whereDel, arrayOf(accountId.toString()))
                 val whereDelC = StickerSetsCustomColumns.ACCOUNT_ID + " = ?"
@@ -105,13 +93,8 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
                     whereDelK,
                     arrayOf(accountId.toString())
                 )
-                db.setTransactionSuccessful()
-                db.endTransaction()
-                emit(true)
-            } catch (exception: Exception) {
-                db.endTransaction()
-                throw exception
             }
+            emit(true)
         }
     }
 
@@ -119,8 +102,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
         return flow {
             val start = System.currentTimeMillis()
             val db = TempDataHelper.helper.writableDatabase
-            db.beginTransaction()
-            try {
+            db.transaction {
                 val whereDel = StickersKeywordsColumns.ACCOUNT_ID + " = ?"
                 db.delete(
                     StickersKeywordsColumns.TABLENAME,
@@ -134,14 +116,9 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
                         createCvStickersKeywords(accountId, entity, id)
                     )
                 }
-                db.setTransactionSuccessful()
-                db.endTransaction()
-                emit(true)
-            } catch (exception: Exception) {
-                db.endTransaction()
-                throw exception
             }
             log("StickersStorage.storeKeyWords", start, "count: " + safeCountOf(sets))
+            emit(true)
         }
     }
 

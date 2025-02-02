@@ -78,13 +78,14 @@ class CommentCreatePresenter(
     }
 
     private fun loadAttachments() {
-        appendJob(attachmentsSingle()
-            .zip(uploadsSingle()) { first, second ->
-                combine(
-                    first, second
-                )
-            }
-            .fromIOToMain({ onAttachmentsRestored(it) }) { it.printStackTrace() })
+        appendJob(
+            attachmentsSingle()
+                .zip(uploadsSingle()) { first, second ->
+                    combine(
+                        first, second
+                    )
+                }
+                .fromIOToMain({ onAttachmentsRestored(it) }) { it.printStackTrace() })
     }
 
     private fun onAttachmentsRestored(entries: List<AttachmentEntry>) {
@@ -162,28 +163,34 @@ class CommentCreatePresenter(
         if (savedInstanceState == null) {
             setTextBody(body)
         }
-        appendJob(uploadManager.observeAdding()
-            .sharedFlowToMain { it -> onUploadQueueUpdates(it) { destination.compareTo(it.destination) } })
-        appendJob(uploadManager.observeStatus()
-            .sharedFlowToMain {
-                onUploadStatusUpdate(
-                    it
-                )
-            })
-        appendJob(uploadManager.observeProgress()
-            .sharedFlowToMain { onUploadProgressUpdate(it) })
-        appendJob(uploadManager.observeDeleting(true)
-            .sharedFlowToMain {
-                onUploadObjectRemovedFromQueue(
-                    it
-                )
-            })
-        appendJob(attachmentsRepository.observeAdding()
-            .filter { filterAttachEvents(it) }
-            .sharedFlowToMain { handleAttachmentsAdding(it) })
-        appendJob(attachmentsRepository.observeRemoving()
-            .filter { filterAttachEvents(it) }
-            .sharedFlowToMain { handleAttachmentRemoving(it) })
+        appendJob(
+            uploadManager.observeAdding()
+                .sharedFlowToMain { it -> onUploadQueueUpdates(it) { destination.compareTo(it.destination) } })
+        appendJob(
+            uploadManager.observeStatus()
+                .sharedFlowToMain {
+                    onUploadStatusUpdate(
+                        it
+                    )
+                })
+        appendJob(
+            uploadManager.observeProgress()
+                .sharedFlowToMain { onUploadProgressUpdate(it) })
+        appendJob(
+            uploadManager.observeDeleting(true)
+                .sharedFlowToMain {
+                    onUploadObjectRemovedFromQueue(
+                        it
+                    )
+                })
+        appendJob(
+            attachmentsRepository.observeAdding()
+                .filter { filterAttachEvents(it) }
+                .sharedFlowToMain { handleAttachmentsAdding(it) })
+        appendJob(
+            attachmentsRepository.observeRemoving()
+                .filter { filterAttachEvents(it) }
+                .sharedFlowToMain { handleAttachmentRemoving(it) })
         loadAttachments()
     }
 }

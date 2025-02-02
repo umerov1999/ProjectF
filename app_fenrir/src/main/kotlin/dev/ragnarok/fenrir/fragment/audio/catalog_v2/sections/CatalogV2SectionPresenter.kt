@@ -127,12 +127,13 @@ class CatalogV2SectionPresenter(
     private fun loadActualData() {
         actualDataLoading = true
         resolveRefreshingView()
-        appendJob(fInteractor.getCatalogV2Section(accountId, section_id, null)
-            .fromIOToMain({ data -> onActualDataReceived(false, data) }) { t ->
-                onActualDataGetError(
-                    t
-                )
-            })
+        appendJob(
+            fInteractor.getCatalogV2Section(accountId, section_id, null)
+                .fromIOToMain({ data -> onActualDataReceived(false, data) }) { t ->
+                    onActualDataGetError(
+                        t
+                    )
+                })
     }
 
     private fun onActualDataGetError(t: Throwable) {
@@ -149,12 +150,13 @@ class CatalogV2SectionPresenter(
         }
         actualDataLoading = true
         resolveRefreshingView()
-        appendJob(fInteractor.getCatalogV2Section(accountId, section_id, nextFrom)
-            .fromIOToMain({ data -> onActualDataReceived(true, data) }) { t ->
-                onActualDataGetError(
-                    t
-                )
-            })
+        appendJob(
+            fInteractor.getCatalogV2Section(accountId, section_id, nextFrom)
+                .fromIOToMain({ data -> onActualDataReceived(true, data) }) { t ->
+                    onActualDataGetError(
+                        t
+                    )
+                })
     }
 
     private fun onActualDataReceived(isNext: Boolean, data: CatalogV2Section) {
@@ -187,21 +189,22 @@ class CatalogV2SectionPresenter(
     }
 
     fun onAdd(album: AudioPlaylist) {
-        appendJob(fInteractor.followPlaylist(
-            accountId,
-            album.id,
-            album.owner_id,
-            album.access_key
-        )
-            .fromIOToMain({
-                view?.customToast?.showToast(
-                    R.string.success
-                )
-            }) {
-                showError(
-                    it
-                )
-            })
+        appendJob(
+            fInteractor.followPlaylist(
+                accountId,
+                album.id,
+                album.owner_id,
+                album.access_key
+            )
+                .fromIOToMain({
+                    view?.customToast?.showToast(
+                        R.string.success
+                    )
+                }) {
+                    showError(
+                        it
+                    )
+                })
     }
 
     fun fireRefresh() {

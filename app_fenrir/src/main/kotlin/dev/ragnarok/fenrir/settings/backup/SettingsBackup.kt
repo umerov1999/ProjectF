@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.settings.backup
 
 import androidx.annotation.Keep
+import androidx.core.content.edit
 import de.maxr1998.modernpreferences.PreferenceScreen
 import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.kJson
@@ -252,7 +253,7 @@ class SettingsBackup {
                 it
             )
             for ((key, value) in silentsPeerPointers) {
-                pref.edit().putBoolean(key, value).apply()
+                pref.edit { putBoolean(key, value) }
             }
         }
         Settings.get().notifications().reloadSilentSettings(false)
@@ -263,7 +264,7 @@ class SettingsBackup {
                 MapSerializer(String.serializer(), String.serializer()), it
             )
             for ((key, value) in user_names_pointers) {
-                pref.edit().putString(key, value).apply()
+                pref.edit { putString(key, value) }
             }
         }
         Settings.get().main().reloadUserNameChangesSettings(false)

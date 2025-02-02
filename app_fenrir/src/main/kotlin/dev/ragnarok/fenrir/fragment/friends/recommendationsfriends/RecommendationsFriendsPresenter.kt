@@ -36,12 +36,13 @@ class RecommendationsFriendsPresenter(accountId: Long, savedInstanceState: Bundl
     private fun requestActualData() {
         actualDataLoading = true
         resolveRefreshingView()
-        actualDataDisposable.add(relationshipInteractor.getRecommendations(accountId, 50)
-            .fromIOToMain({ users -> onDataReceived(users) }) { t ->
-                onDataGetError(
-                    t
-                )
-            })
+        actualDataDisposable.add(
+            relationshipInteractor.getRecommendations(accountId, 50)
+                .fromIOToMain({ users -> onDataReceived(users) }) { t ->
+                    onDataGetError(
+                        t
+                    )
+                })
     }
 
     private fun onDataGetError(t: Throwable) {

@@ -43,18 +43,19 @@ class VideoAlbumsPresenter(
     private fun requestActualData(offset: Int) {
         netLoadingNow = true
         resolveRefreshingView()
-        netDisposable.add(videosInteractor.getActualAlbums(
-            accountId,
-            ownerId,
-            COUNT_PER_LOAD,
-            offset
-        )
-            .fromIOToMain({ albums ->
-                onActualDataReceived(
-                    offset,
-                    albums
-                )
-            }) { t -> onActualDataGetError(t) })
+        netDisposable.add(
+            videosInteractor.getActualAlbums(
+                accountId,
+                ownerId,
+                COUNT_PER_LOAD,
+                offset
+            )
+                .fromIOToMain({ albums ->
+                    onActualDataReceived(
+                        offset,
+                        albums
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     private fun onActualDataGetError(t: Throwable) {

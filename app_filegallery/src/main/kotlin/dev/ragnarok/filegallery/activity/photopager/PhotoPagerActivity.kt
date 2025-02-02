@@ -22,6 +22,7 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.FileProvider
 import androidx.core.net.toFile
+import androidx.core.net.toUri
 import androidx.core.view.MenuProvider
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -257,7 +258,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                         FileProvider.getUriForFile(
                             this,
                             Constants.FILE_PROVIDER_AUTHORITY,
-                            Uri.parse(i).toFile()
+                            i.toUri().toFile()
                         )
                     )
                 }
@@ -563,7 +564,9 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                     .load(image.photo_url)
                     .into(photo, mPicassoLoadCallback)
             } else {
-                photo.fromAnimationFile(Uri.parse(image.photo_url).toFile(), true)
+                image.photo_url?.toUri()?.toFile()?.let {
+                    photo.fromAnimationFile(it, true)
+                }
                 mLoadingNow = false
                 resolveProgressVisibility(true)
             }

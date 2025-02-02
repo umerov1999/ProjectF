@@ -8,6 +8,7 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.util.Property
 import android.view.View
+import androidx.core.content.withStyledAttributes
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.toColor
 
@@ -36,23 +37,23 @@ class CircleRoadProgress(context: Context, attrs: AttributeSet) : View(context, 
     }
 
     private fun initializeAttributes(context: Context, attrs: AttributeSet) {
-        val ta = context.obtainStyledAttributes(attrs, R.styleable.CircleRoadProgress)
-        circleCenterPointX = ta.getFloat(R.styleable.CircleRoadProgress_circleCenterPointX, 54f)
-        circleCenterPointY = ta.getFloat(R.styleable.CircleRoadProgress_circleCenterPointY, 54f)
-        roadColor =
-            ta.getColor(R.styleable.CircleRoadProgress_roadColor, "#575757".toColor())
-        roadStrokeWidth =
-            ta.getDimensionPixelSize(R.styleable.CircleRoadProgress_roadStrokeWidth, 10).toFloat()
-        roadRadius =
-            ta.getDimensionPixelSize(R.styleable.CircleRoadProgress_roadRadius, 42).toFloat()
-        arcLoadingColor =
-            ta.getColor(R.styleable.CircleRoadProgress_arcLoadingColor, "#f5d600".toColor())
-        arcLoadingStrokeWidth =
-            ta.getDimensionPixelSize(R.styleable.CircleRoadProgress_arcLoadingStrokeWidth, 3)
-                .toFloat()
-        arcLoadingStartAngle =
-            ta.getFloat(R.styleable.CircleRoadProgress_arcLoadingStartAngle, 270f)
-        ta.recycle()
+        context.withStyledAttributes(attrs, R.styleable.CircleRoadProgress) {
+            circleCenterPointX = getFloat(R.styleable.CircleRoadProgress_circleCenterPointX, 54f)
+            circleCenterPointY = getFloat(R.styleable.CircleRoadProgress_circleCenterPointY, 54f)
+            roadColor =
+                getColor(R.styleable.CircleRoadProgress_roadColor, "#575757".toColor())
+            roadStrokeWidth =
+                getDimensionPixelSize(R.styleable.CircleRoadProgress_roadStrokeWidth, 10).toFloat()
+            roadRadius =
+                getDimensionPixelSize(R.styleable.CircleRoadProgress_roadRadius, 42).toFloat()
+            arcLoadingColor =
+                getColor(R.styleable.CircleRoadProgress_arcLoadingColor, "#f5d600".toColor())
+            arcLoadingStrokeWidth =
+                getDimensionPixelSize(R.styleable.CircleRoadProgress_arcLoadingStrokeWidth, 3)
+                    .toFloat()
+            arcLoadingStartAngle =
+                getFloat(R.styleable.CircleRoadProgress_arcLoadingStartAngle, 270f)
+        }
     }
 
     private fun drawRoad(canvas: Canvas) {

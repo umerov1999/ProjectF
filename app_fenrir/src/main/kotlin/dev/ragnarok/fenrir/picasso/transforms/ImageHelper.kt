@@ -9,6 +9,7 @@ import android.graphics.Picture
 import android.graphics.PorterDuff
 import android.graphics.Shader
 import android.os.Build
+import androidx.core.graphics.createBitmap
 
 object ImageHelper {
     fun getRoundedBitmap(workBitmap: Bitmap?): Bitmap? {
@@ -25,7 +26,7 @@ object ImageHelper {
             obj = Picture()
             canvas = obj.beginRecording(bitmapWidth, bitmapHeight)
         } else {
-            output = Bitmap.createBitmap(
+            output = createBitmap(
                 bitmapWidth,
                 bitmapHeight,
                 workBitmap.config ?: Bitmap.Config.ARGB_8888
@@ -59,7 +60,7 @@ object ImageHelper {
             obj = Picture()
             canvas = obj.beginRecording(bitmapWidth, bitmapHeight)
         } else {
-            output = Bitmap.createBitmap(
+            output = createBitmap(
                 bitmapWidth,
                 bitmapHeight,
                 workBitmap.config ?: Bitmap.Config.ARGB_8888

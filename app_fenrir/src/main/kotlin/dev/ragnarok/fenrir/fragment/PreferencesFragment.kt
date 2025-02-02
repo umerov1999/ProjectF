@@ -28,6 +28,9 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.edit
+import androidx.core.graphics.scale
+import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -45,22 +48,61 @@ import de.maxr1998.modernpreferences.AbsPreferencesFragment
 import de.maxr1998.modernpreferences.PreferenceScreen
 import de.maxr1998.modernpreferences.PreferencesAdapter
 import de.maxr1998.modernpreferences.PreferencesExtra
-import de.maxr1998.modernpreferences.helpers.*
+import de.maxr1998.modernpreferences.helpers.DISABLED_RESOURCE_ID
+import de.maxr1998.modernpreferences.helpers.accentButtonPref
+import de.maxr1998.modernpreferences.helpers.colorPick
+import de.maxr1998.modernpreferences.helpers.customText
+import de.maxr1998.modernpreferences.helpers.editText
+import de.maxr1998.modernpreferences.helpers.multiLineText
+import de.maxr1998.modernpreferences.helpers.onCheckedChange
+import de.maxr1998.modernpreferences.helpers.onClick
+import de.maxr1998.modernpreferences.helpers.onMultiLineTextChange
+import de.maxr1998.modernpreferences.helpers.onSeek
+import de.maxr1998.modernpreferences.helpers.onSelectionChange
+import de.maxr1998.modernpreferences.helpers.onTextBeforeChanged
+import de.maxr1998.modernpreferences.helpers.onTextChanged
+import de.maxr1998.modernpreferences.helpers.pref
+import de.maxr1998.modernpreferences.helpers.screen
+import de.maxr1998.modernpreferences.helpers.seekBar
+import de.maxr1998.modernpreferences.helpers.separatorSpace
+import de.maxr1998.modernpreferences.helpers.singleChoice
+import de.maxr1998.modernpreferences.helpers.subScreen
+import de.maxr1998.modernpreferences.helpers.switch
 import de.maxr1998.modernpreferences.preferences.Badge
 import de.maxr1998.modernpreferences.preferences.CustomTextPreference
 import de.maxr1998.modernpreferences.preferences.choice.SelectionItem
-import dev.ragnarok.fenrir.*
+import dev.ragnarok.fenrir.Common
+import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Constants.API_VERSION
+import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.Extra.ACCOUNT_ID
 import dev.ragnarok.fenrir.Extra.PHOTOS
-import dev.ragnarok.fenrir.activity.*
-import dev.ragnarok.fenrir.activity.alias.*
+import dev.ragnarok.fenrir.Includes
+import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.UserAgentTool
+import dev.ragnarok.fenrir.activity.ActivityFeatures
+import dev.ragnarok.fenrir.activity.ActivityUtils
+import dev.ragnarok.fenrir.activity.EnterPinActivity
+import dev.ragnarok.fenrir.activity.FileManagerSelectActivity
+import dev.ragnarok.fenrir.activity.PhotosActivity
+import dev.ragnarok.fenrir.activity.ProxyManagerActivity
+import dev.ragnarok.fenrir.activity.alias.BlackFenrirAlias
+import dev.ragnarok.fenrir.activity.alias.BlueFenrirAlias
+import dev.ragnarok.fenrir.activity.alias.GreenFenrirAlias
+import dev.ragnarok.fenrir.activity.alias.LineageFenrirAlias
+import dev.ragnarok.fenrir.activity.alias.RedFenrirAlias
+import dev.ragnarok.fenrir.activity.alias.ToggleAlias
+import dev.ragnarok.fenrir.activity.alias.VKFenrirAlias
+import dev.ragnarok.fenrir.activity.alias.VioletFenrirAlias
+import dev.ragnarok.fenrir.activity.alias.WhiteFenrirAlias
+import dev.ragnarok.fenrir.activity.alias.YellowFenrirAlias
 import dev.ragnarok.fenrir.api.model.LocalServerSettings
 import dev.ragnarok.fenrir.api.model.PlayerCoverBackgroundSettings
 import dev.ragnarok.fenrir.api.model.SlidrSettings
 import dev.ragnarok.fenrir.db.DBHelper
 import dev.ragnarok.fenrir.db.TempDataHelper
 import dev.ragnarok.fenrir.domain.InteractorFactory
+import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
 import dev.ragnarok.fenrir.listener.BackPressCallback
 import dev.ragnarok.fenrir.listener.CanBackPressedCallback
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
@@ -71,6 +113,7 @@ import dev.ragnarok.fenrir.model.DrawerCategory
 import dev.ragnarok.fenrir.model.LocalPhoto
 import dev.ragnarok.fenrir.model.SwitchableCategory
 import dev.ragnarok.fenrir.module.FenrirNative
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.clear_cache
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.picasso.transforms.EllipseTransformation
@@ -84,6 +127,8 @@ import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.backup.SettingsBackup
+import dev.ragnarok.fenrir.toColor
+import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.CoverSafeResize
@@ -280,10 +325,12 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
     ) { result ->
         if (result.resultCode == RESULT_OK && result.data != null) {
             PreferenceScreen.getPreferences(requireActivity())
-                .edit().putString(
-                    "music_dir",
-                    result.data?.getStringExtra(Extra.PATH)
-                ).apply()
+                .edit {
+                    putString(
+                        "music_dir",
+                        result.data?.getStringExtra(Extra.PATH)
+                    )
+                }
             preferencesAdapter?.applyToPreference("music_dir") { ss -> (ss as CustomTextPreference).reload() }
         }
     }
@@ -292,10 +339,12 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
     ) { result ->
         if (result.resultCode == RESULT_OK && result.data != null) {
             PreferenceScreen.getPreferences(requireActivity())
-                .edit().putString(
-                    "photo_dir",
-                    result.data?.getStringExtra(Extra.PATH)
-                ).apply()
+                .edit {
+                    putString(
+                        "photo_dir",
+                        result.data?.getStringExtra(Extra.PATH)
+                    )
+                }
             preferencesAdapter?.applyToPreference("photo_dir") { ss -> (ss as CustomTextPreference).reload() }
         }
     }
@@ -305,10 +354,12 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
     ) { result ->
         if (result.resultCode == RESULT_OK && result.data != null) {
             PreferenceScreen.getPreferences(requireActivity())
-                .edit().putString(
-                    "video_dir",
-                    result.data?.getStringExtra(Extra.PATH)
-                ).apply()
+                .edit {
+                    putString(
+                        "video_dir",
+                        result.data?.getStringExtra(Extra.PATH)
+                    )
+                }
             preferencesAdapter?.applyToPreference("video_dir") { ss -> (ss as CustomTextPreference).reload() }
         }
     }
@@ -318,10 +369,12 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
     ) { result ->
         if (result.resultCode == RESULT_OK && result.data != null) {
             PreferenceScreen.getPreferences(requireActivity())
-                .edit().putString(
-                    "docs_dir",
-                    result.data?.getStringExtra(Extra.PATH)
-                ).apply()
+                .edit {
+                    putString(
+                        "docs_dir",
+                        result.data?.getStringExtra(Extra.PATH)
+                    )
+                }
             preferencesAdapter?.applyToPreference("docs_dir") { ss -> (ss as CustomTextPreference).reload() }
         }
     }
@@ -330,10 +383,12 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
     ) { result ->
         if (result.resultCode == RESULT_OK && result.data != null) {
             PreferenceScreen.getPreferences(requireActivity())
-                .edit().putString(
-                    "sticker_dir",
-                    result.data?.getStringExtra(Extra.PATH)
-                ).apply()
+                .edit {
+                    putString(
+                        "sticker_dir",
+                        result.data?.getStringExtra(Extra.PATH)
+                    )
+                }
             preferencesAdapter?.applyToPreference("sticker_dir") { ss -> (ss as CustomTextPreference).reload() }
 
         }
@@ -2267,7 +2322,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 .setTitle(R.string.avatar_style_title)
                 .setView(view)
                 .setPositiveButton(R.string.button_ok) { _, _ ->
-                    val circle = ivCircleSelected.visibility == View.VISIBLE
+                    val circle = ivCircleSelected.isVisible
                     Settings.get()
                         .ui()
                         .storeAvatarStyle(if (circle) AvatarStyle.CIRCLE else AvatarStyle.OVAL)
@@ -2826,7 +2881,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             if (mWidth <= 0 || mHeight <= 0) {
                 return bitmap
             }
-            val tmp = Bitmap.createScaledBitmap(bitmap, mWidth, mHeight, true)
+            val tmp = bitmap.scale(mWidth, mHeight)
             bitmap.recycle()
             return tmp
         }

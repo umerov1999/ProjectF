@@ -105,20 +105,21 @@ class MessagesLookPresenter(
     }
 
     private fun initRequest() {
-        appendJob(messagesInteractor.getPeerMessages(
-            accountId,
-            peer.id,
-            COUNT,
-            -COUNT / 2,
-            mFocusMessageId,
-            cacheData = false,
-            rev = false
-        )
-            .fromIOToMain({ messages -> onInitDataLoaded(messages) }) { t ->
-                onDataGetError(
-                    t
-                )
-            })
+        appendJob(
+            messagesInteractor.getPeerMessages(
+                accountId,
+                peer.id,
+                COUNT,
+                -COUNT / 2,
+                mFocusMessageId,
+                cacheData = false,
+                rev = false
+            )
+                .fromIOToMain({ messages -> onInitDataLoaded(messages) }) { t ->
+                    onDataGetError(
+                        t
+                    )
+                })
     }
 
     private fun onDataGetError(t: Throwable) {
@@ -142,13 +143,14 @@ class MessagesLookPresenter(
     }
 
     private fun deleteSentImpl(ids: Collection<Int>) {
-        appendJob(messagesInteractor.deleteMessages(
-            accountId, peer.id, ids,
-            forAll = false, spam = false
-        )
-            .fromIOToMain(dummy()) { t ->
-                showError(t)
-            })
+        appendJob(
+            messagesInteractor.deleteMessages(
+                accountId, peer.id, ids,
+                forAll = false, spam = false
+            )
+                .fromIOToMain(dummy()) { t ->
+                    showError(t)
+                })
     }
 
     fun fireFooterLoadMoreClick() {
@@ -164,20 +166,21 @@ class MessagesLookPresenter(
         val firstMessageId = firstMessageId ?: return
         loadingState.headerLoading()
         val targetMessageId = firstMessageId
-        appendJob(messagesInteractor.getPeerMessages(
-            accountId,
-            peer.id,
-            COUNT,
-            -COUNT,
-            targetMessageId,
-            cacheData = false,
-            rev = false
-        )
-            .fromIOToMain({ onDownDataLoaded(it) }) { t ->
-                onDownDataGetError(
-                    t
-                )
-            })
+        appendJob(
+            messagesInteractor.getPeerMessages(
+                accountId,
+                peer.id,
+                COUNT,
+                -COUNT,
+                targetMessageId,
+                cacheData = false,
+                rev = false
+            )
+                .fromIOToMain({ onDownDataLoaded(it) }) { t ->
+                    onDownDataGetError(
+                        t
+                    )
+                })
     }
 
     override fun onActionModeDeleteClick() {
@@ -189,16 +192,17 @@ class MessagesLookPresenter(
             }
         }
         if (ids.nonNullNoEmpty()) {
-            appendJob(messagesInteractor.deleteMessages(
-                accountId,
-                peer.id,
-                ids,
-                forAll = false,
-                spam = false
-            )
-                .fromIOToMain({ onMessagesDeleteSuccessfully(ids) }) { t ->
-                    showError(getCauseIfRuntime(t))
-                })
+            appendJob(
+                messagesInteractor.deleteMessages(
+                    accountId,
+                    peer.id,
+                    ids,
+                    forAll = false,
+                    spam = false
+                )
+                    .fromIOToMain({ onMessagesDeleteSuccessfully(ids) }) { t ->
+                        showError(getCauseIfRuntime(t))
+                    })
         }
     }
 
@@ -211,13 +215,14 @@ class MessagesLookPresenter(
             }
         }
         if (ids.nonNullNoEmpty()) {
-            appendJob(messagesInteractor.deleteMessages(
-                accountId, peer.id, ids,
-                forAll = false, spam = true
-            )
-                .fromIOToMain({ onMessagesDeleteSuccessfully(ids) }) { t ->
-                    showError(getCauseIfRuntime(t))
-                })
+            appendJob(
+                messagesInteractor.deleteMessages(
+                    accountId, peer.id, ids,
+                    forAll = false, spam = true
+                )
+                    .fromIOToMain({ onMessagesDeleteSuccessfully(ids) }) { t ->
+                        showError(getCauseIfRuntime(t))
+                    })
         }
     }
 
@@ -226,20 +231,21 @@ class MessagesLookPresenter(
         val lastMessageId = lastMessageId ?: return
         loadingState.footerLoading()
         val targetLastMessageId = lastMessageId
-        appendJob(messagesInteractor.getPeerMessages(
-            accountId,
-            peer.id,
-            COUNT,
-            0,
-            targetLastMessageId,
-            cacheData = false,
-            rev = false
-        )
-            .fromIOToMain({ onUpDataLoaded(it) }) { t ->
-                onUpDataGetError(
-                    t
-                )
-            })
+        appendJob(
+            messagesInteractor.getPeerMessages(
+                accountId,
+                peer.id,
+                COUNT,
+                0,
+                targetLastMessageId,
+                cacheData = false,
+                rev = false
+            )
+                .fromIOToMain({ onUpDataLoaded(it) }) { t ->
+                    onUpDataGetError(
+                        t
+                    )
+                })
     }
 
     private val lastMessageId: Int?
@@ -260,10 +266,11 @@ class MessagesLookPresenter(
 
     fun fireMessageRestoreClick(message: Message) {
         val id = message.getObjectId()
-        appendJob(messagesInteractor.restoreMessage(accountId, peer.id, id)
-            .fromIOToMain({ onMessageRestoredSuccessfully(id) }) { t ->
-                showError(getCauseIfRuntime(t))
-            })
+        appendJob(
+            messagesInteractor.restoreMessage(accountId, peer.id, id)
+                .fromIOToMain({ onMessageRestoredSuccessfully(id) }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
     }
 
     private fun onMessageRestoredSuccessfully(id: Int) {

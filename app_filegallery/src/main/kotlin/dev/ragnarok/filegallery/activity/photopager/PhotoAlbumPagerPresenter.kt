@@ -19,12 +19,13 @@ class PhotoAlbumPagerPresenter(
     private fun loadData() {
         if (!canLoad) return
         changeLoadingNowState(true)
-        appendJob(photosInteractor.getPhotos(mPhotos.size, COUNT_PER_LOAD, invertPhotoRev)
-            .fromIOToMain({ onActualPhotosReceived(it) }) { t ->
-                onActualDataGetError(
-                    t
-                )
-            })
+        appendJob(
+            photosInteractor.getPhotos(mPhotos.size, COUNT_PER_LOAD, invertPhotoRev)
+                .fromIOToMain({ onActualPhotosReceived(it) }) { t ->
+                    onActualDataGetError(
+                        t
+                    )
+                })
     }
 
     private fun onActualDataGetError(t: Throwable) {

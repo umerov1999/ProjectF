@@ -7,13 +7,20 @@ import dev.ragnarok.fenrir.domain.mappers.Dto2Model
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.link.LinkParserFeedback
 import dev.ragnarok.fenrir.model.FeedbackVKOfficial
-import dev.ragnarok.fenrir.model.FeedbackVKOfficial.*
+import dev.ragnarok.fenrir.model.FeedbackVKOfficial.ActionBrowserURL
+import dev.ragnarok.fenrir.model.FeedbackVKOfficial.ActionMessage
+import dev.ragnarok.fenrir.model.FeedbackVKOfficial.ActionURL
+import dev.ragnarok.fenrir.model.FeedbackVKOfficial.Attachment
+import dev.ragnarok.fenrir.model.FeedbackVKOfficial.ImageAdditional
 import dev.ragnarok.fenrir.model.FeedbackVKOfficialList
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.Utils
 import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.decodeFromJsonElementOrNull
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 
 class FeedbackVKOfficialDtoAdapter :
     AbsDtoAdapter<FeedbackVKOfficialList>("FeedbackVKOfficialList") {

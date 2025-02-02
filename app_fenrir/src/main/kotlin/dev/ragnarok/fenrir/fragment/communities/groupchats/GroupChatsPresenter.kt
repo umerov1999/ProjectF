@@ -27,13 +27,14 @@ class GroupChatsPresenter(accountId: Long, private val groupId: Long, savedInsta
         netLoadingNowOffset = offset
         resolveRefreshingView()
         resolveLoadMoreFooter()
-        netDisposable.add(owners.getGroupChats(accountId, groupId, offset, COUNT_PER_REQUEST)
-            .fromIOToMain({ rec_chats ->
-                onActualDataReceived(
-                    offset,
-                    rec_chats
-                )
-            }) { t -> onActualDataGetError(t) })
+        netDisposable.add(
+            owners.getGroupChats(accountId, groupId, offset, COUNT_PER_REQUEST)
+                .fromIOToMain({ rec_chats ->
+                    onActualDataReceived(
+                        offset,
+                        rec_chats
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     private fun onActualDataGetError(t: Throwable) {
@@ -113,13 +114,14 @@ class GroupChatsPresenter(accountId: Long, private val groupId: Long, savedInsta
     }
 
     fun fireGroupChatsClick(chat: GroupChats) {
-        netDisposable.add(utilsInteractor.joinChatByInviteLink(accountId, chat.invite_link)
-            .fromIOToMain({ t ->
-                view?.goToChat(
-                    accountId,
-                    t.chat_id
-                )
-            }) { t -> onActualDataGetError(t) })
+        netDisposable.add(
+            utilsInteractor.joinChatByInviteLink(accountId, chat.invite_link)
+                .fromIOToMain({ t ->
+                    view?.goToChat(
+                        accountId,
+                        t.chat_id
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     fun fireScrollToEnd() {

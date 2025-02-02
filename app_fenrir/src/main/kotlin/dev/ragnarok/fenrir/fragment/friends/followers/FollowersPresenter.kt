@@ -32,18 +32,19 @@ class FollowersPresenter(accountId: Long, private val userId: Long, savedInstanc
     private fun requestActualData(do_scan: Boolean) {
         actualDataLoading = true
         resolveRefreshingView()
-        actualDataDisposable.add(relationshipInteractor.getFollowers(
-            accountId,
-            userId,
-            if (isNotFriendShow) 1000 else 200,
-            offset
-        )
-            .fromIOToMain({ users ->
-                onActualDataReceived(
-                    users,
-                    do_scan
-                )
-            }) { t -> onActualDataGetError(t) })
+        actualDataDisposable.add(
+            relationshipInteractor.getFollowers(
+                accountId,
+                userId,
+                if (isNotFriendShow) 1000 else 200,
+                offset
+            )
+                .fromIOToMain({ users ->
+                    onActualDataReceived(
+                        users,
+                        do_scan
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     fun removeFollower(owner: Owner) {
@@ -146,12 +147,13 @@ class FollowersPresenter(accountId: Long, private val userId: Long, savedInstanc
 
     private fun loadAllCacheData() {
         cacheLoadingNow = true
-        cacheDisposable.add(relationshipInteractor.getCachedFollowers(accountId, userId)
-            .fromIOToMain({ users -> onCachedDataReceived(users) }) { t ->
-                onCacheDataGetError(
-                    t
-                )
-            })
+        cacheDisposable.add(
+            relationshipInteractor.getCachedFollowers(accountId, userId)
+                .fromIOToMain({ users -> onCachedDataReceived(users) }) { t ->
+                    onCacheDataGetError(
+                        t
+                    )
+                })
     }
 
     private fun onCacheDataGetError(t: Throwable) {

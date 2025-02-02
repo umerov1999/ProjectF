@@ -139,7 +139,8 @@ class KeepLongpollService : Service() {
 
         fun stop(context: Context) {
             try {
-                context.stopService(Intent(context, KeepLongpollService::class.java))
+                val intent = Intent(context, KeepLongpollService::class.java)
+                context.stopService(intent)
             } catch (e: IllegalStateException) {
                 e.printStackTrace()
             } catch (e: SecurityException) {

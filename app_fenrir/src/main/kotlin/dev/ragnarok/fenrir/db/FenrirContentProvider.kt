@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.db
 
+import android.annotation.SuppressLint
 import android.content.*
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
@@ -7,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
 import android.database.sqlite.SQLiteQueryBuilder
 import android.net.Uri
 import android.provider.BaseColumns
+import androidx.core.net.toUri
 import dev.ragnarok.fenrir.BuildConfig
 import dev.ragnarok.fenrir.db.column.*
 import dev.ragnarok.fenrir.db.column.attachments.CommentsAttachmentsColumns
@@ -18,7 +20,7 @@ import dev.ragnarok.fenrir.util.Logger
 class FenrirContentProvider : ContentProvider() {
     companion object {
         // Uri authority
-        val AUTHORITY: String = BuildConfig.APPLICATION_ID + ".providers.FenrirMessages"
+        val AUTHORITY: String = "${BuildConfig.APPLICATION_ID}.providers.FenrirMessages"
         const val URI_USERS = 1
         const val URI_USERS_ID = 2
         const val URI_MESSAGES = 3
@@ -186,60 +188,60 @@ class FenrirContentProvider : ContentProvider() {
         private var sUriMatcher: UriMatcher = UriMatcher(UriMatcher.NO_MATCH)
 
         // Общий Uri
-        private val USER_CONTENT_URI = Uri.parse("content://$AUTHORITY/$USER_PATH")
-        private val MESSAGE_CONTENT_URI = Uri.parse("content://$AUTHORITY/$MESSAGES_PATH")
+        private val USER_CONTENT_URI = "content://$AUTHORITY/$USER_PATH".toUri()
+        private val MESSAGE_CONTENT_URI = "content://$AUTHORITY/$MESSAGES_PATH".toUri()
         private val MESSAGES_ATTACHMENTS_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$MESSAGES_ATTACHMENTS_PATH")
-        private val PHOTOS_CONTENT_URI = Uri.parse("content://$AUTHORITY/$PHOTOS_PATH")
+            "content://$AUTHORITY/$MESSAGES_ATTACHMENTS_PATH".toUri()
+        private val PHOTOS_CONTENT_URI = "content://$AUTHORITY/$PHOTOS_PATH".toUri()
         private val PHOTOS_EXTENDED_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$PHOTOS_EXTENDED_PATH")
-        private val DIALOGS_CONTENT_URI = Uri.parse("content://$AUTHORITY/$DIALOGS_PATH")
-        private val PEERS_CONTENT_URI = Uri.parse("content://$AUTHORITY/$PEERS_PATH")
-        private val DOCS_CONTENT_URI = Uri.parse("content://$AUTHORITY/$DOCS_PATH")
-        private val VIDEOS_CONTENT_URI = Uri.parse("content://$AUTHORITY/$VIDEOS_PATH")
-        private val POSTS_CONTENT_URI = Uri.parse("content://$AUTHORITY/$POSTS_PATH")
+            "content://$AUTHORITY/$PHOTOS_EXTENDED_PATH".toUri()
+        private val DIALOGS_CONTENT_URI = "content://$AUTHORITY/$DIALOGS_PATH".toUri()
+        private val PEERS_CONTENT_URI = "content://$AUTHORITY/$PEERS_PATH".toUri()
+        private val DOCS_CONTENT_URI = "content://$AUTHORITY/$DOCS_PATH".toUri()
+        private val VIDEOS_CONTENT_URI = "content://$AUTHORITY/$VIDEOS_PATH".toUri()
+        private val POSTS_CONTENT_URI = "content://$AUTHORITY/$POSTS_PATH".toUri()
         private val POSTS_ATTACHMENTS_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$POSTS_ATTACHMENTS_PATH")
-        private val GROUPS_CONTENT_URI = Uri.parse("content://$AUTHORITY/$GROUPS_PATH")
+            "content://$AUTHORITY/$POSTS_ATTACHMENTS_PATH".toUri()
+        private val GROUPS_CONTENT_URI = "content://$AUTHORITY/$GROUPS_PATH".toUri()
         private val RELATIVESHIP_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$RELATIVESHIP_PATH")
-        private val COMMENTS_CONTENT_URI = Uri.parse("content://$AUTHORITY/$COMMENTS_PATH")
+            "content://$AUTHORITY/$RELATIVESHIP_PATH".toUri()
+        private val COMMENTS_CONTENT_URI = "content://$AUTHORITY/$COMMENTS_PATH".toUri()
         private val COMMENTS_ATTACHMENTS_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$COMMENTS_ATTACHMENTS_PATH")
+            "content://$AUTHORITY/$COMMENTS_ATTACHMENTS_PATH".toUri()
         private val PHOTO_ALBUMS_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$PHOTO_ALBUMS_PATH")
-        private val NEWS_CONTENT_URI = Uri.parse("content://$AUTHORITY/$NEWS_PATH")
+            "content://$AUTHORITY/$PHOTO_ALBUMS_PATH".toUri()
+        private val NEWS_CONTENT_URI = "content://$AUTHORITY/$NEWS_PATH".toUri()
         private val GROUPS_DET_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$GROUPS_DET_PATH")
+            "content://$AUTHORITY/$GROUPS_DET_PATH".toUri()
         private val VIDEO_ALBUMS_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$VIDEO_ALBUMS_PATH")
-        private val TOPICS_CONTENT_URI = Uri.parse("content://$AUTHORITY/$TOPICS_PATH")
+            "content://$AUTHORITY/$VIDEO_ALBUMS_PATH".toUri()
+        private val TOPICS_CONTENT_URI = "content://$AUTHORITY/$TOPICS_PATH".toUri()
         private val NOTIFICATIONS_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$NOTIFICATIONS_PATH")
-        private val USER_DET_CONTENT_URI = Uri.parse("content://$AUTHORITY/$USER_DET_PATH")
+            "content://$AUTHORITY/$NOTIFICATIONS_PATH".toUri()
+        private val USER_DET_CONTENT_URI = "content://$AUTHORITY/$USER_DET_PATH".toUri()
         private val FAVE_PHOTOS_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$FAVE_PHOTOS_PATH")
+            "content://$AUTHORITY/$FAVE_PHOTOS_PATH".toUri()
         private val FAVE_VIDEOS_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$FAVE_VIDEOS_PATH")
+            "content://$AUTHORITY/$FAVE_VIDEOS_PATH".toUri()
         private val FAVE_PAGES_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$FAVE_PAGES_PATH")
+            "content://$AUTHORITY/$FAVE_PAGES_PATH".toUri()
         private val FAVE_GROUPS_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$FAVE_GROUPS_PATH")
+            "content://$AUTHORITY/$FAVE_GROUPS_PATH".toUri()
         private val FAVE_ARTICLES_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$FAVE_ARTICLES_PATH")
+            "content://$AUTHORITY/$FAVE_ARTICLES_PATH".toUri()
         private val FAVE_PRODUCTS_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$FAVE_PRODUCTS_PATH")
+            "content://$AUTHORITY/$FAVE_PRODUCTS_PATH".toUri()
         private val FAVE_LINKS_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$FAVE_LINKS_PATH")
+            "content://$AUTHORITY/$FAVE_LINKS_PATH".toUri()
         private val FAVE_POSTS_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$FAVE_POSTS_PATH")
+            "content://$AUTHORITY/$FAVE_POSTS_PATH".toUri()
         private val COUNTRIES_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$COUNTRIES_PATH")
+            "content://$AUTHORITY/$COUNTRIES_PATH".toUri()
         private val FEED_LISTS_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$FEED_LISTS_PATH")
+            "content://$AUTHORITY/$FEED_LISTS_PATH".toUri()
         private val FRIEND_LISTS_CONTENT_URI =
-            Uri.parse("content://$AUTHORITY/$FRIEND_LISTS_PATH")
-        private val KEYS_CONTENT_URI = Uri.parse("content://$AUTHORITY/$KEYS_PATH")
+            "content://$AUTHORITY/$FRIEND_LISTS_PATH".toUri()
+        private val KEYS_CONTENT_URI = "content://$AUTHORITY/$KEYS_PATH".toUri()
         private const val AID = "aid"
 
         //Setup projection maps
@@ -1321,6 +1323,7 @@ class FenrirContentProvider : ContentProvider() {
         }
     }
 
+    @SuppressLint("UseKtx")
     override fun applyBatch(operations: ArrayList<ContentProviderOperation>): Array<ContentProviderResult?> {
         if (operations.isEmpty()) {
             return arrayOfNulls(0)

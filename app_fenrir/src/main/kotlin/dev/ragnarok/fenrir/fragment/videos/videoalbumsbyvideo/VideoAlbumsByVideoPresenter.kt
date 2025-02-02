@@ -28,17 +28,18 @@ class VideoAlbumsByVideoPresenter(
     private fun requestActualData() {
         netLoadingNow = true
         resolveRefreshingView()
-        appendJob(videosInteractor.getAlbumsByVideo(
-            accountId,
-            ownerId,
-            videoOwnerId,
-            videoId
-        )
-            .fromIOToMain({ albums -> onActualDataReceived(albums) }) { t ->
-                onActualDataGetError(
-                    t
-                )
-            })
+        appendJob(
+            videosInteractor.getAlbumsByVideo(
+                accountId,
+                ownerId,
+                videoOwnerId,
+                videoId
+            )
+                .fromIOToMain({ albums -> onActualDataReceived(albums) }) { t ->
+                    onActualDataGetError(
+                        t
+                    )
+                })
     }
 
     private fun onActualDataGetError(t: Throwable) {

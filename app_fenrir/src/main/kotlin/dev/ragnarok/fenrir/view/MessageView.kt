@@ -10,6 +10,7 @@ import android.graphics.Shader
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.widget.LinearLayout
+import androidx.core.content.withStyledAttributes
 import dev.ragnarok.fenrir.R
 
 class MessageView : LinearLayout {
@@ -45,11 +46,11 @@ class MessageView : LinearLayout {
 
     private fun initializeAttributes(context: Context, attrs: AttributeSet?) {
         if (attrs != null) {
-            val array = context.obtainStyledAttributes(attrs, R.styleable.MessageView)
-            setRadius(array.getDimension(R.styleable.MessageView_radius, dp2px(DEFAULT_RADIUS)))
-            first_color = array.getColor(R.styleable.MessageView_first_color, DEFAULT_COLOR)
-            second_color = array.getColor(R.styleable.MessageView_second_color, DEFAULT_COLOR)
-            array.recycle()
+            context.withStyledAttributes(attrs, R.styleable.MessageView) {
+                setRadius(getDimension(R.styleable.MessageView_radius, dp2px(DEFAULT_RADIUS)))
+                first_color = getColor(R.styleable.MessageView_first_color, DEFAULT_COLOR)
+                second_color = getColor(R.styleable.MessageView_second_color, DEFAULT_COLOR)
+            }
         }
     }
 

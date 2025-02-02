@@ -1,7 +1,11 @@
 package dev.ragnarok.fenrir.api.adapters
 
 import dev.ragnarok.fenrir.api.Fields
-import dev.ragnarok.fenrir.api.model.*
+import dev.ragnarok.fenrir.api.model.VKApiAudio
+import dev.ragnarok.fenrir.api.model.VKApiCity
+import dev.ragnarok.fenrir.api.model.VKApiCommunity
+import dev.ragnarok.fenrir.api.model.VKApiCountry
+import dev.ragnarok.fenrir.api.model.VKApiCover
 import dev.ragnarok.fenrir.api.util.VKStringUtils
 import dev.ragnarok.fenrir.kJson
 import kotlinx.serialization.json.JsonElement

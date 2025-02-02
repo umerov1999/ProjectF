@@ -21,6 +21,7 @@ import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
+import androidx.core.util.size
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -318,7 +319,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
     }
 
     override fun setPreparingProgressVisible(position: Int, preparing: Boolean) {
-        for (i in 0 until mHolderSparseArray.size()) {
+        for (i in 0 until mHolderSparseArray.size) {
             val key = mHolderSparseArray.keyAt(i)
             val holder = findByPosition(key)
             val isCurrent = position == key

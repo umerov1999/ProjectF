@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.model
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.core.net.toUri
 import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.putBoolean
 
@@ -26,7 +27,7 @@ class LocalVideo : Parcelable, Comparable<LocalVideo>, ISelectable {
 
     internal constructor(parcel: Parcel) {
         id = parcel.readLong()
-        data = Uri.parse(parcel.readString())
+        data = parcel.readString()?.toUri()
         selected = parcel.getBoolean()
         index = parcel.readInt()
         size = parcel.readLong()

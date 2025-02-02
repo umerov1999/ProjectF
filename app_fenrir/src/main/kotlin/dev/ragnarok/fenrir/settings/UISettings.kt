@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.settings
 import android.content.Context
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.edit
 import de.maxr1998.modernpreferences.PreferenceScreen.Companion.getPreferences
 import dev.ragnarok.fenrir.fragment.PreferencesFragment
 import dev.ragnarok.fenrir.fragment.fave.FaveTabsFragment
@@ -35,9 +36,9 @@ internal class UISettings(context: Context) : IUISettings {
 
     override fun storeAvatarStyle(@AvatarStyle style: Int) {
         getPreferences(app)
-            .edit()
-            .putInt(PreferencesFragment.KEY_AVATAR_STYLE, style)
-            .apply()
+            .edit {
+                putInt(PreferencesFragment.KEY_AVATAR_STYLE, style)
+            }
     }
 
     override val mainThemeKey: String
@@ -48,12 +49,12 @@ internal class UISettings(context: Context) : IUISettings {
 
     override fun setMainTheme(key: String) {
         val preferences = getPreferences(app)
-        preferences.edit().putString("app_theme", key).apply()
+        preferences.edit { putString("app_theme", key) }
     }
 
     override fun switchNightMode(@AppCompatDelegate.NightMode key: Int) {
         val preferences = getPreferences(app)
-        preferences.edit().putString("night_switch", key.toString()).apply()
+        preferences.edit { putString("night_switch", key.toString()) }
     }
 
     override fun isDarkModeEnabled(context: Context): Boolean {
@@ -129,9 +130,9 @@ internal class UISettings(context: Context) : IUISettings {
     }
 
     override fun notifyPlaceResumed(type: Int) {
-        getPreferences(app).edit()
-            .putInt("last_closed_place_type", type)
-            .apply()
+        getPreferences(app).edit {
+            putInt("last_closed_place_type", type)
+        }
     }
 
     override val isSystemEmoji: Boolean

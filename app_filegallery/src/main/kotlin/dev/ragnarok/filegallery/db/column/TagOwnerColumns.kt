@@ -5,4 +5,6 @@ import android.provider.BaseColumns
 object TagOwnerColumns : BaseColumns {
     const val TABLENAME = "tag_owners"
     const val NAME = "name"
+
+    const val NAME_JOINED = "owner_name"
 }

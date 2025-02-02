@@ -28,13 +28,14 @@ class GiftsPresenter(accountId: Long, private val owner_id: Long, savedInstanceS
     private fun request(offset: Int) {
         netLoadingNow = true
         resolveRefreshingView()
-        netDisposable.add(ownersRepository.getGifts(accountId, owner_id, COUNT_PER_REQUEST, offset)
-            .fromIOToMain({ gifts ->
-                onNetDataReceived(
-                    offset,
-                    gifts
-                )
-            }) { t -> onNetDataGetError(t) })
+        netDisposable.add(
+            ownersRepository.getGifts(accountId, owner_id, COUNT_PER_REQUEST, offset)
+                .fromIOToMain({ gifts ->
+                    onNetDataReceived(
+                        offset,
+                        gifts
+                    )
+                }) { t -> onNetDataGetError(t) })
     }
 
     private fun onNetDataGetError(t: Throwable) {

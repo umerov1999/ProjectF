@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.view.animation.DecelerateInterpolator
 import androidx.annotation.ColorInt
+import androidx.core.graphics.withTranslation
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.util.Utils
 
@@ -370,44 +371,44 @@ class MediaActionDrawable : Drawable() {
             } else {
                 paint2.alpha = 255
             }
-            canvas.save()
-            canvas.translate(
+            canvas.withTranslation(
                 bounds.centerX() + Utils.dp(1f) * (1.0f - p),
                 bounds.centerY().toFloat()
-            )
-            var ms = 500.0f * p
-            var rotation: Float = if (previousIcon == ICON_PAUSE) 90f else 0f
-            if (previousIcon == ICON_PLAY && nextIcon == ICON_PAUSE) {
-                rotation = when {
-                    ms < 384 -> {
-                        95 * CubicBezierInterpolator.EASE_BOTH.getInterpolation(ms / 384)
-                    }
+            ) {
+                var ms = 500.0f * p
+                var rotation: Float = if (previousIcon == ICON_PAUSE) 90f else 0f
+                if (previousIcon == ICON_PLAY && nextIcon == ICON_PAUSE) {
+                    rotation = when {
+                        ms < 384 -> {
+                            95 * CubicBezierInterpolator.EASE_BOTH.getInterpolation(ms / 384)
+                        }
 
-                    ms < 484 -> {
-                        95 - 5 * CubicBezierInterpolator.EASE_BOTH.getInterpolation((ms - 384) / 100.0f)
-                    }
+                        ms < 484 -> {
+                            95 - 5 * CubicBezierInterpolator.EASE_BOTH.getInterpolation((ms - 384) / 100.0f)
+                        }
 
-                    else -> {
-                        90f
+                        else -> {
+                            90f
+                        }
+                    }
+                    ms += 100f
+                } else if (previousIcon == ICON_PAUSE && nextIcon == ICON_PLAY) {
+                    if (ms < 100) {
+                        rotation =
+                            -5 * CubicBezierInterpolator.EASE_BOTH.getInterpolation(ms / 100.0f)
+                    } else if (ms < 484) {
+                        rotation =
+                            -5 + 95 * CubicBezierInterpolator.EASE_BOTH.getInterpolation((ms - 100) / 384)
                     }
                 }
-                ms += 100f
-            } else if (previousIcon == ICON_PAUSE && nextIcon == ICON_PLAY) {
-                if (ms < 100) {
-                    rotation = -5 * CubicBezierInterpolator.EASE_BOTH.getInterpolation(ms / 100.0f)
-                } else if (ms < 484) {
-                    rotation =
-                        -5 + 95 * CubicBezierInterpolator.EASE_BOTH.getInterpolation((ms - 100) / 384)
+                rotate(rotation)
+                if (previousIcon != ICON_PLAY && previousIcon != ICON_PAUSE) {
+                    scale(drawableScale, drawableScale)
                 }
+                CurrentTheme.playPauseAnimator.draw(this, paint2, ms)
+                scale(1.0f, -1.0f)
+                CurrentTheme.playPauseAnimator.draw(this, paint2, ms)
             }
-            canvas.rotate(rotation)
-            if (previousIcon != ICON_PLAY && previousIcon != ICON_PAUSE) {
-                canvas.scale(drawableScale, drawableScale)
-            }
-            CurrentTheme.playPauseAnimator.draw(canvas, paint2, ms)
-            canvas.scale(1.0f, -1.0f)
-            CurrentTheme.playPauseAnimator.draw(canvas, paint2, ms)
-            canvas.restore()
         }
         val newTime = System.currentTimeMillis()
         var dt = newTime - lastAnimationTime

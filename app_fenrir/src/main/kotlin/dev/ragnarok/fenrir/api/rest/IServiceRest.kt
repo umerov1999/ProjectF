@@ -8,6 +8,8 @@ import dev.ragnarok.fenrir.kJson
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.json.JsonObjectBuilder
+import kotlinx.serialization.json.put
 import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
@@ -54,34 +56,47 @@ abstract class IServiceRest {
             return BaseResponse.serializer(Dictionary.serializer(serial))
         }
 
-        private fun toSerialStr(obj: Any?): String? {
-            return when (obj) {
-                is String -> {
-                    obj
-                }
-
-                is Byte, is Short, is Int, is Long, is Float, is Double -> {
-                    obj.toString()
-                }
-
-                is Boolean -> {
-                    if (obj) "1" else "0"
-                }
-
-                else -> null
-            }
-        }
-
         inline fun <reified T : Any> jsonForm(obj: T, serial: KSerializer<T>): RequestBody {
             return kJson.encodeToString(serial, obj)
+                .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        }
+
+        fun jsonForm(vararg pairs: Pair<String, Any?>): RequestBody {
+            val json = JsonObjectBuilder()
+            for ((first, second) in pairs) {
+                when (second) {
+                    is String -> {
+                        json.put(first, second)
+                    }
+
+                    is Number -> {
+                        json.put(first, second)
+                    }
+
+                    is Boolean -> {
+                        json.put(first, second)
+                    }
+                }
+            }
+            return kJson.printJsonElement(json.build())
                 .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         }
 
         fun form(vararg pairs: Pair<String, Any?>): FormBody {
             val formBuilder = FormBody.Builder()
             for ((first, second) in pairs) {
-                toSerialStr(second)?.let {
-                    formBuilder.add(first, it)
+                when (second) {
+                    is String -> {
+                        formBuilder.add(first, second)
+                    }
+
+                    is Number -> {
+                        formBuilder.add(first, second.toString())
+                    }
+
+                    is Boolean -> {
+                        formBuilder.add(first, if (second) "1" else "0")
+                    }
                 }
             }
             return formBuilder.build()

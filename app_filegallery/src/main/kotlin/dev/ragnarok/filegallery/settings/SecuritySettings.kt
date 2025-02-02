@@ -2,6 +2,7 @@ package dev.ragnarok.filegallery.settings
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import de.maxr1998.modernpreferences.PreferenceScreen.Companion.getPreferences
 import dev.ragnarok.fenrir.module.StringHash
 import dev.ragnarok.filegallery.nonNullNoEmpty
@@ -21,9 +22,9 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
         set(pinHash) {
             mPinHash = pinHash
             if (pinHash == null) {
-                mPrefs.edit().remove(KEY_PIN_HASH).apply()
+                mPrefs.edit { remove(KEY_PIN_HASH) }
             } else {
-                mPrefs.edit().putString(KEY_PIN_HASH, pinHash).apply()
+                mPrefs.edit { putString(KEY_PIN_HASH, pinHash) }
             }
         }
     override val pinEnterHistory: List<Long>
@@ -32,20 +33,21 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
     override var isUsePinForEntrance: Boolean
         get() = hasPinHash && getPreferences(mApplication)
             .getBoolean(KEY_USE_PIN_FOR_ENTRANCE, false)
-        set(value) = getPreferences(mApplication).edit().putBoolean(KEY_USE_PIN_FOR_ENTRANCE, value)
-            .apply()
+        set(value) = getPreferences(mApplication).edit {
+            putBoolean(KEY_USE_PIN_FOR_ENTRANCE, value)
+        }
 
     private fun storePinHistory() {
         val target: MutableSet<String> = HashSet(mPinEnterHistory.size)
         for (value in mPinEnterHistory) {
             target.add(value.toString())
         }
-        mPrefs.edit().putStringSet(KEY_PIN_ENTER_HISTORY, target).apply()
+        mPrefs.edit { putStringSet(KEY_PIN_ENTER_HISTORY, target) }
     }
 
     override fun clearPinHistory() {
         mPinEnterHistory.clear()
-        mPrefs.edit().remove(KEY_PIN_ENTER_HISTORY).apply()
+        mPrefs.edit { remove(KEY_PIN_ENTER_HISTORY) }
     }
 
     override fun firePinAttemptNow() {
@@ -65,12 +67,14 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
 
     override var isEntranceByFingerprintAllowed: Boolean
         get() = getPreferences(mApplication).getBoolean("allow_fingerprint", false)
-        set(value) = getPreferences(mApplication).edit().putBoolean("allow_fingerprint", value)
-            .apply()
+        set(value) = getPreferences(mApplication).edit {
+            putBoolean("allow_fingerprint", value)
+        }
 
     override fun updateLastPinTime() {
-        getPreferences(mApplication).edit().putLong(LAST_PIN_ENTERED, System.currentTimeMillis())
-            .apply()
+        getPreferences(mApplication).edit {
+            putLong(LAST_PIN_ENTERED, System.currentTimeMillis())
+        }
     }
 
     override fun setPin(pin: IntArray?) {

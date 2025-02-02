@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.util.AttributeSet
+import androidx.core.graphics.createBitmap
 import de.maxr1998.modernpreferences.preferences.colorpicker.ColorPickerView
 import de.maxr1998.modernpreferences.preferences.colorpicker.Utils
 import de.maxr1998.modernpreferences.preferences.colorpicker.builder.PaintBuilder
@@ -33,7 +34,7 @@ class AlphaSlider : AbsCustomSlider {
     override fun createBitmaps() {
         super.createBitmaps()
         alphaPatternPaint.shader = PaintBuilder.createAlphaPatternShader(barHeight * 2)
-        clearBitmap = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
+        clearBitmap = createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
         clearBitmapCanvas = Canvas(clearBitmap ?: return)
     }
 

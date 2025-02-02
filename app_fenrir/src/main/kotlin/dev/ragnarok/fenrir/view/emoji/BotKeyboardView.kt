@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.LinearLayout
 import android.widget.ScrollView
+import androidx.core.content.withStyledAttributes
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import dev.ragnarok.fenrir.R
@@ -88,10 +89,10 @@ class BotKeyboardView : ScrollView {
 
     private fun initializeAttributes(context: Context, attrs: AttributeSet?) {
         if (attrs != null) {
-            val array = context.obtainStyledAttributes(attrs, R.styleable.BotKeyboardView)
-            needTrackKeyboard =
-                array.getBoolean(R.styleable.BotKeyboardView_track_keyboard_height, true)
-            array.recycle()
+            context.withStyledAttributes(attrs, R.styleable.BotKeyboardView) {
+                needTrackKeyboard =
+                    getBoolean(R.styleable.BotKeyboardView_track_keyboard_height, true)
+            }
         }
     }
 

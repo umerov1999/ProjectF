@@ -164,10 +164,7 @@ class CustomToast private constructor(context: Context) : AbsCustomToast {
 
     init {
         duration = Toast.LENGTH_SHORT
-        mContext = if (context !is Activity) {
-            ContextThemeWrapper(context, ThemesController.currentStyle())
-        } else {
-            context
-        }
+        mContext =
+            context as? Activity ?: ContextThemeWrapper(context, ThemesController.currentStyle())
     }
 }

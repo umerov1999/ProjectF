@@ -25,7 +25,7 @@ class MessagesCriteria(val accountId: Long, val peerId: Long) : Criteria() {
     override fun hashCode(): Int {
         var result = accountId.hashCode()
         result = 31 * result + peerId.hashCode()
-        result = 31 * result + if (startMessageId != null) startMessageId.hashCode() else 0
+        result = 31 * result + (startMessageId?.hashCode() ?: 0)
         return result
     }
 

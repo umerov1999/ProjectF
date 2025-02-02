@@ -159,16 +159,17 @@ class PostEditPresenter(
 
     private fun save() {
         d(TAG, "save, author: " + post.author + ", signer: " + post.creator)
-        appendJob(uploadManager[accountId, uploadDestination]
-            .fromIOToMain({ data ->
-                if (data.isEmpty()) {
-                    doCommitImpl()
-                } else {
-                    view?.customToast?.showToastSuccessBottom(
-                        R.string.wait_until_file_upload_is_complete
-                    )
-                }
-            }) { it.printStackTrace() })
+        appendJob(
+            uploadManager[accountId, uploadDestination]
+                .fromIOToMain({ data ->
+                    if (data.isEmpty()) {
+                        doCommitImpl()
+                    } else {
+                        view?.customToast?.showToastSuccessBottom(
+                            R.string.wait_until_file_upload_is_complete
+                        )
+                    }
+                }) { it.printStackTrace() })
     }
 
     private val isGroup: Boolean
@@ -207,17 +208,18 @@ class PostEditPresenter(
         setEditingNow(true)
         val signed = if (canAddSignature()) addSignature.get() else null
         val friendsOnly = if (isFriendsOnlyOptionAvailable()) super.friendsOnly.get() else null
-        appendJob(wallInteractor
-            .editPost(
-                accountId, post.ownerId, post.vkid, friendsOnly,
-                getTextBody(), attachmentTokens, null, signed, publishDate,
-                null, null, null, null
-            )
-            .fromIOToMain({ onEditResponse() }) { throwable ->
-                onEditError(
-                    getCauseIfRuntime(throwable)
+        appendJob(
+            wallInteractor
+                .editPost(
+                    accountId, post.ownerId, post.vkid, friendsOnly,
+                    getTextBody(), attachmentTokens, null, signed, publishDate,
+                    null, null, null, null
                 )
-            })
+                .fromIOToMain({ onEditResponse() }) { throwable ->
+                    onEditError(
+                        getCauseIfRuntime(throwable)
+                    )
+                })
     }
 
     private fun postImpl() {
@@ -228,16 +230,17 @@ class PostEditPresenter(
         // Эта опция не может быть доступна (так как публикация - исключительно для PAGE)
         val fromGroup: Boolean? = null
         setEditingNow(true)
-        appendJob(wallInteractor
-            .post(
-                accountId, post.ownerId, null, fromGroup, body, attachmentTokens, null,
-                signed, publishDate, null, null, null, post.vkid, null, null, null
-            )
-            .fromIOToMain({ onEditResponse() }) { throwable ->
-                onEditError(
-                    getCauseIfRuntime(throwable)
+        appendJob(
+            wallInteractor
+                .post(
+                    accountId, post.ownerId, null, fromGroup, body, attachmentTokens, null,
+                    signed, publishDate, null, null, null, post.vkid, null, null, null
                 )
-            })
+                .fromIOToMain({ onEditResponse() }) { throwable ->
+                    onEditError(
+                        getCauseIfRuntime(throwable)
+                    )
+                })
     }
 
     private fun onEditError(throwable: Throwable) {
@@ -421,30 +424,35 @@ class PostEditPresenter(
         addSignature.setValue(post.signerId > 0)
         setFromGroupOptionAvailable(false) // only for publishing
         uploadDestination = UploadDestination.forPost(post.vkid, post.ownerId)
-        appendJob(uploadManager.observeAdding()
-            .sharedFlowToMain { it ->
-                onUploadQueueUpdates(
-                    it
-                ) {
-                    it.accountId == accountId
-                            && it.destination.compareTo(uploadDestination)
-                }
-            })
-        appendJob(uploadManager.observeProgress()
-            .sharedFlowToMain { onUploadProgressUpdate(it) })
-        appendJob(uploadManager.observeStatus()
-            .sharedFlowToMain {
-                onUploadStatusUpdate(
-                    it
-                )
-            })
-        appendJob(uploadManager.observeDeleting(false)
-            .sharedFlowToMain {
-                onUploadObjectRemovedFromQueue(
-                    it
-                )
-            })
-        appendJob(uploadManager.observeResults()
-            .sharedFlowToMain { onUploadComplete(it) })
+        appendJob(
+            uploadManager.observeAdding()
+                .sharedFlowToMain { it ->
+                    onUploadQueueUpdates(
+                        it
+                    ) {
+                        it.accountId == accountId
+                                && it.destination.compareTo(uploadDestination)
+                    }
+                })
+        appendJob(
+            uploadManager.observeProgress()
+                .sharedFlowToMain { onUploadProgressUpdate(it) })
+        appendJob(
+            uploadManager.observeStatus()
+                .sharedFlowToMain {
+                    onUploadStatusUpdate(
+                        it
+                    )
+                })
+        appendJob(
+            uploadManager.observeDeleting(false)
+                .sharedFlowToMain {
+                    onUploadObjectRemovedFromQueue(
+                        it
+                    )
+                })
+        appendJob(
+            uploadManager.observeResults()
+                .sharedFlowToMain { onUploadComplete(it) })
     }
 }

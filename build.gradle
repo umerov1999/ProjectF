@@ -3,8 +3,8 @@ buildscript {
     ext.is_developer_build = true
 
     ext.appCompileSDK = 35
-    ext.appBuildTools = "35.0.0"
-    ext.appNdk = "28.0.12674087"
+    ext.appBuildTools = "35.0.1"
+    ext.appNdk = "28.0.12916984"
     ext.appMinSDK = is_developer_build ? 29 : 26
     ext.appTargetSDK = 31
     ext.appFenrirVersionCode = 999
@@ -13,30 +13,30 @@ buildscript {
     ext.appFileGalleryVersionName = "1.999"
 
     //androidx libraries
-    ext.activityVersion = "1.10.0-rc01"
+    ext.activityVersion = "1.10.0"
     ext.annotationVersion = "1.9.1"
     ext.appcompatVersion = "1.7.0"
     ext.biometricVersion = "1.4.0-alpha02"
     ext.browserVersion = "1.8.0"
     ext.cardviewVersion = "1.0.0"
-    ext.collectionVersion = "1.5.0-beta01"
+    ext.collectionVersion = "1.5.0-beta03"
     ext.concurentVersion = "1.2.0"
     ext.constraintlayoutVersion = "2.2.0"
-    ext.coordinatorlayoutVersion = "1.3.0-alpha02"
+    ext.coordinatorlayoutVersion = "1.3.0-beta01"
     ext.coreVersion = "1.15.0"
     ext.customviewVersion = "1.2.0-alpha02"
     ext.customviewPoolingcontainerVersion = "1.0.0"
     ext.documentfile = "1.0.1"
     ext.drawerlayoutVersion = "1.2.0"
     ext.dynamicanimationVersion = "1.1.0-alpha03"
-    ext.exifinterfaceVersion = "1.4.0-alpha01"
+    ext.exifinterfaceVersion = "1.4.0-rc01"
     ext.fragmentVersion = "1.8.5"
     ext.graphicsShapesVersion = "1.0.1"
-    ext.lifecycleVersion = "2.9.0-alpha08"
+    ext.lifecycleVersion = "2.9.0-alpha09"
     ext.mediaVersion = "1.7.0"
     ext.media3Version = "1.5.1"
     ext.resourceInspectionAnnotation = "1.0.1"
-    ext.savedStateVersion = "1.3.0-alpha06"
+    ext.savedStateVersion = "1.3.0-alpha07"
     ext.swiperefreshlayoutVersion = "1.2.0-alpha01"
     ext.tracingVersion = "1.2.0"
     ext.transitionVersion = "1.5.1"
@@ -58,12 +58,12 @@ buildscript {
     ext.autoValueVersion = "1.11.0"
 
     //common libraries
-    ext.kotlin_version = "2.1.0"
+    ext.kotlin_version = "2.1.10"
     ext.kotlin_coroutines = "1.10.1"
     ext.kotlin_serializer = "1.8.0"
     ext.okhttpLibraryVersion = "5.0.0-SNAPSHOT"
     //ext.okhttpLibraryVersion = "5.0.0-alpha.14"
-    ext.okioVersion = "3.10.1"
+    ext.okioVersion = "3.10.2"
     ext.guavaVersion = "33.4.0-android"
     ext.errorProneVersion = "2.36.0"
     ext.checkerCompatQualVersion = "2.5.6"
@@ -92,10 +92,10 @@ buildscript {
         //maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.8.0-rc02"
-        classpath "com.google.gms:google-services:4.4.2"
+        classpath "com.android.tools.build:gradle:8.9.0-beta01"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
+        classpath "com.google.gms:google-services:4.4.2"
         //https://github.com/esensar/kotlinx-serialization-msgpack
     }
 }

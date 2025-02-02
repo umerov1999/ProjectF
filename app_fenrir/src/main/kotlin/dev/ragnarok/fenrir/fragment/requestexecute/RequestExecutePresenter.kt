@@ -67,12 +67,13 @@ class RequestExecutePresenter(accountId: Long, savedInstanceState: Bundle?) :
             }
         }
         setLoadingNow(true)
-        appendJob(executeSingle(accountId, trimmedMethod, params)
-            .fromIOToMain({ onRequestResponse(it) }) { throwable ->
-                onRequestError(
-                    getCauseIfRuntime(throwable)
-                )
-            })
+        appendJob(
+            executeSingle(accountId, trimmedMethod, params)
+                .fromIOToMain({ onRequestResponse(it) }) { throwable ->
+                    onRequestError(
+                        getCauseIfRuntime(throwable)
+                    )
+                })
     }
 
     private fun hasWritePermission(): Boolean {

@@ -3,7 +3,11 @@ package dev.ragnarok.fenrir.fragment.search.criteria
 import android.os.Parcel
 import android.os.Parcelable
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.fragment.search.options.*
+import dev.ragnarok.fenrir.fragment.search.options.DatabaseOption
+import dev.ragnarok.fenrir.fragment.search.options.SimpleBooleanOption
+import dev.ragnarok.fenrir.fragment.search.options.SimpleNumberOption
+import dev.ragnarok.fenrir.fragment.search.options.SimpleTextOption
+import dev.ragnarok.fenrir.fragment.search.options.SpinnerOption
 import dev.ragnarok.fenrir.util.ParcelUtils.readObjectLong
 import dev.ragnarok.fenrir.util.ParcelUtils.writeObjectLong
 

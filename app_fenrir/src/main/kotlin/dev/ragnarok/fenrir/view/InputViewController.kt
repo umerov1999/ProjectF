@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.isEmpty
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.model.Keyboard
@@ -31,7 +32,6 @@ import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnMyStickerClickedListener
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnSoftKeyboardOpenCloseListener
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnStickerClickedListener
 import dev.ragnarok.fenrir.view.emoji.section.Emojicon
-import kotlin.String
 
 class InputViewController(
     activity: Activity,
@@ -165,7 +165,7 @@ class InputViewController(
         if (emojiOnScreen == visible) {
             return
         }
-        if (visible && rlEmojiContainer.childCount == 0) {
+        if (visible && rlEmojiContainer.isEmpty()) {
             emojiPopup?.getEmojiView(rlEmojiContainer).let {
                 rlEmojiContainer.addView(it)
             }

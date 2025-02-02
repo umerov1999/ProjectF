@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.os.PowerManager
@@ -15,6 +14,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.PermissionChecker
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.util.toast.CustomToast
@@ -31,7 +31,7 @@ object AppPerms {
             pm ?: return
             if (!pm.isIgnoringBatteryOptimizations(packageName)) {
                 val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-                intent.data = Uri.parse("package:$packageName")
+                intent.data = "package:$packageName".toUri()
                 //intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 context.startActivity(intent)
             }
@@ -44,7 +44,7 @@ object AppPerms {
         if (Utils.hasScopedStorage()) {
             if (!Environment.isExternalStorageManager()) {
                 val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                intent.data = Uri.parse("package:${context.packageName}")
+                intent.data = "package:${context.packageName}".toUri()
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 context.startActivity(intent)
                 Process.killProcess(Process.myPid())

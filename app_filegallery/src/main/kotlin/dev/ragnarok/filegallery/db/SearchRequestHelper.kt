@@ -24,7 +24,7 @@ class SearchRequestHelper(context: Context) :
                 " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 " [" + SearchRequestColumns.SOURCE_ID + "] INTEGER, " +
                 " [" + SearchRequestColumns.QUERY + "] TEXT, " +
-                " CONSTRAINT [] UNIQUE ([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
+                " CONSTRAINT [] UNIQUE ([" + SearchRequestColumns.SOURCE_ID + "], [" + SearchRequestColumns.QUERY + "]) ON CONFLICT IGNORE);"
         db.execSQL(sql)
     }
 

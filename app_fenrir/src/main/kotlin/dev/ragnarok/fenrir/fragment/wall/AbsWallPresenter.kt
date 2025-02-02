@@ -9,6 +9,7 @@ import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ArrayAdapter
+import androidx.core.net.toUri
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -98,24 +99,30 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     }
 
     private fun firePrepared() {
-        appendJob(uploadManager[accountId, listOf(Method.STORY, Method.PHOTO_TO_PROFILE)]
-            .fromIOToMain { data -> onUploadsDataReceived(data) })
-        appendJob(uploadManager.observeAdding()
-            .sharedFlowToMain { added -> onUploadsAdded(added) })
-        appendJob(uploadManager.observeDeleting(true)
-            .sharedFlowToMain { ids -> onUploadDeleted(ids) })
-        appendJob(uploadManager.observeResults()
-            .filter {
-                listOf(
-                    Method.STORY,
-                    Method.PHOTO_TO_PROFILE
-                ).contains(it.first.destination.method)
-            }
-            .sharedFlowToMain { pair -> onUploadFinished(pair) })
-        appendJob(uploadManager.observeStatus()
-            .sharedFlowToMain { upload -> onUploadStatusUpdate(upload) })
-        appendJob(uploadManager.observeProgress()
-            .sharedFlowToMain { updates -> onProgressUpdates(updates) })
+        appendJob(
+            uploadManager[accountId, listOf(Method.STORY, Method.PHOTO_TO_PROFILE)]
+                .fromIOToMain { data -> onUploadsDataReceived(data) })
+        appendJob(
+            uploadManager.observeAdding()
+                .sharedFlowToMain { added -> onUploadsAdded(added) })
+        appendJob(
+            uploadManager.observeDeleting(true)
+                .sharedFlowToMain { ids -> onUploadDeleted(ids) })
+        appendJob(
+            uploadManager.observeResults()
+                .filter {
+                    listOf(
+                        Method.STORY,
+                        Method.PHOTO_TO_PROFILE
+                    ).contains(it.first.destination.method)
+                }
+                .sharedFlowToMain { pair -> onUploadFinished(pair) })
+        appendJob(
+            uploadManager.observeStatus()
+                .sharedFlowToMain { upload -> onUploadStatusUpdate(upload) })
+        appendJob(
+            uploadManager.observeProgress()
+                .sharedFlowToMain { updates -> onProgressUpdates(updates) })
     }
 
     fun updateToStory(toStory: String?) {
@@ -201,15 +208,17 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     internal abstract fun getOwner(): Owner
 
     fun fireAddToBlacklistClick() {
-        appendJob(InteractorFactory.createAccountInteractor()
-            .banOwners(accountId, listOf(getOwner()))
-            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(
+            InteractorFactory.createAccountInteractor()
+                .banOwners(accountId, listOf(getOwner()))
+                .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     fun fireRemoveBlacklistClick() {
-        appendJob(InteractorFactory.createAccountInteractor()
-            .unbanOwner(accountId, ownerId)
-            .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
+        appendJob(
+            InteractorFactory.createAccountInteractor()
+                .unbanOwner(accountId, ownerId)
+                .fromIOToMain({ onExecuteComplete() }) { t -> onExecuteError(t) })
     }
 
     fun fireRemoveStoryClick(storyOwnerId: Long, id: Int) {
@@ -220,12 +229,13 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     }
 
     private fun loadWallCachedData() {
-        cacheCompositeDisposable.add(walls.getCachedWall(accountId, ownerId, wallFilter)
-            .fromIOToMain({ posts -> onCachedDataReceived(posts) }) { obj ->
-                obj.printStackTrace()
-                actualDataReady = false
-                requestWall(0)
-            })
+        cacheCompositeDisposable.add(
+            walls.getCachedWall(accountId, ownerId, wallFilter)
+                .fromIOToMain({ posts -> onCachedDataReceived(posts) }) { obj ->
+                    obj.printStackTrace()
+                    actualDataReady = false
+                    requestWall(0)
+                })
     }
 
     private fun onCachedDataReceived(posts: List<Post>) {
@@ -269,21 +279,22 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         setRequestNow(true)
         val nextOffset = offset + COUNT
         val append = offset > 0
-        netCompositeDisposable.add(walls.getWall(
-            accountId,
-            ownerId,
-            offset + skipWallOffset,
-            COUNT,
-            wallFilter,
-            skipWallOffset <= 0
-        )
-            .fromIOToMain({
-                onActualDataReceived(
-                    nextOffset,
-                    it,
-                    append
-                )
-            }) { throwable -> onActualDataGetError(throwable) })
+        netCompositeDisposable.add(
+            walls.getWall(
+                accountId,
+                ownerId,
+                offset + skipWallOffset,
+                COUNT,
+                wallFilter,
+                skipWallOffset <= 0
+            )
+                .fromIOToMain({
+                    onActualDataReceived(
+                        nextOffset,
+                        it,
+                        append
+                    )
+                }) { throwable -> onActualDataGetError(throwable) })
     }
 
     private fun onActualDataGetError(throwable: Throwable) {
@@ -406,54 +417,56 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
             .setCancelable(true)
             .setView(root)
             .setPositiveButton(R.string.button_ok) { _, _ ->
-                appendJob(InteractorFactory.createAccountInteractor().saveProfileInfo(
-                    accountId,
-                    checkEditInfo(
-                        root.findViewById<TextInputEditText>(R.id.edit_first_name).editableText.toString()
-                            .trim(), p.first_name
-                    ),
-                    checkEditInfo(
-                        root.findViewById<TextInputEditText>(R.id.edit_last_name).editableText.toString()
-                            .trim(), p.last_name
-                    ),
-                    checkEditInfo(
-                        root.findViewById<TextInputEditText>(R.id.edit_maiden_name).editableText.toString()
-                            .trim(), p.maiden_name
-                    ),
-                    checkEditInfo(
-                        root.findViewById<TextInputEditText>(R.id.edit_screen_name).editableText.toString()
-                            .trim(), p.screen_name
-                    ),
-                    checkEditInfo(
-                        root.findViewById<TextInputEditText>(R.id.edit_bdate).editableText.toString()
-                            .trim(), p.bdate
-                    ),
-                    checkEditInfo(
-                        root.findViewById<TextInputEditText>(R.id.edit_home_town).editableText.toString()
-                            .trim(), p.home_town
-                    ),
-                    checkEditInfo(
-                        selectedItem + 1,
-                        p.sex
+                appendJob(
+                    InteractorFactory.createAccountInteractor().saveProfileInfo(
+                        accountId,
+                        checkEditInfo(
+                            root.findViewById<TextInputEditText>(R.id.edit_first_name).editableText.toString()
+                                .trim(), p.first_name
+                        ),
+                        checkEditInfo(
+                            root.findViewById<TextInputEditText>(R.id.edit_last_name).editableText.toString()
+                                .trim(), p.last_name
+                        ),
+                        checkEditInfo(
+                            root.findViewById<TextInputEditText>(R.id.edit_maiden_name).editableText.toString()
+                                .trim(), p.maiden_name
+                        ),
+                        checkEditInfo(
+                            root.findViewById<TextInputEditText>(R.id.edit_screen_name).editableText.toString()
+                                .trim(), p.screen_name
+                        ),
+                        checkEditInfo(
+                            root.findViewById<TextInputEditText>(R.id.edit_bdate).editableText.toString()
+                                .trim(), p.bdate
+                        ),
+                        checkEditInfo(
+                            root.findViewById<TextInputEditText>(R.id.edit_home_town).editableText.toString()
+                                .trim(), p.home_town
+                        ),
+                        checkEditInfo(
+                            selectedItem + 1,
+                            p.sex
+                        )
                     )
-                )
-                    .fromIOToMain({ t ->
-                        when (t) {
-                            0 -> createCustomToast(context).showToastError(R.string.not_changed)
-                            1 -> createCustomToast(context).showToastSuccessBottom(R.string.success)
-                            2 -> createCustomToast(context).showToastBottom(R.string.later)
-                        }
-                    }) { t ->
-                        showError(t)
-                    })
+                        .fromIOToMain({ t ->
+                            when (t) {
+                                0 -> createCustomToast(context).showToastError(R.string.not_changed)
+                                1 -> createCustomToast(context).showToastSuccessBottom(R.string.success)
+                                2 -> createCustomToast(context).showToastBottom(R.string.later)
+                            }
+                        }) { t ->
+                            showError(t)
+                        })
             }
             .setNegativeButton(R.string.button_cancel, null)
             .show()
     }
 
     fun fireEdit(context: Context) {
-        appendJob(InteractorFactory.createAccountInteractor().getProfileInfo(accountId)
-            .fromIOToMain { t -> fireEdit(context, t) })
+        appendJob(
+            InteractorFactory.createAccountInteractor().getProfileInfo(accountId)
+                .fromIOToMain { t -> fireEdit(context, t) })
     }
 
     fun fireToggleMonitor() {
@@ -482,17 +495,18 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         cacheCompositeDisposable.clear()
         requestWall(0)
         if (!Settings.get().main().isDisable_history) {
-            appendJob(storiesInteractor.getStories(
-                accountId,
-                if (accountId == ownerId) null else ownerId
-            )
-                .fromIOToMain {
-                    if (it.nonNullNoEmpty()) {
-                        stories.clear()
-                        stories.addAll(it)
-                        view?.updateStory(stories)
-                    }
-                })
+            appendJob(
+                storiesInteractor.getStories(
+                    accountId,
+                    if (accountId == ownerId) null else ownerId
+                )
+                    .fromIOToMain {
+                        if (it.nonNullNoEmpty()) {
+                            stories.clear()
+                            stories.addAll(it)
+                            view?.updateStory(stories)
+                        }
+                    })
         }
         onRefresh()
     }
@@ -551,10 +565,11 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     }
 
     fun firePostRestoreClick(post: Post) {
-        appendJob(walls.restore(accountId, post.ownerId, post.vkid)
-            .fromIOToMain(dummy()) { t ->
-                showError(t)
-            })
+        appendJob(
+            walls.restore(accountId, post.ownerId, post.vkid)
+                .fromIOToMain(dummy()) { t ->
+                    showError(t)
+                })
     }
 
     fun fireLikeLongClick(post: Post) {
@@ -579,10 +594,11 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         if (Settings.get().main().isDisable_likes || isHiddenAccount(accountId)) {
             return
         }
-        appendJob(walls.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
-            .fromIOToMain(dummy()) { t ->
-                showError(t)
-            })
+        appendJob(
+            walls.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
+                .fromIOToMain(dummy()) { t ->
+                    showError(t)
+                })
     }
 
     fun changeWallFilter(mode: Int): Boolean {
@@ -664,10 +680,11 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     }
 
     fun fireButtonRemoveClick(post: Post) {
-        appendJob(walls.delete(accountId, ownerId, post.vkid)
-            .fromIOToMain(dummy()) { t ->
-                showError(t)
-            })
+        appendJob(
+            walls.delete(accountId, ownerId, post.vkid)
+                .fromIOToMain(dummy()) { t ->
+                    showError(t)
+                })
     }
 
     companion object {
@@ -821,7 +838,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
     fun fireNewAvatarPhotoSelected(file: String?) {
         val intent = UploadIntent(accountId, UploadDestination.forProfilePhoto(ownerId))
             .setAutoCommit(true)
-            .setFileUri(Uri.parse(file))
+            .setFileUri(file?.toUri())
             .setSize(Upload.IMAGE_SIZE_FULL)
         uploadManager.enqueue(listOf(intent))
     }
@@ -954,30 +971,34 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         storiesInteractor = InteractorFactory.createStoriesInteractor()
         loadWallCachedData()
         if (!Settings.get().main().isDisable_history) {
-            appendJob(storiesInteractor.getStories(
-                accountId,
-                if (accountId == ownerId) null else ownerId
-            )
-                .fromIOToMain {
-                    if (it.nonNullNoEmpty()) {
-                        stories.clear()
-                        stories.addAll(it)
-                        view?.updateStory(stories)
-                    }
-                })
+            appendJob(
+                storiesInteractor.getStories(
+                    accountId,
+                    if (accountId == ownerId) null else ownerId
+                )
+                    .fromIOToMain {
+                        if (it.nonNullNoEmpty()) {
+                            stories.clear()
+                            stories.addAll(it)
+                            view?.updateStory(stories)
+                        }
+                    })
         }
-        appendJob(walls
-            .observeMinorChanges()
-            .filter { it.accountId == accountId && it.ownerId == ownerId }
-            .sharedFlowToMain { onPostChange(it) })
-        appendJob(walls
-            .observeChanges()
-            .filter { it.ownerId == ownerId }
-            .sharedFlowToMain { onPostChange(it) })
-        appendJob(walls
-            .observePostInvalidation()
-            .filter { it.ownerId == ownerId }
-            .sharedFlowToMain { onPostInvalid(it.id) })
+        appendJob(
+            walls
+                .observeMinorChanges()
+                .filter { it.accountId == accountId && it.ownerId == ownerId }
+                .sharedFlowToMain { onPostChange(it) })
+        appendJob(
+            walls
+                .observeChanges()
+                .filter { it.ownerId == ownerId }
+                .sharedFlowToMain { onPostChange(it) })
+        appendJob(
+            walls
+                .observePostInvalidation()
+                .filter { it.ownerId == ownerId }
+                .sharedFlowToMain { onPostInvalid(it.id) })
         firePrepared()
     }
 }

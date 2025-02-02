@@ -11,6 +11,8 @@ import android.provider.BaseColumns
 import android.provider.MediaStore
 import android.util.Size
 import androidx.annotation.RequiresApi
+import androidx.core.graphics.scale
+import androidx.core.net.toUri
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.db.interfaces.ILocalMediaStorage
 import dev.ragnarok.fenrir.getInt
@@ -104,7 +106,7 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
                     result.add(
                         LocalPhoto()
                             .setImageId(imageId)
-                            .setFullImageUri(Uri.parse(data))
+                            .setFullImageUri(data?.toUri())
                     )
                 }
                 cursor.close()
@@ -130,7 +132,7 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
                     result.add(
                         LocalPhoto()
                             .setImageId(imageId)
-                            .setFullImageUri(Uri.parse(data))
+                            .setFullImageUri(data?.toUri())
                     )
                 }
                 cursor.close()
@@ -222,7 +224,7 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
                 val inputStream: InputStream = ByteArrayInputStream(cover)
                 var bitmap = BitmapFactory.decodeStream(inputStream)
                 if (bitmap != null) {
-                    bitmap = Bitmap.createScaledBitmap(bitmap, 256, 256, false)
+                    bitmap = bitmap.scale(256, 256, false)
                 }
                 bitmap
             } catch (e: Exception) {

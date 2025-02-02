@@ -79,12 +79,13 @@ class ChatUsersDomainPresenter(
 
     private fun requestData() {
         setRefreshing(true)
-        appendJob(messagesInteractor.getChatUsers(accountId, chatId)
-            .fromIOToMain({ onDataReceived(it) }) { t ->
-                onDataGetError(
-                    t
-                )
-            })
+        appendJob(
+            messagesInteractor.getChatUsers(accountId, chatId)
+                .fromIOToMain({ onDataReceived(it) }) { t ->
+                    onDataGetError(
+                        t
+                    )
+                })
     }
 
     private fun onDataGetError(t: Throwable) {

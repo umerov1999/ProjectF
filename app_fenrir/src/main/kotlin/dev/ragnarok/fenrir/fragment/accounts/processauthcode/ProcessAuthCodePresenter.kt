@@ -28,12 +28,13 @@ class ProcessAuthCodePresenter(
     }
 
     private fun requestData(action: Int) {
-        appendJob(pInteractor.processAuthCode(accountId, authCode, action)
-            .fromIOToMain({ onDataReceived(it) }) { t ->
-                onDataGetError(
-                    t
-                )
-            })
+        appendJob(
+            pInteractor.processAuthCode(accountId, authCode, action)
+                .fromIOToMain({ onDataReceived(it) }) { t ->
+                    onDataGetError(
+                        t
+                    )
+                })
     }
 
     fun permit() {

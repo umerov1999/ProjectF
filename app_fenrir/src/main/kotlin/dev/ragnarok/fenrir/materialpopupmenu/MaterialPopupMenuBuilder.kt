@@ -147,7 +147,8 @@ class MaterialPopupMenuBuilder internal constructor(
      */
     fun build(): MaterialPopupMenu {
         require(sectionList.isNotEmpty()) { "Popup menu sections cannot be empty!" }
-        return MaterialPopupMenu(view = view,
+        return MaterialPopupMenu(
+            view = view,
             context = context,
             data = data,
             dismissListener = onDismissListener,
@@ -257,7 +258,8 @@ class MaterialPopupMenuBuilder internal constructor(
 
         internal fun toPopupMenuSection(): MaterialPopupMenu.PopupMenuSection {
             require(itemsHolderList.isNotEmpty()) { "Section '$title' has no items!" }
-            return MaterialPopupMenu.PopupMenuSection(data,
+            return MaterialPopupMenu.PopupMenuSection(
+                data,
                 itemsHolderList.filter { !it.data.shouldBeHidden }
                     .map(AbstractItem::convertToPopupMenuItem))
         }

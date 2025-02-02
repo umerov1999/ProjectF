@@ -33,18 +33,19 @@ class OwnerArticlesPresenter(
     private fun request(offset: Int) {
         netLoadingNow = true
         resolveRefreshingView()
-        netDisposable.add(faveInteractor.getOwnerPublishedArticles(
-            accountId,
-            ownerId,
-            COUNT_PER_REQUEST,
-            offset
-        )
-            .fromIOToMain({ articles ->
-                onNetDataReceived(
-                    offset,
-                    articles
-                )
-            }) { t -> onNetDataGetError(t) })
+        netDisposable.add(
+            faveInteractor.getOwnerPublishedArticles(
+                accountId,
+                ownerId,
+                COUNT_PER_REQUEST,
+                offset
+            )
+                .fromIOToMain({ articles ->
+                    onNetDataReceived(
+                        offset,
+                        articles
+                    )
+                }) { t -> onNetDataGetError(t) })
     }
 
     private fun onNetDataGetError(t: Throwable) {
@@ -96,19 +97,21 @@ class OwnerArticlesPresenter(
     }
 
     fun fireArticleDelete(index: Int, article: Article) {
-        appendJob(faveInteractor.removeArticle(accountId, article.ownerId, article.id)
-            .fromIOToMain({
-                mArticles[index].setIsFavorite(false)
-                view?.notifyDataSetChanged()
-            }) { t -> onNetDataGetError(t) })
+        appendJob(
+            faveInteractor.removeArticle(accountId, article.ownerId, article.id)
+                .fromIOToMain({
+                    mArticles[index].setIsFavorite(false)
+                    view?.notifyDataSetChanged()
+                }) { t -> onNetDataGetError(t) })
     }
 
     fun fireArticleAdd(index: Int, article: Article) {
-        appendJob(faveInteractor.addArticle(accountId, article.uRL)
-            .fromIOToMain({
-                mArticles[index].setIsFavorite(true)
-                view?.notifyDataSetChanged()
-            }) { t -> onNetDataGetError(t) })
+        appendJob(
+            faveInteractor.addArticle(accountId, article.uRL)
+                .fromIOToMain({
+                    mArticles[index].setIsFavorite(true)
+                    view?.notifyDataSetChanged()
+                }) { t -> onNetDataGetError(t) })
     }
 
     fun fireArticleClick(article: Article) {

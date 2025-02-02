@@ -151,21 +151,22 @@ class CommunityManagerEditPresenter : AccountDependencyPresenter<ICommunityManag
         val role = selectedRole
         val user = currentUser
         setSavingNow(true)
-        appendJob(interactor.editManager(
-            accountId,
-            groupId,
-            user,
-            role,
-            showAsContact,
-            position,
-            email,
-            phone
-        )
-            .fromIOToMain({ onSavingComplete() }) { throwable ->
-                onSavingError(
-                    getCauseIfRuntime(throwable)
-                )
-            })
+        appendJob(
+            interactor.editManager(
+                accountId,
+                groupId,
+                user,
+                role,
+                showAsContact,
+                position,
+                email,
+                phone
+            )
+                .fromIOToMain({ onSavingComplete() }) { throwable ->
+                    onSavingError(
+                        getCauseIfRuntime(throwable)
+                    )
+                })
     }
 
     fun fireDeleteClick() {
@@ -174,21 +175,22 @@ class CommunityManagerEditPresenter : AccountDependencyPresenter<ICommunityManag
         }
         val user = currentUser
         setSavingNow(true)
-        appendJob(interactor.editManager(
-            accountId,
-            groupId,
-            user,
-            null,
-            false,
-            null,
-            null,
-            null
-        )
-            .fromIOToMain({ onSavingComplete() }) { throwable ->
-                onSavingError(
-                    getCauseIfRuntime(throwable)
-                )
-            })
+        appendJob(
+            interactor.editManager(
+                accountId,
+                groupId,
+                user,
+                null,
+                false,
+                null,
+                null,
+                null
+            )
+                .fromIOToMain({ onSavingComplete() }) { throwable ->
+                    onSavingError(
+                        getCauseIfRuntime(throwable)
+                    )
+                })
     }
 
     private fun onSavingComplete() {

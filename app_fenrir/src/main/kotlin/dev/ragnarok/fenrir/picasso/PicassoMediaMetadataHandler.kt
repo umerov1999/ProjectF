@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import androidx.core.net.toUri
 import com.squareup.picasso3.Picasso
 import com.squareup.picasso3.Request
 import com.squareup.picasso3.RequestHandler
@@ -30,7 +31,7 @@ class PicassoMediaMetadataHandler : RequestHandler() {
 
     override fun load(picasso: Picasso, request: Request, callback: Callback) {
         val target =
-            getMetadataAudioThumbnail(Uri.parse(request.uri.toString().replace("share_", "")))
+            getMetadataAudioThumbnail(request.uri.toString().replace("share_", "").toUri())
         if (target == null) {
             callback.onError(Throwable("Picasso Thumb Not Support"))
             return

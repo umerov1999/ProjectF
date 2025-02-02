@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
 import android.view.ViewOutlineProvider
 import android.widget.FrameLayout
+import androidx.core.content.withStyledAttributes
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.MaterialShapeUtils
 import dev.ragnarok.fenrir.R
@@ -29,17 +30,17 @@ class BottomShadowView : FrameLayout {
 
     private fun init(context: Context, attrs: AttributeSet?) {
         outlineProvider = ViewOutlineProvider.BOUNDS
-        val a = getContext().obtainStyledAttributes(attrs, R.styleable.BottomShadowView)
-        background = a.getDrawable(R.styleable.BottomShadowView_android_background)
-        if (background is ColorDrawable) {
-            val background = background as ColorDrawable
-            val materialShapeDrawable = MaterialShapeDrawable()
-            materialShapeDrawable.fillColor = ColorStateList.valueOf(background.color)
-            materialShapeDrawable.initializeElevationOverlay(context)
-            setBackground(materialShapeDrawable)
+        getContext().withStyledAttributes(attrs, R.styleable.BottomShadowView) {
+            background = getDrawable(R.styleable.BottomShadowView_android_background)
+            if (background is ColorDrawable) {
+                val background = background as ColorDrawable
+                val materialShapeDrawable = MaterialShapeDrawable()
+                materialShapeDrawable.fillColor = ColorStateList.valueOf(background.color)
+                materialShapeDrawable.initializeElevationOverlay(context)
+                setBackground(materialShapeDrawable)
+            }
+            elevation = getDimension(R.styleable.BottomShadowView_elevation, 0f)
         }
-        elevation = a.getDimension(R.styleable.BottomShadowView_elevation, 0f)
-        a.recycle()
     }
 
     override fun setElevation(elevation: Float) {

@@ -43,17 +43,18 @@ class MutualFriendsPresenter(
     private fun requestActualData() {
         actualDataLoading = true
         resolveRefreshingView()
-        actualDataDisposable.add(relationshipInteractor.getMutualFriends(
-            accountId,
-            userId,
-            200,
-            offset
-        )
-            .fromIOToMain({ users -> onDataReceived(users) }) { t ->
-                onDataGetError(
-                    t
-                )
-            })
+        actualDataDisposable.add(
+            relationshipInteractor.getMutualFriends(
+                accountId,
+                userId,
+                200,
+                offset
+            )
+                .fromIOToMain({ users -> onDataReceived(users) }) { t ->
+                    onDataGetError(
+                        t
+                    )
+                })
     }
 
     private fun onDataGetError(t: Throwable) {

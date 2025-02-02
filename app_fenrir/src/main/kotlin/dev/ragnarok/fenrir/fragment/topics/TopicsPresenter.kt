@@ -39,18 +39,19 @@ class TopicsPresenter(accountId: Long, private val ownerId: Long, savedInstanceS
         netLoadingNowOffset = offset
         resolveRefreshingView()
         resolveLoadMoreFooter()
-        netDisposable.add(boardInteractor.getActualTopics(
-            accountId,
-            ownerId,
-            COUNT_PER_REQUEST,
-            offset
-        )
-            .fromIOToMain({ topics ->
-                onActualDataReceived(
-                    offset,
-                    topics
-                )
-            }) { t -> onActualDataGetError(t) })
+        netDisposable.add(
+            boardInteractor.getActualTopics(
+                accountId,
+                ownerId,
+                COUNT_PER_REQUEST,
+                offset
+            )
+                .fromIOToMain({ topics ->
+                    onActualDataReceived(
+                        offset,
+                        topics
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     private fun onActualDataGetError(t: Throwable) {

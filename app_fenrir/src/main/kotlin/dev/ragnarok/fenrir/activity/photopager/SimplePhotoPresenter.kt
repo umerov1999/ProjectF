@@ -72,15 +72,16 @@ class SimplePhotoPresenter : PhotoPagerPresenter {
         for (photo in mPhotos) {
             ids.add(AccessIdPairModel(photo.getObjectId(), photo.ownerId, photo.accessKey))
         }
-        appendJob(photosInteractor.getPhotosByIds(accountId, ids)
-            .fromIOToMain({ onPhotosReceived(it) }) { t ->
-                view?.let {
-                    showError(
-                        it,
-                        Utils.getCauseIfRuntime(t)
-                    )
-                }
-            })
+        appendJob(
+            photosInteractor.getPhotosByIds(accountId, ids)
+                .fromIOToMain({ onPhotosReceived(it) }) { t ->
+                    view?.let {
+                        showError(
+                            it,
+                            Utils.getCauseIfRuntime(t)
+                        )
+                    }
+                })
     }
 
     private fun onPhotosReceived(photos: List<Photo>) {

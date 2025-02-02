@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.Shader
+import androidx.core.graphics.createBitmap
 import kotlin.math.roundToInt
 
 object PaintBuilder {
@@ -27,7 +28,7 @@ object PaintBuilder {
 
     private fun createAlphaBackgroundPattern(size: Int): Bitmap {
         val alphaPatternPaint = newPaint().build()
-        val bm = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val bm = createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val c = Canvas(bm)
         val s = (size / 2f).roundToInt()
         for (i in 0..1) for (j in 0..1) {

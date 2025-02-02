@@ -8,6 +8,7 @@ import android.graphics.Matrix
 import android.graphics.RectF
 import android.net.Uri
 import android.util.Log
+import androidx.core.graphics.scale
 import androidx.exifinterface.media.ExifInterface
 import com.yalantis.ucrop.callback.BitmapCropCallback
 import com.yalantis.ucrop.model.CropParameters
@@ -125,10 +126,10 @@ class BitmapCropTask(
                 val resizeScale = min(scaleX, scaleY)
 
                 val mViewBitmapS = mViewBitmap ?: return false
-                val resizedBitmap = Bitmap.createScaledBitmap(
-                    mViewBitmapS,
+                val resizedBitmap = mViewBitmapS.scale(
                     (mViewBitmapS.width * resizeScale).roundToInt(),
-                    (mViewBitmapS.height * resizeScale).roundToInt(), false
+                    (mViewBitmapS.height * resizeScale).roundToInt(),
+                    false
                 )
                 if (mViewBitmap != resizedBitmap) {
                     mViewBitmap?.recycle()

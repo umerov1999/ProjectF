@@ -18,7 +18,13 @@ import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder.OnAttachmentsActi
 import dev.ragnarok.fenrir.fragment.feedback.FeedbackAdapter.UsersHolder
 import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
-import dev.ragnarok.fenrir.model.*
+import dev.ragnarok.fenrir.model.Comment
+import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.model.PhotoSize
+import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.model.Topic
+import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.model.feedback.CommentFeedback
 import dev.ragnarok.fenrir.model.feedback.CopyFeedback
 import dev.ragnarok.fenrir.model.feedback.LikeCommentFeedback

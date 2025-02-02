@@ -21,6 +21,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Paint.Style
+import androidx.core.graphics.scale
 import java.lang.Math.toRadians
 import kotlin.math.cos
 import kotlin.math.sin
@@ -53,7 +54,7 @@ internal class Snowflake(val params: Params) {
         shouldRecycleFalling = true
         size = randomizer.randomInt(params.sizeMinInPx, params.sizeMaxInPx, gaussian = true)
         if (params.image != null) {
-            bitmap = Bitmap.createScaledBitmap(params.image, size, size, false)
+            bitmap = params.image.scale(size, size, false)
         }
 
         val speed =

@@ -131,12 +131,13 @@ class DialogsPresenter(
             return
         }
         setNetLoadingNow(true)
-        netDisposable.add(messagesInteractor.getDialogs(dialogsOwnerId, COUNT, null)
-            .fromIOToMain({ onDialogsFirstResponse(it) }) { t ->
-                onDialogsGetError(
-                    t
-                )
-            })
+        netDisposable.add(
+            messagesInteractor.getDialogs(dialogsOwnerId, COUNT, null)
+                .fromIOToMain({ onDialogsFirstResponse(it) }) { t ->
+                    onDialogsGetError(
+                        t
+                    )
+                })
         resolveRefreshingView()
     }
 
@@ -146,10 +147,11 @@ class DialogsPresenter(
         }
         val lastMid = lastDialogMessageId ?: return
         setNetLoadingNow(true)
-        netDisposable.add(messagesInteractor.getDialogs(dialogsOwnerId, COUNT, lastMid)
-            .fromIOToMain(
-                { onNextDialogsResponse(it) }
-            ) { throwable -> onDialogsGetError(getCauseIfRuntime(throwable)) })
+        netDisposable.add(
+            messagesInteractor.getDialogs(dialogsOwnerId, COUNT, lastMid)
+                .fromIOToMain(
+                    { onNextDialogsResponse(it) }
+                ) { throwable -> onDialogsGetError(getCauseIfRuntime(throwable)) })
     }
 
     private fun onNextDialogsResponse(data: List<Dialog>) {
@@ -183,10 +185,11 @@ class DialogsPresenter(
 
     private fun removeDialog(peeId: Long) {
         val accountId = dialogsOwnerId
-        appendJob(messagesInteractor.deleteDialog(accountId, peeId)
-            .fromIOToMain({ onDialogRemovedSuccessfully(accountId, peeId) }) { t ->
-                showError(t)
-            })
+        appendJob(
+            messagesInteractor.deleteDialog(accountId, peeId)
+                .fromIOToMain({ onDialogRemovedSuccessfully(accountId, peeId) }) { t ->
+                    showError(t)
+                })
     }
 
     private fun resolveRefreshingView() {
@@ -199,11 +202,12 @@ class DialogsPresenter(
     private fun loadCachedThenActualData() {
         cacheNowLoading = true
         resolveRefreshingView()
-        cacheLoadingDisposable.add(messagesInteractor.getCachedDialogs(dialogsOwnerId)
-            .fromIOToMain({ onCachedDataReceived(it) }) { ignored ->
-                ignored.printStackTrace()
-                onCachedDataReceived(emptyList())
-            })
+        cacheLoadingDisposable.add(
+            messagesInteractor.getCachedDialogs(dialogsOwnerId)
+                .fromIOToMain({ onCachedDataReceived(it) }) { ignored ->
+                    ignored.printStackTrace()
+                    onCachedDataReceived(emptyList())
+                })
     }
 
     fun fireRepost(dialog: Dialog) {
@@ -228,15 +232,16 @@ class DialogsPresenter(
                 Settings.get().security().getEncryptionLocationPolicy(accountId, dialog.peerId)
         }
         builder.setRequireEncryption(encryptionEnabled).setKeyLocationPolicy(keyLocationPolicy)
-        appendJob(messagesInteractor.put(builder)
-            .fromIOToMain({
-                messagesInteractor.runSendingQueue()
+        appendJob(
+            messagesInteractor.put(builder)
+                .fromIOToMain({
+                    messagesInteractor.runSendingQueue()
 
-                view?.showSnackbar(
-                    R.string.success,
-                    false
-                )
-            }) { t -> onDialogsGetError(t) })
+                    view?.showSnackbar(
+                        R.string.success,
+                        false
+                    )
+                }) { t -> onDialogsGetError(t) })
     }
 
     @SuppressLint("CheckResult")
@@ -551,19 +556,20 @@ class DialogsPresenter(
     fun fireNewGroupChatTitleEntered(users: List<User>, title: String?) {
         val targetTitle = if (title.isNullOrEmpty()) getTitleIfEmpty(users) else title
         val accountId = accountId
-        appendJob(messagesInteractor.createGroupChat(
-            accountId,
-            idsListOfOwner(users),
-            targetTitle
-        )
-            .fromIOToMain({ chatid ->
-                onGroupChatCreated(
-                    chatid,
-                    targetTitle
-                )
-            }) { t ->
-                showError(getCauseIfRuntime(t))
-            })
+        appendJob(
+            messagesInteractor.createGroupChat(
+                accountId,
+                idsListOfOwner(users),
+                targetTitle
+            )
+                .fromIOToMain({ chatid ->
+                    onGroupChatCreated(
+                        chatid,
+                        targetTitle
+                    )
+                }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
     }
 
     private fun onGroupChatCreated(chatId: Long, title: String?) {
@@ -644,27 +650,29 @@ class DialogsPresenter(
     }
 
     fun fireUnPin(dialog: Dialog) {
-        appendJob(messagesInteractor.pinUnPinConversation(accountId, dialog.peerId, false)
-            .fromIOToMain({
-                view?.customToast?.showToastSuccessBottom(
-                    R.string.success
-                )
-                fireRefresh()
-            }) { throwable ->
-                showError(throwable)
-            })
+        appendJob(
+            messagesInteractor.pinUnPinConversation(accountId, dialog.peerId, false)
+                .fromIOToMain({
+                    view?.customToast?.showToastSuccessBottom(
+                        R.string.success
+                    )
+                    fireRefresh()
+                }) { throwable ->
+                    showError(throwable)
+                })
     }
 
     fun firePin(dialog: Dialog) {
-        appendJob(messagesInteractor.pinUnPinConversation(accountId, dialog.peerId, true)
-            .fromIOToMain({
-                view?.customToast?.showToastSuccessBottom(
-                    R.string.success
-                )
-                fireRefresh()
-            }) { throwable ->
-                showError(throwable)
-            })
+        appendJob(
+            messagesInteractor.pinUnPinConversation(accountId, dialog.peerId, true)
+                .fromIOToMain({
+                    view?.customToast?.showToastSuccessBottom(
+                        R.string.success
+                    )
+                    fireRefresh()
+                }) { throwable ->
+                    showError(throwable)
+                })
     }
 
     fun fireAddToLauncherShortcuts(dialog: Dialog) {
@@ -673,29 +681,31 @@ class DialogsPresenter(
             .setAvaUrl(dialog.imageUrl)
             .setTitle(dialog.getDisplayTitle(applicationContext))
         val completable = addDynamicShortcut(applicationContext, dialogsOwnerId, peer)
-        appendJob(completable
-            .fromIOToMain({
-                view?.customToast?.showToastSuccessBottom(
-                    R.string.success
-                )
-            }) { obj -> obj.printStackTrace() })
+        appendJob(
+            completable
+                .fromIOToMain({
+                    view?.customToast?.showToastSuccessBottom(
+                        R.string.success
+                    )
+                }) { obj -> obj.printStackTrace() })
     }
 
     fun fireRead(dialog: Dialog) {
-        appendJob(messagesInteractor.markAsRead(
-            accountId,
-            dialog.peerId,
-            dialog.lastMessageId
-        )
-            .fromIOToMain({
-                view?.customToast?.showToastSuccessBottom(
-                    R.string.success
-                )
-                dialog.setInRead(dialog.lastMessageId)
-                view?.notifyDataSetChanged()
-            }) { throwable ->
-                showError(throwable)
-            })
+        appendJob(
+            messagesInteractor.markAsRead(
+                accountId,
+                dialog.peerId,
+                dialog.lastMessageId
+            )
+                .fromIOToMain({
+                    view?.customToast?.showToastSuccessBottom(
+                        R.string.success
+                    )
+                    dialog.setInRead(dialog.lastMessageId)
+                    view?.notifyDataSetChanged()
+                }) { throwable ->
+                    showError(throwable)
+                })
     }
 
     fun fireContextViewCreated(contextView: IContextView, dialog: Dialog) {

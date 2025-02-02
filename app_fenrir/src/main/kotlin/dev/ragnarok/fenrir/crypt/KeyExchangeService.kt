@@ -5,13 +5,18 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.os.*
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
+import android.os.PowerManager
 import android.util.Base64
 import android.util.LongSparseArray
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import dev.ragnarok.fenrir.*
+import androidx.core.util.size
+import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.KeyExchangeCommitActivity.Companion.createIntent
 import dev.ragnarok.fenrir.api.Apis.get
 import dev.ragnarok.fenrir.api.model.VKApiMessage
@@ -27,6 +32,8 @@ import dev.ragnarok.fenrir.crypt.ver.Version.ofCurrent
 import dev.ragnarok.fenrir.db.Stores
 import dev.ragnarok.fenrir.domain.IUtilsInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
+import dev.ragnarok.fenrir.getParcelableExtraCompat
+import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.longpoll.AppNotificationChannels
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.push.OwnerInfo
@@ -160,7 +167,7 @@ class KeyExchangeService : Service() {
     }
 
     private fun findSessionFor(accountId: Long, peerId: Long): KeyExchangeSession? {
-        for (i in 0 until mCurrentActiveSessions.size()) {
+        for (i in 0 until mCurrentActiveSessions.size) {
             val key = mCurrentActiveSessions.keyAt(i)
             val session = mCurrentActiveSessions[key]
             if (session.accountId == accountId && session.peerId == peerId) {
@@ -245,16 +252,17 @@ class KeyExchangeService : Service() {
         messageId: Int,
         message: ExchangeMessage
     ) {
-        mCompositeJob.add(OwnerInfo.getRx(this, accountId, Peer.toUserId(peerId))
-            .fromIOToMain { userInfo ->
-                displayUserConfirmNotificationImpl(
-                    accountId,
-                    peerId,
-                    messageId,
-                    message,
-                    userInfo
-                )
-            })
+        mCompositeJob.add(
+            OwnerInfo.getRx(this, accountId, Peer.toUserId(peerId))
+                .fromIOToMain { userInfo ->
+                    displayUserConfirmNotificationImpl(
+                        accountId,
+                        peerId,
+                        messageId,
+                        message,
+                        userInfo
+                    )
+                })
     }
 
     override fun onDestroy() {
@@ -268,13 +276,14 @@ class KeyExchangeService : Service() {
     }
 
     private fun notifyAboutKeyExchangeAsync(accountId: Long, peerId: Long, sessionId: Long) {
-        mCompositeJob.add(OwnerInfo.getRx(this, accountId, Peer.toUserId(peerId))
-            .fromIOToMain { userInfo ->
-                notifyAboutKeyExchange(
-                    sessionId,
-                    userInfo
-                )
-            })
+        mCompositeJob.add(
+            OwnerInfo.getRx(this, accountId, Peer.toUserId(peerId))
+                .fromIOToMain { userInfo ->
+                    notifyAboutKeyExchange(
+                        sessionId,
+                        userInfo
+                    )
+                })
     }
 
     private fun notifyAboutKeyExchange(sessionId: Long, info: OwnerInfo) {
@@ -492,7 +501,7 @@ class KeyExchangeService : Service() {
     }
 
     private fun finishAllByTimeout() {
-        for (i in 0 until mCurrentActiveSessions.size()) {
+        for (i in 0 until mCurrentActiveSessions.size) {
             val id = mCurrentActiveSessions.keyAt(i)
             val session = mCurrentActiveSessions[id]
             if (session != null) {

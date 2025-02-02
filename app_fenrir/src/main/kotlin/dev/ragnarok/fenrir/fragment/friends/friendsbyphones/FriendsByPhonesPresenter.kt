@@ -40,12 +40,13 @@ class FriendsByPhonesPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun requestActualData() {
         netLoadingNow = true
         resolveRefreshingView()
-        appendJob(accountsInteractor.getContactList(accountId, 0, 1000)
-            .fromIOToMain({ owners -> onActualDataReceived(owners) }) { t ->
-                onActualDataGetError(
-                    t
-                )
-            })
+        appendJob(
+            accountsInteractor.getContactList(accountId, 0, 1000)
+                .fromIOToMain({ owners -> onActualDataReceived(owners) }) { t ->
+                    onActualDataGetError(
+                        t
+                    )
+                })
     }
 
     fun fireImportContacts(path: String) {
@@ -129,12 +130,13 @@ class FriendsByPhonesPresenter(accountId: Long, savedInstanceState: Bundle?) :
         }
         netLoadingNow = true
         resolveRefreshingView()
-        appendJob(accountsInteractor.importMessagesContacts(accountId, context, 0, 1000)
-            .fromIOToMain({ owners -> onActualDataReceived(owners) }) { t ->
-                onActualDataGetError(
-                    t
-                )
-            })
+        appendJob(
+            accountsInteractor.importMessagesContacts(accountId, context, 0, 1000)
+                .fromIOToMain({ owners -> onActualDataReceived(owners) }) { t ->
+                    onActualDataGetError(
+                        t
+                    )
+                })
     }
 
     fun fireReset() {
@@ -143,12 +145,13 @@ class FriendsByPhonesPresenter(accountId: Long, savedInstanceState: Bundle?) :
         }
         netLoadingNow = true
         resolveRefreshingView()
-        appendJob(accountsInteractor.resetMessagesContacts(accountId, 0, 1000)
-            .fromIOToMain({ owners -> onActualDataReceived(owners) }) { t ->
-                onActualDataGetError(
-                    t
-                )
-            })
+        appendJob(
+            accountsInteractor.resetMessagesContacts(accountId, 0, 1000)
+                .fromIOToMain({ owners -> onActualDataReceived(owners) }) { t ->
+                    onActualDataGetError(
+                        t
+                    )
+                })
     }
 
     private fun onActualDataGetError(t: Throwable) {

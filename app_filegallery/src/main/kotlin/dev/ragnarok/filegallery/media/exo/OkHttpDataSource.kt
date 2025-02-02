@@ -1,6 +1,7 @@
 package dev.ragnarok.filegallery.media.exo
 
 import android.net.Uri
+import androidx.core.net.toUri
 import androidx.media3.common.C
 import androidx.media3.common.MediaLibraryInfo
 import androidx.media3.common.PlaybackException
@@ -16,9 +17,16 @@ import com.google.common.base.Predicate
 import com.google.common.net.HttpHeaders
 import com.google.common.util.concurrent.SettableFuture
 import com.google.errorprone.annotations.CanIgnoreReturnValue
-import okhttp3.*
+import okhttp3.CacheControl
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import okhttp3.ResponseBody
 import okio.Buffer
 import okio.BufferedSource
 import java.io.IOException
@@ -59,7 +67,7 @@ class OkHttpDataSource internal constructor(
     private var bytesToRead: Long = 0
     private var bytesRead: Long = 0
     override fun getUri(): Uri {
-        return Uri.parse(response?.request?.url.toString())
+        return response?.request?.url.toString().toUri()
     }
 
     override fun getResponseCode(): Int {

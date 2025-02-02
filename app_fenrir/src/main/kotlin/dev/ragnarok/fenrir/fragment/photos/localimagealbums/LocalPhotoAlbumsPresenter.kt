@@ -87,14 +87,15 @@ class LocalPhotoAlbumsPresenter(savedInstanceState: Bundle?) :
     private fun loadData() {
         if (mLoadingNow) return
         changeLoadingNowState(true)
-        appendJob(Stores.instance
-            .localMedia()
-            .imageAlbums
-            .fromIOToMain({ onDataLoaded(it) }) { throwable ->
-                onLoadError(
-                    throwable
-                )
-            })
+        appendJob(
+            Stores.instance
+                .localMedia()
+                .imageAlbums
+                .fromIOToMain({ onDataLoaded(it) }) { throwable ->
+                    onLoadError(
+                        throwable
+                    )
+                })
     }
 
     private fun onLoadError(throwable: Throwable) {

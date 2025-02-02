@@ -18,7 +18,6 @@ import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.view.VideoServiceIcons.getIconByType
-import kotlin.String
 
 class FaveVideosAdapter(private val context: Context, private var data: List<Video>) :
     RecyclerView.Adapter<FaveVideosAdapter.Holder>() {

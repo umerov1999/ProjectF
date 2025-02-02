@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.edit
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -94,10 +95,12 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             PreferenceScreen.getPreferences(requireActivity())
-                .edit().putString(
-                    "music_dir",
-                    result.data?.getStringExtra(Extra.PATH)
-                ).apply()
+                .edit {
+                    putString(
+                        "music_dir",
+                        result.data?.getStringExtra(Extra.PATH)
+                    )
+                }
             preferencesAdapter?.applyToPreference("music_dir") { ss -> (ss as CustomTextPreference).reload() }
         }
     }
@@ -106,10 +109,12 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             PreferenceScreen.getPreferences(requireActivity())
-                .edit().putString(
-                    "photo_dir",
-                    result.data?.getStringExtra(Extra.PATH)
-                ).apply()
+                .edit {
+                    putString(
+                        "photo_dir",
+                        result.data?.getStringExtra(Extra.PATH)
+                    )
+                }
             preferencesAdapter?.applyToPreference("photo_dir") { ss -> (ss as CustomTextPreference).reload() }
         }
     }
@@ -119,10 +124,12 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             PreferenceScreen.getPreferences(requireActivity())
-                .edit().putString(
-                    "video_dir",
-                    result.data?.getStringExtra(Extra.PATH)
-                ).apply()
+                .edit {
+                    putString(
+                        "video_dir",
+                        result.data?.getStringExtra(Extra.PATH)
+                    )
+                }
             preferencesAdapter?.applyToPreference("video_dir") { ss -> (ss as CustomTextPreference).reload() }
         }
     }
@@ -250,16 +257,17 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
 
                 override fun onQueryTextChange(newText: String?): Boolean {
                     sleepDataDisposable.cancel()
-                    sleepDataDisposable.set(delayTaskFlow(SEARCH_DELAY.toLong())
-                        .toMain {
-                            if (newText.nonNullNoEmpty() && newText.trimmedNonNullNoEmpty()) {
-                                preferencesAdapter?.findPreferences(
-                                    requireActivity(),
-                                    newText,
-                                    root
-                                )
-                            }
-                        })
+                    sleepDataDisposable.set(
+                        delayTaskFlow(SEARCH_DELAY.toLong())
+                            .toMain {
+                                if (newText.nonNullNoEmpty() && newText.trimmedNonNullNoEmpty()) {
+                                    preferencesAdapter?.findPreferences(
+                                        requireActivity(),
+                                        newText,
+                                        root
+                                    )
+                                }
+                            })
                     return false
                 }
             })
@@ -373,10 +381,11 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 titleRes = R.string.font_size
                 onSeek {
                     sleepDataDisposable.cancel()
-                    sleepDataDisposable.set(delayTaskFlow(1000)
-                        .toMain {
-                            requireActivity().recreate()
-                        })
+                    sleepDataDisposable.set(
+                        delayTaskFlow(1000)
+                            .toMain {
+                                requireActivity().recreate()
+                            })
                 }
             }
 

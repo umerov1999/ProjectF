@@ -47,11 +47,12 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private var mTmpFeedScrollOnGuiReady: String? = null
     private var needAskWhenGuiReady = false
     private fun refreshFeedSources() {
-        appendJob(feedInteractor.getCachedFeedLists(accountId)
-            .fromIOToMain({ lists ->
-                onFeedListsUpdated(lists)
-                requestActualFeedLists()
-            }) { requestActualFeedLists() })
+        appendJob(
+            feedInteractor.getCachedFeedLists(accountId)
+                .fromIOToMain({ lists ->
+                    onFeedListsUpdated(lists)
+                    requestActualFeedLists()
+                }) { requestActualFeedLists() })
     }
 
     internal fun requestActualFeedLists() {
@@ -92,37 +93,39 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
                     throw UnsupportedOperationException()
                 }
             }
-            loadingHolder.add(feedInteractor.getActualFeed(
-                accountId,
-                25,
-                startFrom,
-                fil,
-                9,
-                sourcesIds
-            )
-                .fromIOToMain({
-                    onActualFeedReceived(
-                        startFrom,
-                        it.first,
-                        it.second
-                    )
-                }) { t -> onActualFeedGetError(t) })
+            loadingHolder.add(
+                feedInteractor.getActualFeed(
+                    accountId,
+                    25,
+                    startFrom,
+                    fil,
+                    9,
+                    sourcesIds
+                )
+                    .fromIOToMain({
+                        onActualFeedReceived(
+                            startFrom,
+                            it.first,
+                            it.second
+                        )
+                    }) { t -> onActualFeedGetError(t) })
         } else {
-            loadingHolder.add(feedInteractor.getActualFeed(
-                accountId,
-                25,
-                startFrom,
-                if (sourcesIds.isNullOrEmpty()) "post" else null,
-                9,
-                sourcesIds
-            )
-                .fromIOToMain({
-                    onActualFeedReceived(
-                        startFrom,
-                        it.first,
-                        it.second
-                    )
-                }) { t -> onActualFeedGetError(t) })
+            loadingHolder.add(
+                feedInteractor.getActualFeed(
+                    accountId,
+                    25,
+                    startFrom,
+                    if (sourcesIds.isNullOrEmpty()) "post" else null,
+                    9,
+                    sourcesIds
+                )
+                    .fromIOToMain({
+                        onActualFeedReceived(
+                            startFrom,
+                            it.first,
+                            it.second
+                        )
+                    }) { t -> onActualFeedGetError(t) })
         }
     }
 
@@ -358,17 +361,18 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
             .setInputType(InputType.TYPE_CLASS_TEXT)
             .setCallback(object : InputTextDialog.Callback {
                 override fun onChanged(newValue: String?) {
-                    appendJob(feedInteractor.saveList(
-                        accountId,
-                        newValue?.trim(),
-                        iIds
-                    )
-                        .fromIOToMain({
-                            createCustomToast(context).showToastSuccessBottom(R.string.success)
-                            requestActualFeedLists()
-                        }) { i ->
-                            showError(i)
-                        })
+                    appendJob(
+                        feedInteractor.saveList(
+                            accountId,
+                            newValue?.trim(),
+                            iIds
+                        )
+                            .fromIOToMain({
+                                createCustomToast(context).showToastSuccessBottom(R.string.success)
+                                requestActualFeedLists()
+                            }) { i ->
+                                showError(i)
+                            })
                 }
 
                 override fun onCanceled() {
@@ -391,10 +395,11 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun fireFeedSourceDelete(id: Int?) {
-        appendJob(feedInteractor.deleteList(accountId, id)
-            .fromIOToMain(dummy()) { t ->
-                showError(t)
-            })
+        appendJob(
+            feedInteractor.deleteList(accountId, id)
+                .fromIOToMain(dummy()) { t ->
+                    showError(t)
+                })
     }
 
     fun fireNewsShareLongClick(news: News) {
@@ -416,10 +421,11 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun fireAddBookmark(ownerId: Long, postId: Int) {
-        appendJob(faveInteractor.addPost(accountId, ownerId, postId, null)
-            .fromIOToMain({ onPostAddedToBookmarks() }) { t ->
-                showError(getCauseIfRuntime(t))
-            })
+        appendJob(
+            faveInteractor.addPost(accountId, ownerId, postId, null)
+                .fromIOToMain({ onPostAddedToBookmarks() }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
     }
 
     private fun onPostAddedToBookmarks() {
@@ -437,20 +443,22 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun fireBanClick(news: News) {
-        appendJob(feedInteractor.addBan(accountId, setOf(news.sourceId))
-            .fromIOToMain({ fireRefresh() }) { t -> onActualFeedGetError(t) })
+        appendJob(
+            feedInteractor.addBan(accountId, setOf(news.sourceId))
+                .fromIOToMain({ fireRefresh() }) { t -> onActualFeedGetError(t) })
     }
 
     fun fireIgnoreClick(news: News) {
         val type = if ("post" == news.type) "wall" else news.type
-        appendJob(feedInteractor.ignoreItem(accountId, type, news.sourceId, news.postId)
-            .fromIOToMain({
-                if (it.status) {
-                    fireRefresh()
-                } else {
-                    view?.showError(it.message)
-                }
-            }) { t -> onActualFeedGetError(t) })
+        appendJob(
+            feedInteractor.ignoreItem(accountId, type, news.sourceId, news.postId)
+                .fromIOToMain({
+                    if (it.status) {
+                        fireRefresh()
+                    } else {
+                        view?.showError(it.message)
+                    }
+                }) { t -> onActualFeedGetError(t) })
     }
 
     fun fireNewsBodyClick(news: News) {
@@ -520,8 +528,9 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     init {
-        appendJob(walls.observeMinorChanges()
-            .sharedFlowToMain { onPostUpdateEvent(it) })
+        appendJob(
+            walls.observeMinorChanges()
+                .sharedFlowToMain { onPostUpdateEvent(it) })
         feedInteractor = InteractorFactory.createFeedInteractor()
         mFeed = ArrayList()
         mFeedSources = ArrayList(createDefaultFeedSources())

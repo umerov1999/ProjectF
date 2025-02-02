@@ -21,19 +21,21 @@ class LocalPhotosPresenter(
         if (mLoadingNow) return
         changeLoadingState(true)
         if (mLocalImageAlbum != null) {
-            appendJob(Stores.instance
-                .localMedia()
-                .getPhotos(mLocalImageAlbum.id.toLong())
-                .fromIOToMain({ onDataLoaded(it) }) {
-                    onLoadError()
-                })
+            appendJob(
+                Stores.instance
+                    .localMedia()
+                    .getPhotos(mLocalImageAlbum.id.toLong())
+                    .fromIOToMain({ onDataLoaded(it) }) {
+                        onLoadError()
+                    })
         } else {
-            appendJob(Stores.instance
-                .localMedia()
-                .photos
-                .fromIOToMain({ onDataLoaded(it) }) {
-                    onLoadError()
-                })
+            appendJob(
+                Stores.instance
+                    .localMedia()
+                    .photos
+                    .fromIOToMain({ onDataLoaded(it) }) {
+                        onLoadError()
+                    })
         }
     }
 

@@ -22,6 +22,10 @@
     <item name="android:minWidth">@dimen/m3_comp_toolbar_floating_container_height</item>
     <item name="backgroundTint">@macro/m3_comp_toolbar_floating_standard_container_color</item>
     <item name="shapeAppearance">@style/ShapeAppearance.M3.Comp.Toolbar.Floating.Container.Shape</item>
+    <item name="marginLeftSystemWindowInsets">true</item>
+    <item name="marginTopSystemWindowInsets">true</item>
+    <item name="marginRightSystemWindowInsets">true</item>
+    <item name="marginBottomSystemWindowInsets">true</item>
   </style>
 
   <!-- Style for Floating Toolbar. -->
@@ -34,18 +38,10 @@
 
   <!-- Style for Vibrant color variation of the Floating Toolbar. -->
   <style name="Widget.Material3.FloatingToolbar.Vibrant">
-    <item name="materialThemeOverlay">@style/ThemeOverlay.Material3.FloatingToolbar.Vibrant</item>
     <item name="backgroundTint">@macro/m3_comp_toolbar_floating_vibrant_container_color</item>
   </style>
 
-  <!-- Style for icon buttons within Floating Toolbars. This style is
-       automatically set on all buttons which use ?attr/materialIconButtonStyle
-       for their button style and are children of a Floating Toolbar. -->
-  <style name="Widget.Material3.FloatingToolbar.IconButton" parent="Widget.Material3.Button.IconButton"/>
-
-  <!-- Style for icon buttons within Vibrant Floating Toolbars. This style is
-       automatically set on all buttons which use ?attr/materialIconButtonStyle
-       for their button style and are children of a Vibrant Floating Toolbar. -->
+  <!-- Style for icon buttons within Vibrant Floating Toolbars. -->
   <style name="Widget.Material3.FloatingToolbar.IconButton.Vibrant" parent="Widget.Material3.Button.IconButton.Filled.Tonal">
     <item name="android:textColor">@color/m3_floating_toolbar_vibrant_icon_button_text_color_selector</item>
     <item name="backgroundTint">@color/m3_floating_toolbar_vibrant_icon_button_container_color_selector</item>

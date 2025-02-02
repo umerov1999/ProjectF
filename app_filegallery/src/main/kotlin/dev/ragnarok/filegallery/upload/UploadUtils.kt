@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.MediaStore
+import androidx.core.graphics.scale
+import androidx.core.net.toUri
 import dev.ragnarok.filegallery.getString
 import java.io.File
 import java.io.FileInputStream
@@ -34,7 +36,7 @@ object UploadUtils {
             UploadIntent(destination)
                 .setSize(size)
                 .setAutoCommit(autoCommit)
-                .setFileUri(Uri.parse(file))
+                .setFileUri(file?.toUri())
         )
         return intents
     }
@@ -69,6 +71,6 @@ object UploadUtils {
         val ratio = (maxImageSize / realImage.width).coerceAtMost(maxImageSize / realImage.height)
         val width = (ratio * realImage.width).roundToInt()
         val height = (ratio * realImage.height).roundToInt()
-        return Bitmap.createScaledBitmap(realImage, width, height, filter)
+        return realImage.scale(width, height, filter)
     }
 }

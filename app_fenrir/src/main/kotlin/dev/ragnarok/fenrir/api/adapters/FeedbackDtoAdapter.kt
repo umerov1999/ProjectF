@@ -1,7 +1,22 @@
 package dev.ragnarok.fenrir.api.adapters
 
-import dev.ragnarok.fenrir.api.model.*
-import dev.ragnarok.fenrir.api.model.feedback.*
+import dev.ragnarok.fenrir.api.model.VKApiComment
+import dev.ragnarok.fenrir.api.model.VKApiPhoto
+import dev.ragnarok.fenrir.api.model.VKApiPost
+import dev.ragnarok.fenrir.api.model.VKApiTopic
+import dev.ragnarok.fenrir.api.model.VKApiVideo
+import dev.ragnarok.fenrir.api.model.feedback.Copies
+import dev.ragnarok.fenrir.api.model.feedback.UserArray
+import dev.ragnarok.fenrir.api.model.feedback.VKApiBaseFeedback
+import dev.ragnarok.fenrir.api.model.feedback.VKApiCommentFeedback
+import dev.ragnarok.fenrir.api.model.feedback.VKApiCopyFeedback
+import dev.ragnarok.fenrir.api.model.feedback.VKApiLikeCommentFeedback
+import dev.ragnarok.fenrir.api.model.feedback.VKApiLikeFeedback
+import dev.ragnarok.fenrir.api.model.feedback.VKApiMentionCommentFeedback
+import dev.ragnarok.fenrir.api.model.feedback.VKApiMentionWallFeedback
+import dev.ragnarok.fenrir.api.model.feedback.VKApiReplyCommentFeedback
+import dev.ragnarok.fenrir.api.model.feedback.VKApiUsersFeedback
+import dev.ragnarok.fenrir.api.model.feedback.VKApiWallFeedback
 import dev.ragnarok.fenrir.kJson
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject

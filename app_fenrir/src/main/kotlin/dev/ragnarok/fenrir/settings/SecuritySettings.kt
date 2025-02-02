@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.settings
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import de.maxr1998.modernpreferences.PreferenceScreen.Companion.getPreferences
 import dev.ragnarok.fenrir.crypt.KeyLocationPolicy
 import dev.ragnarok.fenrir.module.StringHash
@@ -39,9 +40,9 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
         set(pinHash) {
             mPinHash = pinHash
             if (pinHash == null) {
-                mPrefs.edit().remove(KEY_PIN_HASH).apply()
+                mPrefs.edit { remove(KEY_PIN_HASH) }
             } else {
-                mPrefs.edit().putString(KEY_PIN_HASH, pinHash).apply()
+                mPrefs.edit { putString(KEY_PIN_HASH, pinHash) }
             }
         }
     override val pinEnterHistory: List<Long>
@@ -52,12 +53,12 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
         for (value in mPinEnterHistory) {
             target.add(value.toString())
         }
-        mPrefs.edit().putStringSet(KEY_PIN_ENTER_HISTORY, target).apply()
+        mPrefs.edit { putStringSet(KEY_PIN_ENTER_HISTORY, target) }
     }
 
     override fun clearPinHistory() {
         mPinEnterHistory.clear()
-        mPrefs.edit().remove(KEY_PIN_ENTER_HISTORY).apply()
+        mPrefs.edit { remove(KEY_PIN_ENTER_HISTORY) }
     }
 
     override fun firePinAttemptNow() {
@@ -74,9 +75,9 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
         peerId: Long,
         @KeyLocationPolicy policy: Int
     ) {
-        mPrefs.edit()
-            .putInt(encryptionKeyFor(accountId, peerId), policy)
-            .apply()
+        mPrefs.edit {
+            putInt(encryptionKeyFor(accountId, peerId), policy)
+        }
     }
 
     override fun isMessageEncryptionEnabled(accountId: Long, peerId: Long): Boolean {
@@ -84,9 +85,9 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
     }
 
     override fun disableMessageEncryption(accountId: Long, peerId: Long) {
-        mPrefs.edit()
-            .remove(encryptionKeyFor(accountId, peerId))
-            .apply()
+        mPrefs.edit {
+            remove(encryptionKeyFor(accountId, peerId))
+        }
     }
 
     @KeyLocationPolicy
@@ -107,20 +108,22 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
     override var isUsePinForSecurity: Boolean
         get() = hasPinHash && getPreferences(mApplication)
             .getBoolean(KEY_USE_PIN_FOR_SECURITY, false)
-        set(value) = getPreferences(mApplication).edit()
-            .putBoolean(KEY_USE_PIN_FOR_SECURITY, value && hasPinHash)
-            .apply()
+        set(value) = getPreferences(mApplication).edit {
+            putBoolean(KEY_USE_PIN_FOR_SECURITY, value && hasPinHash)
+        }
 
     override var isEntranceByFingerprintAllowed: Boolean
         get() = getPreferences(mApplication).getBoolean("allow_fingerprint", false)
-        set(value) = getPreferences(mApplication).edit().putBoolean("allow_fingerprint", value)
-            .apply()
+        set(value) = getPreferences(mApplication).edit {
+            putBoolean("allow_fingerprint", value)
+        }
 
     override var isUsePinForEntrance: Boolean
         get() = hasPinHash && getPreferences(mApplication)
             .getBoolean(KEY_USE_PIN_FOR_ENTRANCE, false)
-        set(value) = getPreferences(mApplication).edit().putBoolean(KEY_USE_PIN_FOR_ENTRANCE, value)
-            .apply()
+        set(value) = getPreferences(mApplication).edit {
+            putBoolean(KEY_USE_PIN_FOR_ENTRANCE, value)
+        }
 
     override var isDelayedAllow: Boolean
         get() {
@@ -134,12 +137,14 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
             val fin = System.currentTimeMillis() - last
             return fin in 1..600000
         }
-        set(value) = getPreferences(mApplication).edit().putBoolean(DELAYED_PIN_FOR_ENTRANCE, value)
-            .apply()
+        set(value) = getPreferences(mApplication).edit {
+            putBoolean(DELAYED_PIN_FOR_ENTRANCE, value)
+        }
 
     override fun updateLastPinTime() {
-        getPreferences(mApplication).edit().putLong(LAST_PIN_ENTERED, System.currentTimeMillis())
-            .apply()
+        getPreferences(mApplication).edit {
+            putLong(LAST_PIN_ENTERED, System.currentTimeMillis())
+        }
     }
 
     override fun setPin(pin: IntArray?) {
@@ -163,23 +168,23 @@ class SecuritySettings internal constructor(context: Context) : ISecuritySetting
         get() = mKeyEncryptionPolicyAccepted
         set(accepted) {
             mKeyEncryptionPolicyAccepted = accepted
-            mPrefs.edit()
-                .putBoolean(KEY_ENCRYPTION_POLICY_ACCEPTED, accepted)
-                .apply()
+            mPrefs.edit {
+                putBoolean(KEY_ENCRYPTION_POLICY_ACCEPTED, accepted)
+            }
         }
 
     override fun addHiddenDialog(peerId: Long) {
         hiddenPeers.add(peerId.toString())
-        getPreferences(mApplication).edit()
-            .putStringSet(KEY_HIDDEN_PEERS, hiddenPeers)
-            .apply()
+        getPreferences(mApplication).edit {
+            putStringSet(KEY_HIDDEN_PEERS, hiddenPeers)
+        }
     }
 
     override fun removeHiddenDialog(peerId: Long) {
         hiddenPeers.remove(peerId.toString())
-        getPreferences(mApplication).edit()
-            .putStringSet(KEY_HIDDEN_PEERS, hiddenPeers)
-            .apply()
+        getPreferences(mApplication).edit {
+            putStringSet(KEY_HIDDEN_PEERS, hiddenPeers)
+        }
     }
 
     override val hasHiddenDialogs: Boolean

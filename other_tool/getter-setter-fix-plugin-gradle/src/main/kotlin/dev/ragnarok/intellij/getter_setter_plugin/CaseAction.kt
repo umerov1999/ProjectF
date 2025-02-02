@@ -13,8 +13,8 @@ open class CaseActionAction : AnAction() {
 
     override fun actionPerformed(event: AnActionEvent) {
         try {
-            val editor = event.getRequiredData(CommonDataKeys.EDITOR)
-            val project = event.getRequiredData(CommonDataKeys.PROJECT)
+            val editor = event.getData(CommonDataKeys.EDITOR) ?: return
+            val project = event.getData(CommonDataKeys.PROJECT) ?: return
             val document = editor.document
 
             // Work off of the primary caret to get the selection info
@@ -61,7 +61,7 @@ open class CaseActionAction : AnAction() {
     }
 
     override fun update(e: AnActionEvent) {
-        val editor = e.getRequiredData(CommonDataKeys.EDITOR)
+        val editor = e.getData(CommonDataKeys.EDITOR) ?: return
         val caretModel = editor.caretModel
         e.presentation.isEnabledAndVisible = caretModel.currentCaret.hasSelection()
     }

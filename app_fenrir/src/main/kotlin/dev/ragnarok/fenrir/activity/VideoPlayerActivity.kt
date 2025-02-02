@@ -127,20 +127,21 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         actionBar?.title = video?.title
         actionBar?.subtitle = video?.description
         if (!isLocal && video != null) {
-            mCompositeJob.add(OwnerInfo.getRx(
-                this,
-                Settings.get().accounts().current,
-                (video ?: return).ownerId
-            )
-                .fromIOToMain({ userInfo ->
-                    val av =
-                        findViewById<ImageView>(R.id.toolbar_avatar)
-                    av.setImageBitmap(userInfo.avatar)
-                    av.setOnClickListener { onOpen() }
-                    if (video?.description.isNullOrEmpty() && actionBar != null) {
-                        actionBar.subtitle = userInfo.owner.fullName
-                    }
-                }) { })
+            mCompositeJob.add(
+                OwnerInfo.getRx(
+                    this,
+                    Settings.get().accounts().current,
+                    (video ?: return).ownerId
+                )
+                    .fromIOToMain({ userInfo ->
+                        val av =
+                            findViewById<ImageView>(R.id.toolbar_avatar)
+                        av.setImageBitmap(userInfo.avatar)
+                        av.setOnClickListener { onOpen() }
+                        if (video?.description.isNullOrEmpty() && actionBar != null) {
+                            actionBar.subtitle = userInfo.owner.fullName
+                        }
+                    }) { })
         } else {
             findViewById<View>(R.id.toolbar_avatar).visibility = View.GONE
         }
@@ -192,20 +193,21 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
             actionBar?.title = video?.title
             actionBar?.subtitle = video?.description
             if (!isLocal && video != null) {
-                mCompositeJob.add(OwnerInfo.getRx(
-                    this,
-                    Settings.get().accounts().current,
-                    (video ?: return).ownerId
-                )
-                    .fromIOToMain({ userInfo ->
-                        val av =
-                            findViewById<ImageView>(R.id.toolbar_avatar)
-                        av.setImageBitmap(userInfo.avatar)
-                        av.setOnClickListener { onOpen() }
-                        if (video?.description.isNullOrEmpty() && actionBar != null) {
-                            actionBar.subtitle = userInfo.owner.fullName
-                        }
-                    }) { })
+                mCompositeJob.add(
+                    OwnerInfo.getRx(
+                        this,
+                        Settings.get().accounts().current,
+                        (video ?: return).ownerId
+                    )
+                        .fromIOToMain({ userInfo ->
+                            val av =
+                                findViewById<ImageView>(R.id.toolbar_avatar)
+                            av.setImageBitmap(userInfo.avatar)
+                            av.setOnClickListener { onOpen() }
+                            if (video?.description.isNullOrEmpty() && actionBar != null) {
+                                actionBar.subtitle = userInfo.owner.fullName
+                            }
+                        }) { })
             } else {
                 findViewById<View>(R.id.toolbar_avatar).visibility = View.GONE
             }

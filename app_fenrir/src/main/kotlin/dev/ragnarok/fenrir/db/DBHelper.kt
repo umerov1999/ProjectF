@@ -4,6 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
+import androidx.core.database.sqlite.transaction
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.db.column.CommentsColumns
 import dev.ragnarok.fenrir.db.column.CountriesColumns
@@ -124,50 +125,48 @@ class DBHelper private constructor(context: Context, aid: Long) :
     }
 
     private fun dropAllTables(db: SQLiteDatabase) {
-        db.beginTransaction()
+        db.transaction {
+            // сначала удаляем триггеры, потому что они зависят от таблиц
+            //db.execSQL("DROP TRIGGER IF EXISTS t_delete_attachments_wall")
+            //db.execSQL("DROP TRIGGER IF EXISTS t_delete_attachments_messages")
+            //db.execSQL("DROP TRIGGER IF EXISTS t_delete_attachments_comments")
+            execSQL("DROP TRIGGER IF EXISTS zero_msg_upd")
+            execSQL("DROP TRIGGER IF EXISTS zero_msg_del")
 
-        // сначала удаляем триггеры, потому что они зависят от таблиц
-        //db.execSQL("DROP TRIGGER IF EXISTS t_delete_attachments_wall")
-        //db.execSQL("DROP TRIGGER IF EXISTS t_delete_attachments_messages")
-        //db.execSQL("DROP TRIGGER IF EXISTS t_delete_attachments_comments")
-        db.execSQL("DROP TRIGGER IF EXISTS zero_msg_upd")
-        db.execSQL("DROP TRIGGER IF EXISTS zero_msg_del")
-
-        db.execSQL("DROP TABLE IF EXISTS " + MessagesAttachmentsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + CommentsAttachmentsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + CommentsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + DialogsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + PeersColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + DocsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + GroupsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + GroupsDetailsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + MessagesColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + NewsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + PhotoAlbumsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + PhotosColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + PhotosExtendedColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + WallsAttachmentsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + PostsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + RelationshipsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + UsersColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + VideoAlbumsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + VideosColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + TopicsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + NotificationsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + UsersDetailsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + FavePhotosColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + FaveArticlesColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + FaveProductsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + FaveVideosColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + FavePagesColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + FavePagesColumns.GROUPSTABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + FaveLinksColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + FavePostsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + CountriesColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + FeedListsColumns.TABLENAME)
-        db.execSQL("DROP TABLE IF EXISTS " + FriendListsColumns.TABLENAME)
-        db.setTransactionSuccessful()
-        db.endTransaction()
+            execSQL("DROP TABLE IF EXISTS " + MessagesAttachmentsColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + CommentsAttachmentsColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + CommentsColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + DialogsColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + PeersColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + DocsColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + GroupsColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + GroupsDetailsColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + MessagesColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + NewsColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + PhotoAlbumsColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + PhotosColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + PhotosExtendedColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + WallsAttachmentsColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + PostsColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + RelationshipsColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + UsersColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + VideoAlbumsColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + VideosColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + TopicsColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + NotificationsColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + UsersDetailsColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + FavePhotosColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + FaveArticlesColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + FaveProductsColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + FaveVideosColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + FavePagesColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + FavePagesColumns.GROUPSTABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + FaveLinksColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + FavePostsColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + CountriesColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + FeedListsColumns.TABLENAME)
+            execSQL("DROP TABLE IF EXISTS " + FriendListsColumns.TABLENAME)
+        }
     }
 
     private fun createKeysTableIfNotExist(db: SQLiteDatabase) {

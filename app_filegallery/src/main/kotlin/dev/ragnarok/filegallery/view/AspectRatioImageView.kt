@@ -2,6 +2,7 @@ package dev.ragnarok.filegallery.view
 
 import android.content.Context
 import android.util.AttributeSet
+import androidx.core.content.withStyledAttributes
 import com.google.android.material.imageview.ShapeableImageView
 import dev.ragnarok.filegallery.R
 
@@ -12,9 +13,9 @@ class AspectRatioImageView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : ShapeableImageView(context, attrs) {
-    private var aspectRatio: Float
-    private var aspectRatioEnabled: Boolean
-    private var dominantMeasurement: Int
+    private var aspectRatio: Float = 1f
+    private var aspectRatioEnabled: Boolean = false
+    private var dominantMeasurement: Int = MEASUREMENT_WIDTH
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         if (!aspectRatioEnabled) return
@@ -109,20 +110,20 @@ class AspectRatioImageView @JvmOverloads constructor(
     }
 
     init {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.AspectRatioImageView)
-        val aspectRatioW =
-            a.getInt(R.styleable.AspectRatioImageView_aspectRatioW, DEFAULT_ASPECT_RATIO_W)
-        val aspectRatioH =
-            a.getInt(R.styleable.AspectRatioImageView_aspectRatioH, DEFAULT_ASPECT_RATIO_H)
-        aspectRatio = aspectRatioW.toFloat() / aspectRatioH.toFloat()
-        aspectRatioEnabled = a.getBoolean(
-            R.styleable.AspectRatioImageView_aspectRatioEnabled,
-            DEFAULT_ASPECT_RATIO_ENABLED
-        )
-        dominantMeasurement = a.getInt(
-            R.styleable.AspectRatioImageView_dominantMeasurement,
-            DEFAULT_DOMINANT_MEASUREMENT
-        )
-        a.recycle()
+        context.withStyledAttributes(attrs, R.styleable.AspectRatioImageView) {
+            val aspectRatioW =
+                getInt(R.styleable.AspectRatioImageView_aspectRatioW, DEFAULT_ASPECT_RATIO_W)
+            val aspectRatioH =
+                getInt(R.styleable.AspectRatioImageView_aspectRatioH, DEFAULT_ASPECT_RATIO_H)
+            aspectRatio = aspectRatioW.toFloat() / aspectRatioH.toFloat()
+            aspectRatioEnabled = getBoolean(
+                R.styleable.AspectRatioImageView_aspectRatioEnabled,
+                DEFAULT_ASPECT_RATIO_ENABLED
+            )
+            dominantMeasurement = getInt(
+                R.styleable.AspectRatioImageView_dominantMeasurement,
+                DEFAULT_DOMINANT_MEASUREMENT
+            )
+        }
     }
 }

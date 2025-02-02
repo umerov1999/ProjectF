@@ -9,6 +9,7 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import androidx.annotation.RawRes
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.content.withStyledAttributes
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGLottieDrawable
 import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGLottieDrawable.Companion.RESTART
@@ -344,14 +345,14 @@ class ThorVGLottieView @JvmOverloads constructor(context: Context, attrs: Attrib
     }
 
     init {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.ThorVGLottieView)
-        rawResTmp = a.getResourceId(R.styleable.ThorVGLottieView_fromRes, 0)
-        if (rawResTmp == 0) {
-            rawResTmp = null
+        context.withStyledAttributes(attrs, R.styleable.ThorVGLottieView) {
+            rawResTmp = getResourceId(R.styleable.ThorVGLottieView_fromRes, 0)
+            if (rawResTmp == 0) {
+                rawResTmp = null
+            }
+            repeatTmp = getBoolean(R.styleable.ThorVGLottieView_loopAnimation, false)
+            repeatModeTmp = getInt(R.styleable.ThorVGLottieView_loopMode, RESTART)
         }
-        repeatTmp = a.getBoolean(R.styleable.ThorVGLottieView_loopAnimation, false)
-        repeatModeTmp = a.getInt(R.styleable.ThorVGLottieView_loopMode, RESTART)
-        a.recycle()
         if (FenrirNative.isNativeLoaded && rawResTmp != null) {
             loadedFrom = LoadedFrom.RES
             isPlaying = true

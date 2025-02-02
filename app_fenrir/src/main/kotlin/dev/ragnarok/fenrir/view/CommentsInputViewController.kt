@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.isEmpty
 import com.google.android.material.textfield.TextInputEditText
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
@@ -22,7 +23,6 @@ import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnEmojiconClickedListener
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnSoftKeyboardOpenCloseListener
 import dev.ragnarok.fenrir.view.emoji.EmojiconsPopup.OnStickerClickedListener
 import dev.ragnarok.fenrir.view.emoji.section.Emojicon
-import kotlin.String
 
 class CommentsInputViewController(
     activity: Activity,
@@ -78,7 +78,7 @@ class CommentsInputViewController(
         if (emojiOnScreen == visible) {
             return
         }
-        if (visible && rlEmojiContainer.childCount == 0) {
+        if (visible && rlEmojiContainer.isEmpty()) {
             val emojiView = emojiPopup?.getEmojiView(rlEmojiContainer)
             emojiView?.let { rlEmojiContainer.addView(it) }
         }

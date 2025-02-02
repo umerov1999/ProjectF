@@ -1,9 +1,9 @@
 package dev.ragnarok.fenrir.fragment.videos
 
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import androidx.core.net.toUri
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import dev.ragnarok.fenrir.Includes
@@ -195,11 +195,12 @@ class VideosListPresenter(
         if (requestNow) return
         setRequestNow(true)
         val startFrom = if (more) intNextFrom else IntNextFrom(0)
-        netDisposable.add(interactor[accountId, ownerId, albumId, COUNT, startFrom.offset]
-            .fromIOToMain({
-                val nextFrom = IntNextFrom(startFrom.offset + COUNT)
-                onRequestResposnse(it, startFrom, nextFrom)
-            }) { throwable -> onListGetError(throwable) })
+        netDisposable.add(
+            interactor[accountId, ownerId, albumId, COUNT, startFrom.offset]
+                .fromIOToMain({
+                    val nextFrom = IntNextFrom(startFrom.offset + COUNT)
+                    onRequestResposnse(it, startFrom, nextFrom)
+                }) { throwable -> onListGetError(throwable) })
     }
 
     internal fun onListGetError(throwable: Throwable) {
@@ -245,14 +246,15 @@ class VideosListPresenter(
     fun fireFileForUploadSelected(file: String?) {
         val intent = UploadIntent(accountId, destination)
             .setAutoCommit(true)
-            .setFileUri(Uri.parse(file))
+            .setFileUri(file?.toUri())
         uploadManager.enqueue(listOf(intent))
     }
 
     private fun loadAllFromCache() {
         cacheNowLoading = true
-        cacheDisposable.add(interactor.getCachedVideos(accountId, ownerId, albumId)
-            .fromIOToMain({ onCachedDataReceived(it) }) { obj -> obj.printStackTrace() })
+        cacheDisposable.add(
+            interactor.getCachedVideos(accountId, ownerId, albumId)
+                .fromIOToMain({ onCachedDataReceived(it) }) { obj -> obj.printStackTrace() })
     }
 
     private fun onCachedDataReceived(videos: List<Video>) {
@@ -324,17 +326,18 @@ class VideosListPresenter(
                 val title = root.findViewById<TextInputEditText>(R.id.edit_title).text.toString()
                 val description =
                     root.findViewById<TextInputEditText>(R.id.edit_description).text.toString()
-                appendJob(interactor.edit(
-                    accountId, video.ownerId, video.id,
-                    title, description
-                ).fromIOToMain({
-                    data[position].setTitle(title).setDescription(description)
-                    view?.notifyItemChanged(
-                        position
-                    )
-                }) { t ->
-                    showError(getCauseIfRuntime(t))
-                })
+                appendJob(
+                    interactor.edit(
+                        accountId, video.ownerId, video.id,
+                        title, description
+                    ).fromIOToMain({
+                        data[position].setTitle(title).setDescription(description)
+                        view?.notifyItemChanged(
+                            position
+                        )
+                    }) { t ->
+                        showError(getCauseIfRuntime(t))
+                    })
             }
             .setNegativeButton(R.string.button_cancel, null)
             .show()
@@ -347,10 +350,11 @@ class VideosListPresenter(
     fun fireVideoOption(id: Int, video: Video, position: Int, context: Context) {
         when (id) {
             R.id.action_add_to_my_videos -> {
-                netDisposable.add(interactor.addToMy(accountId, accountId, video.ownerId, video.id)
-                    .fromIOToMain({ onAddComplete() }) { t ->
-                        showError(getCauseIfRuntime(t))
-                    })
+                netDisposable.add(
+                    interactor.addToMy(accountId, accountId, video.ownerId, video.id)
+                        .fromIOToMain({ onAddComplete() }) { t ->
+                            showError(getCauseIfRuntime(t))
+                        })
             }
 
             R.id.action_edit -> {
@@ -358,15 +362,16 @@ class VideosListPresenter(
             }
 
             R.id.action_delete_from_my_videos -> {
-                netDisposable.add(interactor.delete(accountId, video.id, video.ownerId, accountId)
-                    .fromIOToMain({
-                        data.removeAt(position)
-                        view?.notifyItemRemoved(
-                            position
-                        )
-                    }) { t ->
-                        showError(getCauseIfRuntime(t))
-                    })
+                netDisposable.add(
+                    interactor.delete(accountId, video.id, video.ownerId, accountId)
+                        .fromIOToMain({
+                            data.removeAt(position)
+                            view?.notifyItemRemoved(
+                                position
+                            )
+                        }) { t ->
+                            showError(getCauseIfRuntime(t))
+                        })
             }
 
             R.id.share_button -> {
@@ -453,23 +458,29 @@ class VideosListPresenter(
     init {
         intNextFrom = IntNextFrom(0)
         data = ArrayList()
-        appendJob(uploadManager[accountId, destination]
-            .fromIOToMain { data -> onUploadsDataReceived(data) })
-        appendJob(uploadManager.observeAdding()
-            .sharedFlowToMain { onUploadsAdded(it) })
-        appendJob(uploadManager.observeDeleting(true)
-            .sharedFlowToMain { onUploadDeleted(it) })
-        appendJob(uploadManager.observeResults()
-            .filter {
-                destination.compareTo(
-                    it.first.destination
-                )
-            }
-            .sharedFlowToMain { onUploadResults(it) })
-        appendJob(uploadManager.observeStatus()
-            .sharedFlowToMain { onUploadStatusUpdate(it) })
-        appendJob(uploadManager.observeProgress()
-            .sharedFlowToMain { onProgressUpdates(it) })
+        appendJob(
+            uploadManager[accountId, destination]
+                .fromIOToMain { data -> onUploadsDataReceived(data) })
+        appendJob(
+            uploadManager.observeAdding()
+                .sharedFlowToMain { onUploadsAdded(it) })
+        appendJob(
+            uploadManager.observeDeleting(true)
+                .sharedFlowToMain { onUploadDeleted(it) })
+        appendJob(
+            uploadManager.observeResults()
+                .filter {
+                    destination.compareTo(
+                        it.first.destination
+                    )
+                }
+                .sharedFlowToMain { onUploadResults(it) })
+        appendJob(
+            uploadManager.observeStatus()
+                .sharedFlowToMain { onUploadStatusUpdate(it) })
+        appendJob(
+            uploadManager.observeProgress()
+                .sharedFlowToMain { onProgressUpdates(it) })
         loadAllFromCache()
         request(false)
         if (IVideosListView.ACTION_SELECT.equals(action, ignoreCase = true)) {

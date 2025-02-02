@@ -75,19 +75,20 @@ class WallMultiAttachmentsPresenter(
     private fun loadActualData(offset: Int) {
         actualDataLoading = true
         resolveRefreshingView()
-        actualDataDisposable.add(fInteractor.getWallNoCache(
-            accountId,
-            owner_id,
-            offset,
-            100,
-            WallCriteria.MODE_ALL
-        )
-            .fromIOToMain({ data ->
-                onActualDataReceived(
-                    offset,
-                    data
-                )
-            }) { t -> onActualDataGetError(t) })
+        actualDataDisposable.add(
+            fInteractor.getWallNoCache(
+                accountId,
+                owner_id,
+                offset,
+                100,
+                WallCriteria.MODE_ALL
+            )
+                .fromIOToMain({ data ->
+                    onActualDataReceived(
+                        offset,
+                        data
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     private fun onActualDataGetError(t: Throwable) {
@@ -393,10 +394,11 @@ class WallMultiAttachmentsPresenter(
     }
 
     fun firePostRestoreClick(post: Post) {
-        appendJob(fInteractor.restore(accountId, post.ownerId, post.vkid)
-            .fromIOToMain(dummy()) { t ->
-                showError(t)
-            })
+        appendJob(
+            fInteractor.restore(accountId, post.ownerId, post.vkid)
+                .fromIOToMain(dummy()) { t ->
+                    showError(t)
+                })
     }
 
     fun fireLikeLongClick(post: Post) {
@@ -424,10 +426,11 @@ class WallMultiAttachmentsPresenter(
         ) {
             return
         }
-        appendJob(fInteractor.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
-            .fromIOToMain(dummy()) { t ->
-                showError(t)
-            })
+        appendJob(
+            fInteractor.like(accountId, post.ownerId, post.vkid, !post.isUserLikes)
+                .fromIOToMain(dummy()) { t ->
+                    showError(t)
+                })
     }
 
     init {

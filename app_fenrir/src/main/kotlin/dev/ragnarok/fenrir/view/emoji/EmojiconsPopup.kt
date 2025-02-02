@@ -17,6 +17,7 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.GridView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -99,9 +100,9 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
     fun storeState() {
         if (emojisPager != null) {
             getPreferences(mContext)
-                .edit()
-                .putInt(KEY_PAGE, emojisPager?.currentItem ?: 0)
-                .apply()
+                .edit {
+                    putInt(KEY_PAGE, emojisPager?.currentItem ?: 0)
+                }
         }
     }
 

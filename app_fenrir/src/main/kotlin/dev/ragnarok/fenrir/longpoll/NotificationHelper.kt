@@ -108,7 +108,8 @@ object NotificationHelper {
         ChatEntryFetcher.getRx(context, accountId, accountId)
             .fromScopeToMain(NotificationScheduler.INSTANCE, { account ->
                 ChatEntryFetcher.getRx(context, accountId, message.peerId)
-                    .fromScopeToMain(NotificationScheduler.INSTANCE,
+                    .fromScopeToMain(
+                        NotificationScheduler.INSTANCE,
                         { info ->
                             if (Settings.get().main().isLoad_history_notif) {
                                 messages.getPeerMessages(
@@ -120,7 +121,8 @@ object NotificationHelper {
                                     cacheData = false,
                                     rev = false
                                 )
-                                    .fromScopeToMain(NotificationScheduler.INSTANCE,
+                                    .fromScopeToMain(
+                                        NotificationScheduler.INSTANCE,
                                         {
                                             doShowNotification(
                                                 accountId,

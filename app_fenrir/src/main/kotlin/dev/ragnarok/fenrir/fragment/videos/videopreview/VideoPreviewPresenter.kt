@@ -59,28 +59,30 @@ class VideoPreviewPresenter(
     fun fireFaveVideo() {
         val pVideo = video ?: return
         if (!pVideo.isFavorite) {
-            appendJob(faveInteractor.addVideo(
-                accountId,
-                pVideo.ownerId,
-                pVideo.id,
-                pVideo.accessKey
-            )
-                .fromIOToMain({ onVideoAddedToBookmarks() }) { t ->
-                    showError(
-                        getCauseIfRuntime(t)
-                    )
-                })
+            appendJob(
+                faveInteractor.addVideo(
+                    accountId,
+                    pVideo.ownerId,
+                    pVideo.id,
+                    pVideo.accessKey
+                )
+                    .fromIOToMain({ onVideoAddedToBookmarks() }) { t ->
+                        showError(
+                            getCauseIfRuntime(t)
+                        )
+                    })
         } else {
-            appendJob(faveInteractor.removeVideo(
-                accountId,
-                pVideo.ownerId,
-                pVideo.id
-            )
-                .fromIOToMain({ onVideoAddedToBookmarks() }) { t ->
-                    showError(
-                        getCauseIfRuntime(t)
-                    )
-                })
+            appendJob(
+                faveInteractor.removeVideo(
+                    accountId,
+                    pVideo.ownerId,
+                    pVideo.id
+                )
+                    .fromIOToMain({ onVideoAddedToBookmarks() }) { t ->
+                        showError(
+                            getCauseIfRuntime(t)
+                        )
+                    })
         }
     }
 
@@ -96,13 +98,14 @@ class VideoPreviewPresenter(
                 .setCancelable(true)
                 .setView(root)
                 .setPositiveButton(R.string.button_ok) { _, _ ->
-                    appendJob(interactor.edit(
-                        accountId, vd.ownerId, vd.id,
-                        root.findViewById<TextInputEditText>(R.id.edit_title).text.toString(),
-                        root.findViewById<TextInputEditText>(R.id.edit_description).text.toString()
-                    ).fromIOToMain({ refreshVideoInfo() }) { t ->
-                        showError(getCauseIfRuntime(t))
-                    })
+                    appendJob(
+                        interactor.edit(
+                            accountId, vd.ownerId, vd.id,
+                            root.findViewById<TextInputEditText>(R.id.edit_title).text.toString(),
+                            root.findViewById<TextInputEditText>(R.id.edit_description).text.toString()
+                        ).fromIOToMain({ refreshVideoInfo() }) { t ->
+                            showError(getCauseIfRuntime(t))
+                        })
                 }
                 .setNegativeButton(R.string.button_cancel, null)
                 .show()
@@ -137,14 +140,15 @@ class VideoPreviewPresenter(
         view.setCommentButtonVisible(video.isCanComment || video.commentsCount > 0 || isMy)
         view.displayLikes(video.likesCount, video.isUserLikes)
         if (owner == null) {
-            appendJob(ownerInteractor.getBaseOwnerInfo(
-                accountId,
-                ownerId,
-                IOwnersRepository.MODE_ANY
-            )
-                .fromIOToMain({ info -> onOwnerReceived(info) }) { e ->
-                    showError(e)
-                })
+            appendJob(
+                ownerInteractor.getBaseOwnerInfo(
+                    accountId,
+                    ownerId,
+                    IOwnersRepository.MODE_ANY
+                )
+                    .fromIOToMain({ info -> onOwnerReceived(info) }) { e ->
+                        showError(e)
+                    })
         } else {
             owner?.let { view.displayOwner(it) }
         }
@@ -197,12 +201,13 @@ class VideoPreviewPresenter(
         if (video == null) {
             view?.displayLoading()
         }
-        appendJob(interactor.getById(accountId, ownerId, videoId, accessKey, false)
-            .fromIOToMain({ video -> onActualInfoReceived(video) }) { throwable ->
-                onVideoInfoGetError(
-                    getCauseIfRuntime(throwable)
-                )
-            })
+        appendJob(
+            interactor.getById(accountId, ownerId, videoId, accessKey, false)
+                .fromIOToMain({ video -> onActualInfoReceived(video) }) { throwable ->
+                    onVideoInfoGetError(
+                        getCauseIfRuntime(throwable)
+                    )
+                })
     }
 
     private val isMy: Boolean
@@ -222,21 +227,23 @@ class VideoPreviewPresenter(
     }
 
     fun fireAddToMyClick() {
-        appendJob(interactor.addToMy(accountId, accountId, ownerId, videoId)
-            .fromIOToMain({ onAddComplete() }) { throwable ->
-                onAddError(
-                    getCauseIfRuntime(throwable)
-                )
-            })
+        appendJob(
+            interactor.addToMy(accountId, accountId, ownerId, videoId)
+                .fromIOToMain({ onAddComplete() }) { throwable ->
+                    onAddError(
+                        getCauseIfRuntime(throwable)
+                    )
+                })
     }
 
     fun fireDeleteMyClick() {
-        appendJob(interactor.delete(accountId, videoId, ownerId, accountId)
-            .fromIOToMain({ onAddComplete() }) { throwable ->
-                onAddError(
-                    getCauseIfRuntime(throwable)
-                )
-            })
+        appendJob(
+            interactor.delete(accountId, videoId, ownerId, accountId)
+                .fromIOToMain({ onAddComplete() }) { throwable ->
+                    onAddError(
+                        getCauseIfRuntime(throwable)
+                    )
+                })
     }
 
     fun fireCopyUrlClick(context: Context) {
@@ -300,10 +307,11 @@ class VideoPreviewPresenter(
         }
         video?.let {
             val add = !it.isUserLikes
-            appendJob(interactor.likeOrDislike(accountId, ownerId, videoId, accessKey, add)
-                .fromIOToMain(
-                    { pair: Pair<Int, Boolean> -> onLikesResponse(pair.first, pair.second) }
-                ) { throwable -> onLikeError(getCauseIfRuntime(throwable)) })
+            appendJob(
+                interactor.likeOrDislike(accountId, ownerId, videoId, accessKey, add)
+                    .fromIOToMain(
+                        { pair: Pair<Int, Boolean> -> onLikesResponse(pair.first, pair.second) }
+                    ) { throwable -> onLikeError(getCauseIfRuntime(throwable)) })
         }
     }
 

@@ -28,12 +28,13 @@ class EnterPinPresenter(savedState: Bundle?) : RxSupportPresenter<IEnterPinView>
             .accounts()
             .current
         if (accountId != ISettings.IAccountsSettings.INVALID_ID) {
-            appendJob(ownersRepository.getBaseOwnerInfo(
-                accountId,
-                accountId,
-                IOwnersRepository.MODE_ANY
-            )
-                .fromIOToMain({ owner -> onOwnerInfoReceived(owner) }) { })
+            appendJob(
+                ownersRepository.getBaseOwnerInfo(
+                    accountId,
+                    accountId,
+                    IOwnersRepository.MODE_ANY
+                )
+                    .fromIOToMain({ owner -> onOwnerInfoReceived(owner) }) { })
         }
     }
 

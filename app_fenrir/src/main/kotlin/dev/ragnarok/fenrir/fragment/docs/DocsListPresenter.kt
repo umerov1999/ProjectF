@@ -2,9 +2,9 @@ package dev.ragnarok.fenrir.fragment.docs
 
 import android.app.Activity
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
+import androidx.core.net.toUri
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.R
@@ -113,19 +113,20 @@ class DocsListPresenter(
             DocsOption.add_item_doc -> {
                 val docsInteractor = InteractorFactory.createDocsInteractor()
                 val accessKey = doc.accessKey
-                appendJob(docsInteractor.add(
-                    accountId,
-                    doc.id,
-                    doc.ownerId,
-                    accessKey
-                )
-                    .fromIOToMain({
-                        createCustomToast(context).setDuration(
-                            Toast.LENGTH_LONG
-                        ).showToastSuccessBottom(R.string.added)
-                    }) { t ->
-                        showError(getCauseIfRuntime(t))
-                    })
+                appendJob(
+                    docsInteractor.add(
+                        accountId,
+                        doc.id,
+                        doc.ownerId,
+                        accessKey
+                    )
+                        .fromIOToMain({
+                            createCustomToast(context).setDuration(
+                                Toast.LENGTH_LONG
+                            ).showToastSuccessBottom(R.string.added)
+                        }) { t ->
+                            showError(getCauseIfRuntime(t))
+                        })
             }
 
             DocsOption.delete_item_doc -> MaterialAlertDialogBuilder(context)
@@ -153,11 +154,12 @@ class DocsListPresenter(
     }
 
     private fun doRemove(doc: Document, index: Int) {
-        appendJob(docsInteractor.delete(accountId, doc.id, doc.ownerId)
-            .fromIOToMain({
-                mDocuments.removeAt(index)
-                view?.notifyDataRemoved(index)
-            }) { })
+        appendJob(
+            docsInteractor.delete(accountId, doc.id, doc.ownerId)
+                .fromIOToMain({
+                    mDocuments.removeAt(index)
+                    view?.notifyDataRemoved(index)
+                }) { })
     }
 
     internal fun share(context: Context, document: Document) {
@@ -259,12 +261,13 @@ class DocsListPresenter(
     private fun requestAll() {
         setRequestNow(true)
         val filter = selectedFilter
-        requestHolder.add(docsInteractor.request(accountId, mOwnerId, filter)
-            .fromIOToMain({ data -> onNetDataReceived(data) }) { throwable ->
-                onRequestError(
-                    getCauseIfRuntime(throwable)
-                )
-            })
+        requestHolder.add(
+            docsInteractor.request(accountId, mOwnerId, filter)
+                .fromIOToMain({ data -> onNetDataReceived(data) }) { throwable ->
+                    onRequestError(
+                        getCauseIfRuntime(throwable)
+                    )
+                })
     }
 
     private fun onRequestError(throwable: Throwable) {
@@ -302,12 +305,13 @@ class DocsListPresenter(
     private fun loadAll() {
         setCacheLoadingNow(true)
         val filter = selectedFilter
-        mLoader.add(docsInteractor.getCacheData(accountId, mOwnerId, filter)
-            .fromIOToMain({ data -> onCacheDataReceived(data) }) { throwable ->
-                onLoadError(
-                    getCauseIfRuntime(throwable)
-                )
-            })
+        mLoader.add(
+            docsInteractor.getCacheData(accountId, mOwnerId, filter)
+                .fromIOToMain({ data -> onCacheDataReceived(data) }) { throwable ->
+                    onLoadError(
+                        getCauseIfRuntime(throwable)
+                    )
+                })
     }
 
     private fun resolveRefreshingView() {
@@ -410,7 +414,7 @@ class DocsListPresenter(
     fun fireFileForUploadSelected(file: String?) {
         val intent = UploadIntent(accountId, destination)
             .setAutoCommit(true)
-            .setFileUri(Uri.parse(file))
+            .setFileUri(file?.toUri())
         uploadManager.enqueue(listOf(intent))
     }
 
@@ -444,23 +448,29 @@ class DocsListPresenter(
     }
 
     init {
-        appendJob(uploadManager[accountId, destination]
-            .fromIOToMain { data -> onUploadsDataReceived(data) })
-        appendJob(uploadManager.observeAdding()
-            .sharedFlowToMain { onUploadsAdded(it) })
-        appendJob(uploadManager.observeDeleting(true)
-            .sharedFlowToMain { onUploadDeleted(it) })
-        appendJob(uploadManager.observeResults()
-            .filter {
-                destination.compareTo(
-                    it.first.destination
-                )
-            }
-            .sharedFlowToMain { onUploadResults(it) })
-        appendJob(uploadManager.observeStatus()
-            .sharedFlowToMain { onUploadStatusUpdate(it) })
-        appendJob(uploadManager.observeProgress()
-            .sharedFlowToMain { onProgressUpdates(it) })
+        appendJob(
+            uploadManager[accountId, destination]
+                .fromIOToMain { data -> onUploadsDataReceived(data) })
+        appendJob(
+            uploadManager.observeAdding()
+                .sharedFlowToMain { onUploadsAdded(it) })
+        appendJob(
+            uploadManager.observeDeleting(true)
+                .sharedFlowToMain { onUploadDeleted(it) })
+        appendJob(
+            uploadManager.observeResults()
+                .filter {
+                    destination.compareTo(
+                        it.first.destination
+                    )
+                }
+                .sharedFlowToMain { onUploadResults(it) })
+        appendJob(
+            uploadManager.observeStatus()
+                .sharedFlowToMain { onUploadStatusUpdate(it) })
+        appendJob(
+            uploadManager.observeProgress()
+                .sharedFlowToMain { onProgressUpdates(it) })
         val filter = savedInstanceState?.getInt(SAVE_FILTER) ?: DocFilter.Type.ALL
         filters = createFilters(filter)
         loadAll()

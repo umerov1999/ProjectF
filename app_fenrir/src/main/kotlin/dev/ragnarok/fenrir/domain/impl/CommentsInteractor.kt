@@ -701,14 +701,15 @@ class CommentsInteractor(
                 } else {
                     emptyTaskFlow()
                 }
-                storeCompletable.andThen(transform(
-                    accountId,
-                    commented,
-                    comments,
-                    users,
-                    communities
-                )
-                    .map { data -> data[0] })
+                storeCompletable.andThen(
+                    transform(
+                        accountId,
+                        commented,
+                        comments,
+                        users,
+                        communities
+                    )
+                        .map { data -> data[0] })
             }
     }
 

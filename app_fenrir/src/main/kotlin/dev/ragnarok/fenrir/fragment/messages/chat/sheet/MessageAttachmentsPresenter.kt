@@ -588,22 +588,28 @@ class MessageAttachmentsPresenter(
         }
         val predicate: suspend (IBaseEvent) -> Boolean =
             { it.attachToType == AttachToType.MESSAGE && it.attachToId == messageId && it.accountId == messageOwnerId }
-        appendJob(attachmentsRepository
-            .observeAdding()
-            .filter(predicate)
-            .sharedFlowToMain { onAttachmentsAdded(it.attachments) })
-        appendJob(attachmentsRepository
-            .observeRemoving()
-            .filter(predicate)
-            .sharedFlowToMain { onAttachmentRemoved(it.generatedId) })
-        appendJob(uploadManager.observeAdding()
-            .sharedFlowToMain { onUploadsAdded(it) })
-        appendJob(uploadManager.observeDeleting(true)
-            .sharedFlowToMain { onUploadsRemoved(it) })
-        appendJob(uploadManager.observeStatus()
-            .sharedFlowToMain { onUploadStatusChanges(it) })
-        appendJob(uploadManager.observeProgress()
-            .sharedFlowToMain { onUploadProgressUpdates(it) })
+        appendJob(
+            attachmentsRepository
+                .observeAdding()
+                .filter(predicate)
+                .sharedFlowToMain { onAttachmentsAdded(it.attachments) })
+        appendJob(
+            attachmentsRepository
+                .observeRemoving()
+                .filter(predicate)
+                .sharedFlowToMain { onAttachmentRemoved(it.generatedId) })
+        appendJob(
+            uploadManager.observeAdding()
+                .sharedFlowToMain { onUploadsAdded(it) })
+        appendJob(
+            uploadManager.observeDeleting(true)
+                .sharedFlowToMain { onUploadsRemoved(it) })
+        appendJob(
+            uploadManager.observeStatus()
+                .sharedFlowToMain { onUploadStatusChanges(it) })
+        appendJob(
+            uploadManager.observeProgress()
+                .sharedFlowToMain { onUploadProgressUpdates(it) })
         loadData()
     }
 }

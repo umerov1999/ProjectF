@@ -15,7 +15,6 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils
-import kotlin.String
 
 class CircleCounterButton @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
     LinearLayout(context, attrs) {

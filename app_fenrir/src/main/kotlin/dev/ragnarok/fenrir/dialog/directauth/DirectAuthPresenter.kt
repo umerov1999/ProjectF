@@ -49,27 +49,28 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
             null
         }
         setLoginNow(true)
-        appendJob(networker.vkDirectAuth()
-            .directLogin(
-                "password",
-                Constants.API_ID,
-                Constants.SECRET,
-                trimmedUsername,
-                trimmedPass,
-                Constants.AUTH_API_VERSION,
-                Constants.DEFAULT_ACCOUNT_TYPE == AccountType.VK_ANDROID,
-                scope,
-                code,
-                captchaSid,
-                captchaCode,
-                forceSms,
-                Constants.DEFAULT_ACCOUNT_TYPE == AccountType.VK_ANDROID
-            )
-            .fromIOToMain({ response -> onLoginResponse(response) }) { t ->
-                onLoginError(
-                    getCauseIfRuntime(t)
+        appendJob(
+            networker.vkDirectAuth()
+                .directLogin(
+                    "password",
+                    Constants.API_ID,
+                    Constants.SECRET,
+                    trimmedUsername,
+                    trimmedPass,
+                    Constants.AUTH_API_VERSION,
+                    Constants.DEFAULT_ACCOUNT_TYPE == AccountType.VK_ANDROID,
+                    scope,
+                    code,
+                    captchaSid,
+                    captchaCode,
+                    forceSms,
+                    Constants.DEFAULT_ACCOUNT_TYPE == AccountType.VK_ANDROID
                 )
-            })
+                .fromIOToMain({ response -> onLoginResponse(response) }) { t ->
+                    onLoginError(
+                        getCauseIfRuntime(t)
+                    )
+                })
     }
 
     private fun onLoginError(t: Throwable) {
@@ -113,21 +114,22 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
                     }
                 }
                 if (!sid.isNullOrEmpty() && requireSmsCode) {
-                    appendJob(networker.vkAuth()
-                        .validatePhone(
-                            phone,
-                            Constants.API_ID,
-                            Constants.API_ID,
-                            Constants.SECRET,
-                            sid,
-                            Constants.AUTH_API_VERSION,
-                            true,
-                            true
-                        )
-                        .delayedFlow(1000)
-                        .fromIOToMain({ }) {
-                            showError(getCauseIfRuntime(t))
-                        })
+                    appendJob(
+                        networker.vkAuth()
+                            .validatePhone(
+                                phone,
+                                Constants.API_ID,
+                                Constants.API_ID,
+                                Constants.SECRET,
+                                sid,
+                                Constants.AUTH_API_VERSION,
+                                true,
+                                true
+                            )
+                            .delayedFlow(1000)
+                            .fromIOToMain({ }) {
+                                showError(getCauseIfRuntime(t))
+                            })
                 }
             }
         } else {

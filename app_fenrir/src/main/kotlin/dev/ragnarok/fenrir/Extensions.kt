@@ -19,6 +19,7 @@ import android.view.View
 import androidx.annotation.ColorInt
 import androidx.core.database.getBlobOrNull
 import androidx.core.database.getStringOrNull
+import androidx.core.graphics.toColorInt
 import kotlinx.serialization.json.Json
 import okhttp3.ResponseBody
 import java.io.Serializable
@@ -507,7 +508,7 @@ inline fun <reified T> MutableList<T>.swap(index1: Int, index2: Int) {
 @ColorInt
 fun String.toColor(): Int {
     try {
-        return Color.parseColor(this)
+        return this.toColorInt()
     } catch (e: Exception) {
         e.printStackTrace()
     }

@@ -35,12 +35,13 @@ class FaveVideosPresenter(accountId: Long, savedInstanceState: Bundle?) :
 
     private fun loadCachedData() {
         cacheLoadingNow = true
-        cacheDisposable.add(faveInteractor.getCachedVideos(accountId)
-            .fromIOToMain({ videos -> onCachedDataReceived(videos) }) { t ->
-                onCacheGetError(
-                    t
-                )
-            })
+        cacheDisposable.add(
+            faveInteractor.getCachedVideos(accountId)
+                .fromIOToMain({ videos -> onCachedDataReceived(videos) }) { t ->
+                    onCacheGetError(
+                        t
+                    )
+                })
     }
 
     private fun onCacheGetError(t: Throwable) {
@@ -64,13 +65,14 @@ class FaveVideosPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun request(offset: Int) {
         netLoadingNow = true
         resolveRefreshingView()
-        netDisposable.add(faveInteractor.getVideos(accountId, COUNT_PER_REQUEST, offset)
-            .fromIOToMain({ videos ->
-                onNetDataReceived(
-                    offset,
-                    videos
-                )
-            }) { t -> onNetDataGetError(t) })
+        netDisposable.add(
+            faveInteractor.getVideos(accountId, COUNT_PER_REQUEST, offset)
+                .fromIOToMain({ videos ->
+                    onNetDataReceived(
+                        offset,
+                        videos
+                    )
+                }) { t -> onNetDataGetError(t) })
     }
 
     private fun onNetDataGetError(t: Throwable) {
@@ -131,11 +133,12 @@ class FaveVideosPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun fireVideoDelete(index: Int, video: Video) {
-        netDisposable.add(faveInteractor.removeVideo(accountId, video.ownerId, video.id)
-            .fromIOToMain({
-                mVideos.removeAt(index)
-                view?.notifyDataSetChanged()
-            }) { t -> onNetDataGetError(t) })
+        netDisposable.add(
+            faveInteractor.removeVideo(accountId, video.ownerId, video.id)
+                .fromIOToMain({
+                    mVideos.removeAt(index)
+                    view?.notifyDataSetChanged()
+                }) { t -> onNetDataGetError(t) })
     }
 
     fun fireScrollToEnd() {

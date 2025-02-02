@@ -3,7 +3,6 @@ package dev.ragnarok.filegallery.fragment.filemanager
 import android.content.Context
 import android.content.Intent
 import android.media.MediaMetadataRetriever
-import android.net.Uri
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.core.net.toFile
+import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso3.Callback
@@ -66,12 +66,13 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        mPlayerDisposable.set(MusicPlaybackController.observeServiceBinding()
-            .fromIOToMain { status ->
-                onServiceBindEvent(
-                    status
-                )
-            })
+        mPlayerDisposable.set(
+            MusicPlaybackController.observeServiceBinding()
+                .fromIOToMain { status ->
+                    onServiceBindEvent(
+                        status
+                    )
+                })
     }
 
     private fun onServiceBindEvent(@PlayerStatus status: Int) {
@@ -184,7 +185,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
             val retriever = MediaMetadataRetriever()
             var finalUrl = url
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-                val uri = Uri.parse(url)
+                val uri = url.toUri()
                 if ("file" == uri.scheme) {
                     finalUrl = uri.path.toString()
                 }
@@ -196,7 +197,7 @@ class FileManagerAdapter(private var context: Context, private var data: List<Fi
                 emit(
                     Pair(
                         (bitrate.toLong() / 1000).toInt(),
-                        Uri.parse(url).toFile().length()
+                        url.toUri().toFile().length()
                     )
                 )
             } else {

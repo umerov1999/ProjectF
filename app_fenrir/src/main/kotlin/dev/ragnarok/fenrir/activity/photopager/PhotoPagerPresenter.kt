@@ -217,23 +217,25 @@ open class PhotoPagerPresenter internal constructor(
             user = bundle.getById(photo.ownerId).fullName
         }
         val buttons: MutableList<FunctionSource> = ArrayList(2)
-        buttons.add(FunctionSource(
-            album_info, R.drawable.photo_album
-        ) {
-            PlaceFactory.getVKPhotosAlbumPlace(
-                accountId,
-                photo.ownerId,
-                photo.albumId,
-                null,
-                photo.getObjectId()
-            )
-                .tryOpenWith(context)
-        })
-        buttons.add(FunctionSource(
-            user, R.drawable.person
-        ) {
-            PlaceFactory.getOwnerWallPlace(accountId, photo.ownerId, null).tryOpenWith(context)
-        })
+        buttons.add(
+            FunctionSource(
+                album_info, R.drawable.photo_album
+            ) {
+                PlaceFactory.getVKPhotosAlbumPlace(
+                    accountId,
+                    photo.ownerId,
+                    photo.albumId,
+                    null,
+                    photo.getObjectId()
+                )
+                    .tryOpenWith(context)
+            })
+        buttons.add(
+            FunctionSource(
+                user, R.drawable.person
+            ) {
+                PlaceFactory.getOwnerWallPlace(accountId, photo.ownerId, null).tryOpenWith(context)
+            })
         val adapter = ButtonAdapter(context, buttons)
         MaterialAlertDialogBuilder(context)
             .setTitle(
@@ -271,14 +273,15 @@ open class PhotoPagerPresenter internal constructor(
 
     fun fireInfoButtonClick(context: Context) {
         val photo = current
-        appendJob(photosInteractor.getAlbumById(accountId, photo.ownerId, photo.albumId)
-            .fromIOToMain({
-                getOwnerForPhoto(
-                    context,
-                    photo,
-                    it
-                )
-            }) { getOwnerForPhoto(context, photo, null) })
+        appendJob(
+            photosInteractor.getAlbumById(accountId, photo.ownerId, photo.albumId)
+                .fromIOToMain({
+                    getOwnerForPhoto(
+                        context,
+                        photo,
+                        it
+                    )
+                }) { getOwnerForPhoto(context, photo, null) })
     }
 
     fun fireShareButtonClick() {
@@ -307,34 +310,35 @@ open class PhotoPagerPresenter internal constructor(
         if (need_update && need_update_info() && hasPhotos()) {
             val photo = current
             if (photo.albumId != -311) {
-                appendJob(photosInteractor.getPhotosByIds(
-                    accountId,
-                    setOf(
-                        AccessIdPairModel(
-                            photo.getObjectId(),
-                            photo.ownerId,
-                            photo.accessKey
+                appendJob(
+                    photosInteractor.getPhotosByIds(
+                        accountId,
+                        setOf(
+                            AccessIdPairModel(
+                                photo.getObjectId(),
+                                photo.ownerId,
+                                photo.accessKey
+                            )
                         )
                     )
-                )
-                    .fromIOToMain {
-                        if (it[0].getObjectId() == photo.getObjectId()) {
-                            val ne = it[0]
-                            if (ne.accessKey == null) {
-                                ne.setAccessKey(photo.accessKey)
+                        .fromIOToMain {
+                            if (it[0].getObjectId() == photo.getObjectId()) {
+                                val ne = it[0]
+                                if (ne.accessKey == null) {
+                                    ne.setAccessKey(photo.accessKey)
+                                }
+                                val old = mPhotos[currentIndex]
+                                mPhotos[currentIndex] = ne
+                                mPhotos[currentIndex].let { uit ->
+                                    uit.setShowPhotoTags(old.showPhotoTags)
+                                    uit.setPhotoTags(old.photoTags)
+                                    uit.setMsgId(old.msgId)
+                                    uit.setDeleted(old.isDeleted)
+                                    uit.setMsgPeerId(old.msgPeerId)
+                                }
+                                refreshInfoViews(false)
                             }
-                            val old = mPhotos[currentIndex]
-                            mPhotos[currentIndex] = ne
-                            mPhotos[currentIndex].let { uit ->
-                                uit.setShowPhotoTags(old.showPhotoTags)
-                                uit.setPhotoTags(old.photoTags)
-                                uit.setMsgId(old.msgId)
-                                uit.setDeleted(old.isDeleted)
-                                uit.setMsgPeerId(old.msgPeerId)
-                            }
-                            refreshInfoViews(false)
-                        }
-                    })
+                        })
             }
         }
     }
@@ -358,19 +362,20 @@ open class PhotoPagerPresenter internal constructor(
         val ownerId = photo.ownerId
         val photoId = photo.getObjectId()
         val add = !photo.isUserLikes
-        appendJob(photosInteractor.like(accountId, ownerId, photoId, add, photo.accessKey)
-            .fromIOToMain({
-                interceptLike(
-                    ownerId,
-                    photoId,
-                    it,
-                    add
-                )
-            }) { t ->
-                view?.let {
-                    showError(it, Utils.getCauseIfRuntime(t))
-                }
-            })
+        appendJob(
+            photosInteractor.like(accountId, ownerId, photoId, add, photo.accessKey)
+                .fromIOToMain({
+                    interceptLike(
+                        ownerId,
+                        photoId,
+                        it,
+                        add
+                    )
+                }) { t ->
+                    view?.let {
+                        showError(it, Utils.getCauseIfRuntime(t))
+                    }
+                })
     }
 
     private fun onDeleteOrRestoreResult(photoId: Int, ownerId: Long, deleted: Boolean) {
@@ -421,16 +426,17 @@ open class PhotoPagerPresenter internal constructor(
             }
             downloadResult(context, fixStart(path), dir, photo)
         } else {
-            appendJob(OwnerInfo.getRx(context, accountId, photo.ownerId)
-                .fromIOToMain({
-                    downloadResult(
-                        context,
-                        makeLegalFilename(
-                            fixStart(it.owner.fullName) ?: ("id" + photo.ownerId),
-                            null
-                        ), dir, photo
-                    )
-                }) { downloadResult(context, null, dir, photo) })
+            appendJob(
+                OwnerInfo.getRx(context, accountId, photo.ownerId)
+                    .fromIOToMain({
+                        downloadResult(
+                            context,
+                            makeLegalFilename(
+                                fixStart(it.owner.fullName) ?: ("id" + photo.ownerId),
+                                null
+                            ), dir, photo
+                        )
+                    }) { downloadResult(context, null, dir, photo) })
         }
     }
 
@@ -467,20 +473,21 @@ open class PhotoPagerPresenter internal constructor(
         if (photo.albumId == -311) {
             return
         }
-        appendJob(photosInteractor.copy(
-            accountId,
-            photo.ownerId,
-            photo.getObjectId(),
-            photo.accessKey
-        )
-            .fromIOToMain({ onPhotoCopied() }) { t ->
-                view?.let {
-                    showError(
-                        it,
-                        Utils.getCauseIfRuntime(t)
-                    )
-                }
-            })
+        appendJob(
+            photosInteractor.copy(
+                accountId,
+                photo.ownerId,
+                photo.getObjectId(),
+                photo.accessKey
+            )
+                .fromIOToMain({ onPhotoCopied() }) { t ->
+                    view?.let {
+                        showError(
+                            it,
+                            Utils.getCauseIfRuntime(t)
+                        )
+                    }
+                })
     }
 
     fun fireDetectQRClick(context: Activity) {

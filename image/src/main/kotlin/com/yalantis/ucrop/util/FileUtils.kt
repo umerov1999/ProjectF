@@ -24,6 +24,7 @@ import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
+import androidx.core.net.toUri
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
@@ -145,7 +146,7 @@ object FileUtils {
                 if (!id.isNullOrEmpty()) {
                     return try {
                         val contentUri = ContentUris.withAppendedId(
-                            Uri.parse("content://downloads/public_downloads"), id.toLong()
+                            "content://downloads/public_downloads".toUri(), id.toLong()
                         )
                         getDataColumn(context, contentUri, null, null)
                     } catch (e: NumberFormatException) {

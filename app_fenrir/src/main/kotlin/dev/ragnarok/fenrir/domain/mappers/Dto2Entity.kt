@@ -622,37 +622,42 @@ object Dto2Entity {
                 .setAllWallCount(counters.all_wall)
                 .setOwnWallCount(counters.owner_wall).setPostponedWallCount(counters.postponed_wall)
         }
-        dbo.setMilitaries(mapAll(
-            user.militaries
-        ) {
-            mapMilitary(
-                it
-            )
-        })
-        dbo.setCareers(mapAll(
-            user.careers
-        ) {
-            mapCareer(it)
-        })
-        dbo.setUniversities(mapAll(
-            user.universities
-        ) {
-            mapUniversity(
-                it
-            )
-        })
-        dbo.setSchools(mapAll(
-            user.schools
-        ) {
-            mapSchool(it)
-        })
-        dbo.setRelatives(mapAll(
-            user.relatives
-        ) {
-            mapUserRelative(
-                it
-            )
-        })
+        dbo.setMilitaries(
+            mapAll(
+                user.militaries
+            ) {
+                mapMilitary(
+                    it
+                )
+            })
+        dbo.setCareers(
+            mapAll(
+                user.careers
+            ) {
+                mapCareer(it)
+            })
+        dbo.setUniversities(
+            mapAll(
+                user.universities
+            ) {
+                mapUniversity(
+                    it
+                )
+            })
+        dbo.setSchools(
+            mapAll(
+                user.schools
+            ) {
+                mapSchool(it)
+            })
+        dbo.setRelatives(
+            mapAll(
+                user.relatives
+            ) {
+                mapUserRelative(
+                    it
+                )
+            })
         dbo.setRelation(user.relation)
         dbo.setRelationPartnerId(user.relation_partner?.id.orZero())
         dbo.setLanguages(user.langs)
@@ -797,11 +802,12 @@ object Dto2Entity {
         } else {
             entity.setAttachments(null)
         }
-        entity.setCopyHistory(mapAll(
-            news.copy_history
-        ) {
-            mapPost(it)
-        })
+        entity.setCopyHistory(
+            mapAll(
+                news.copy_history
+            ) {
+                mapPost(it)
+            })
         return entity
     }
 
@@ -1225,11 +1231,12 @@ object Dto2Entity {
             dbo.setAttachments(null)
         }
         if (dto.hasCopyHistory()) {
-            dbo.setCopyHierarchy(mapAll(
-                dto.copy_history
-            ) {
-                mapPost(it)
-            })
+            dbo.setCopyHierarchy(
+                mapAll(
+                    dto.copy_history
+                ) {
+                    mapPost(it)
+                })
         } else {
             dbo.setCopyHierarchy(null)
         }
@@ -1513,11 +1520,12 @@ object Dto2Entity {
             .setPayload(dto.payload)
             .setConversationMessageId(dto.conversation_message_id)
             .setReactionId(dto.reaction_id)
-            .setReactions(mapAll(
-                dto.reactions
-            ) {
-                mapReaction(it)
-            })
+            .setReactions(
+                mapAll(
+                    dto.reactions
+                ) {
+                    mapReaction(it)
+                })
         if (entity.isHasAttachments) {
             entity.setAttachments(dto.attachments?.let { mapAttachmentsList(it) })
         } else {

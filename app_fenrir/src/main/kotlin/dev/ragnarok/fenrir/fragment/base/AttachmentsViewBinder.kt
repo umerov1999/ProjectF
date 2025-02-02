@@ -16,6 +16,9 @@ import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.annotation.DrawableRes
+import androidx.core.util.size
+import androidx.core.view.isEmpty
+import androidx.core.view.isNotEmpty
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.imageview.ShapeableImageView
 import com.squareup.picasso3.Transformation
@@ -152,8 +155,8 @@ class AttachmentsViewBinder(
         peerId: Long?
     ) {
         if (voices.isNullOrEmpty() || container == null) {
-            if (container?.childCount.orZero() > 0) {
-                container?.removeAllViews()
+            if (container?.isNotEmpty() == true) {
+                container.removeAllViews()
             }
             container?.visibility = View.GONE
             return
@@ -220,7 +223,7 @@ class AttachmentsViewBinder(
         speed: Boolean
     ) {
         val holders: SparseArray<MutableSet<WeakReference<VoiceHolder>>> = mVoiceSharedHolders.cache
-        for (i in 0 until holders.size()) {
+        for (i in 0 until holders.size) {
             val key = holders.keyAt(i)
             val play = key == voiceMessageId
             val set = holders[key]
@@ -239,7 +242,7 @@ class AttachmentsViewBinder(
 
     fun disableVoiceMessagePlaying() {
         val holders: SparseArray<MutableSet<WeakReference<VoiceHolder>>> = mVoiceSharedHolders.cache
-        for (i in 0 until holders.size()) {
+        for (i in 0 until holders.size) {
             val key = holders.keyAt(i)
             val set = holders[key]
             for (reference in set) {
@@ -336,14 +339,14 @@ class AttachmentsViewBinder(
 
     private fun displayStickers(stickers: List<Sticker>?, stickersContainer: ViewGroup?) {
         if (stickers.isNullOrEmpty() || stickersContainer == null) {
-            if (stickersContainer?.childCount.orZero() > 0) {
-                stickersContainer?.removeAllViews()
+            if (stickersContainer?.isNotEmpty() == true) {
+                stickersContainer.removeAllViews()
             }
             stickersContainer?.visibility = View.GONE
             return
         }
         stickersContainer.visibility = View.VISIBLE
-        if (stickersContainer.childCount == 0) {
+        if (stickersContainer.isEmpty()) {
             val localView = ThorVGLottieView(mContext)
             stickersContainer.addView(localView)
         }
@@ -390,8 +393,8 @@ class AttachmentsViewBinder(
         layout: Int
     ) {
         if (posts.isNullOrEmpty() || container == null) {
-            if (container?.childCount.orZero() > 0) {
-                container?.removeAllViews()
+            if (container?.isNotEmpty() == true) {
+                container.removeAllViews()
             }
             container?.visibility = View.GONE
             return
@@ -461,8 +464,8 @@ class AttachmentsViewBinder(
     @SuppressLint("SetTextI18n")
     fun displayFriendsPost(users: List<User>?, container: ViewGroup?, layout: Int) {
         if (users.isNullOrEmpty() || container == null) {
-            if (container?.childCount.orZero() > 0) {
-                container?.removeAllViews()
+            if (container?.isNotEmpty() == true) {
+                container.removeAllViews()
             }
             container?.visibility = View.GONE
             return
@@ -518,8 +521,8 @@ class AttachmentsViewBinder(
         postsAsLinks: Boolean
     ) {
         if (fwds.isNullOrEmpty() || fwdContainer == null) {
-            if (fwdContainer?.childCount.orZero() > 0) {
-                fwdContainer?.removeAllViews()
+            if (fwdContainer?.isNotEmpty() == true) {
+                fwdContainer.removeAllViews()
             }
             fwdContainer?.visibility = View.GONE
             return
@@ -602,8 +605,8 @@ class AttachmentsViewBinder(
 
     private fun displayDocs(docs: List<DocLink>?, root: ViewGroup?) {
         if (docs.isNullOrEmpty() || root == null) {
-            if (root?.childCount.orZero() > 0) {
-                root?.removeAllViews()
+            if (root?.isNotEmpty() == true) {
+                root.removeAllViews()
             }
             root?.visibility = View.GONE
             return
@@ -940,8 +943,8 @@ class AttachmentsViewBinder(
 
     private fun displayBigLinks(bigLinks: List<Link>?, root: ViewGroup?) {
         if (bigLinks.isNullOrEmpty() || root == null) {
-            if (root?.childCount.orZero() > 0) {
-                root?.removeAllViews()
+            if (root?.isNotEmpty() == true) {
+                root.removeAllViews()
             }
             root?.visibility = View.GONE
             return
@@ -1016,8 +1019,8 @@ class AttachmentsViewBinder(
 
     private fun displayArticles(articles: List<Article>?, root: ViewGroup?) {
         if (articles.isNullOrEmpty() || root == null) {
-            if (root?.childCount.orZero() > 0) {
-                root?.removeAllViews()
+            if (root?.isNotEmpty() == true) {
+                root.removeAllViews()
             }
             root?.visibility = View.GONE
             return
@@ -1265,7 +1268,7 @@ class AttachmentsViewBinder(
 
         internal fun safeRemoveChildrenAndGoneParent(container: ViewGroup?) {
             if (container != null) {
-                if (container.childCount > 0) {
+                if (container.isNotEmpty()) {
                     container.removeAllViews()
                 }
                 container.visibility = View.GONE

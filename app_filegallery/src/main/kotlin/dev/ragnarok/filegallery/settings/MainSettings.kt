@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Environment
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.edit
 import de.maxr1998.modernpreferences.PreferenceScreen.Companion.getPreferences
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.FileUtils
@@ -50,12 +51,12 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override fun setMainTheme(key: String) {
         val preferences = getPreferences(app)
-        preferences.edit().putString("app_theme", key).apply()
+        preferences.edit { putString("app_theme", key) }
     }
 
     override fun switchNightMode(@AppCompatDelegate.NightMode key: Int) {
         val preferences = getPreferences(app)
-        preferences.edit().putString("night_switch", key.toString()).apply()
+        preferences.edit { putString("night_switch", key.toString()) }
     }
 
     override fun isDarkModeEnabled(context: Context): Boolean {
@@ -90,7 +91,7 @@ internal class MainSettings(context: Context) : IMainSettings {
             if (ret.isNullOrEmpty() || !File(ret).exists()) {
                 ret =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).absolutePath
-                getPreferences(app).edit().putString("music_dir", ret).apply()
+                getPreferences(app).edit { putString("music_dir", ret) }
             }
             return ret!!
         }
@@ -101,7 +102,7 @@ internal class MainSettings(context: Context) : IMainSettings {
             if (ret.isNullOrEmpty() || !File(ret).exists()) {
                 ret =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).absolutePath + "/Fenrir"
-                getPreferences(app).edit().putString("photo_dir", ret).apply()
+                getPreferences(app).edit { putString("photo_dir", ret) }
             }
             return ret
         }
@@ -112,7 +113,7 @@ internal class MainSettings(context: Context) : IMainSettings {
             if (ret.isNullOrEmpty() || !File(ret).exists()) {
                 ret =
                     Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).absolutePath + "/Fenrir"
-                getPreferences(app).edit().putString("video_dir", ret).apply()
+                getPreferences(app).edit { putString("video_dir", ret) }
             }
             return ret
         }
@@ -128,11 +129,12 @@ internal class MainSettings(context: Context) : IMainSettings {
         }
 
     override fun setLocalServer(settings: LocalServerSettings) {
-        getPreferences(app).edit()
-            .putString(
+        getPreferences(app).edit {
+            putString(
                 "local_media_server",
                 kJson.encodeToString(LocalServerSettings.serializer(), settings)
-            ).apply()
+            )
+        }
         localServerPublisher.myEmit(settings)
     }
 
@@ -152,11 +154,12 @@ internal class MainSettings(context: Context) : IMainSettings {
         }
 
     override fun setPlayerCoverBackgroundSettings(settings: PlayerCoverBackgroundSettings) {
-        getPreferences(app).edit()
-            .putString(
+        getPreferences(app).edit {
+            putString(
                 "player_background_settings_json",
                 kJson.encodeToString(PlayerCoverBackgroundSettings.serializer(), settings)
-            ).apply()
+            )
+        }
     }
 
     override val slidrSettings: SlidrSettings
@@ -170,11 +173,12 @@ internal class MainSettings(context: Context) : IMainSettings {
         }
 
     override fun setSlidrSettings(settings: SlidrSettings) {
-        getPreferences(app).edit()
-            .putString(
+        getPreferences(app).edit {
+            putString(
                 "slidr_settings_json",
                 kJson.encodeToString(SlidrSettings.serializer(), settings)
-            ).apply()
+            )
+        }
     }
 
     override val musicLifecycle: Int
@@ -184,7 +188,7 @@ internal class MainSettings(context: Context) : IMainSettings {
             )!!
                 .trim().toInt()
             if (v < 60000) {
-                getPreferences(app).edit().putString("lifecycle_music_service", "60000").apply()
+                getPreferences(app).edit { putString("lifecycle_music_service", "60000") }
                 v = 60000
             }
             v
@@ -241,10 +245,12 @@ internal class MainSettings(context: Context) : IMainSettings {
     override val isInstant_photo_display: Boolean
         get() {
             if (!getPreferences(app).contains("instant_photo_display")) {
-                getPreferences(app).edit().putBoolean(
-                    "instant_photo_display",
-                    FenrirNative.isNativeLoaded && FileUtils.threadsCount > 4
-                ).apply()
+                getPreferences(app).edit {
+                    putBoolean(
+                        "instant_photo_display",
+                        FenrirNative.isNativeLoaded && FileUtils.threadsCount > 4
+                    )
+                }
             }
             return getPreferences(app).getBoolean("instant_photo_display", false)
         }
@@ -332,10 +338,12 @@ internal class MainSettings(context: Context) : IMainSettings {
     override val picassoDispatcher: Int
         get() = try {
             if (!getPreferences(app).contains("picasso_dispatcher")) {
-                getPreferences(app).edit().putString(
-                    "picasso_dispatcher",
-                    if (FenrirNative.isNativeLoaded && FileUtils.threadsCount > 4) "1" else "0"
-                ).apply()
+                getPreferences(app).edit {
+                    putString(
+                        "picasso_dispatcher",
+                        if (FenrirNative.isNativeLoaded && FileUtils.threadsCount > 4) "1" else "0"
+                    )
+                }
             }
             getPreferences(app).getString("picasso_dispatcher", "0")!!
                 .trim().toInt()

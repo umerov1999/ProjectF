@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.LayoutRes
+import androidx.core.view.isNotEmpty
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
@@ -205,7 +206,7 @@ abstract class RecyclerBindableAdapter<T, VH : RecyclerView.ViewHolder>(private 
 
         //empty out our FrameLayout and replace with our header/footer
         (vh.itemView as ViewGroup).let {
-            if (it.childCount > 0) {
+            if (it.isNotEmpty()) {
                 it.removeAllViews()
             }
             it.addView(view)

@@ -65,13 +65,14 @@ class FavePagesPresenter(
     private fun loadActualData(offset: Int) {
         actualDataLoading = true
         resolveRefreshingView()
-        actualDataDisposable.add(faveInteractor.getPages(accountId, GET_COUNT, offset, isUser)
-            .fromIOToMain({
-                onActualDataReceived(
-                    offset,
-                    it
-                )
-            }) { t -> onActualDataGetError(t) })
+        actualDataDisposable.add(
+            faveInteractor.getPages(accountId, GET_COUNT, offset, isUser)
+                .fromIOToMain({
+                    onActualDataReceived(
+                        offset,
+                        it
+                    )
+                }) { t -> onActualDataGetError(t) })
     }
 
     internal fun onActualDataGetError(t: Throwable) {
@@ -127,12 +128,13 @@ class FavePagesPresenter(
 
     private fun loadAllCachedData() {
         cacheLoadingNow = true
-        cacheDisposable.add(faveInteractor.getCachedPages(accountId, isUser)
-            .fromIOToMain({ onCachedDataReceived(it) }) { t ->
-                onCachedGetError(
-                    t
-                )
-            })
+        cacheDisposable.add(
+            faveInteractor.getCachedPages(accountId, isUser)
+                .fromIOToMain({ onCachedDataReceived(it) }) { t ->
+                    onCachedGetError(
+                        t
+                    )
+                })
     }
 
     private fun onCachedGetError(t: Throwable) {
@@ -196,17 +198,19 @@ class FavePagesPresenter(
     }
 
     fun fireOwnerDelete(owner: Owner) {
-        appendJob(faveInteractor.removePage(accountId, owner.ownerId, isUser)
-            .fromIOToMain({ onUserRemoved(accountId, owner.ownerId) }) { t ->
-                showError(getCauseIfRuntime(t))
-            })
+        appendJob(
+            faveInteractor.removePage(accountId, owner.ownerId, isUser)
+                .fromIOToMain({ onUserRemoved(accountId, owner.ownerId) }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
     }
 
     fun firePushFirst(owner: Owner) {
-        appendJob(faveInteractor.pushFirst(accountId, owner.ownerId)
-            .fromIOToMain({ fireRefresh() }) { t ->
-                showError(getCauseIfRuntime(t))
-            })
+        appendJob(
+            faveInteractor.pushFirst(accountId, owner.ownerId)
+                .fromIOToMain({ fireRefresh() }) { t ->
+                    showError(getCauseIfRuntime(t))
+                })
     }
 
     fun fireMention(owner: Owner) {

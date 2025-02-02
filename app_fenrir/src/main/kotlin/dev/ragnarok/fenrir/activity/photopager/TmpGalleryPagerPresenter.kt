@@ -34,12 +34,13 @@ class TmpGalleryPagerPresenter : PhotoPagerPresenter {
 
     private fun loadDataFromDatabase(source: TmpSource) {
         changeLoadingNowState(true)
-        appendJob(Stores.instance
-            .tempStore()
-            .getTemporaryData(source.ownerId, source.sourceId, Serializers.PHOTOS_SERIALIZER)
-            .fromIOToMain({ onInitialLoadingFinished(it) }) {
-                PersistentLogger.logThrowable("TmpGalleryPagerPresenter", it)
-            })
+        appendJob(
+            Stores.instance
+                .tempStore()
+                .getTemporaryData(source.ownerId, source.sourceId, Serializers.PHOTOS_SERIALIZER)
+                .fromIOToMain({ onInitialLoadingFinished(it) }) {
+                    PersistentLogger.logThrowable("TmpGalleryPagerPresenter", it)
+                })
     }
 
     private fun loadDataFromParcelNative(parcelNative: Long) {

@@ -14,6 +14,7 @@ import android.view.View.OnCreateContextMenuListener
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.graphics.createBitmap
 import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.model.tags.TagOwner
@@ -97,7 +98,7 @@ class TagOwnerAdapter(private var data: List<TagOwner>, private val context: Con
                 color2 = "#adadff"
             }
         }
-        val bitmap: Bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val bitmap: Bitmap = createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val gradient = LinearGradient(
             0f,
             0f,

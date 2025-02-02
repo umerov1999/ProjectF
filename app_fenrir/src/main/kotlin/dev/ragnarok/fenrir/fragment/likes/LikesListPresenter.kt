@@ -29,21 +29,22 @@ class LikesListPresenter(
         loadingNow = true
         //this.loadingOffset = offset;
         resolveRefreshingView()
-        netDisposable.add(likesInteractor.getLikes(
-            accountId,
-            type,
-            ownerId,
-            itemId,
-            filter,
-            50,
-            offset
-        )
-            .fromIOToMain({ owners ->
-                onDataReceived(
-                    offset,
-                    owners
-                )
-            }) { t -> onDataGetError(t) })
+        netDisposable.add(
+            likesInteractor.getLikes(
+                accountId,
+                type,
+                ownerId,
+                itemId,
+                filter,
+                50,
+                offset
+            )
+                .fromIOToMain({ owners ->
+                    onDataReceived(
+                        offset,
+                        owners
+                    )
+                }) { t -> onDataGetError(t) })
     }
 
     private fun onDataGetError(t: Throwable) {

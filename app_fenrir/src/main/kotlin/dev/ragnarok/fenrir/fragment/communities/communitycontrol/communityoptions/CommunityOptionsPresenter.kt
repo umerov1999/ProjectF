@@ -47,23 +47,24 @@ class CommunityOptionsPresenter(
         mObsceneStopWords: Int?,
         mObsceneStopWordsText: String?
     ) {
-        appendJob(InteractorFactory.createGroupSettingsInteractor().edit(
-            accountId,
-            community.id,
-            name,
-            description,
-            address,
-            settings.access,
-            website,
-            if (community.communityType != VKApiCommunity.Type.PAGE) settings.category
-                ?.getObjectId() else null,
-            if (community.communityType == VKApiCommunity.Type.PAGE) settings.dateCreated
-                ?.let { SimpleDateFormat("dd.mm.yyyy", Utils.appLocale).format(it) } else null,
-            settings.age, mObsceneFilter, mObsceneStopWords, mObsceneStopWordsText
-        )
-            .fromIOToMain({ onEditComplete() }, {
-                onEditError(Utils.getCauseIfRuntime(it))
-            })
+        appendJob(
+            InteractorFactory.createGroupSettingsInteractor().edit(
+                accountId,
+                community.id,
+                name,
+                description,
+                address,
+                settings.access,
+                website,
+                if (community.communityType != VKApiCommunity.Type.PAGE) settings.category
+                    ?.getObjectId() else null,
+                if (community.communityType == VKApiCommunity.Type.PAGE) settings.dateCreated
+                    ?.let { SimpleDateFormat("dd.mm.yyyy", Utils.appLocale).format(it) } else null,
+                settings.age, mObsceneFilter, mObsceneStopWords, mObsceneStopWordsText
+            )
+                .fromIOToMain({ onEditComplete() }, {
+                    onEditError(Utils.getCauseIfRuntime(it))
+                })
         )
     }
 

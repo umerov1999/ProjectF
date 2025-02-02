@@ -42,13 +42,14 @@ class NewsfeedMentionsPresenter(
     }
 
     private fun load(offset: Int) {
-        appendJob(interactor.getMentions(accountId, ownerId, 50, offset, null, null)
-            .fromIOToMain({
-                onDataReceived(
-                    offset,
-                    it.first
-                )
-            }) { throwable -> onRequestError(throwable) })
+        appendJob(
+            interactor.getMentions(accountId, ownerId, 50, offset, null, null)
+                .fromIOToMain({
+                    onDataReceived(
+                        offset,
+                        it.first
+                    )
+                }) { throwable -> onRequestError(throwable) })
     }
 
     private fun onRequestError(throwable: Throwable) {

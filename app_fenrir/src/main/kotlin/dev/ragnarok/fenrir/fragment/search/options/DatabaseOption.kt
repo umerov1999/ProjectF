@@ -55,7 +55,7 @@ class DatabaseOption : BaseOption {
     override fun hashCode(): Int {
         var result = super.hashCode()
         result = 31 * result + type
-        result = 31 * result + if (value != null) value.hashCode() else 0
+        result = 31 * result + (value?.hashCode() ?: 0)
         return result
     }
 

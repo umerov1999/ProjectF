@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.isNotEmpty
 import androidx.core.widget.TextViewCompat
 import com.squareup.picasso3.Transformation
 import dev.ragnarok.fenrir.Constants
@@ -84,7 +85,7 @@ class CommentContainer : LinearLayout {
         onHashTagClickListener: EmojiconTextView.OnHashTagClickListener?
     ) {
         if (commentsData.isNullOrEmpty()) {
-            if (childCount > 0) {
+            if (isNotEmpty()) {
                 removeAllViews()
             }
             visibility = GONE
@@ -99,7 +100,7 @@ class CommentContainer : LinearLayout {
             }
         }
         if (comments.isEmpty()) {
-            if (childCount > 0) {
+            if (isNotEmpty()) {
                 removeAllViews()
             }
             visibility = GONE

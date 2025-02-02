@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isNotEmpty
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -586,7 +587,7 @@ class AudioContainer : LinearLayout {
         if (audios.isNullOrEmpty()) {
             dispose()
 
-            if (childCount > 0) {
+            if (isNotEmpty()) {
                 removeAllViews()
             }
             visibility = GONE

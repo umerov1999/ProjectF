@@ -86,10 +86,11 @@ class UserBannedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private fun loadNextPart(offset: Int) {
         if (loadinNow) return
         setLoadinNow(true)
-        appendJob(interactor.getBanned(accountId, 50, offset)
-            .fromIOToMain(
-                { part -> onBannedPartReceived(offset, part) }
-            ) { throwable -> onBannedPartGetError(getCauseIfRuntime(throwable)) })
+        appendJob(
+            interactor.getBanned(accountId, 50, offset)
+                .fromIOToMain(
+                    { part -> onBannedPartReceived(offset, part) }
+                ) { throwable -> onBannedPartGetError(getCauseIfRuntime(throwable)) })
     }
 
     fun fireRefresh() {
@@ -110,12 +111,13 @@ class UserBannedPresenter(accountId: Long, savedInstanceState: Bundle?) :
 
     fun fireOwnersSelected(owners: ArrayList<Owner>) {
         if (owners.nonNullNoEmpty()) {
-            appendJob(interactor.banOwners(accountId, owners)
-                .fromIOToMain({ onAddingComplete() }) { throwable ->
-                    onAddError(
-                        getCauseIfRuntime(throwable)
-                    )
-                })
+            appendJob(
+                interactor.banOwners(accountId, owners)
+                    .fromIOToMain({ onAddingComplete() }) { throwable ->
+                        onAddError(
+                            getCauseIfRuntime(throwable)
+                        )
+                    })
         }
     }
 
@@ -134,12 +136,13 @@ class UserBannedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     }
 
     fun fireRemoveClick(owner: Owner) {
-        appendJob(interactor.unbanOwner(accountId, owner.ownerId)
-            .fromIOToMain({ onRemoveComplete() }) { throwable ->
-                onRemoveError(
-                    getCauseIfRuntime(throwable)
-                )
-            })
+        appendJob(
+            interactor.unbanOwner(accountId, owner.ownerId)
+                .fromIOToMain({ onRemoveComplete() }) { throwable ->
+                    onRemoveError(
+                        getCauseIfRuntime(throwable)
+                    )
+                })
     }
 
     fun fireOwnerClick(owner: Owner) {
@@ -152,17 +155,19 @@ class UserBannedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     init {
         loadNextPart(0)
         val repository = blacklistRepository
-        appendJob(repository.observeAdding()
-            .filter { it.first == accountId }
-            .map {
-                it.second
-            }
-            .sharedFlowToMain { onOwnerAdded(it) })
-        appendJob(repository.observeRemoving()
-            .filter { it.first == accountId }
-            .map {
-                it.second
-            }
-            .sharedFlowToMain { onOwnerRemoved(it) })
+        appendJob(
+            repository.observeAdding()
+                .filter { it.first == accountId }
+                .map {
+                    it.second
+                }
+                .sharedFlowToMain { onOwnerAdded(it) })
+        appendJob(
+            repository.observeRemoving()
+                .filter { it.first == accountId }
+                .map {
+                    it.second
+                }
+                .sharedFlowToMain { onOwnerRemoved(it) })
     }
 }

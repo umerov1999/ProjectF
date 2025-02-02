@@ -65,29 +65,30 @@ class PostPublishPrepareActivity : AppCompatActivity(), RecyclerMenuAdapter.Acti
             links = ActivityUtils.checkLinks(this)
             setLoading(true)
             val interactor = owners
-            compositeJob.add(interactor.getCommunitiesWhereAdmin(
-                accountId,
-                admin = true,
-                editor = true,
-                moderator = false
-            )
-                .zip(
-                    interactor.getBaseOwnerInfo(
-                        accountId,
-                        accountId,
-                        IOwnersRepository.MODE_NET
-                    )
-                ) { owners, owner ->
-                    val result: MutableList<Owner> = ArrayList()
-                    result.add(owner)
-                    result.addAll(owners)
-                    result
-                }
-                .fromIOToMain({ owners -> onOwnersReceived(owners) }) { throwable ->
-                    onOwnersGetError(
-                        throwable
-                    )
-                })
+            compositeJob.add(
+                interactor.getCommunitiesWhereAdmin(
+                    accountId,
+                    admin = true,
+                    editor = true,
+                    moderator = false
+                )
+                    .zip(
+                        interactor.getBaseOwnerInfo(
+                            accountId,
+                            accountId,
+                            IOwnersRepository.MODE_NET
+                        )
+                    ) { owners, owner ->
+                        val result: MutableList<Owner> = ArrayList()
+                        result.add(owner)
+                        result.addAll(owners)
+                        result
+                    }
+                    .fromIOToMain({ owners -> onOwnersReceived(owners) }) { throwable ->
+                        onOwnersGetError(
+                            throwable
+                        )
+                    })
         }
         updateViews()
     }

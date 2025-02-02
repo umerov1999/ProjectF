@@ -69,19 +69,20 @@ class CatalogV2ListPresenter(
     private fun request() {
         netLoadingNow = true
         resolveLoading()
-        netDisposable.add(audioInteractor.getCatalogV2Sections(
-            accountId,
-            owner_id,
-            artist_id,
-            url,
-            query,
-            null
-        )
-            .fromIOToMain({ sections ->
-                onNetDataReceived(
-                    sections
-                )
-            }) { t -> onNetDataGetError(t) })
+        netDisposable.add(
+            audioInteractor.getCatalogV2Sections(
+                accountId,
+                owner_id,
+                artist_id,
+                url,
+                query,
+                null
+            )
+                .fromIOToMain({ sections ->
+                    onNetDataReceived(
+                        sections
+                    )
+                }) { t -> onNetDataGetError(t) })
     }
 
     private fun onNetDataGetError(t: Throwable) {

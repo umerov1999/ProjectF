@@ -2,7 +2,14 @@ package dev.ragnarok.fenrir.fragment.search.criteria
 
 import android.os.Parcel
 import android.os.Parcelable
-import dev.ragnarok.fenrir.fragment.search.options.*
+import dev.ragnarok.fenrir.fragment.search.options.BaseOption
+import dev.ragnarok.fenrir.fragment.search.options.DatabaseOption
+import dev.ragnarok.fenrir.fragment.search.options.SimpleBooleanOption
+import dev.ragnarok.fenrir.fragment.search.options.SimpleDateOption
+import dev.ragnarok.fenrir.fragment.search.options.SimpleGPSOption
+import dev.ragnarok.fenrir.fragment.search.options.SimpleNumberOption
+import dev.ragnarok.fenrir.fragment.search.options.SimpleTextOption
+import dev.ragnarok.fenrir.fragment.search.options.SpinnerOption
 import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 
@@ -44,7 +51,7 @@ open class BaseSearchCriteria : Parcelable, Cloneable {
     }
 
     override fun hashCode(): Int {
-        var result = if (query != null) query.hashCode() else 0
+        var result = query?.hashCode() ?: 0
         result = 31 * result + options.hashCode()
         return result
     }

@@ -11,6 +11,7 @@ import android.graphics.PorterDuffXfermode
 import android.graphics.Shader
 import android.os.Build
 import androidx.annotation.ColorInt
+import androidx.core.graphics.createBitmap
 
 object ImageWithStrokeHelper {
     fun getRoundedBitmap(
@@ -30,7 +31,7 @@ object ImageWithStrokeHelper {
             obj = Picture()
             canvas = obj.beginRecording(bitmapWidth, bitmapHeight)
         } else {
-            output = Bitmap.createBitmap(
+            output = createBitmap(
                 bitmapWidth,
                 bitmapHeight,
                 workBitmap.config ?: Bitmap.Config.ARGB_8888
@@ -97,7 +98,7 @@ object ImageWithStrokeHelper {
             obj = Picture()
             canvas = obj.beginRecording(bitmapWidth, bitmapHeight)
         } else {
-            output = Bitmap.createBitmap(
+            output = createBitmap(
                 bitmapWidth,
                 bitmapHeight,
                 workBitmap.config ?: Bitmap.Config.ARGB_8888

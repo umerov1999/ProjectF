@@ -13,7 +13,7 @@ class TmpGalleryPagerPresenter(
         if (mPhotos.isEmpty()) {
             view?.closeOnly()
         } else {
-            view?.returnFileInfo(currentFile)
+            currentFile?.let { view?.returnFileInfo(it) }
         }
     }
 

@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.net.toFile
+import androidx.core.net.toUri
 import androidx.exifinterface.media.ExifInterface
 import com.squareup.picasso3.BitmapSafeResize
 import com.squareup.picasso3.BitmapUtils
@@ -26,7 +27,12 @@ import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.util.CoverSafeResize
 import okio.buffer
 import okio.source
-import java.io.*
+import java.io.ByteArrayInputStream
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.FilenameFilter
+import java.io.InputStream
 import java.nio.ByteBuffer
 
 class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
@@ -334,7 +340,7 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
         if (dst == null) {
             callback.onError(Throwable("Thumb not handle"))
         } else {
-            work(Uri.parse("file://" + dst.absolutePath), dir, request, callback)
+            work(("file://" + dst.absolutePath).toUri(), dir, request, callback)
         }
         return true
 
@@ -349,10 +355,8 @@ class PicassoFileManagerHandler(val context: Context) : RequestHandler() {
     }
 
     override fun load(picasso: Picasso, request: Request, callback: Callback) {
-        val requestUri = Uri.parse(
-            checkNotNull(request.uri) { "request.uri == null" }.toString()
-                .replace("thumb_", "")
-        )
+        val requestUri = checkNotNull(request.uri) { "request.uri == null" }.toString()
+            .replace("thumb_", "").toUri()
         if (prepareDirectory(requestUri, request, callback)) {
             return
         }

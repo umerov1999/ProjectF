@@ -7,13 +7,19 @@ import android.graphics.Matrix
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
+import androidx.core.graphics.scale
+import androidx.core.net.toUri
 import androidx.exifinterface.media.ExifInterface
 import dev.ragnarok.fenrir.getString
 import dev.ragnarok.fenrir.model.LocalPhoto
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.IOUtils.closeStreamQuietly
 import dev.ragnarok.fenrir.util.IOUtils.recycleBitmapQuietly
-import java.io.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
 import kotlin.math.roundToInt
 
 object UploadUtils {
@@ -174,7 +180,7 @@ object UploadUtils {
         autoCommit: Boolean
     ): List<UploadIntent> {
         val intent = UploadIntent(accountId, destination).setAutoCommit(autoCommit).setFileUri(
-            Uri.parse(path)
+            path?.toUri()
         )
         return listOf(intent)
     }
@@ -188,7 +194,7 @@ object UploadUtils {
             UploadIntent(accountId, destination)
                 .setSize(size)
                 .setAutoCommit(autoCommit)
-                .setFileUri(Uri.parse(file))
+                .setFileUri(file?.toUri())
         )
         return intents
     }
@@ -223,6 +229,6 @@ object UploadUtils {
         val ratio = (maxImageSize / realImage.width).coerceAtMost(maxImageSize / realImage.height)
         val width = (ratio * realImage.width).roundToInt()
         val height = (ratio * realImage.height).roundToInt()
-        return Bitmap.createScaledBitmap(realImage, width, height, filter)
+        return realImage.scale(width, height, filter)
     }
 }

@@ -59,7 +59,8 @@ class TagDirPresenter(private val owner_id: Long) :
     private fun loadActualData() {
         appendJob(
             storage.getTagDirs(owner_id)
-                .fromIOToMain({ onActualDataReceived(it) },
+                .fromIOToMain(
+                    { onActualDataReceived(it) },
                     { t -> onActualDataGetError(t) })
         )
     }

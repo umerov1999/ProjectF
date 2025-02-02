@@ -8,6 +8,8 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.core.content.withStyledAttributes
+import androidx.core.graphics.withSave
 import com.google.android.material.radiobutton.MaterialRadioButton
 import me.minetsh.imaging.R
 import kotlin.math.min
@@ -39,10 +41,10 @@ class IMGColorRadio : MaterialRadioButton, AnimatorUpdateListener {
     }
 
     private fun initialize(context: Context, attrs: AttributeSet?) {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.IMGColorRadio)
-        mColor = a.getColor(R.styleable.IMGColorRadio_image_color, Color.WHITE)
-        mStrokeColor = a.getColor(R.styleable.IMGColorRadio_image_stroke_color, Color.WHITE)
-        a.recycle()
+        context.withStyledAttributes(attrs, R.styleable.IMGColorRadio) {
+            mColor = getColor(R.styleable.IMGColorRadio_image_color, Color.WHITE)
+            mStrokeColor = getColor(R.styleable.IMGColorRadio_image_stroke_color, Color.WHITE)
+        }
         buttonDrawable = null
         mPaint.color = mColor
         mPaint.strokeWidth = 5f
@@ -70,14 +72,14 @@ class IMGColorRadio : MaterialRadioButton, AnimatorUpdateListener {
         val hw = width / 2f
         val hh = height / 2f
         val radius = min(hw, hh)
-        canvas.save()
-        mPaint.color = mColor
-        mPaint.style = Paint.Style.FILL
-        canvas.drawCircle(hw, hh, getBallRadius(radius), mPaint)
-        mPaint.color = mStrokeColor
-        mPaint.style = Paint.Style.STROKE
-        canvas.drawCircle(hw, hh, getRingRadius(radius), mPaint)
-        canvas.restore()
+        canvas.withSave {
+            mPaint.color = mColor
+            mPaint.style = Paint.Style.FILL
+            drawCircle(hw, hh, getBallRadius(radius), mPaint)
+            mPaint.color = mStrokeColor
+            mPaint.style = Paint.Style.STROKE
+            drawCircle(hw, hh, getRingRadius(radius), mPaint)
+        }
     }
 
     private fun getBallRadius(radius: Float): Float {

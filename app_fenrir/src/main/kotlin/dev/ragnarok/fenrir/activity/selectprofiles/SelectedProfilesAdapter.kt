@@ -15,7 +15,6 @@ import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.util.Utils
-import kotlin.String
 
 class SelectedProfilesAdapter(private val mContext: Context, private val mData: List<Owner>) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
