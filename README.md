@@ -1,9 +1,13 @@
 # Fenrir VK
 Первый языческий
 
+За основу взят проект Phoenix (R)
+
 <b>Языки: Русский, английский</b>
 
-<b>Kate версия авторизуется в вк используя app id от kate mobile, Fenrir версия от официального клиента. Вообщем разное api. Kate версия ничего общего с Kate Mobile не имеет</b>
+<b>Kate версия авторизуется в вк, используя app id от Kate Mobile. Fenrir версия - от официального клиента. Вообщем разное api. Kate версия ничего общего с Kate Mobile не имеет и существует на случай, если вк что-то сломает</b>
+
+По поводу функционала и т.д. - многие существующие моды и т.д. построены на официальном приложении. Этот клиент написан с нуля, поэтому многих привычных функций не будет, либо будут выглядить иначе.
 
 <b>Скриншоты:</b>
 <img src="Fenrir_VK.jpg"/>
@@ -26,7 +30,7 @@
         ./ffmpeg.sh
         после синхронизации репозитория ffmpeg введите min sdk version
         после сборки ffmpeg соберите native в Android Studio и поместите native-release.aar в compiled_native
-  3) Выберите flavor fenrir или kate и Debug или Release и соберите apk :)
+  3) Выберите flavor - fenrir или kate и Debug или Release и соберите apk :)
 
 Локальный медиа сервер https://github.com/umerov1999/FenrirMediaServer/releases
 
