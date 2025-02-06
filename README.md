@@ -46,4 +46,5 @@
 <b>Языки: Русский</b>
 
 <b>Скриншот:</b>
+
 <img src="FileGallery.jpg"/>
