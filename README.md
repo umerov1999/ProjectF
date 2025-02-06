@@ -3,6 +3,8 @@
 
 <b>Языки: Русский, английский</b>
 
+<b>Kate версия авторизуется в вк используя app id от kate mobile, Fenrir версия от официального клиента. Вообщем разное api. Kate версия ничего общего с Kate Mobile не имеет</b>
+
 <b>Скриншоты:</b>
 <img src="Fenrir_VK.jpg"/>
 
@@ -19,7 +21,12 @@
 
   1) Для релизных сборок вам нужен сертификат.
         keytool -genkey -v -keystore Fenrir.keystore -alias fenrir -storetype PKCS12 -keyalg RSA -keysize 2048 -validity 10000
-  2) Выберите тип сборки (fenrir_vk_full) Debug или Release и соберите apk :)
+  2) Далее нужно собрать нативную библиотеку. Создать папку compiled_native, раскомментировать [include ":native"] в settings.gradle
+        cd native
+        ./ffmpeg.sh
+        после синхронизации репозитория ffmpeg введите min sdk version
+        после сборки ffmpeg соберите native в Android Studio и поместите native-release.aar в compiled_native
+  3) Выберите flavor fenrir или kate и Debug или Release и соберите apk :)
 
 Локальный медиа сервер https://github.com/umerov1999/FenrirMediaServer/releases
 
