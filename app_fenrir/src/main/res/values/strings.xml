@@ -1737,6 +1737,7 @@
     <string name="show_photos_line">Show photos carousel</string>
     <string name="native_parcel_photo">Native Parcel for photo</string>
     <string name="native_parcel_story">Native Parcel for story</string>
+    <string name="native_parcel_docs">Native Parcel for docs</string>
     <string name="native_parcel_summary">If it crashes when opening</string>
     <string name="disable_likes">Hide likes (photos, walls)</string>
     <string name="date_start">Date from:</string>

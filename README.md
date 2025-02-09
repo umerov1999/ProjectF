@@ -9,7 +9,7 @@
 
 <b>Скриншоты:</b>
 
-<img src="Fenrir_VK.jpg"/>
+<img src="Fenrir_VK.jpg" alt=""/>
 
 <b>Инструкция по сборке:</b><br>
 Требуется:<br>
@@ -47,4 +47,4 @@
 
 <b>Скриншот:</b>
 
-<img src="FileGallery.jpg"/>
+<img src="FileGallery.jpg" alt=""/>

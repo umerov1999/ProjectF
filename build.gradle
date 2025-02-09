@@ -4,7 +4,8 @@ buildscript {
 
     ext.appCompileSDK = 35
     ext.appBuildTools = "35.0.1"
-    ext.appNdk = "28.0.12916984"
+    ext.appNdk = "28.0.13004108"
+    ext.appCMake = "3.31.5"
     ext.appMinSDK = is_developer_build ? 29 : 26
     ext.appTargetSDK = 31
     ext.appFenrirVersionCode = 999
@@ -92,7 +93,7 @@ buildscript {
         //maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.9.0-beta01"
+        classpath "com.android.tools.build:gradle:8.9.0-rc01"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
         classpath "com.google.gms:google-services:4.4.2"

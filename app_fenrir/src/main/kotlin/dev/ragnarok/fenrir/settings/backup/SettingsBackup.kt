@@ -148,6 +148,7 @@ class SettingsBackup {
         var disable_notifications: Boolean? = null
         var native_parcel_photo: Boolean? = null
         var native_parcel_story: Boolean? = null
+        var native_parcel_docs: Boolean? = null
         var dump_fcm: Boolean? = null
         var hint_stickers: Boolean? = null
         var enable_native: Boolean? = null

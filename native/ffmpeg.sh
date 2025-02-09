@@ -1,16 +1,25 @@
 #!/bin/bash
+FFMPEG_VERSION="7.1"
 SCRIPT_DIR=${PWD}
 cd ~/
-#git clone https://git.ffmpeg.org/ffmpeg.git
-#git clone https://github.com/FFmpeg/FFmpeg ffmpeg
-git clone https://github.com/FFmpeg/FFmpeg -b release/7.1 --single-branch ffmpeg
-cd ffmpeg
-#git checkout release/7.1
-rm -r -f ".git"
+##git clone https://git.ffmpeg.org/ffmpeg.git -b release/$FFMPEG_VERSION --single-branch
+#git clone https://github.com/FFmpeg/FFmpeg -b release/$FFMPEG_VERSION --single-branch ffmpeg
+#cd ffmpeg
+#rm -r -f ".git"
+
+wget https://github.com/FFmpeg/FFmpeg/archive/refs/heads/release/$FFMPEG_VERSION.zip
+if [[ $? -ne 0 ]]; then
+    echo "Wget failed!"
+    exit 1;
+fi
+unzip $FFMPEG_VERSION.zip
+rm $FFMPEG_VERSION.zip
+mv FFmpeg-release-$FFMPEG_VERSION ffmpeg
+
 
 ENABLED_DECODERS=(mpeg4 h264 hevc mp3 aac ac3 eac3 flac vorbis alac)
 HOST_PLATFORM="linux-x86_64"
-NDK_PATH="$HOME/Android/Sdk/ndk/28.0.12916984"
+NDK_PATH="$HOME/Android/Sdk/ndk/28.0.13004108"
 
 echo 'Please input platform version (Example 21 - Android 5.0): '
 read ANDROID_PLATFORM

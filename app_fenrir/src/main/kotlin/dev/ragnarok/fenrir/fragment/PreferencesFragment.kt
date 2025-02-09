@@ -1684,6 +1684,13 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 titleRes = R.string.native_parcel_story
             }
 
+            switch("native_parcel_docs") {
+                defaultValue = true
+                dependency = "enable_native"
+                summaryRes = R.string.native_parcel_summary
+                titleRes = R.string.native_parcel_docs
+            }
+
             editText("max_bitmap_resolution", parentFragmentManager) {
                 defaultValue = "4000"
                 textInputType = InputType.TYPE_CLASS_NUMBER

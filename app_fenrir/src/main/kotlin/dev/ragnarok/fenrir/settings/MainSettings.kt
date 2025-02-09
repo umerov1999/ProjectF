@@ -741,6 +741,8 @@ internal class MainSettings(context: Context) : IMainSettings {
         get() = getPreferences(app).getBoolean("validate_tls", true)
     override val isNative_parcel_story: Boolean
         get() = getPreferences(app).getBoolean("native_parcel_story", true)
+    override val isNative_parcel_docs: Boolean
+        get() = getPreferences(app).getBoolean("native_parcel_docs", true)
     override val isDoLogs: Boolean
         get() = isDeveloper_mode && getPreferences(app).getBoolean("do_logs", false)
     override val isDump_fcm: Boolean

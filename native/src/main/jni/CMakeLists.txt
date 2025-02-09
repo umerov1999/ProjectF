@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.31.4 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.31.5 FATAL_ERROR)
 project(fenrir_jni C CXX ASM)
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
@@ -63,6 +63,7 @@ add_library(thorvg STATIC
         animation/thorvg/src/renderer/tvgSwCanvas.cpp
         animation/thorvg/src/renderer/tvgTaskScheduler.cpp
         animation/thorvg/src/renderer/tvgText.cpp
+        animation/thorvg/src/renderer/tvgTrimPath.cpp
         animation/thorvg/src/renderer/tvgWgCanvas.cpp
         animation/thorvg/src/loaders/lottie/tvgLottieAnimation.cpp
         animation/thorvg/src/loaders/lottie/tvgLottieBuilder.cpp

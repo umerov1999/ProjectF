@@ -1,6 +1,5 @@
 package kotlinx.serialization.msgpack.stream
 
-import com.google.common.math.IntMath.mod
 import dev.ragnarok.fenrir.module.BufferWriteNative
 import okio.BufferedSource
 
@@ -92,6 +91,38 @@ class MsgPackDataInputArrayBuffer(private val byteArray: ByteArray) : MsgPackDat
 }
 
 class MsgPackDataOutputArrayBufferCompressed : MsgPackDataOutputBuffer() {
+    private val byteArrays = mutableListOf<ByteArray>()
+
+    override fun add(byte: Byte): Boolean {
+        return byteArrays.add(ByteArray(1) { byte })
+    }
+
+    override fun addAll(bytes: List<Byte>): Boolean {
+        if (bytes.isNotEmpty()) {
+            return byteArrays.add(bytes.toByteArray())
+        }
+        return true
+    }
+
+    override fun addAll(bytes: ByteArray): Boolean {
+        if (bytes.isNotEmpty()) {
+            return byteArrays.add(bytes)
+        }
+        return true
+    }
+
+    override fun toByteArray(): ByteArray {
+        val totalSize = byteArrays.sumOf { it.size }
+        val bytes = BufferWriteNative(totalSize)
+        byteArrays.forEach {
+            bytes.putByteArray(it)
+        }
+        return bytes.compressLZ4Buffer() ?: ByteArray(0)
+    }
+}
+
+/*
+class MsgPackDataOutputArrayBufferCompressed : MsgPackDataOutputBuffer() {
     private val bytes = BufferWriteNative(8192)
     override fun add(byte: Byte): Boolean {
         bytes.putChar(byte)
@@ -115,7 +146,7 @@ class MsgPackDataOutputArrayBufferCompressed : MsgPackDataOutputBuffer() {
     override fun toByteArray() = bytes.compressLZ4Buffer() ?: ByteArray(0)
 }
 
-class MsgPackDataBufferedOutputArrayBuffer : MsgPackDataOutputBuffer() {
+class MsgPackDataOutputArrayBuffer : MsgPackDataOutputBuffer() {
     private val bytes = ArrayList<Byte>()
     override fun add(byte: Byte): Boolean {
         if (mod(bytes.size, 8192) == 0) {
@@ -137,6 +168,7 @@ class MsgPackDataBufferedOutputArrayBuffer : MsgPackDataOutputBuffer() {
     override fun addAll(bytesArray: ByteArray) = addAll(bytesArray.toList())
     override fun toByteArray() = bytes.toByteArray()
 }
+ */
 
 class MsgPackDataInputOkio(private val bufferedSource: BufferedSource) : MsgPackDataInputBuffer() {
     private var index = 0

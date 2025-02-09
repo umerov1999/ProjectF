@@ -22,6 +22,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
 import com.google.android.material.slider.Slider
+import com.google.android.material.slider.TickVisibilityMode
 import de.maxr1998.modernpreferences.Preference
 import de.maxr1998.modernpreferences.PreferencesAdapter
 import de.maxr1998.modernpreferences.R
@@ -109,7 +110,8 @@ class SeekBarPreference(key: String) : Preference(key) {
             value = valueInternal.toFloat()
             valueFrom = min.toFloat()
             stepSize = step.toFloat()
-            isTickVisible = showTickMarks
+            tickVisibilityMode =
+                if (showTickMarks) TickVisibilityMode.TICK_VISIBILITY_AUTO_LIMIT else TickVisibilityMode.TICK_VISIBILITY_HIDDEN
 
             onSeek { v, done ->
                 if (done) {

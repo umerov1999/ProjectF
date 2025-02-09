@@ -4,15 +4,15 @@ import androidx.core.content.edit
 import de.maxr1998.modernpreferences.PreferenceScreen
 import dev.ragnarok.filegallery.Includes
 
-class StepArrayList<T>(list: List<T>, private val key: String? = null) : ArrayList<T>(list) {
+class StepList<T>(private val list: List<T>, private val key: String? = null) {
     private var currentItem = 0
     fun getNext(): T? {
-        if (isEmpty()) {
+        if (list.isEmpty()) {
             return null
         }
-        val curVl = get(currentItem)
+        val curVl = list[currentItem]
         currentItem++
-        if (currentItem >= size) {
+        if (currentItem >= list.size) {
             currentItem = 0
         }
         key?.let {
@@ -27,7 +27,7 @@ class StepArrayList<T>(list: List<T>, private val key: String? = null) : ArrayLi
         key?.let {
             currentItem =
                 PreferenceScreen.getPreferences(Includes.provideApplicationContext()).getInt(key, 0)
-            if (currentItem >= size) {
+            if (currentItem >= list.size) {
                 currentItem = 0
             }
         }

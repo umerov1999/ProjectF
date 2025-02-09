@@ -813,6 +813,9 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                                 ".sstmp"
                             ).absolutePath || sel.absolutePath == File(
                                 Environment.getExternalStorageDirectory(),
+                                ".picker_transcoded"
+                            ).absolutePath || sel.absolutePath == File(
+                                Environment.getExternalStorageDirectory(),
                                 ".SLOGAN"
                             ).absolutePath || sel.absolutePath == File(
                                 Environment.getExternalStorageDirectory(),

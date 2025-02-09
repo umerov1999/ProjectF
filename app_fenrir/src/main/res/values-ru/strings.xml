@@ -1500,6 +1500,7 @@
     <string name="show_photos_line">Показывать трекбар с фотками</string>
     <string name="native_parcel_photo">Нативный Parcel для фото</string>
     <string name="native_parcel_story">Нативный Parcel для историй</string>
+    <string name="native_parcel_docs">Нативный Parcel для документов</string>
     <string name="native_parcel_summary">Если вылетает при открытии</string>
     <string name="disable_likes">Отключить лайки (фото, стена)</string>
     <string name="date_start">Дата от:</string>

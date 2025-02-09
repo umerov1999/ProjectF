@@ -120,6 +120,7 @@ interface ISettings {
         val isValidate_tls: Boolean
         val isNative_parcel_photo: Boolean
         val isNative_parcel_story: Boolean
+        val isNative_parcel_docs: Boolean
         val isDoLogs: Boolean
         val isDump_fcm: Boolean
         val isAutoplay_gif: Boolean

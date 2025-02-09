@@ -2,11 +2,12 @@ package dev.ragnarok.fenrir.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 
-class Document : AbsModel {
+class Document : AbsModel, ParcelNative.ParcelableNative {
     val id: Int
     val ownerId: Long
     var title: String? = null
@@ -58,6 +59,23 @@ class Document : AbsModel {
         msgPeerId = parcel.readLong()
     }
 
+    internal constructor(parcel: ParcelNative) {
+        id = parcel.readInt()
+        ownerId = parcel.readLong()
+        title = parcel.readString()
+        size = parcel.readLong()
+        ext = parcel.readString()
+        url = parcel.readString()
+        date = parcel.readLong()
+        type = parcel.readInt()
+        accessKey = parcel.readString()
+        photoPreview = parcel.readParcelable(PhotoSizes.NativeCreator)
+        videoPreview = parcel.readParcelable(VideoPreview.NativeCreator)
+        graffiti = parcel.readParcelable(Graffiti.NativeCreator)
+        msgId = parcel.readInt()
+        msgPeerId = parcel.readLong()
+    }
+
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id)
         parcel.writeLong(ownerId)
@@ -73,6 +91,23 @@ class Document : AbsModel {
         parcel.writeTypedObjectCompat(graffiti, flags)
         parcel.writeInt(msgId)
         parcel.writeLong(msgPeerId)
+    }
+
+    override fun writeToParcelNative(dest: ParcelNative) {
+        dest.writeInt(id)
+        dest.writeLong(ownerId)
+        dest.writeString(title)
+        dest.writeLong(size)
+        dest.writeString(ext)
+        dest.writeString(url)
+        dest.writeLong(date)
+        dest.writeInt(type)
+        dest.writeString(accessKey)
+        dest.writeParcelable(photoPreview)
+        dest.writeParcelable(videoPreview)
+        dest.writeParcelable(graffiti)
+        dest.writeInt(msgId)
+        dest.writeLong(msgPeerId)
     }
 
     @AbsModelType
@@ -166,7 +201,7 @@ class Document : AbsModel {
         return this
     }
 
-    class Graffiti : AbsModel {
+    class Graffiti : AbsModel, ParcelNative.ParcelableNative {
         var src: String? = null
             private set
         var width = 0
@@ -181,10 +216,22 @@ class Document : AbsModel {
             height = parcel.readInt()
         }
 
+        internal constructor(parcel: ParcelNative) {
+            src = parcel.readString()
+            width = parcel.readInt()
+            height = parcel.readInt()
+        }
+
         override fun writeToParcel(parcel: Parcel, flags: Int) {
             parcel.writeString(src)
             parcel.writeInt(width)
             parcel.writeInt(height)
+        }
+
+        override fun writeToParcelNative(dest: ParcelNative) {
+            dest.writeString(src)
+            dest.writeInt(width)
+            dest.writeInt(height)
         }
 
         @AbsModelType
@@ -211,18 +258,27 @@ class Document : AbsModel {
             return 0
         }
 
-        companion object CREATOR : Parcelable.Creator<Graffiti> {
-            override fun createFromParcel(parcel: Parcel): Graffiti {
-                return Graffiti(parcel)
-            }
+        companion object {
+            @JvmField
+            val CREATOR: Parcelable.Creator<Graffiti> = object : Parcelable.Creator<Graffiti> {
+                override fun createFromParcel(parcel: Parcel): Graffiti {
+                    return Graffiti(parcel)
+                }
 
-            override fun newArray(size: Int): Array<Graffiti?> {
-                return arrayOfNulls(size)
+                override fun newArray(size: Int): Array<Graffiti?> {
+                    return arrayOfNulls(size)
+                }
             }
+            val NativeCreator: ParcelNative.Creator<Graffiti> =
+                object : ParcelNative.Creator<Graffiti> {
+                    override fun readFromParcelNative(dest: ParcelNative): Graffiti {
+                        return Graffiti(dest)
+                    }
+                }
         }
     }
 
-    class VideoPreview : AbsModel {
+    class VideoPreview : AbsModel, ParcelNative.ParcelableNative {
         var src: String? = null
             private set
         var width = 0
@@ -240,11 +296,25 @@ class Document : AbsModel {
             fileSize = parcel.readLong()
         }
 
+        internal constructor(parcel: ParcelNative) {
+            src = parcel.readString()
+            width = parcel.readInt()
+            height = parcel.readInt()
+            fileSize = parcel.readLong()
+        }
+
         override fun writeToParcel(parcel: Parcel, flags: Int) {
             parcel.writeString(src)
             parcel.writeInt(width)
             parcel.writeInt(height)
             parcel.writeLong(fileSize)
+        }
+
+        override fun writeToParcelNative(dest: ParcelNative) {
+            dest.writeString(src)
+            dest.writeInt(width)
+            dest.writeInt(height)
+            dest.writeLong(fileSize)
         }
 
         @AbsModelType
@@ -276,24 +346,43 @@ class Document : AbsModel {
             return 0
         }
 
-        companion object CREATOR : Parcelable.Creator<VideoPreview> {
-            override fun createFromParcel(parcel: Parcel): VideoPreview {
-                return VideoPreview(parcel)
-            }
+        companion object {
+            @JvmField
+            val CREATOR: Parcelable.Creator<VideoPreview> =
+                object : Parcelable.Creator<VideoPreview> {
+                    override fun createFromParcel(parcel: Parcel): VideoPreview {
+                        return VideoPreview(parcel)
+                    }
 
-            override fun newArray(size: Int): Array<VideoPreview?> {
-                return arrayOfNulls(size)
-            }
+                    override fun newArray(size: Int): Array<VideoPreview?> {
+                        return arrayOfNulls(size)
+                    }
+                }
+            val NativeCreator: ParcelNative.Creator<VideoPreview> =
+                object : ParcelNative.Creator<VideoPreview> {
+                    override fun readFromParcelNative(dest: ParcelNative): VideoPreview {
+                        return VideoPreview(dest)
+                    }
+                }
         }
     }
 
-    companion object CREATOR : Parcelable.Creator<Document> {
-        override fun createFromParcel(parcel: Parcel): Document {
-            return Document(parcel)
-        }
+    companion object {
+        @JvmField
+        val CREATOR: Parcelable.Creator<Document> = object : Parcelable.Creator<Document> {
+            override fun createFromParcel(parcel: Parcel): Document {
+                return Document(parcel)
+            }
 
-        override fun newArray(size: Int): Array<Document?> {
-            return arrayOfNulls(size)
+            override fun newArray(size: Int): Array<Document?> {
+                return arrayOfNulls(size)
+            }
         }
+        val NativeCreator: ParcelNative.Creator<Document> =
+            object : ParcelNative.Creator<Document> {
+                override fun readFromParcelNative(dest: ParcelNative): Document {
+                    return Document(dest)
+                }
+            }
     }
 }

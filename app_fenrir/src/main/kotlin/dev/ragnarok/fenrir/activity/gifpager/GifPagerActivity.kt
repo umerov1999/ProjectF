@@ -31,6 +31,9 @@ import dev.ragnarok.fenrir.getParcelableArrayListCompat
 import dev.ragnarok.fenrir.listener.AppStyleable
 import dev.ragnarok.fenrir.model.Document
 import dev.ragnarok.fenrir.model.PhotoSize
+import dev.ragnarok.fenrir.module.FenrirNative
+import dev.ragnarok.fenrir.module.parcel.ParcelFlags
+import dev.ragnarok.fenrir.module.parcel.ParcelNative
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceProvider
 import dev.ragnarok.fenrir.settings.CurrentTheme.getNavigationBarColor
@@ -191,7 +194,23 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
         val aid = requireArguments().getLong(Extra.ACCOUNT_ID)
         val index = requireArguments().getInt(Extra.INDEX)
         val documents: ArrayList<Document> =
-            requireArguments().getParcelableArrayListCompat(Extra.DOCS)!!
+            if (FenrirNative.isNativeLoaded && Settings.get()
+                    .main().isNative_parcel_docs
+            ) {
+                var pointer = requireArguments().getLong(Extra.DOCS)
+                requireArguments().putLong(Extra.DOCS, 0)
+                if (!Utils.isParcelNativeRegistered(pointer)) {
+                    pointer = 0
+                }
+                Utils.unregisterParcelNative(pointer)
+                ParcelNative.loadParcelableArrayList(
+                    pointer,
+                    Document.NativeCreator,
+                    ParcelFlags.EMPTY_LIST
+                )!!
+            } else {
+                requireArguments().getParcelableArrayListCompat(Extra.DOCS)!!
+            }
         return GifPagerPresenter(aid, documents, index, saveInstanceState)
     }
 
@@ -297,7 +316,16 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
             val args = Bundle()
             args.putLong(Extra.ACCOUNT_ID, aid)
             args.putInt(Extra.INDEX, index)
-            args.putParcelableArrayList(Extra.DOCS, documents)
+            if (FenrirNative.isNativeLoaded && Settings.get().main().isNative_parcel_docs) {
+                val pointer = ParcelNative.createParcelableList(documents, ParcelFlags.NULL_LIST)
+                Utils.registerParcelNative(pointer)
+                args.putLong(
+                    Extra.DOCS,
+                    pointer
+                )
+            } else {
+                args.putParcelableArrayList(Extra.DOCS, documents)
+            }
             return args
         }
     }
