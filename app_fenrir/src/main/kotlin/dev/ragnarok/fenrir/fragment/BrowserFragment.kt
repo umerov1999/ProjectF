@@ -156,6 +156,70 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
         )
     }
 
+    private fun showBrowserImageMenuOptions(imageUrl: String) {
+        val menus = ModalBottomSheetDialogFragment.Builder()
+        val owner = arguments?.getString(Extra.OWNER)
+        var typeRes = arguments?.getString(Extra.TYPE).orEmpty()
+        if (owner != null && typeRes.isNotEmpty()) {
+            menus.add(
+                OptionRequest(
+                    R.id.button_ok,
+                    getString(R.string.download),
+                    R.drawable.save,
+                    true
+                )
+            )
+        }
+        menus.add(
+            OptionRequest(
+                R.id.button_cancel,
+                getString(R.string.copy_simple),
+                R.drawable.content_copy,
+                true
+            )
+        )
+        menus.show(
+            childFragmentManager,
+            "left_options"
+        ) { _, option ->
+            if (option.id == R.id.button_ok) {
+                val urlObj = URL(imageUrl)
+                val urlPath: String = urlObj.path
+                var fileName = urlPath.substring(urlPath.lastIndexOf('/') + 1)
+                if (fileName.lastIndexOf('.') != -1) {
+                    fileName = fileName.substring(0, fileName.lastIndexOf('.'))
+                }
+
+                if (owner == null || typeRes.isEmpty()) {
+                    return@show
+                }
+                typeRes += ("_$fileName")
+                val dir = File(Settings.get().main().photoDir)
+                if (!dir.isDirectory) {
+                    val created = dir.mkdirs()
+                    if (!created) {
+                        CustomToast.createCustomToast(requireActivity())
+                            .showToastError("Can't create directory $dir")
+                        return@show
+                    }
+                } else dir.setLastModified(Calendar.getInstance().time.time)
+                downloadResult(
+                    DownloadWorkUtils.makeLegalFilename(
+                        (DownloadWorkUtils.fixStart(owner) ?: typeRes),
+                        null
+                    ), dir, imageUrl, typeRes
+                )
+            } else if (option.id == R.id.button_cancel) {
+                val clipboard =
+                    requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
+                val clip = ClipData.newPlainText("response", imageUrl)
+                clipboard?.setPrimaryClip(clip)
+                CustomToast.createCustomToast(context)
+                    .showToast(R.string.copied_to_clipboard)
+            }
+        }
+    }
+
     override
     fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo?) {
         if (v is WebView) {
@@ -163,70 +227,12 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
             val type = result.type
 
             if (type == HitTestResult.IMAGE_TYPE || type == HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
-                val imageUrl = result.extra ?: return
-
-                val menus = ModalBottomSheetDialogFragment.Builder()
-                val owner = arguments?.getString(Extra.OWNER)
-                var typeRes = arguments?.getString(Extra.TYPE).orEmpty()
-                if (owner != null && typeRes.isNotEmpty()) {
-                    menus.add(
-                        OptionRequest(
-                            R.id.button_ok,
-                            getString(R.string.download),
-                            R.drawable.save,
-                            true
-                        )
-                    )
-                }
-                menus.add(
-                    OptionRequest(
-                        R.id.button_cancel,
-                        getString(R.string.copy_simple),
-                        R.drawable.content_copy,
-                        true
-                    )
-                )
-                menus.show(
-                    childFragmentManager,
-                    "left_options"
-                ) { _, option ->
-                    if (option.id == R.id.button_ok) {
-                        val urlObj = URL(imageUrl)
-                        val urlPath: String = urlObj.path
-                        var fileName = urlPath.substring(urlPath.lastIndexOf('/') + 1)
-                        if (fileName.lastIndexOf('.') != -1) {
-                            fileName = fileName.substring(0, fileName.lastIndexOf('.'))
-                        }
-
-                        if (owner == null || typeRes.isEmpty()) {
-                            return@show
-                        }
-                        typeRes += ("_$fileName")
-                        val dir = File(Settings.get().main().photoDir)
-                        if (!dir.isDirectory) {
-                            val created = dir.mkdirs()
-                            if (!created) {
-                                CustomToast.createCustomToast(requireActivity())
-                                    .showToastError("Can't create directory $dir")
-                                return@show
-                            }
-                        } else dir.setLastModified(Calendar.getInstance().time.time)
-                        downloadResult(
-                            DownloadWorkUtils.makeLegalFilename(
-                                (DownloadWorkUtils.fixStart(owner) ?: typeRes),
-                                null
-                            ), dir, imageUrl, typeRes
-                        )
-                    } else if (option.id == R.id.button_cancel) {
-                        val clipboard =
-                            requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
-                        val clip = ClipData.newPlainText("response", imageUrl)
-                        clipboard?.setPrimaryClip(clip)
-                        CustomToast.createCustomToast(context)
-                            .showToast(R.string.copied_to_clipboard)
-                    }
-                }
-            }
+                showBrowserImageMenuOptions(result.extra ?: return)
+            } /* else if (type == HitTestResult.UNKNOWN_TYPE){
+                val message = Message()
+                message.target = ImgHandler()
+                v.requestFocusNodeHref(message)
+            } */
         }
     }
 

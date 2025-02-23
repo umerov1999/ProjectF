@@ -49,6 +49,11 @@ import dev.ragnarok.fenrir.util.Utils.createOkHttp
 import dev.ragnarok.fenrir.util.Utils.declOfNum
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -513,6 +518,33 @@ object NotificationHelper {
         //}
     }
 
+    private fun downloadTask(file: File, url: String): Flow<Boolean> = flow {
+        val output: OutputStream = FileOutputStream(file)
+        val builder: OkHttpClient.Builder = createOkHttp(Constants.GIF_TIMEOUT, false)
+        val request: Request = Request.Builder()
+            .url(url)
+            .build()
+        val response: Response = builder.build().newCall(request).execute()
+        if (!response.isSuccessful) {
+            throw Exception(
+                "Server return " + response.code +
+                        " " + response.message
+            )
+        }
+        val inputStream = response.body.byteStream()
+        val input = BufferedInputStream(inputStream)
+        val data = ByteArray(80 * 1024)
+        var bufferLength: Int
+        while (input.read(data).also { bufferLength = it } != -1) {
+            output.write(data, 0, bufferLength)
+        }
+        //MimeType = response.header("Content-Type", "image/jpeg");
+        output.flush()
+        input.close()
+        response.close()
+        emit(true)
+    }
+
     private fun doDownloadDataNotification(
         mContext: Context,
         url: String?,
@@ -528,29 +560,15 @@ object NotificationHelper {
         try {
             if (!file.exists()) {
                 if (url.isNullOrEmpty()) throw Exception(mContext.getString(R.string.null_image_link))
-                val output: OutputStream = FileOutputStream(file)
-                val builder: OkHttpClient.Builder = createOkHttp(Constants.GIF_TIMEOUT, false)
-                val request: Request = Request.Builder()
-                    .url(url)
-                    .build()
-                val response: Response = builder.build().newCall(request).execute()
-                if (!response.isSuccessful) {
-                    throw Exception(
-                        "Server return " + response.code +
-                                " " + response.message
-                    )
+
+                runBlocking {
+                    NotificationScheduler.INSTANCE.launch {
+                        downloadTask(file, url).single()
+                    }.join()
                 }
-                val inputStream = response.body.byteStream()
-                val input = BufferedInputStream(inputStream)
-                val data = ByteArray(80 * 1024)
-                var bufferLength: Int
-                while (input.read(data).also { bufferLength = it } != -1) {
-                    output.write(data, 0, bufferLength)
+                if (!file.exists()) {
+                    throw Exception(mContext.getString(R.string.error))
                 }
-                //MimeType = response.header("Content-Type", "image/jpeg");
-                output.flush()
-                input.close()
-                response.close()
             }
             urit = FileProvider.getUriForFile(mContext, Constants.FILE_PROVIDER_AUTHORITY, file)
             mContext.grantUriPermission(

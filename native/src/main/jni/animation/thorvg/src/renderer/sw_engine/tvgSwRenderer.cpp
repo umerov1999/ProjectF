@@ -24,7 +24,7 @@
     #include <omp.h>
 #endif
 #include <algorithm>
-#include "tvgMath.h"
+#include <atomic>
 #include "tvgSwCommon.h"
 #include "tvgTaskScheduler.h"
 #include "tvgSwRenderer.h"
@@ -32,8 +32,8 @@
 /************************************************************************/
 /* Internal Class Implementation                                        */
 /************************************************************************/
-static int32_t initEngineCnt = false;
-static int32_t rendererCnt = 0;
+static atomic<int32_t> initEngineCnt{};
+static atomic<int32_t> rendererCnt{};
 static SwMpool* globalMpool = nullptr;
 static uint32_t threadsCnt = 0;
 
@@ -122,8 +122,7 @@ struct SwShapeTask : SwTask
         auto visibleFill = false;
 
         //This checks also for the case, if the invisible shape turned to visible by alpha.
-        auto prepareShape = false;
-        if (!shapePrepared(&shape) && (flags & RenderUpdateFlag::Color)) prepareShape = true;
+        auto prepareShape = !shapePrepared(&shape) && flags & (RenderUpdateFlag::Color | RenderUpdateFlag::Gradient);
 
         //Shape
         if (flags & (RenderUpdateFlag::Path | RenderUpdateFlag::Transform) || prepareShape) {
@@ -184,6 +183,7 @@ struct SwShapeTask : SwTask
     err:
         bbox.reset();
         shapeReset(&shape);
+        rleReset(shape.strokeRle);
         shapeDelOutline(&shape, mpool, tid);
     }
 
@@ -324,8 +324,6 @@ bool SwRenderer::sync()
     }
     tasks.clear();
 
-    if (!sharedMpool) mpoolClear(mpool);
-
     return true;
 }
 
@@ -385,7 +383,7 @@ void SwRenderer::clearCompositors()
 {
     //Free Composite Caches
     ARRAY_FOREACH(p, compositors) {
-        free((*p)->compositor->image.data);
+        tvg::free((*p)->compositor->image.data);
         delete((*p)->compositor);
         delete(*p);
     }
@@ -521,26 +519,6 @@ bool SwRenderer::beginComposite(RenderCompositor* cmp, MaskMethod method, uint8_
 }
 
 
-bool SwRenderer::mempool(bool shared)
-{
-    if (shared == sharedMpool) return true;
-
-    if (shared) {
-        if (!sharedMpool) {
-            if (!mpoolTerm(mpool)) return false;
-            mpool = globalMpool;
-        }
-    } else {
-        if (sharedMpool) mpool = mpoolInit(threadsCnt);
-    }
-
-    sharedMpool = shared;
-
-    if (mpool) return true;
-    return false;
-}
-
-
 const RenderSurface* SwRenderer::mainSurface()
 {
     return surface;
@@ -576,7 +554,7 @@ SwSurface* SwRenderer::request(int channelSize, bool square)
         //Inherits attributes from main surface
         cmp = new SwSurface(surface);
         cmp->compositor = new SwCompositor;
-        cmp->compositor->image.data = (pixel_t*)malloc(channelSize * w * h);
+        cmp->compositor->image.data = tvg::malloc<pixel_t*>(channelSize * w * h);
         cmp->w = cmp->compositor->image.w = w;
         cmp->h = cmp->compositor->image.h = h;
         cmp->stride = cmp->compositor->image.stride = w;
@@ -721,7 +699,7 @@ bool SwRenderer::render(RenderCompositor* cmp, const RenderEffect* effect, bool 
 
 void SwRenderer::dispose(RenderEffect* effect) 
 {
-    free(effect->rd);
+    tvg::free(effect->rd);
     effect->rd = nullptr;
 }
 
@@ -810,8 +788,16 @@ RenderData SwRenderer::prepare(const RenderShape& rshape, RenderData data, const
 }
 
 
-SwRenderer::SwRenderer():mpool(globalMpool)
+SwRenderer::SwRenderer()
 {
+    if (TaskScheduler::onthread()) {
+        TVGLOG("SW_RENDERER", "Running on a non-dominant thread!, Renderer(%p)", this);
+        mpool = mpoolInit(threadsCnt);
+        sharedMpool = false;
+    } else {
+        mpool = globalMpool;
+        sharedMpool = true;
+    }
 }
 
 

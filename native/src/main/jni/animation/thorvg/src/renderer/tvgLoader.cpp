@@ -249,7 +249,7 @@ bool LoaderMgr::term()
 {
     //clean up the remained font loaders which is globally used.
     INLIST_SAFE_FOREACH(_activeLoaders, loader) {
-        if (loader->type != FileType::Ttf) break;
+        if (loader->type != FileType::Ttf) continue;
         auto ret = loader->close();
         _activeLoaders.remove(loader);
         if (ret) delete(loader);
@@ -335,6 +335,18 @@ LoadModule* LoaderMgr::loader(const char* key, ColorReplace *colorReplacement)
 {
     INLIST_FOREACH(_activeLoaders, loader) {
         if (loader->pathcache && strstr(loader->hashpath, key)) {
+            ++loader->sharing;
+            return loader;
+        }
+    }
+    return nullptr;
+}
+
+
+LoadModule* LoaderMgr::anyfont()
+{
+    INLIST_FOREACH(_activeLoaders, loader) {
+        if ((loader->type == FileType::Ttf) && loader->pathcache) {
             ++loader->sharing;
             return loader;
         }

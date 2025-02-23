@@ -530,10 +530,7 @@ public class Zstd {
     public static native int loadFastDictDecompress(long stream, ZstdDictDecompress dict);
     public static native int loadDictCompress(long stream, byte[] dict, int dict_size);
     public static native int loadFastDictCompress(long stream, ZstdDictCompress dict);
-    // TODO: Fix native compilation
     public static native void registerSequenceProducer(long stream, long seqProdState, long seqProdFunction);
-    // static native long getBuiltinSequenceProducer(); // Used in tests
-    static native long getStubSequenceProducer();    // Used in tests
     public static native int setCompressionChecksums(long stream, boolean useChecksums);
     public static native int setCompressionMagicless(long stream, boolean useMagicless);
     public static native int setCompressionLevel(long stream, int level);
@@ -801,7 +798,6 @@ public class Zstd {
      * @return the number of bytes into buffer 'dictBuffer' or an error code if
      *          it fails (which can be tested using ZSTD_isError())
      */
-
     public static long trainFromBuffer(byte[][] samples, byte[] dictBuffer, boolean legacy) {
         return trainFromBuffer(samples, dictBuffer, legacy, defaultCompressionLevel());
     }
@@ -855,6 +851,7 @@ public class Zstd {
         }
         return trainFromBufferDirect0(samples, sampleSizes, dictBuffer, legacy, compressionLevel);
     }
+
 
     private static native long trainFromBufferDirect0(ByteBuffer samples, int[] sampleSizes, ByteBuffer dictBuffer, boolean legacy, int compressionLevel);
 

@@ -98,6 +98,7 @@ private:
     LottieRepeater* parseRepeater();
     LottieOffsetPath* parseOffsetPath();
     LottieFont* parseFont();
+    void parseFontData(LottieFont* font, const char* data);
     LottieMarker* parseMarker();
 
     void parseEffect(LottieEffect* effect, void(LottieParser::*func)(LottieEffect*, int));

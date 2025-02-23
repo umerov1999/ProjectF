@@ -50,6 +50,12 @@
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -576,14 +582,8 @@
             android:supportsPictureInPicture="true"
             android:theme="@style/App.DayNight.Swipes" />
 
-        <!-- Profile phone Activity -->
-        <!-- Shortcut launcher Activity -->
-        <!-- Search interface -->
-        <!-- Used to set options -->
-
         <service
             android:name="dev.ragnarok.fenrir.media.music.MusicPlaybackService"
-            android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="mediaPlayback">
             <intent-filter>
@@ -613,7 +613,10 @@
             android:screenOrientation="portrait"
             tools:ignore="DiscouragedApi,LockedOrientationActivity" />
 
-        <service android:name="dev.ragnarok.fenrir.crypt.KeyExchangeService" />
+        <service
+            android:name="dev.ragnarok.fenrir.crypt.KeyExchangeService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
 
         <activity
             android:name="dev.ragnarok.fenrir.activity.qr.CameraScanActivity"
@@ -633,8 +636,8 @@
 
         <service
             android:name="androidx.work.impl.foreground.SystemForegroundService"
-            android:foregroundServiceType="dataSync"
-            tools:node="merge" />
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
 
         <service
             android:name="dev.ragnarok.fenrir.service.KeepLongpollService"

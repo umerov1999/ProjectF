@@ -481,7 +481,7 @@ class TouchImageView @JvmOverloads constructor(
      * @return true if image is zoomed
      */
     val isZoomed: Boolean
-        get() = currentZoom != 1f
+        get() = currentZoom >= 1.2f
 
     /**
      * Return a Rect representing the zoomed image.

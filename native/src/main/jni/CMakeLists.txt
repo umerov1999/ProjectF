@@ -323,11 +323,6 @@ target_compile_definitions(opus PRIVATE
 add_library(common STATIC
         audio/ts/MpegTsBitStream.cpp
         audio/ts/MpegTsDemux.cpp
-        audio/taglib/ape/apefile.cpp
-        audio/taglib/ape/apefooter.cpp
-        audio/taglib/ape/apeitem.cpp
-        audio/taglib/ape/apeproperties.cpp
-        audio/taglib/ape/apetag.cpp
         audio/taglib/audioproperties.cpp
         audio/taglib/fileref.cpp
         audio/taglib/mpeg/id3v1/id3v1genres.cpp
@@ -425,6 +420,7 @@ add_library(common STATIC
         compress/zstd/compress/huf_compress.c
         compress/zstd/compress/zstd_ldm.c
         compress/zstd/compress/zstd_opt.c
+        compress/zstd/compress/zstd_preSplit.c
         compress/zstd/compress/zstd_compress_superblock.c
         compress/zstd/decompress/huf_decompress_amd64.S
         compress/zstd/compress/fse_compress.c
@@ -442,7 +438,6 @@ target_include_directories(common
         audio/taglib/toolkit
         audio/taglib/utf8
         audio/taglib/utf8/utf8
-        audio/taglib/ape
         compress/lz4
         compress/zlib
         compress/zstd

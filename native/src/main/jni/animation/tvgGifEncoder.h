@@ -490,7 +490,7 @@ static void _writeLzwImage(GifWriter* writer, uint32_t width, uint32_t height, u
 
     fputc(minCodeSize, f); // min code size 8 bits
 
-    auto* codetree = (GifLzwNode*)malloc(sizeof(GifLzwNode)*4096);
+    auto* codetree = new GifLzwNode[sizeof(GifLzwNode)*4096];
 
     memset(codetree, 0, sizeof(GifLzwNode)*4096);
     int32_t curCode = -1;
@@ -556,7 +556,7 @@ static void _writeLzwImage(GifWriter* writer, uint32_t width, uint32_t height, u
 
     fputc(0, f); // image block terminator
 
-    free(codetree);
+    delete[] codetree;
 }
 
 
@@ -578,8 +578,8 @@ bool gifBegin(GifWriter* writer, const char* filename, uint32_t width, uint32_t 
     writer->firstFrame = true;
 
     // allocate
-    writer->oldImage = (uint8_t*)malloc(width*height*4);
-    writer->tmpImage = (uint8_t*)malloc(width*height*4);
+    writer->oldImage = new uint8_t[width*height*4];
+    writer->tmpImage = new uint8_t[width*height*4];
 
     fputs("GIF89a", writer->f);
 
@@ -643,8 +643,8 @@ bool gifEnd(GifWriter* writer)
 
     fputc(0x3b, writer->f); // end of file
     fclose(writer->f);
-    free(writer->oldImage);
-    free(writer->tmpImage);
+    delete[] writer->oldImage;
+    delete[] writer->tmpImage;
 
     writer->f = nullptr;
     writer->oldImage = nullptr;

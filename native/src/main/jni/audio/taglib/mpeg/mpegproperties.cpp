@@ -28,7 +28,9 @@
 #include "tdebug.h"
 #include "mpegfile.h"
 #include "xingheader.h"
+#ifdef TAGLIB_WITH_APE
 #include "apetag.h"
+#endif
 
 using namespace TagLib;
 

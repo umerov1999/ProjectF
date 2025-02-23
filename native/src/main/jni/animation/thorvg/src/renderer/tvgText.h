@@ -23,7 +23,7 @@
 #ifndef _TVG_TEXT_H
 #define _TVG_TEXT_H
 
-#include <cstring>
+#include "tvgCommon.h"
 #include "tvgShape.h"
 #include "tvgFill.h"
 #include "tvgLoader.h"
@@ -45,14 +45,14 @@ struct Text::Impl : Paint::Impl
 
     ~Impl()
     {
-        free(utf8);
+        tvg::free(utf8);
         LoaderMgr::retrieve(loader);
         delete(shape);
     }
 
     Result text(const char* utf8)
     {
-        free(this->utf8);
+        tvg::free(this->utf8);
         if (utf8) this->utf8 = strdup(utf8);
         else this->utf8 = nullptr;
         changed = true;
@@ -62,7 +62,7 @@ struct Text::Impl : Paint::Impl
 
     Result font(const char* name, float size, const char* style)
     {
-        auto loader = LoaderMgr::loader(name, nullptr);
+        auto loader = name ? LoaderMgr::loader(name, nullptr) : LoaderMgr::anyfont();
         if (!loader) return Result::InsufficientCondition;
 
         if (style && strstr(style, "italic")) italic = true;

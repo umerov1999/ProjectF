@@ -37,35 +37,39 @@ struct LottieStroke
 {
     struct DashAttr
     {
-        //0: offset, 1: dash, 2: gap
-        LottieFloat value[3] = {0.0f, 0.0f, 0.0f};
+        LottieFloat offset = 0.0f;
+        LottieFloat* values = nullptr;
+        uint8_t size = 0;
+        uint8_t allocated = 0;
     };
 
     virtual ~LottieStroke()
     {
+        if (dashattr) delete[] dashattr->values;
         delete(dashattr);
     }
 
-    LottieFloat& dash(int no)
+
+    LottieFloat& dashValue()
     {
         if (!dashattr) dashattr = new DashAttr;
-        return dashattr->value[no];
+
+        if (dashattr->size + 1 > dashattr->allocated) {
+            dashattr->allocated = dashattr->size + 2;
+            auto newValues = new LottieFloat[dashattr->allocated];
+            for (uint8_t i = 0; i < dashattr->size; ++i) newValues[i] = LottieFloat(dashattr->values[i]);
+            delete[] dashattr->values;
+            dashattr->values = newValues;
+        }
+
+        return dashattr->values[dashattr->size++];
     }
 
-    float dashOffset(float frameNo, Tween& tween, LottieExpressions* exps)
-    {
-        return dash(0)(frameNo, tween, exps);
-    }
 
-    float dashSize(float frameNo, Tween& tween, LottieExpressions* exps)
+    LottieFloat& dashOffset()
     {
-        auto d = dash(1)(frameNo, tween, exps);
-        return (d > 0.0f) ? d : 0.0f;
-    }
-
-    float dashGap(float frameNo, Tween& tween, LottieExpressions* exps)
-    {
-        return dash(2)(frameNo, tween, exps);
+        if (!dashattr) dashattr = new DashAttr;
+        return dashattr->offset;
     }
 
     LottieFloat width = 0.0f;
@@ -241,7 +245,7 @@ struct LottieGlyph
     ~LottieGlyph()
     {
         ARRAY_FOREACH(p, children) delete(*p);
-        free(code);
+        tvg::free(code);
     }
 };
 
@@ -254,7 +258,7 @@ struct LottieTextRange
 
     ~LottieTextRange()
     {
-        free(interpolator);
+        tvg::free(interpolator);
     }
 
     struct {
@@ -296,17 +300,26 @@ struct LottieFont
     ~LottieFont()
     {
         ARRAY_FOREACH(p, chars) delete(*p);
-        free(style);
-        free(family);
-        free(name);
+        tvg::free(style);
+        tvg::free(family);
+        tvg::free(name);
+        tvg::free(data.b64src);
     }
+
+    struct {
+        char* b64src = nullptr;
+        uint32_t size = 0;
+    } data;
 
     Array<LottieGlyph*> chars;
     char* name = nullptr;
     char* family = nullptr;
     char* style = nullptr;
+    size_t dataSize = 0;
     float ascent = 0.0f;
     Origin origin = Embedded;
+
+    void prepare();
 };
 
 struct LottieMarker
@@ -317,7 +330,7 @@ struct LottieMarker
     
     ~LottieMarker()
     {
-        free(name);
+        tvg::free(name);
     }
 };
 
@@ -614,9 +627,8 @@ struct LottieSolidStroke : LottieSolid, LottieStroke
     {
         if (width.ix == ix) return &width;
         if (dashattr) {
-            if (dashattr->value[0].ix == ix) return &dashattr->value[0];
-            if (dashattr->value[1].ix == ix) return &dashattr->value[1];
-            if (dashattr->value[2].ix == ix) return &dashattr->value[2];
+            for (uint8_t i = 0; i < dashattr->size ; ++i)
+                if (dashattr->values[i].ix == ix) return &dashattr->values[i];
         }
         return LottieSolid::property(ix);
     }
@@ -727,9 +739,8 @@ struct LottieGradientStroke : LottieGradient, LottieStroke
     {
         if (width.ix == ix) return &width;
         if (dashattr) {
-            if (dashattr->value[0].ix == ix) return &dashattr->value[0];
-            if (dashattr->value[1].ix == ix) return &dashattr->value[1];
-            if (dashattr->value[2].ix == ix) return &dashattr->value[2];
+            for (uint8_t i = 0; i < dashattr->size ; ++i)
+                if (dashattr->values[i].ix == ix) return &dashattr->values[i];
         }
         return LottieGradient::property(ix);
     }
@@ -918,7 +929,7 @@ struct LottieSlot
 
     ~LottieSlot()
     {
-        free(sid);
+        tvg::free(sid);
         if (!overridden) return;
         ARRAY_FOREACH(pair, pairs) delete(pair->prop);
     }

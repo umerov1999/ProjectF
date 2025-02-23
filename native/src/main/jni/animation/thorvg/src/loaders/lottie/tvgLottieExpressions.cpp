@@ -60,7 +60,7 @@ static LottieExpressions* exps = nullptr;   //singleton instance engine
 
 static ExpContent* _expcontent(LottieExpression* exp, float frameNo, LottieObject* obj)
 {
-    auto data = (ExpContent*)malloc(sizeof(ExpContent));
+    auto data = tvg::malloc<ExpContent*>(sizeof(ExpContent));
     data->exp = exp;
     data->frameNo = frameNo;
     data->obj = obj;
@@ -70,7 +70,7 @@ static ExpContent* _expcontent(LottieExpression* exp, float frameNo, LottieObjec
 
 static void contentFree(void *native_p, struct jerry_object_native_info_t *info_p)
 {
-    free(native_p);
+    tvg::free(native_p);
 }
 
 static jerry_object_native_info_t freeCb {contentFree, 0, 0};
@@ -81,7 +81,7 @@ static char* _name(jerry_value_t args)
 {
     auto arg0 = jerry_value_to_string(args);
     auto len = jerry_string_length(arg0);
-    auto name = (jerry_char_t*)malloc(len * sizeof(jerry_char_t) + 1);
+    auto name = tvg::malloc<jerry_char_t*>(len * sizeof(jerry_char_t) + 1);
     jerry_string_to_buffer(arg0, JERRY_ENCODING_UTF8, name, len);
     name[len] = '\0';
     jerry_value_free(arg0);
@@ -93,7 +93,7 @@ static unsigned long _idByName(jerry_value_t args)
 {
     auto name = _name(args);
     auto id = djb2Encode(name);
-    free(name);
+    tvg::free(name);
     return id;
 }
 
@@ -691,7 +691,7 @@ static jerry_value_t _nearestKey(const jerry_call_info_t* info, const jerry_valu
     auto exp = static_cast<LottieExpression*>(jerry_object_get_native_ptr(info->function, nullptr));
     auto time = jerry_value_as_number(args[0]);
     auto frameNo = exp->comp->frameAtTime(time);
-    auto index = jerry_number(exp->property->nearest(frameNo));
+    auto index = jerry_number((float)exp->property->nearest(frameNo));
 
     auto obj = jerry_object();
     jerry_object_set_sz(obj, EXP_INDEX, index);
@@ -831,7 +831,7 @@ static bool _loopOutCommon(LottieExpression* exp, const jerry_value_t args[], co
         else if (!strcmp(name, EXP_PINGPONG)) exp->loop.mode = LottieExpression::LoopMode::OutPingPong;
         else if (!strcmp(name, EXP_OFFSET)) exp->loop.mode = LottieExpression::LoopMode::OutOffset;
         else if (!strcmp(name, EXP_CONTINUE)) exp->loop.mode = LottieExpression::LoopMode::OutContinue;
-        free(name);
+        tvg::free(name);
     }
 
     if (exp->loop.mode != LottieExpression::LoopMode::OutCycle && exp->loop.mode != LottieExpression::LoopMode::OutPingPong) {
@@ -883,7 +883,7 @@ static bool _loopInCommon(LottieExpression* exp, const jerry_value_t args[], con
         else if (!strcmp(name, EXP_PINGPONG)) exp->loop.mode = LottieExpression::LoopMode::InPingPong;
         else if (!strcmp(name, EXP_OFFSET)) exp->loop.mode = LottieExpression::LoopMode::InOffset;
         else if (!strcmp(name, EXP_CONTINUE)) exp->loop.mode = LottieExpression::LoopMode::InContinue;
-        free(name);
+        tvg::free(name);
     }
 
     if (exp->loop.mode != LottieExpression::LoopMode::InCycle && exp->loop.mode != LottieExpression::LoopMode::InPingPong) {
@@ -1080,7 +1080,7 @@ static void _buildProperty(float frameNo, jerry_value_t context, LottieExpressio
     jerry_object_set_sz(context, "nearestKey", nearestKey);
     jerry_value_free(nearestKey);
 
-    auto numKeys = jerry_number(exp->property->frameCnt());
+    auto numKeys = jerry_number((float)exp->property->frameCnt());
     jerry_object_set_sz(context, "numKeys", numKeys);
     jerry_value_free(numKeys);
 
@@ -1236,7 +1236,7 @@ void LottieExpressions::buildComp(jerry_value_t context, float frameNo, LottieLa
     jerry_object_set_native_ptr(layer, &freeCb, _expcontent(exp, frameNo, comp));
     jerry_value_free(layer);
 
-    auto numLayers = jerry_number(comp->children.count);
+    auto numLayers = jerry_number((float)comp->children.count);
     jerry_object_set_sz(context, "numLayers", numLayers);
     jerry_value_free(numLayers);
 }

@@ -5,7 +5,9 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -86,10 +88,18 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
             .setColor("#dd0000".toColor())
             .setOngoing(true)
         setForegroundAsync(
-            ForegroundInfo(
-                NotificationHelper.NOTIFICATION_DOWNLOAD_MANAGER,
-                builder.build()
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                ForegroundInfo(
+                    NotificationHelper.NOTIFICATION_DOWNLOAD_MANAGER,
+                    builder.build(),
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+                )
+            } else {
+                ForegroundInfo(
+                    NotificationHelper.NOTIFICATION_DOWNLOAD_MANAGER,
+                    builder.build()
+                )
+            }
         )
     }
 

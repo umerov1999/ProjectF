@@ -16,6 +16,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.App
+import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.R
@@ -1018,7 +1019,7 @@ class ChatPresenter(
 
     @SuppressLint("CheckResult")
     private fun sendMessage(builder: SaveMessageBuilder) {
-        if (isHiddenAccount(builder.accountId)) {
+        if (isHiddenAccount(builder.accountId) && !Constants.IS_DEBUG) {
             view?.showSnackbar(R.string.read_only_account, true)
             return
         }

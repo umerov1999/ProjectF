@@ -616,10 +616,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                     .inflate(R.layout.content_photo_page, container, false)
             )
             ret.photo.setOnTouchListener { view, event ->
-                if (event.pointerCount >= 2 || view.canScrollHorizontally(1) && view.canScrollHorizontally(
-                        -1
-                    )
-                ) {
+                if (event.pointerCount >= 2 || view is TouchImageView && view.isZoomed) {
                     when (event.action) {
                         MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
                             container.requestDisallowInterceptTouchEvent(true)

@@ -6,7 +6,9 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.net.Uri
+import android.os.Build
 import android.util.Base64
 import android.webkit.MimeTypeMap
 import androidx.core.app.NotificationCompat
@@ -740,10 +742,18 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
             .setColor("#dd0000".toColor())
             .setOngoing(true)
         setForegroundAsync(
-            ForegroundInfo(
-                NotificationHelper.NOTIFICATION_DOWNLOAD_MANAGER,
-                builder.build()
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                ForegroundInfo(
+                    NotificationHelper.NOTIFICATION_DOWNLOAD_MANAGER,
+                    builder.build(),
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+                )
+            } else {
+                ForegroundInfo(
+                    NotificationHelper.NOTIFICATION_DOWNLOAD_MANAGER,
+                    builder.build()
+                )
+            }
         )
     }
 

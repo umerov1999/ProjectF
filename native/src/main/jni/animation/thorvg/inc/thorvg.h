@@ -232,7 +232,7 @@ enum class SceneEffect : uint8_t
 {
     ClearAll = 0,      ///< Reset all previously applied scene effects, restoring the scene to its original state.
     GaussianBlur,      ///< Apply a blur effect with a Gaussian filter. Param(3) = {sigma(float)[> 0], direction(int)[both: 0 / horizontal: 1 / vertical: 2], border(int)[duplicate: 0 / wrap: 1], quality(int)[0 - 100]}
-    DropShadow,        ///< Apply a drop shadow effect with a Gaussian Blur filter. Param(8) = {color_R(int)[0 - 255], color_G(int)[0 - 255], color_B(int)[0 - 255], opacity(int)[0 - 255], angle(float)[0 - 360], distance(float), blur_sigma(float)[> 0], quality(int)[0 - 100]}
+    DropShadow,        ///< Apply a drop shadow effect with a Gaussian Blur filter. Param(8) = {color_R(int)[0 - 255], color_G(int)[0 - 255], color_B(int)[0 - 255], opacity(int)[0 - 255], angle(double)[0 - 360], distance(double), blur_sigma(double)[> 0], quality(int)[0 - 100]}
     Fill,              ///< Override the scene content color with a given fill information (Experimental API). Param(5) = {color_R(int)[0 - 255], color_G(int)[0 - 255], color_B(int)[0 - 255], opacity(int)[0 - 255]}
     Tint,              ///< Tinting the current scene color with a given black, white color paramters (Experimental API). Param(7) = {black_R(int)[0 - 255], black_G(int)[0 - 255], black_B(int)[0 - 255], white_R(int)[0 - 255], white_G(int)[0 - 255], white_B(int)[0 - 255], intensity(float)[0 - 100]}
     Tritone            ///< Apply a tritone color effect to the scene using three color parameters for shadows, midtones, and highlights (Experimental API). Param(9) = {Shadow_R(int)[0 - 255], Shadow_G(int)[0 - 255], Shadow_B(int)[0 - 255], Midtone_R(int)[0 - 255], Midtone_G(int)[0 - 255], Midtone_B(int)[0 - 255], Highlight_R(int)[0 - 255], Highlight_G(int)[0 - 255], Highlight_B(int)[0 - 255]}
@@ -985,10 +985,11 @@ public:
      * @param[in] h The height of the rectangle.
      * @param[in] rx The x-axis radius of the ellipse defining the rounded corners of the rectangle.
      * @param[in] ry The y-axis radius of the ellipse defining the rounded corners of the rectangle.
+     * @param[in] cw Specifies the path direction: @c true for clockwise, @c false for counterclockwise.
      *
      * @note For @p rx and @p ry greater than or equal to the half of @p w and the half of @p h, respectively, the shape become an ellipse.
      */
-    Result appendRect(float x, float y, float w, float h, float rx = 0, float ry = 0) noexcept;
+    Result appendRect(float x, float y, float w, float h, float rx = 0, float ry = 0, bool cw = true) noexcept;
 
     /**
      * @brief Appends an ellipse to the path.
@@ -1003,9 +1004,10 @@ public:
      * @param[in] cy The vertical coordinate of the center of the ellipse.
      * @param[in] rx The x-axis radius of the ellipse.
      * @param[in] ry The y-axis radius of the ellipse.
+     * @param[in] cw Specifies the path direction: @c true for clockwise, @c false for counterclockwise.
      *
      */
-    Result appendCircle(float cx, float cy, float rx, float ry) noexcept;
+    Result appendCircle(float cx, float cy, float rx, float ry, bool cw = true) noexcept;
 
     /**
      * @brief Appends a given sub-path to the path.
@@ -1528,6 +1530,7 @@ public:
      *
      * @retval Result::InsufficientCondition when the specified @p name cannot be found.
      *
+     * @note If the @p name is not specified, ThorVG will select any available font candidate.
      * @note Experimental API
      */
     Result font(const char* name, float size, const char* style = nullptr) noexcept;
@@ -1667,17 +1670,6 @@ public:
     ~SwCanvas();
 
     /**
-     * @brief Enumeration specifying the methods of Memory Pool behavior policy.
-     * @since 0.4
-     */
-    enum MempoolPolicy : uint8_t
-    {
-        Default = 0, ///< Default behavior that ThorVG is designed to.
-        Shareable,   ///< Memory Pool is shared among the SwCanvases.
-        Individual   ///< Allocate designated memory pool that is only used by current instance.
-    };
-
-    /**
      * @brief Sets the drawing target for the rasterization.
      *
      * The buffer of a desirable size should be allocated and owned by the caller.
@@ -1698,30 +1690,6 @@ public:
      * @see Canvas::sync()
     */
     Result target(uint32_t* buffer, uint32_t stride, uint32_t w, uint32_t h, ColorSpace cs) noexcept;
-
-    /**
-     * @brief Set sw engine memory pool behavior policy.
-     *
-     * Basically ThorVG draws a lot of shapes, it allocates/deallocates a few chunk of memory
-     * while processing rendering. It internally uses one shared memory pool
-     * which can be reused among the canvases in order to avoid memory overhead.
-     *
-     * Thus ThorVG suggests using a memory pool policy to satisfy user demands,
-     * if it needs to guarantee the thread-safety of the internal data access.
-     *
-     * @param[in] policy The method specifying the Memory Pool behavior. The default value is @c MempoolPolicy::Default.
-     *
-     * @retval Result::InsufficientCondition If the canvas contains some paints already.
-     * @retval Result::NonSupport In case the software engine is not supported.
-     *
-     * @note When @c policy is set as @c MempoolPolicy::Individual, the current instance of canvas uses its own individual
-     *       memory data, which is not shared with others. This is necessary when the canvas is accessed on a worker-thread.
-     *
-     * @warning It's not allowed after pushing any paints.
-     *
-     * @since 0.4
-    */
-    Result mempool(MempoolPolicy policy) noexcept;
 
     /**
      * @brief Creates a new SwCanvas object.

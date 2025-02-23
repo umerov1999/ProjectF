@@ -45,7 +45,6 @@ Result Picture::load(const char* filename, ColorReplace *colorReplacement) noexc
 {
 #ifdef THORVG_FILE_IO_SUPPORT
     if (!filename) return Result::InvalidArguments;
-
     return PICTURE(this)->load(filename, colorReplacement);
 #else
     TVGLOG("RENDERER", "FILE IO is disabled!");

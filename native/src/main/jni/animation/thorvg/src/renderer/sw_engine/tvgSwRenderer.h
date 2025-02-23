@@ -55,7 +55,6 @@ public:
     bool clear() override;
     bool sync() override;
     bool target(pixel_t* data, uint32_t stride, uint32_t w, uint32_t h, ColorSpace cs);
-    bool mempool(bool shared);
 
     RenderCompositor* target(const RenderRegion& region, ColorSpace cs, CompositionFlag flags) override;
     bool beginComposite(RenderCompositor* cmp, MaskMethod method, uint8_t opacity) override;
@@ -78,7 +77,7 @@ private:
     Array<SwSurface*>    compositors;                 //render targets cache list
     SwMpool*             mpool;                       //private memory pool
     RenderRegion         vport;                       //viewport
-    bool                 sharedMpool = true;          //memory-pool behavior policy
+    bool                 sharedMpool;                 //memory-pool behavior policy
 
     SwRenderer();
     ~SwRenderer();

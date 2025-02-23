@@ -43,25 +43,6 @@ SwCanvas::~SwCanvas()
 }
 
 
-Result SwCanvas::mempool(MempoolPolicy policy) noexcept
-{
-#ifdef THORVG_SW_RASTER_SUPPORT
-    //We know renderer type, avoid dynamic_cast for performance.
-    auto renderer = static_cast<SwRenderer*>(pImpl->renderer);
-    if (!renderer) return Result::MemoryCorruption;
-
-    //It can't change the policy during the running.
-    if (!pImpl->scene->paints().empty()) return Result::InsufficientCondition;
-
-    if (policy == MempoolPolicy::Individual) renderer->mempool(false);
-    else renderer->mempool(true);
-
-    return Result::Success;
-#endif
-    return Result::NonSupport;
-}
-
-
 Result SwCanvas::target(uint32_t* buffer, uint32_t stride, uint32_t w, uint32_t h, ColorSpace cs) noexcept
 {
 #ifdef THORVG_SW_RASTER_SUPPORT
@@ -76,7 +57,7 @@ Result SwCanvas::target(uint32_t* buffer, uint32_t stride, uint32_t w, uint32_t 
     auto renderer = static_cast<SwRenderer*>(pImpl->renderer);
     if (!renderer) return Result::MemoryCorruption;
 
-    if (!renderer->target(buffer, stride, w, h, static_cast<ColorSpace>(cs))) return Result::InvalidArguments;
+    if (!renderer->target(buffer, stride, w, h, cs)) return Result::InvalidArguments;
     pImpl->vport = {0, 0, (int32_t)w, (int32_t)h};
     renderer->viewport(pImpl->vport);
 

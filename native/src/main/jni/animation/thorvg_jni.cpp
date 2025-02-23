@@ -90,7 +90,6 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGSVGRender_createBitmapNat
     if (!canvas) {
         return;
     }
-    canvas->mempool(tvg::SwCanvas::Individual);
 
     auto picture = tvg::Picture::gen();
     bool orig;
@@ -475,7 +474,6 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottie2Gif_lottie2gif(JNI
         return false;
     }
     auto *pixels = new uint32_t[w * h];
-    info.canvas->mempool(tvg::SwCanvas::Individual);
     info.canvas->target(pixels, w, w, h,
                         tvg::ColorSpace::ABGR8888S);
 

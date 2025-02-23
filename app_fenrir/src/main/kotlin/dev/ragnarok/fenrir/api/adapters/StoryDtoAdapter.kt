@@ -5,6 +5,7 @@ import dev.ragnarok.fenrir.api.model.VKApiStory
 import dev.ragnarok.fenrir.api.model.VKApiVideo
 import dev.ragnarok.fenrir.kJson
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 
 class StoryDtoAdapter : AbsDtoAdapter<VKApiStory>("VKApiStory") {
@@ -41,6 +42,20 @@ class StoryDtoAdapter : AbsDtoAdapter<VKApiStory>("VKApiStory") {
         }
         if (hasObject(root, "link")) {
             story.target_url = optString(root["link"]?.jsonObject, "url")
+        }
+        if (story.target_url.isNullOrEmpty() && hasObject(root, "clickable_stickers")) {
+            val clickableStickers = root["clickable_stickers"]?.jsonObject
+            if (hasArray(clickableStickers, "clickable_stickers")) {
+                val firstSticker = clickableStickers["clickable_stickers"]?.jsonArray[0]
+                if (checkObject(firstSticker) && hasObject(
+                        firstSticker.jsonObject,
+                        "link_object"
+                    )
+                ) {
+                    story.target_url =
+                        optString(firstSticker.jsonObject["link_object"]?.jsonObject, "url")
+                }
+            }
         }
         return story
     }

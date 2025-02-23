@@ -640,10 +640,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                     .inflate(R.layout.content_photo_page, container, false)
             )
             ret.photo.setOnTouchListener { view, event ->
-                if (event.pointerCount >= 2 || view.canScrollVertically(1) && view.canScrollVertically(
-                        -1
-                    )
-                ) {
+                if (event.pointerCount >= 2 || view is TouchImageView && view.isZoomed) {
                     when (event.action) {
                         MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
                             container.requestDisallowInterceptTouchEvent(true)
