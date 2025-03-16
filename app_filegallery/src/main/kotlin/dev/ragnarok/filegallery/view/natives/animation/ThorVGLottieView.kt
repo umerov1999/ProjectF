@@ -11,9 +11,9 @@ import androidx.annotation.RawRes
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.withStyledAttributes
 import dev.ragnarok.fenrir.module.FenrirNative
+import dev.ragnarok.fenrir.module.animation.LoadedFrom
 import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGLottieDrawable
 import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGLottieDrawable.Companion.RESTART
-import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGLottieDrawable.LoadedFrom
 import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGLottieDrawable.LottieAnimationListener
 import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGLottieDrawable.RepeatMode
 import dev.ragnarok.filegallery.Constants

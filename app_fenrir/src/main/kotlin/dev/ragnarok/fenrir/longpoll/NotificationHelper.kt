@@ -52,7 +52,6 @@ import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -534,7 +533,7 @@ object NotificationHelper {
         val inputStream = response.body.byteStream()
         val input = BufferedInputStream(inputStream)
         val data = ByteArray(80 * 1024)
-        var bufferLength: Int
+        var bufferLength = 0
         while (input.read(data).also { bufferLength = it } != -1) {
             output.write(data, 0, bufferLength)
         }
@@ -561,10 +560,14 @@ object NotificationHelper {
             if (!file.exists()) {
                 if (url.isNullOrEmpty()) throw Exception(mContext.getString(R.string.null_image_link))
 
-                runBlocking {
-                    NotificationScheduler.INSTANCE.launch {
+                runBlocking(NotificationScheduler.INSTANCE.coroutineContext) {
+                    try {
                         downloadTask(file, url).single()
-                    }.join()
+                    } catch (e: Exception) {
+                        if (Constants.IS_DEBUG) {
+                            e.printStackTrace()
+                        }
+                    }
                 }
                 if (!file.exists()) {
                     throw Exception(mContext.getString(R.string.error))

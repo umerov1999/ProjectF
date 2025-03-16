@@ -26,12 +26,12 @@ class NotificationsPrefs internal constructor(context: Context) : INotificationS
         }
     }
 
-    override fun setSilentPeer(aid: Long, peerid: Long, silent: Boolean) {
+    override fun setSilentPeer(aid: Long, peerId: Long, silent: Boolean) {
         val preferences = getPreferences(app)
-        silentPeers.add(keyFor(aid, peerid))
-        silentTypes[keyFor(aid, peerid)] = silent
+        silentPeers.add(keyFor(aid, peerId))
+        silentTypes[keyFor(aid, peerId)] = silent
         preferences.edit {
-            putBoolean(keyFor(aid, peerid), silent)
+            putBoolean(keyFor(aid, peerId), silent)
                 .putStringSet(KEY_PEERS_UIDS, silentPeers)
         }
     }

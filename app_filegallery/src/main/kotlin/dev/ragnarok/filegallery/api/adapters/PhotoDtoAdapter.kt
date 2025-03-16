@@ -26,7 +26,7 @@ class PhotoDtoAdapter : AbsDtoAdapter<Photo>("Photo") {
                 if (!checkObject(sizesArray?.get(i))) {
                     continue
                 }
-                val p = sizesArray?.get(i)?.jsonObject
+                val p = sizesArray[i].jsonObject
                 if (optString(p, "type").equals("w")) {
                     photo.setPhoto_url(optString(p, "url"))
                 } else if (optString(p, "type").equals("s")) {

@@ -62,7 +62,6 @@ using namespace tvg;
 
 #if defined(_MSC_VER) && defined(__clang__)
     #define strncpy strncpy_s
-    #define strdup _strdup
 #endif
 
 void* operator new(std::size_t size);
@@ -70,7 +69,7 @@ void operator delete(void* ptr) noexcept;
 
 namespace tvg {
 
-    enum class FileType { Png = 0, Jpg, Webp, Svg, Lottie, Ttf, Raw, Gif, Unknown };
+    enum class FileType { Png = 0, Jpg, Webp, Svg, Lot, Ttf, Raw, Gif, Unknown };
 
     using Size = Point;
 

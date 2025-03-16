@@ -116,35 +116,25 @@ struct Shape::Impl : Paint::Impl
         return renderer->region(rd);
     }
 
-    bool bounds(float* x, float* y, float* w, float* h, bool stroking)
+    bool bounds(Point* pt4, bool stroking)
     {
-        //Path bounding size
-        if (rs.path.pts.count > 0 ) {
-            auto pts = rs.path.pts.begin();
-            Point min = { pts->x, pts->y };
-            Point max = { pts->x, pts->y };
-
-            for (auto pts2 = pts + 1; pts2 < rs.path.pts.end(); ++pts2) {
-                if (pts2->x < min.x) min.x = pts2->x;
-                if (pts2->y < min.y) min.y = pts2->y;
-                if (pts2->x > max.x) max.x = pts2->x;
-                if (pts2->y > max.y) max.y = pts2->y;
-            }
-
-            if (x) *x = min.x;
-            if (y) *y = min.y;
-            if (w) *w = max.x - min.x;
-            if (h) *h = max.y - min.y;
-        }
+        float x, y, w, h;
+        if (!rs.path.bounds(&x, &y, &w, &h)) return false;
 
         //Stroke feathering
         if (stroking && rs.stroke) {
-            if (x) *x -= rs.stroke->width * 0.5f;
-            if (y) *y -= rs.stroke->width * 0.5f;
-            if (w) *w += rs.stroke->width;
-            if (h) *h += rs.stroke->width;
+            x -= rs.stroke->width * 0.5f;
+            y -= rs.stroke->width * 0.5f;
+            w += rs.stroke->width;
+            h += rs.stroke->width;
         }
-        return rs.path.pts.count > 0 ? true : false;
+
+        pt4[0] = {x, y};
+        pt4[1] = {x + w, y};
+        pt4[2] = {x + w, y + h};
+        pt4[3] = {x, y + h};
+
+        return true;
     }
 
     void reserveCmd(uint32_t cmdCnt)
@@ -209,25 +199,20 @@ struct Shape::Impl : Paint::Impl
         renderFlag |= RenderUpdateFlag::Stroke;
     }
 
-    void strokeTrim(float begin, float end, bool simultaneous)
+    void trimpath(const RenderTrimPath& trim)
     {
-        //Even if there is no trimming effect, begin can still affect dashing starting point
-        if (fabsf(end - begin) >= 1.0f) end = begin + 1.0f;
-
         if (!rs.stroke) {
-            if (begin == 0.0f && end == 1.0f) return;
+            if (trim.begin == 0.0f && trim.end == 1.0f) return;
             rs.stroke = new RenderStroke();
         }
 
-        if (tvg::equal(rs.stroke->trim.begin, begin) && tvg::equal(rs.stroke->trim.end, end) && rs.stroke->trim.simultaneous == simultaneous) return;
+        if (tvg::equal(rs.stroke->trim.begin, trim.begin) && tvg::equal(rs.stroke->trim.end, trim.end) && rs.stroke->trim.simultaneous == trim.simultaneous) return;
 
-        rs.stroke->trim.begin = begin;
-        rs.stroke->trim.end = end;
-        rs.stroke->trim.simultaneous = simultaneous;
-        renderFlag |= RenderUpdateFlag::Stroke;
+        rs.stroke->trim = trim;
+        renderFlag |= RenderUpdateFlag::Path;
     }
 
-    bool strokeTrim(float* begin, float* end)
+    bool trimpath(float* begin, float* end)
     {
         if (rs.stroke) {
             if (begin) *begin = rs.stroke->trim.begin;

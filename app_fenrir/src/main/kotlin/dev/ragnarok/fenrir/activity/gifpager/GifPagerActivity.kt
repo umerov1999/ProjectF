@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -56,7 +57,7 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
 
     @get:LayoutRes
     override val noMainContentView: Int
-        get() = R.layout.fragment_gif_pager
+        get() = R.layout.activity_gif_pager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -164,6 +165,10 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
                 )
             w.navigationBarColor =
                 if (colored) getNavigationBarColor(this) else Color.BLACK
+        } else {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+                w.isNavigationBarContrastEnforced = colored
+            }
         }
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons

@@ -61,17 +61,17 @@ void LottieSlot::assign(LottieObject* target, bool byDefault, ColorReplace* colo
         switch (type) {
             case LottieProperty::Type::Position: {
                 if (copy) pair->prop = new LottieVector(static_cast<LottieTransform*>(pair->obj)->position);
-                pair->obj->override(&static_cast<LottieTransform*>(target)->position, shallow, byDefault);
+                pair->obj->override(&static_cast<LottieTransform*>(target)->position, shallow, !copy);
                 break;
             }
             case LottieProperty::Type::Point: {
                 if (copy) pair->prop = new LottieScalar(static_cast<LottieTransform*>(pair->obj)->scale);
-                pair->obj->override(&static_cast<LottieTransform*>(target)->scale, shallow, byDefault);
+                pair->obj->override(&static_cast<LottieTransform*>(target)->scale, shallow, !copy);
                 break;
             }
             case LottieProperty::Type::Float: {
                 if (copy) pair->prop = new LottieFloat(static_cast<LottieTransform*>(pair->obj)->rotation);
-                pair->obj->override(&static_cast<LottieTransform*>(target)->rotation, shallow, byDefault);
+                pair->obj->override(&static_cast<LottieTransform*>(target)->rotation, shallow, !copy);
                 break;
             }
             case LottieProperty::Type::Opacity: {
@@ -79,29 +79,29 @@ void LottieSlot::assign(LottieObject* target, bool byDefault, ColorReplace* colo
                     if (pair->obj->type == LottieObject::Type::Transform) pair->prop = new LottieOpacity(static_cast<LottieTransform*>(pair->obj)->opacity);
                     else pair->prop = new LottieOpacity(static_cast<LottieSolid*>(pair->obj)->opacity);
                 }
-                pair->obj->override(&static_cast<LottieSolid*>(target)->opacity, shallow, byDefault);
+                pair->obj->override(&static_cast<LottieSolid*>(target)->opacity, shallow, !copy);
                 break;
             }
             case LottieProperty::Type::Color: {
                 auto color = static_cast<LottieSolid*>(pair->obj)->color;
                 colorReplacement->getCustomColorLottie32(color.value.rgb[0], color.value.rgb[1], color.value.rgb[2]);
                 if (copy) pair->prop = new LottieColor(color);
-                pair->obj->override(&color, shallow, byDefault);
+                pair->obj->override(&color, shallow, !copy);
                 break;
             }
             case LottieProperty::Type::ColorStop: {
                 if (copy) pair->prop = new LottieColorStop(static_cast<LottieGradient*>(pair->obj)->colorStops);
-                pair->obj->override(&static_cast<LottieGradient*>(target)->colorStops, shallow, byDefault);
+                pair->obj->override(&static_cast<LottieGradient*>(target)->colorStops, shallow, !copy);
                 break;
             }
             case LottieProperty::Type::TextDoc: {
                 if (copy) pair->prop = new LottieTextDoc(static_cast<LottieText*>(pair->obj)->doc);
-                pair->obj->override(&static_cast<LottieText*>(target)->doc, shallow, byDefault);
+                pair->obj->override(&static_cast<LottieText*>(target)->doc, shallow, !copy);
                 break;
             }
             case LottieProperty::Type::Image: {
                 if (copy) pair->prop = new LottieBitmap(static_cast<LottieImage*>(pair->obj)->data);
-                pair->obj->override(&static_cast<LottieImage*>(target)->data, shallow, byDefault);
+                pair->obj->override(&static_cast<LottieImage*>(target)->data, shallow, !copy);
                 break;
             }
             default: break;
@@ -313,6 +313,7 @@ uint32_t LottieGradient::populate(ColorStop& color, size_t count)
             }
             aidx += 2;
         }
+        if (cs.a < 255) opaque = false;
         colorReplacement->getCustomColorLottie(cs.r, cs.g, cs.b);
         output.push(cs);
     }
@@ -324,6 +325,7 @@ uint32_t LottieGradient::populate(ColorStop& color, size_t count)
         cs.g = (uint8_t)nearbyint((*color.input)[cidx + 2] * 255.0f);
         cs.b = (uint8_t)nearbyint((*color.input)[cidx + 3] * 255.0f);
         cs.a = (output.count > 0) ? output.last().a : 255;
+        if (cs.a < 255) opaque = false;
         colorReplacement->getCustomColorLottie(cs.r, cs.g, cs.b);
         output.push(cs);
         cidx += 4;
@@ -333,6 +335,7 @@ uint32_t LottieGradient::populate(ColorStop& color, size_t count)
     while (aidx < color.input->count) {
         cs.offset = (*color.input)[aidx];
         cs.a = (uint8_t)nearbyint((*color.input)[aidx + 1] * 255.0f);
+        if (cs.a < 255) opaque = false;
         if (output.count > 0) {
             cs.r = output.last().r;
             cs.g = output.last().g;
@@ -353,12 +356,11 @@ uint32_t LottieGradient::populate(ColorStop& color, size_t count)
 }
 
 
-Fill* LottieGradient::fill(float frameNo, Tween& tween, LottieExpressions* exps)
+Fill* LottieGradient::fill(float frameNo, uint8_t opacity, Tween& tween, LottieExpressions* exps)
 {
-    auto opacity = this->opacity(frameNo, tween, exps);
     if (opacity == 0) return nullptr;
 
-    Fill* fill = nullptr;
+    Fill* fill;
     auto s = start(frameNo, tween, exps);
     auto e = end(frameNo, tween, exps);
 
@@ -366,11 +368,9 @@ Fill* LottieGradient::fill(float frameNo, Tween& tween, LottieExpressions* exps)
     if (id == 1) {
         fill = LinearGradient::gen();
         static_cast<LinearGradient*>(fill)->linear(s.x, s.y, e.x, e.y);
-    }
     //Radial Gradient
-    if (id == 2) {
+    } else {
         fill = RadialGradient::gen();
-
         auto w = fabsf(e.x - s.x);
         auto h = fabsf(e.y - s.y);
         auto r = (w > h) ? (w + 0.375f * h) : (h + 0.375f * w);
@@ -388,8 +388,6 @@ Fill* LottieGradient::fill(float frameNo, Tween& tween, LottieExpressions* exps)
             static_cast<RadialGradient*>(fill)->radial(s.x, s.y, r, fx, fy, 0.0f);
         }
     }
-
-    if (!fill) return nullptr;
 
     colorStops(frameNo, fill, tween, exps);
 

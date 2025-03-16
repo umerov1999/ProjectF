@@ -23,7 +23,7 @@
 #ifndef _TVG_TEXT_H
 #define _TVG_TEXT_H
 
-#include "tvgCommon.h"
+#include "tvgStr.h"
 #include "tvgShape.h"
 #include "tvgFill.h"
 #include "tvgLoader.h"
@@ -53,7 +53,7 @@ struct Text::Impl : Paint::Impl
     Result text(const char* utf8)
     {
         tvg::free(this->utf8);
-        if (utf8) this->utf8 = strdup(utf8);
+        if (utf8) this->utf8 = tvg::duplicate(utf8);
         else this->utf8 = nullptr;
         changed = true;
 
@@ -62,7 +62,7 @@ struct Text::Impl : Paint::Impl
 
     Result font(const char* name, float size, const char* style)
     {
-        auto loader = name ? LoaderMgr::loader(name, nullptr) : LoaderMgr::anyfont();
+        auto loader = name ? LoaderMgr::font(name) : LoaderMgr::anyfont();
         if (!loader) return Result::InsufficientCondition;
 
         if (style && strstr(style, "italic")) italic = true;
@@ -134,10 +134,10 @@ struct Text::Impl : Paint::Impl
         return PAINT(shape)->update(renderer, transform, clips, opacity, pFlag, false);
     }
 
-    bool bounds(float* x, float* y, float* w, float* h, TVG_UNUSED bool stroking)
+    bool bounds(Point* pt4, TVG_UNUSED bool stroking)
     {
         if (!load()) return false;
-        PAINT(shape)->bounds(x, y, w, h, true, true, false);
+        PAINT(shape)->bounds(pt4, true, true, false);
         return true;
     }
 
@@ -156,7 +156,7 @@ struct Text::Impl : Paint::Impl
             ++dup->loader->sharing;
         }
 
-        dup->utf8 = strdup(utf8);
+        dup->utf8 = tvg::duplicate(utf8);
         dup->italic = italic;
         dup->fontSize = fontSize;
 

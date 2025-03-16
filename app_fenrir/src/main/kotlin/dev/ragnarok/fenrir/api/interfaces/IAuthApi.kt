@@ -1,10 +1,10 @@
 package dev.ragnarok.fenrir.api.interfaces
 
 import androidx.annotation.CheckResult
-import dev.ragnarok.fenrir.api.model.LoginResponse
 import dev.ragnarok.fenrir.api.model.VKApiValidationResponse
 import dev.ragnarok.fenrir.api.model.response.AnonymTokenResponse
 import dev.ragnarok.fenrir.api.model.response.GetAuthCodeStatusResponse
+import dev.ragnarok.fenrir.api.model.response.LoginResponse
 import dev.ragnarok.fenrir.api.model.response.SetAuthCodeStatusResponse
 import dev.ragnarok.fenrir.api.model.response.VKUrlResponse
 import kotlinx.coroutines.flow.Flow

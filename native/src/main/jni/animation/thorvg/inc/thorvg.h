@@ -414,20 +414,42 @@ public:
     Result blend(BlendMethod method) noexcept;
 
     /**
-     * @brief Gets the axis-aligned bounding box of the paint object.
+     * @brief Retrieves the object-oriented bounding box (OBB) of the paint object in canvas space.
+     * 
+     * This function returns the bounding box of the paint, as an oriented bounding box (OBB) after transformations are applied.
      *
-     * @param[out] x The x-coordinate of the upper-left corner of the object.
-     * @param[out] y The y-coordinate of the upper-left corner of the object.
-     * @param[out] w The width of the object.
-     * @param[out] h The height of the object.
-     * @param[in] transformed If @c true, the paint's transformations are taken into account in the scene it belongs to. Otherwise they aren't.
+     * @param[out] pt4 An array of four points representing the bounding box. The array size must be 4.
      *
-     * @note This is useful when you need to figure out the bounding box of the paint in the canvas space.
-     * @note The bounding box doesn't indicate the actual drawing region. It's the smallest rectangle that encloses the object.
-     * @note If @p transformed is @c true, the paint needs to be pushed into a canvas and updated before this api is called.
+     * @retval Result::InvalidArguments @p pt4 is @c nullptr.
+     * @retval Result::InsufficientCondition If it failed to compute the bounding box (mostly due to invalid path information).
+     * 
+     * @note The paint must be pushed into a canvas and updated before calling this function.
+     *
+     * @see Paint::bounds(float* x, float* y, folat* w, float* h)
+     * @see Canvas::update()
+     *
+     * @since 1.0
+     */
+    Result bounds(Point* pt4) const noexcept;
+
+    /**
+     * @brief Retrieves the axis-aligned bounding box (AABB) of the paint object in local space.
+     *
+     * This function returns the bounding box of the paint object relative to its local coordinate system, without applying any transformations.
+     *
+     * @param[out] x The x-coordinate of the upper-left corner of the bounding box.
+     * @param[out] y The y-coordinate of the upper-left corner of the bounding box.
+     * @param[out] w The width of the bounding box.
+     * @param[out] h The height of the bounding box.
+     *
+     * @retval Result::InsufficientCondition If it failed to compute the bounding box (mostly due to invalid path information).
+     *
+     * @note The bounding box is calculated in the object's local space, meaning transformations such as scaling, rotation, or translation are not applied.
+     *
+     * @see Paint::bounds(Point* pt4)
      * @see Canvas::update()
      */
-    Result bounds(float* x, float* y, float* w, float* h, bool transformed = false) const noexcept;
+    Result bounds(float* x, float* y, float* w, float* h) const noexcept;
 
     /**
      * @brief Duplicates the object.
@@ -1099,7 +1121,7 @@ public:
     Result strokeMiterlimit(float miterlimit) noexcept;
 
     /**
-     * @brief Sets the trim of the stroke along the defined path segment, allowing control over which part of the stroke is visible.
+     * @brief Sets the trim of the shape along the defined path segment, allowing control over which part of the shape is visible.
      *
      * If the values of the arguments @p begin and @p end exceed the 0-1 range, they are wrapped around in a manner similar to angle wrapping, effectively treating the range as circular.
      *
@@ -1110,7 +1132,7 @@ public:
      *
      * @note Experimental API
      */
-    Result strokeTrim(float begin, float end, bool simultaneous = true) noexcept;
+    Result trimpath(float begin, float end, bool simultaneous = true) noexcept;
 
     /**
      * @brief Sets the solid color for all of the figures from the path.
@@ -1280,7 +1302,7 @@ public:
 /**
  * @class Picture
  *
- * @brief A class representing an image read in one of the supported formats: raw, svg, png, jpg, lottie(json) and etc.
+ * @brief A class representing an image read in one of the supported formats: raw, svg, png, jpg, lot and etc.
  * Besides the methods inherited from the Paint, it provides methods to load & draw images on the canvas.
  *
  * @note Supported formats are depended on the available TVG loaders.
@@ -1315,7 +1337,7 @@ public:
      *
      * @param[in] data A pointer to a memory location where the content of the picture file is stored. A null-terminated string is expected for non-binary data if @p copy is @c false.
      * @param[in] size The size in bytes of the memory occupied by the @p data.
-     * @param[in] mimeType Mimetype or extension of data such as "jpg", "jpeg", "lottie", "svg", "svg+xml", "png", etc. In case an empty string or an unknown type is provided, the loaders will be tried one by one.
+     * @param[in] mimeType Mimetype or extension of data such as "jpg", "jpeg", "lot", "lottie+json", "svg", "svg+xml", "png", etc. In case an empty string or an unknown type is provided, the loaders will be tried one by one.
      * @param[in] rpath A resource directory path, if the @p data needs to access any external resources.
      * @param[in] copy If @c true the data are copied into the engine local buffer, otherwise they are not.
      *
@@ -1885,7 +1907,7 @@ public:
     /**
      * @brief Retrieves a picture instance associated with this animation instance.
      *
-     * This function provides access to the picture instance that can be used to load animation formats, such as Lottie(json).
+     * This function provides access to the picture instance that can be used to load animation formats, such as lot.
      * After setting up the picture, it can be pushed to the designated canvas, enabling control over animation frames
      * with this Animation instance.
      *

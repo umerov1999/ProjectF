@@ -15,7 +15,7 @@
 Требуется:<br>
   1) Android Studio Meerkat 2024.3.1 или выше. Kotlin 2.1.*
   2) Android SDK 35
-  3) Android NDK 28.0.12916984
+  3) Android NDK 28.0.13004108
   
   Если не работает музыка в Fenrir Kate, обновите kate_receipt_gms_token в app.build_config.<br>
   Взять токен можно из Kate Mobile Extra Mod

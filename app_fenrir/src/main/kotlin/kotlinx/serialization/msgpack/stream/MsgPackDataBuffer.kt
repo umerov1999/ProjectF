@@ -5,8 +5,8 @@ import okio.BufferedSource
 
 abstract class MsgPackDataOutputBuffer : MsgPackDataBuffer {
     abstract fun add(byte: Byte): Boolean
-    abstract fun addAll(bytesList: List<Byte>): Boolean
-    abstract fun addAll(bytesArray: ByteArray): Boolean
+    abstract fun addAll(bytes: List<Byte>): Boolean
+    abstract fun addAll(bytes: ByteArray): Boolean
 }
 
 abstract class MsgPackDataInputBuffer : MsgPackDataBuffer {

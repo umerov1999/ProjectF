@@ -112,8 +112,8 @@ class PostDtoAdapter : AbsDtoAdapter<VKApiPost>("VKApiPost") {
                 if (!checkObject(copyHistoryArray?.get(i))) {
                     continue
                 }
-                val copy = copyHistoryArray?.get(i)?.jsonObject
-                dto.copy_history?.add(deserialize(copy ?: continue))
+                val copy = copyHistoryArray[i].jsonObject
+                dto.copy_history?.add(deserialize(copy))
             }
         } else {
             //empty list

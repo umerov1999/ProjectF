@@ -13,7 +13,7 @@ import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.animation.AnimatedFileDrawable
-import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGLottieDrawable.LoadedFrom
+import dev.ragnarok.fenrir.module.animation.LoadedFrom
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain

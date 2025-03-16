@@ -55,13 +55,13 @@ namespace tvg {
  * No hexadecimal form supported
  * no sequence supported after NAN
  */
-float strToFloat(const char *nPtr, char **endPtr)
+float toFloat(const char *str, char **end)
 {
-    if (endPtr) *endPtr = (char *) (nPtr);
-    if (!nPtr) return 0.0f;
+    if (end) *end = (char *) (str);
+    if (!str) return 0.0f;
 
-    auto a = nPtr;
-    auto iter = nPtr;
+    auto a = str;
+    auto iter = str;
     auto val = 0.0f;
     unsigned long long integerPart = 0;
     int minus = 1;
@@ -87,7 +87,7 @@ float strToFloat(const char *nPtr, char **endPtr)
                 iter += 5;
             else goto error;
         }
-        if (endPtr) *endPtr = (char *) (iter);
+        if (end) *end = (char *) (iter);
         return (minus == -1) ? -INFINITY : INFINITY;
     }
 
@@ -95,7 +95,7 @@ float strToFloat(const char *nPtr, char **endPtr)
         if ((tolower(*(iter + 1)) == 'a') && (tolower(*(iter + 2)) == 'n')) iter += 3;
         else goto error;
 
-        if (endPtr) *endPtr = (char *) (iter);
+        if (end) *end = (char *) (iter);
         return (minus == -1) ? -NAN : NAN;
     }
 
@@ -164,7 +164,7 @@ float strToFloat(const char *nPtr, char **endPtr)
                 exponentPart = exponentPart * 10U + static_cast<unsigned int>(*iter - '0');
             }
         } else if (!isdigit(*(a - 1))) {
-            a = nPtr;
+            a = str;
             goto success;
         } else if (*iter == 0) {
             goto success;
@@ -190,56 +190,73 @@ float strToFloat(const char *nPtr, char **endPtr)
             exponentPart--;
         }
         val = (minus_e == -1) ? (val / scale) : (val * scale);
-    } else if ((iter > nPtr) && !isdigit(*(iter - 1))) {
-        a = nPtr;
+    } else if ((iter > str) && !isdigit(*(iter - 1))) {
+        a = str;
         goto success;
     }
 
 success:
-    if (endPtr) *endPtr = (char *)(a);
+    if (end) *end = (char *)a;
     if (!std::isfinite(val)) return 0.0f;
 
     return minus * val;
 
 error:
-    if (endPtr) *endPtr = (char *)(nPtr);
+    if (end) *end = (char *)str;
     return 0.0f;
 }
 
-char* strDuplicate(const char *str, size_t n)
+
+char* duplicate(const char *str, size_t n)
 {
     auto len = strlen(str);
     if (len < n) n = len;
 
     auto ret = tvg::malloc<char*>(n + 1);
-    if (!ret) return nullptr;
     ret[n] = '\0';
 
-    return (char *) memcpy(ret, str, n);
+    return (char*)memcpy(ret, str, n);
 }
 
-char* strAppend(char* lhs, const char* rhs, size_t n)
+
+char* append(char* lhs, const char* rhs, size_t n)
 {
     if (!rhs) return lhs;
-    if (!lhs) return strDuplicate(rhs, n);
+    if (!lhs) return duplicate(rhs, n);
     lhs = tvg::realloc<char*>(lhs, strlen(lhs) + n + 1);
     return strncat(lhs, rhs, n);
 }
 
-char* strDirname(const char* path)
+
+char* dirname(const char* path)
 {
-    const char *ptr = strrchr(path, '/');
+    auto ptr = strrchr(path, '/');
 #ifdef _WIN32
-    if (ptr) ptr = strrchr(ptr + 1, '\\');
+    ptr = strrchr(ptr ? ptr : path, '\\');
 #endif
-    int len = int(ptr + 1 - path);  // +1 to include '/'
-    return strDuplicate(path, len);
+    auto len = ptr ? size_t(ptr - path + 1) : SIZE_MAX;
+    return duplicate(path, len);
 }
 
 
-const char* strExtension(const char* filename)
+char* filename(const char* path)
 {
-    auto ext = filename;
+    const char* ptr = strrchr(path, '/');
+#ifdef _WIN32
+    auto ptr2 = strrchr(ptr ? ptr : path, '\\');
+    if (ptr2) ptr = ptr2;
+#endif
+    if (ptr) ++ptr;
+    else ptr = path;
+    auto dot = fileext(ptr);
+    auto len = (dot > ptr) ? (size_t)(dot - ptr - 1) : strlen(ptr);
+    return duplicate(ptr, len);
+}
+
+
+const char* fileext(const char* path)
+{
+    auto ext = path;
     while (ext) {
         auto p = strchr(ext, '.');
         if (!p) break;

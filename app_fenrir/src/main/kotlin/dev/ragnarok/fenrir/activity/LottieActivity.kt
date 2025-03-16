@@ -81,7 +81,7 @@ class LottieActivity : AppCompatActivity() {
                                     "Path : " + file + "\r\n" +
                                     "File Size : " + file.length() / 1024 + "kb"
                         log(logs)
-                        toGif?.post { toGif?.isEnabled = true }
+                        toGif?.isEnabled = true
                     }
                 })
                 .setBackgroundColor(Color.TRANSPARENT)
@@ -95,7 +95,7 @@ class LottieActivity : AppCompatActivity() {
     private var lottie: ThorVGLottieView? = null
     private var lg: TextView? = null
     internal fun log(log: String?) {
-        lg?.post { lg?.text = log?.trim() }
+        lg?.text = log?.trim()
     }
 
     override fun attachBaseContext(newBase: Context) {

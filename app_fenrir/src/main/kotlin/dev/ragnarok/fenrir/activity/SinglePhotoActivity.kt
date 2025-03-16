@@ -7,6 +7,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
@@ -367,6 +368,10 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                 )
             w.navigationBarColor =
                 if (colored) getNavigationBarColor(this) else Color.BLACK
+        } else {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+                w.isNavigationBarContrastEnforced = colored
+            }
         }
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons

@@ -31,7 +31,7 @@ import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.getSerializableCompat
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.animation.AnimatedFileDrawable
-import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGLottieDrawable.LoadedFrom
+import dev.ragnarok.fenrir.module.animation.LoadedFrom
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.util.Utils
@@ -482,6 +482,9 @@ class TouchImageView @JvmOverloads constructor(
      */
     val isZoomed: Boolean
         get() = currentZoom >= 1.2f
+
+    private val isZoomedInternal: Boolean
+        get() = currentZoom != 1f
 
     /**
      * Return a Rect representing the zoomed image.
@@ -953,7 +956,7 @@ class TouchImageView @JvmOverloads constructor(
         val redundantYSpace = viewHeight - scaleY * drawableHeight
         matchViewWidth = viewWidth - redundantXSpace
         matchViewHeight = viewHeight - redundantYSpace
-        if (!isZoomed && !imageRenderedAtLeastOnce) {
+        if (!isZoomedInternal && !imageRenderedAtLeastOnce) {
 
             // Stretch and center image to fit view
             if (isRotateImageToFitScreen && orientationMismatch(drawable)) {
@@ -1092,7 +1095,7 @@ class TouchImageView @JvmOverloads constructor(
             return
         }
         this.imageActionState = imageActionState
-        stateListener?.onChangeState(imageActionState, isZoomed)
+        stateListener?.onChangeState(imageActionState, isZoomedInternal)
     }
 
     override fun canScrollHorizontally(direction: Int): Boolean {

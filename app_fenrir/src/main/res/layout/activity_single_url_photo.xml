@@ -4,7 +4,8 @@
     android:id="@+id/photo_single_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black">
+    android:background="@android:color/black"
+    android:fitsSystemWindows="true">
 
     <include layout="@layout/content_photo_page" />
 

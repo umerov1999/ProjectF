@@ -9,11 +9,11 @@ import dev.ragnarok.fenrir.api.CaptchaNeedException
 import dev.ragnarok.fenrir.api.IDirectLoginServiceProvider
 import dev.ragnarok.fenrir.api.NeedValidationException
 import dev.ragnarok.fenrir.api.interfaces.IAuthApi
-import dev.ragnarok.fenrir.api.model.LoginResponse
 import dev.ragnarok.fenrir.api.model.VKApiValidationResponse
 import dev.ragnarok.fenrir.api.model.response.AnonymTokenResponse
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.GetAuthCodeStatusResponse
+import dev.ragnarok.fenrir.api.model.response.LoginResponse
 import dev.ragnarok.fenrir.api.model.response.SetAuthCodeStatusResponse
 import dev.ragnarok.fenrir.api.model.response.VKUrlResponse
 import dev.ragnarok.fenrir.nonNullNoEmpty

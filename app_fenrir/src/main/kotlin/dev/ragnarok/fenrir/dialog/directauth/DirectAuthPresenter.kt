@@ -4,14 +4,16 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Includes.networkInterfaces
+import dev.ragnarok.fenrir.api.ApiException
 import dev.ragnarok.fenrir.api.Auth.scope
 import dev.ragnarok.fenrir.api.CaptchaNeedException
 import dev.ragnarok.fenrir.api.NeedValidationException
 import dev.ragnarok.fenrir.api.interfaces.INetworker
-import dev.ragnarok.fenrir.api.model.LoginResponse
+import dev.ragnarok.fenrir.api.model.response.LoginResponse
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
 import dev.ragnarok.fenrir.model.Captcha
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.service.ApiErrorCodes
 import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayedFlow
@@ -188,6 +190,12 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
                 TwFafin,
                 savePassword
             )
+        } else if (response.errorBasic != null && response.errorBasic?.errorCode == ApiErrorCodes.VALIDATE_NEED) {
+            view?.startDefaultValidation(response.errorBasic?.redirectUri)
+        } else if (response.errorBasic != null) {
+            response.errorBasic?.let {
+                view?.showThrowable(ApiException(it))
+            }
         }
     }
 

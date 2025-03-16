@@ -82,7 +82,7 @@ class ValidateActivity : AppCompatActivity() {
                 }
             }).scrimColor(CurrentTheme.getColorBackground(this)).build()
         )
-        val webview = findViewById<WebView>(R.id.vkontakteview)
+        val webview = findViewById<WebView>(R.id.item_web_auth)
         webview.settings.javaScriptEnabled = true
         webview.settings.domStorageEnabled = true
         webview.settings.blockNetworkLoads = false

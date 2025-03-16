@@ -21,7 +21,7 @@ class FeedbackUserArrayDtoAdapter : AbsDtoAdapter<UserArray>("UserArray") {
                 if (!checkObject(array?.get(i))) {
                     continue
                 }
-                dto.ids?.set(i, optLong(array?.get(i)?.jsonObject, "from_id", 0))
+                dto.ids?.set(i, optLong(array[i].jsonObject, "from_id", 0))
             }
         } else {
             dto.ids = LongArray(0)

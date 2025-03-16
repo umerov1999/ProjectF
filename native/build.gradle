@@ -44,7 +44,8 @@ android {
     }
     kotlinOptions {
         jvmTarget = "21"
-        freeCompilerArgs = ["-opt-in=kotlin.contracts.ExperimentalContracts"]
+        freeCompilerArgs = ["-opt-in=kotlin.contracts.ExperimentalContracts",
+                            "-opt-in=kotlinx.coroutines.DelicateCoroutinesApi"]
     }
 
     externalNativeBuild {

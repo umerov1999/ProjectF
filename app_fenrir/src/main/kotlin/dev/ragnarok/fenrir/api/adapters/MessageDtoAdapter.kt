@@ -55,7 +55,7 @@ class MessageDtoAdapter : AbsDtoAdapter<VKApiMessage>("VKApiMessage") {
                 if (!checkObject(fwdArray?.get(i))) {
                     continue
                 }
-                dto.fwd_messages?.add(deserialize(fwdArray?.get(i) ?: continue))
+                dto.fwd_messages?.add(deserialize(fwdArray[i]))
             }
         }
         if (hasObject(root, "reply_message")) {
@@ -95,7 +95,7 @@ class MessageDtoAdapter : AbsDtoAdapter<VKApiMessage>("VKApiMessage") {
                 dto.reactions?.add(
                     kJson.decodeFromJsonElement(
                         VKApiReaction.serializer(),
-                        reactionArray?.get(i) ?: continue
+                        reactionArray[i]
                     )
                 )
             }

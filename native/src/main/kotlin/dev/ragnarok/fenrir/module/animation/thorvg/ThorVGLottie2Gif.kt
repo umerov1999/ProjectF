@@ -2,11 +2,16 @@ package dev.ragnarok.fenrir.module.animation.thorvg
 
 import android.graphics.Color
 import androidx.annotation.Keep
-import dev.ragnarok.fenrir.module.DispatchQueuePool
+import dev.ragnarok.fenrir.module.BuildConfig
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.newFixedThreadPoolContext
 import java.io.File
 
 class ThorVGLottie2Gif internal constructor(private val builder: Builder) {
-
     private external fun lottie2gif(
         filePath: String,
         w: Int,
@@ -26,24 +31,8 @@ class ThorVGLottie2Gif internal constructor(private val builder: Builder) {
         private set
     var totalFrame = 0
         private set
-    private val listener: Lottie2GifListener = object : Lottie2GifListener {
-        override fun onStarted() {
-            isRunning = true
-            builder.listener?.onStarted()
-        }
 
-        override fun onProgress(frame: Int, totalFrame: Int) {
-            currentFrame = frame
-            this@ThorVGLottie2Gif.totalFrame = totalFrame
-            builder.listener?.onProgress(frame, totalFrame)
-        }
-
-        override fun onFinished() {
-            isRunning = false
-            builder.listener?.onFinished()
-        }
-    }
-    var converter: Runnable = Runnable {
+    private fun doConvert() {
         isSuccessful = lottie2gif(
             builder.file.absolutePath,
             builder.w,
@@ -52,7 +41,29 @@ class ThorVGLottie2Gif internal constructor(private val builder: Builder) {
             builder.bgColor == Color.TRANSPARENT,
             builder.fps,
             builder.gifPath.absolutePath,
-            listener
+            object : Lottie2GifListener {
+                override fun onStarted() {
+                    inMainThread {
+                        isRunning = true
+                        builder.listener?.onStarted()
+                    }
+                }
+
+                override fun onProgress(frame: Int, totalFrame: Int) {
+                    inMainThread {
+                        currentFrame = frame
+                        this@ThorVGLottie2Gif.totalFrame = totalFrame
+                        builder.listener?.onProgress(frame, totalFrame)
+                    }
+                }
+
+                override fun onFinished() {
+                    inMainThread {
+                        isRunning = false
+                        builder.listener?.onFinished()
+                    }
+                }
+            }
         )
     }
 
@@ -64,9 +75,11 @@ class ThorVGLottie2Gif internal constructor(private val builder: Builder) {
 
     private fun build() {
         if (builder.async) {
-            runnableQueue?.execute(converter)
+            CoroutineScope(coroutineDispatcher).launch {
+                doConvert()
+            }
         } else {
-            converter.run()
+            doConvert()
         }
     }
 
@@ -167,7 +180,19 @@ class ThorVGLottie2Gif internal constructor(private val builder: Builder) {
     }
 
     companion object {
-        private var runnableQueue: DispatchQueuePool? = null
+        private val coroutineDispatcher = newFixedThreadPoolContext(2, "convertingQueue$this")
+
+        private val coroutineExceptionHandlerEmpty = CoroutineExceptionHandler { _, throwable ->
+            if (BuildConfig.DEBUG) {
+                throwable.printStackTrace()
+            }
+        }
+
+        private inline fun inMainThread(crossinline function: () -> Unit): Job {
+            return CoroutineScope(Dispatchers.Main + coroutineExceptionHandlerEmpty).launch {
+                function.invoke()
+            }
+        }
 
         fun create(file: File): Builder {
             return Builder(file)
@@ -175,7 +200,6 @@ class ThorVGLottie2Gif internal constructor(private val builder: Builder) {
     }
 
     init {
-        if (runnableQueue == null) runnableQueue = DispatchQueuePool(2)
         build()
     }
 }

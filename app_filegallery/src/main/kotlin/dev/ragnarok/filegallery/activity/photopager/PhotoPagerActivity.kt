@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -433,6 +434,10 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 )
             w.navigationBarColor =
                 if (colored) getNavigationBarColor(this) else Color.BLACK
+        } else {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+                w.isNavigationBarContrastEnforced = colored
+            }
         }
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons

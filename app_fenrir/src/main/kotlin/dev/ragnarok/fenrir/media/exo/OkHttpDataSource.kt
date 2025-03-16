@@ -63,11 +63,12 @@ class OkHttpDataSource internal constructor(
     private var dataSpec: DataSpec? = null
     private var response: Response? = null
     private var responseByteStream: BufferedSource? = null
-    private var opened = false
+    private var connectionEstablished = false
     private var bytesToRead: Long = 0
     private var bytesRead: Long = 0
-    override fun getUri(): Uri {
-        return response?.request?.url.toString().toUri()
+    override fun getUri(): Uri? {
+        return response?.request?.url?.toString()?.toUri()
+            ?: dataSpec?.uri
     }
 
     override fun getResponseCode(): Int {
@@ -122,7 +123,7 @@ class OkHttpDataSource internal constructor(
                     response.headers[HttpHeaders.CONTENT_RANGE]
                 )
                 if (dataSpec.position == documentSize) {
-                    opened = true
+                    connectionEstablished = true
                     transferStarted(dataSpec)
                     return if (dataSpec.length != C.LENGTH_UNSET.toLong()) dataSpec.length else 0
                 }
@@ -164,7 +165,7 @@ class OkHttpDataSource internal constructor(
             val contentLength = responseBody.contentLength()
             if (contentLength != -1L) contentLength - bytesToSkip else C.LENGTH_UNSET.toLong()
         }
-        opened = true
+        connectionEstablished = true
         transferStarted(dataSpec)
         try {
             skipFully(bytesToSkip, dataSpec)
@@ -187,11 +188,13 @@ class OkHttpDataSource internal constructor(
     }
 
     override fun close() {
-        if (opened) {
-            opened = false
+        if (connectionEstablished) {
+            connectionEstablished = false
             transferEnded()
             closeConnectionQuietly()
         }
+        response = null
+        dataSpec = null
     }
 
     /**
@@ -358,7 +361,6 @@ class OkHttpDataSource internal constructor(
     private fun closeConnectionQuietly() {
         if (response != null) {
             response?.body?.close()
-            response = null
         }
         responseByteStream = null
     }

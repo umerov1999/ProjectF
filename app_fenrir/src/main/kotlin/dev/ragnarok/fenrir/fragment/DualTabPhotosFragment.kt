@@ -55,7 +55,7 @@ class DualTabPhotosFragment : BaseFragment(), BackPressCallback {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.activity_dual_tab_photos, container, false)
+        val root = inflater.inflate(R.layout.fragment_dual_tab_photos, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
         val viewPager: ViewPager2 = root.findViewById(R.id.view_pager)
         mPagerAdapter = Adapter(this, mSources)

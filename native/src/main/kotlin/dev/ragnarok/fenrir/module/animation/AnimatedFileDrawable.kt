@@ -3,18 +3,17 @@ package dev.ragnarok.fenrir.module.animation
 import android.graphics.*
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
-import android.os.Handler
-import android.os.Looper
 import android.os.SystemClock
-import androidx.annotation.IntDef
 import androidx.annotation.Keep
-import androidx.annotation.RestrictTo
 import androidx.core.graphics.createBitmap
 import dev.ragnarok.fenrir.module.BuildConfig
-import dev.ragnarok.fenrir.module.DispatchQueue
-import java.util.concurrent.ScheduledThreadPoolExecutor
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlin.math.abs
 
 class AnimatedFileDrawable(
@@ -50,18 +49,6 @@ class AnimatedFileDrawable(
 
     private external fun prepareToSeek(ptr: Long)
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
-    @IntDef(LoadedFrom.NET, LoadedFrom.NO, LoadedFrom.FILE, LoadedFrom.RES)
-    @Retention(AnnotationRetention.SOURCE)
-    annotation class LoadedFrom {
-        companion object {
-            const val NET = -1
-            const val NO = 0
-            const val FILE = 1
-            const val RES = 3
-        }
-    }
-
     private val metaData = IntArray(6)
     private val decoderCreated: Boolean
     private val paint = Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG)
@@ -69,14 +56,13 @@ class AnimatedFileDrawable(
     private val actualDrawRect = RectF()
     private val dstRect = Rect()
     private val scaleFactor = 1f
-    private val mStartTask = Runnable { invalidateInternal() }
 
     @Volatile
     var nativePtr: Long = 0
     private var lastFrameTime: Long = 0
     private var lastTimeStamp = 0
     private var invalidateAfter = 50
-    private var loadFrameTask: Runnable? = null
+    private var loadFrameTask: Job? = null
     private var renderingBitmap: Bitmap? = null
     private var renderingBitmapTime = 0
     private var nextRenderingBitmap: Bitmap? = null
@@ -105,31 +91,30 @@ class AnimatedFileDrawable(
     @Volatile
     var isRecycled = false
         private set
-    private var decodeQueue: DispatchQueue? = null
     private var startTime = 0f
     private var endTime = 0f
     private var startTimeMillis: Long = 0
-    private var useSharedQueue = true
-    private val uiRunnableNoFrame = Runnable {
+    private fun uiRunnableNoFrame() {
         if (destroyWhenDone && nativePtr != 0L) {
             destroyDecoder(nativePtr)
             nativePtr = 0
         }
         if (nativePtr == 0L) {
             recycleResources()
-            return@Runnable
+            return
         }
         loadFrameTask = null
         scheduleNextGetFrame()
     }
-    private val uiRunnable = Runnable {
+
+    private fun uiRunnable() {
         if (destroyWhenDone && nativePtr != 0L) {
             destroyDecoder(nativePtr)
             nativePtr = 0
         }
         if (nativePtr == 0L) {
             recycleResources()
-            return@Runnable
+            return
         }
         if (!forceDecodeAfterNextFrame) {
             singleFrameDecoded = true
@@ -153,7 +138,8 @@ class AnimatedFileDrawable(
         invalidateInternal()
         scheduleNextGetFrame()
     }
-    private val loadFrameRunnable = Runnable {
+
+    private suspend fun loadFrameRunnable() {
         if (!isRecycled) {
             try {
                 if (nativePtr != 0L || metaData[0] == 0 || metaData[1] == 0) {
@@ -190,8 +176,10 @@ class AnimatedFileDrawable(
                                 endTime
                             ) == 0
                         ) {
-                            DispatchQueue.runOnUIThread(uiRunnableNoFrame)
-                            return@Runnable
+                            CoroutineScope(Dispatchers.Main).launch {
+                                uiRunnableNoFrame()
+                            }
+                            return
                         }
                         if (seekWas) {
                             lastTimeStamp = metaData[3]
@@ -199,8 +187,10 @@ class AnimatedFileDrawable(
                         backgroundBitmapTime = metaData[3]
                     }
                 } else {
-                    DispatchQueue.runOnUIThread(uiRunnableNoFrame)
-                    return@Runnable
+                    CoroutineScope(Dispatchers.Main).launch {
+                        uiRunnableNoFrame()
+                    }
+                    return
                 }
             } catch (e: Throwable) {
                 if (BuildConfig.DEBUG) {
@@ -208,7 +198,9 @@ class AnimatedFileDrawable(
                 }
             }
         }
-        DispatchQueue.runOnUIThread(uiRunnable)
+        CoroutineScope(Dispatchers.Main).launch {
+            uiRunnable()
+        }
     }
 
     private fun invalidateInternal() {
@@ -231,9 +223,9 @@ class AnimatedFileDrawable(
                 nextRenderingBitmap?.recycle()
                 nextRenderingBitmap = null
             }
-            if (decodeQueue != null) {
-                decodeQueue?.recycle()
-                decodeQueue = null
+            if (loadFrameTask != null) {
+                loadFrameTask?.cancel()
+                loadFrameTask = null
             }
             invalidateInternal()
         } catch (e: Exception) {
@@ -243,7 +235,7 @@ class AnimatedFileDrawable(
             renderingBitmap = null
             backgroundBitmap = null
             nextRenderingBitmap = null
-            decodeQueue = null
+            loadFrameTask = null
         }
     }
 
@@ -335,10 +327,6 @@ class AnimatedFileDrawable(
         }
     }
 
-    fun setUseSharedQueue(value: Boolean) {
-        useSharedQueue = value
-    }
-
     protected fun finalize() {
         try {
             recycle()
@@ -365,7 +353,9 @@ class AnimatedFileDrawable(
         startTimeMillis = SystemClock.uptimeMillis()
         isRunning = true
         scheduleNextGetFrame()
-        runOnUiThread(mStartTask)
+        inMainThread {
+            invalidateInternal()
+        }
     }
 
     val currentProgress: Float
@@ -397,17 +387,9 @@ class AnimatedFileDrawable(
                 0L.coerceAtLeast(invalidateAfter - (System.currentTimeMillis() - lastFrameDecodeTime))
             )
         }
-        if (useSharedQueue) {
-            executor.schedule(
-                loadFrameRunnable.also { loadFrameTask = it },
-                ms,
-                TimeUnit.MILLISECONDS
-            )
-        } else {
-            if (decodeQueue == null) {
-                decodeQueue = DispatchQueue("decodeQueue$this")
-            }
-            decodeQueue?.postRunnable(loadFrameRunnable.also { loadFrameTask = it }, ms)
+        loadFrameTask = CoroutineScope(coroutineDispatcher).launch {
+            delay(ms)
+            loadFrameRunnable()
         }
     }
 
@@ -587,14 +569,17 @@ class AnimatedFileDrawable(
     }
 
     companion object {
-        private val uiHandler = Handler(Looper.getMainLooper())
-        private val executor = ScheduledThreadPoolExecutor(8, ThreadPoolExecutor.DiscardPolicy())
+        private val coroutineDispatcher = newFixedThreadPoolContext(8, "decodeQueue$this")
 
-        internal fun runOnUiThread(task: Runnable) {
-            if (Looper.myLooper() == uiHandler.looper) {
-                task.run()
-            } else {
-                uiHandler.post(task)
+        private val coroutineExceptionHandlerEmpty = CoroutineExceptionHandler { _, throwable ->
+            if (BuildConfig.DEBUG) {
+                throwable.printStackTrace()
+            }
+        }
+
+        private inline fun inMainThread(crossinline function: () -> Unit): Job {
+            return CoroutineScope(Dispatchers.Main + coroutineExceptionHandlerEmpty).launch {
+                function.invoke()
             }
         }
     }

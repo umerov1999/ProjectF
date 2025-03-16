@@ -91,7 +91,7 @@ class FeedbackVKOfficialDtoAdapter :
                     val action_buttons = root_item["action_buttons"]?.jsonObject
                     for (ss1 in action_buttons.orEmpty().keys) {
                         if (checkArray(action_buttons?.get(ss1))) {
-                            for (ss2 in action_buttons?.get(ss1)?.jsonArray.orEmpty()) {
+                            for (ss2 in action_buttons[ss1]?.jsonArray.orEmpty()) {
                                 if (checkObject(ss2)) {
                                     val act = ss2.jsonObject
                                     if (hasObject(act, "action")) {

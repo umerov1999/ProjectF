@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.dialog.directauth
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -15,6 +16,7 @@ import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.activity.ValidateActivity
 import dev.ragnarok.fenrir.fragment.base.BaseMvpDialogFragment
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
@@ -204,6 +206,12 @@ class DirectAuthDialog : BaseMvpDialogFragment<DirectAuthPresenter, IDirectAuthV
 
     override fun returnLoginViaWebAction() {
         returnResultAndDismiss(ACTION_LOGIN_VIA_WEB, Bundle())
+    }
+
+    override fun startDefaultValidation(url: String?) {
+        val intent = ValidateActivity.createIntent(requireActivity(), url, -1)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        requireActivity().startActivity(intent)
     }
 
     companion object {

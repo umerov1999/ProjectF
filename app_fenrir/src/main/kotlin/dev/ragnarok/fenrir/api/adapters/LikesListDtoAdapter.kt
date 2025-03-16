@@ -29,15 +29,15 @@ class LikesListDtoAdapter : AbsDtoAdapter<LikesListResponse>("LikesListResponse"
                 if (!checkObject(itemsArray?.get(i))) {
                     continue
                 }
-                val itemRoot = itemsArray?.get(i)?.jsonObject
+                val itemRoot = itemsArray[i].jsonObject
                 val type = optString(itemRoot, "type")
                 var owner: VKApiOwner? = null
                 if ("profile" == type || "user" == type) {
-                    owner = itemRoot?.let {
+                    owner = itemRoot.let {
                         kJson.decodeFromJsonElement(VKApiUser.serializer(), it)
                     }
                 } else if ("group" == type || "page" == type) {
-                    owner = itemRoot?.let {
+                    owner = itemRoot.let {
                         kJson.decodeFromJsonElement(VKApiCommunity.serializer(), it)
                     }
                 }

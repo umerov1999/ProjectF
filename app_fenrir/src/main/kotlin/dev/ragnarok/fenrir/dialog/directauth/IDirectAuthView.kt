@@ -32,4 +32,6 @@ interface IDirectAuthView : IMvpView, IErrorView {
     )
 
     fun returnLoginViaWebAction()
+
+    fun startDefaultValidation(url: String?)
 }

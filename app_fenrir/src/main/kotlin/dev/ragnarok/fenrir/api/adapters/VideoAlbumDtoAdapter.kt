@@ -36,15 +36,15 @@ class VideoAlbumDtoAdapter : AbsDtoAdapter<VKApiVideoAlbum>("VKApiVideoAlbum") {
                 if (!checkObject(images?.get(i))) {
                     continue
                 }
-                if (images?.get(i)?.jsonObject?.get("width")?.asPrimitiveSafe?.intOrNull.orZero() >= 800) {
-                    album.image = images?.get(i)?.jsonObject?.get("url")?.asPrimitiveSafe?.content
+                if (images[i].jsonObject["width"]?.asPrimitiveSafe?.intOrNull.orZero() >= 800) {
+                    album.image = images[i].jsonObject["url"]?.asPrimitiveSafe?.content
                     break
                 }
             }
             if (album.image == null) {
                 if (checkObject(images?.get(images.size - 1))) {
                     album.image =
-                        images?.get(images.size - 1)?.jsonObject?.get("url")?.asPrimitiveSafe?.content
+                        images[images.size - 1].jsonObject["url"]?.asPrimitiveSafe?.content
                 }
             }
         } else if (root.has("photo_800")) {

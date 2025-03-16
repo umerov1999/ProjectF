@@ -17,6 +17,7 @@ import dev.ragnarok.fenrir.module.BufferWriteNative
 import dev.ragnarok.fenrir.module.BuildConfig
 import dev.ragnarok.fenrir.module.FenrirNative.appContext
 import dev.ragnarok.fenrir.module.FenrirNative.density
+import dev.ragnarok.fenrir.module.animation.LoadedFrom
 import java.io.File
 import java.io.InputStream
 import kotlin.math.ceil
@@ -27,17 +28,6 @@ class ThorVGLottieDrawable : Drawable, Animatable {
     @IntDef(RESTART, REVERSE)
     @Retention(AnnotationRetention.SOURCE)
     annotation class RepeatMode
-
-    @IntDef(LoadedFrom.NET, LoadedFrom.NO, LoadedFrom.FILE, LoadedFrom.RES)
-    @Retention(AnnotationRetention.SOURCE)
-    annotation class LoadedFrom {
-        companion object {
-            const val NET = -1
-            const val NO = 0
-            const val FILE = 1
-            const val RES = 3
-        }
-    }
 
     private var mLottieState: LottieDrawableState
 

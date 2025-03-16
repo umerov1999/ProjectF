@@ -27,7 +27,7 @@ class ViewersListDtoAdapter : AbsDtoAdapter<ViewersListResponse>("ViewersListAda
                 if (!checkObject(itemsArray?.get(i))) {
                     continue
                 }
-                val itemRoot = itemsArray?.get(i)?.jsonObject
+                val itemRoot = itemsArray[i].jsonObject
                 if (!hasObject(itemRoot, "user")) {
                     continue
                 }

@@ -42,6 +42,7 @@ namespace tvg
 /************************************************************************/
 
 float atan2(float y, float x);
+float length(const PathCommand* cmds, uint32_t cmdsCnt, const Point* pts, uint32_t ptsCnt);
 
 
 static inline float deg2rad(float degree)
@@ -343,6 +344,7 @@ struct Bezier
     float atApprox(float at, float length) const;
     Point at(float t) const;
     float angle(float t) const;
+    void bounds(Point& min, Point& max) const;
 };
 
 

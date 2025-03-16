@@ -20,8 +20,6 @@
  * SOFTWARE.
  */
 
-#include <string.h>
-
 #include "tvgInlist.h"
 #include "tvgStr.h"
 #include "tvgLoader.h"
@@ -102,7 +100,7 @@ static LoadModule* _find(FileType type)
 #endif
             break;
         }
-        case FileType::Lottie: {
+        case FileType::Lot: {
 #ifdef THORVG_LOTTIE_LOADER_SUPPORT
             return new LottieLoader;
 #endif
@@ -128,8 +126,8 @@ static LoadModule* _find(FileType type)
             format = "TTF";
             break;
         }
-        case FileType::Lottie: {
-            format = "lottie(json)";
+        case FileType::Lot: {
+            format = "LOT";
             break;
         }
         case FileType::Raw: {
@@ -162,11 +160,11 @@ static LoadModule* _find(FileType type)
 #ifdef THORVG_FILE_IO_SUPPORT
 static LoadModule* _findByPath(const char* filename)
 {
-    auto ext = strExtension(filename);
+    auto ext = fileext(filename);
     if (!ext) return nullptr;
 
     if (!strcmp(ext, "svg")) return _find(FileType::Svg);
-    if (!strcmp(ext, "json")) return _find(FileType::Lottie);
+    if (!strcmp(ext, "lot") || !strcmp(ext, "json")) return _find(FileType::Lot);
     if (!strcmp(ext, "png")) return _find(FileType::Png);
     if (!strcmp(ext, "jpg")) return _find(FileType::Jpg);
     if (!strcmp(ext, "webp")) return _find(FileType::Webp);
@@ -185,7 +183,7 @@ static FileType _convert(const char* mimeType)
 
     if (!strcmp(mimeType, "svg") || !strcmp(mimeType, "svg+xml")) type = FileType::Svg;
     else if (!strcmp(mimeType, "ttf") || !strcmp(mimeType, "otf")) type = FileType::Ttf;
-    else if (!strcmp(mimeType, "lottie")) type = FileType::Lottie;
+    else if (!strcmp(mimeType, "lot") || !strcmp(mimeType, "lottie+json")) type = FileType::Lot;
     else if (!strcmp(mimeType, "raw")) type = FileType::Raw;
     else if (!strcmp(mimeType, "png")) type = FileType::Png;
     else if (!strcmp(mimeType, "jpg") || !strcmp(mimeType, "jpeg")) type = FileType::Jpg;
@@ -207,7 +205,7 @@ static LoadModule* _findFromCache(const char* filename)
     ScopedLock lock(key);
 
     INLIST_FOREACH(_activeLoaders, loader) {
-        if (loader->pathcache && !strcmp(loader->hashpath, filename)) {
+        if (loader->cached && loader->hashpath && !strcmp(loader->hashpath, filename)) {
             ++loader->sharing;
             return loader;
         }
@@ -262,7 +260,7 @@ bool LoaderMgr::retrieve(LoadModule* loader)
 {
     if (!loader) return false;
     if (loader->close()) {
-        if (loader->cached()) {
+        if (loader->cached) {
             ScopedLock lock(key);
             _activeLoaders.remove(loader);
         }
@@ -279,8 +277,8 @@ LoadModule* LoaderMgr::loader(const char* filename, bool* invalid, ColorReplace 
 
     //TODO: svg & lottie is not sharable.
     auto allowCache = true;
-    auto ext = strExtension(filename);
-    if (ext && (!strcmp(ext, "svg") || !strcmp(ext, "json"))) allowCache = false;
+    auto ext = fileext(filename);
+    if (ext && (!strcmp(ext, "svg") || !strcmp(ext, "json") || !strcmp(ext, "lot"))) allowCache = false;
 
     if (allowCache) {
         if (auto loader = _findFromCache(filename)) return loader;
@@ -291,8 +289,7 @@ LoadModule* LoaderMgr::loader(const char* filename, bool* invalid, ColorReplace 
     if (auto loader = _findByPath(filename)) {
         if (loader->open(filename, colorReplacementP)) {
             if (allowCache) {
-                loader->hashpath = strdup(filename);
-                loader->pathcache = true;
+                loader->cache(duplicate(filename));
                 {
                     ScopedLock lock(key);
                     _activeLoaders.back(loader);
@@ -307,8 +304,7 @@ LoadModule* LoaderMgr::loader(const char* filename, bool* invalid, ColorReplace 
         if (auto loader = _find(static_cast<FileType>(i))) {
             if (loader->open(filename, colorReplacementP)) {
                 if (allowCache) {
-                    loader->hashpath = strdup(filename);
-                    loader->pathcache = true;
+                    loader->cache(duplicate(filename));
                     {
                         ScopedLock lock(key);
                         _activeLoaders.back(loader);
@@ -331,30 +327,6 @@ bool LoaderMgr::retrieve(const char* filename)
 }
 
 
-LoadModule* LoaderMgr::loader(const char* key, ColorReplace *colorReplacement)
-{
-    INLIST_FOREACH(_activeLoaders, loader) {
-        if (loader->pathcache && strstr(loader->hashpath, key)) {
-            ++loader->sharing;
-            return loader;
-        }
-    }
-    return nullptr;
-}
-
-
-LoadModule* LoaderMgr::anyfont()
-{
-    INLIST_FOREACH(_activeLoaders, loader) {
-        if ((loader->type == FileType::Ttf) && loader->pathcache) {
-            ++loader->sharing;
-            return loader;
-        }
-    }
-    return nullptr;
-}
-
-
 LoadModule* LoaderMgr::loader(const char* data, uint32_t size, const char* mimeType, const char* rpath, bool copy, ColorReplace *colorReplacement)
 {
     //Note that users could use the same data pointer with the different content.
@@ -364,7 +336,7 @@ LoadModule* LoaderMgr::loader(const char* data, uint32_t size, const char* mimeT
     //TODO: lottie is not sharable.
     if (allowCache) {
         auto type = _convert(mimeType);
-        if (type == FileType::Lottie) allowCache = false;
+        if (type == FileType::Lot) allowCache = false;
     }
 
     if (allowCache) {
@@ -378,7 +350,7 @@ LoadModule* LoaderMgr::loader(const char* data, uint32_t size, const char* mimeT
         if (auto loader = _findByType(mimeType)) {
             if (loader->open(data, size, rpath, copy, colorReplacementP)) {
                 if (allowCache) {
-                    loader->hashkey = HASH_KEY(data);
+                    loader->cache(HASH_KEY(data));
                     ScopedLock lock(key);
                     _activeLoaders.back(loader);
                 }
@@ -395,7 +367,7 @@ LoadModule* LoaderMgr::loader(const char* data, uint32_t size, const char* mimeT
         if (loader) {
             if (loader->open(data, size, rpath, copy, colorReplacementP)) {
                 if (allowCache) {
-                    loader->hashkey = HASH_KEY(data);
+                    loader->cache(HASH_KEY(data));
                     ScopedLock lock(key);
                     _activeLoaders.back(loader);
                 }
@@ -421,7 +393,7 @@ LoadModule* LoaderMgr::loader(const uint32_t *data, uint32_t w, uint32_t h, Colo
     auto loader = new RawLoader;
     if (loader->open(data, w, h, cs, copy)) {
         if (!copy) {
-            loader->hashkey = HASH_KEY((const char*)data);
+            loader->cache(HASH_KEY((const char*)data));
             ScopedLock lock(key);
             _activeLoaders.back(loader);
         }
@@ -437,13 +409,13 @@ LoadModule* LoaderMgr::loader(const char* name, const char* data, uint32_t size,
 {
 #ifdef THORVG_TTF_LOADER_SUPPORT
     //TODO: add check for mimetype ?
-    if (auto loader = _findFromCache(name)) return loader;
+    if (auto loader = font(name)) return loader;
 
     //function is dedicated for ttf loader (the only supported font loader)
     auto loader = new TtfLoader;
     if (loader->open(data, size, "", copy, colorReplacement)) {
-        loader->hashpath = strdup(name);
-        loader->pathcache = true;
+        loader->name = duplicate(name);
+        loader->cached = true;  //force it.
         ScopedLock lock(key);
         _activeLoaders.back(loader);
         return loader;
@@ -452,5 +424,30 @@ LoadModule* LoaderMgr::loader(const char* name, const char* data, uint32_t size,
     TVGLOG("LOADER", "The font data \"%s\" could not be loaded.", name);
     delete(loader);
 #endif
+    return nullptr;
+}
+
+
+LoadModule* LoaderMgr::font(const char* name)
+{
+    INLIST_FOREACH(_activeLoaders, loader) {
+        if (loader->type != FileType::Ttf) continue;
+        if (loader->cached && tvg::equal(name, static_cast<FontLoader*>(loader)->name)) {
+            ++loader->sharing;
+            return loader;
+        }
+    }
+    return nullptr;
+}
+
+
+LoadModule* LoaderMgr::anyfont()
+{
+    INLIST_FOREACH(_activeLoaders, loader) {
+        if (loader->cached && loader->type == FileType::Ttf) {
+            ++loader->sharing;
+            return loader;
+        }
+    }
     return nullptr;
 }

@@ -97,6 +97,12 @@ public class Snackbar extends BaseTransientBottomBar<Snackbar> {
     /** Indicates that the Snackbar was dismissed from a new Snackbar being shown. */
     public static final int DISMISS_EVENT_CONSECUTIVE = BaseCallback.DISMISS_EVENT_CONSECUTIVE;
 
+    /**
+     * Called when the given {@link Snackbar} is visible.
+     *
+     * @param sb The snackbar which is now visible.
+     * @see Snackbar#show()
+     */
     @Override
     public void onShown(Snackbar sb) {
       // Stub implementation to make API check happy.
@@ -109,13 +115,6 @@ public class Snackbar extends BaseTransientBottomBar<Snackbar> {
   }
 
   @Nullable private BaseCallback<Snackbar> callback;
-
-  /**
-   * This is only used as a temporary flag to opt-out of the new dismissal behavior for Snackbar
-   * with actions, which will never time out.
-   */
-  @SuppressWarnings("unused")
-  private boolean useLegacyDismissalBehavior = false;
 
   private Snackbar(
       @NonNull Context context,
@@ -366,18 +365,6 @@ public class Snackbar extends BaseTransientBottomBar<Snackbar> {
             dispatchDismiss(BaseCallback.DISMISS_EVENT_ACTION);
           });
     }
-    return this;
-  }
-
-  /**
-   * Set whether to use the legacy dismissal behavior for Snackbar with actions. This is a temporary
-   * flag to allow apps to migrate to the new behavior, which will never timeout the Snackbar with
-   * actions. Do not use this for new usages.
-   */
-  @NonNull
-  @CanIgnoreReturnValue
-  public Snackbar setUseLegacyDismissalBehavior(boolean useLegacyDismissalBehavior) {
-    this.useLegacyDismissalBehavior = useLegacyDismissalBehavior;
     return this;
   }
 

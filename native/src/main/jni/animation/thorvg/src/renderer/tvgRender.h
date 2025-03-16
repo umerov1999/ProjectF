@@ -28,7 +28,6 @@
 #include "tvgCommon.h"
 #include "tvgArray.h"
 #include "tvgLock.h"
-#include "tvgTrimPath.h"
 
 namespace tvg
 {
@@ -94,6 +93,35 @@ struct RenderRegion
     }
 };
 
+struct RenderPath
+{
+    Array<PathCommand> cmds;
+    Array<Point> pts;
+
+    void clear()
+    {
+        pts.clear();
+        cmds.clear();
+    }
+
+    bool bounds(float* x, float* y, float* w, float* h);
+};
+
+struct RenderTrimPath
+{
+    float begin = 0.0f;
+    float end = 1.0f;
+    bool simultaneous = true;
+
+    bool valid()
+    {
+        if (begin != 0.0f || end != 1.0f) return true;
+        return false;
+    }
+
+    bool trim(const RenderPath& in, RenderPath& out) const;
+};
+
 struct RenderStroke
 {
     float width = 0.0f;
@@ -103,7 +131,7 @@ struct RenderStroke
     uint32_t dashCnt = 0;
     float dashOffset = 0.0f;
     float miterlimit = 4.0f;
-    TrimPath trim;
+    RenderTrimPath trim;
     StrokeCap cap = StrokeCap::Square;
     StrokeJoin join = StrokeJoin::Bevel;
     bool strokeFirst = false;
@@ -140,19 +168,6 @@ struct RenderStroke
     }
 };
 
-struct RenderPath
-{
-    Array<PathCommand> cmds;
-    Array<Point> pts;
-
-    void clear()
-    {
-        pts.clear();
-        cmds.clear();
-    }
-
-};
-
 struct RenderShape
 {
     RenderPath path;
@@ -175,16 +190,16 @@ struct RenderShape
         if (a) *a = color.a;
     }
 
+    bool trimpath() const
+    {
+        if (!stroke) return false;
+        return stroke->trim.valid();
+    }
+
     float strokeWidth() const
     {
         if (!stroke) return 0;
         return stroke->width;
-    }
-
-    bool strokeTrim() const
-    {
-        if (!stroke) return false;
-        return stroke->trim.valid();
     }
 
     bool strokeFill(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a) const

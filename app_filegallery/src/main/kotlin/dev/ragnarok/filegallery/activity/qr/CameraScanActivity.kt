@@ -393,6 +393,10 @@ class CameraScanActivity : NoMainActivity(), AppStyleable {
                 )
             w.navigationBarColor =
                 if (colored) getNavigationBarColor(this) else Color.BLACK
+        } else {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+                w.isNavigationBarContrastEnforced = colored
+            }
         }
         val ins = WindowInsetsControllerCompat(w, w.decorView)
         ins.isAppearanceLightStatusBars = invertIcons

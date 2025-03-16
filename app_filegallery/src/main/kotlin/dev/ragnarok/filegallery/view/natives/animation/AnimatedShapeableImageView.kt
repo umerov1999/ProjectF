@@ -11,7 +11,7 @@ import androidx.core.content.withStyledAttributes
 import com.google.android.material.imageview.ShapeableImageView
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.animation.AnimatedFileDrawable
-import dev.ragnarok.fenrir.module.animation.AnimatedFileDrawable.LoadedFrom
+import dev.ragnarok.fenrir.module.animation.LoadedFrom
 import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.util.Utils

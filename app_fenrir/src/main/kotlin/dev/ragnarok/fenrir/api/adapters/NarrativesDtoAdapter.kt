@@ -31,15 +31,15 @@ class NarrativesDtoAdapter : AbsDtoAdapter<VKApiNarratives>("VKApiNarratives") {
                 if (!checkObject(images?.get(i))) {
                     continue
                 }
-                if (images?.get(i)?.jsonObject?.get("width")?.asPrimitiveSafe?.int.orZero() >= 400) {
-                    dto.cover = images?.get(i)?.jsonObject?.get("url")?.asPrimitiveSafe?.content
+                if (images[i].jsonObject["width"]?.asPrimitiveSafe?.int.orZero() >= 400) {
+                    dto.cover = images[i].jsonObject["url"]?.asPrimitiveSafe?.content
                     break
                 }
             }
             if (dto.cover == null) {
                 if (checkObject(images?.get(images.size - 1))) {
                     dto.cover =
-                        images?.get(images.size - 1)?.jsonObject?.get("url")?.asPrimitiveSafe?.content
+                        images[images.size - 1].jsonObject["url"]?.asPrimitiveSafe?.content
                 }
             }
         }

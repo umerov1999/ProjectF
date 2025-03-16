@@ -57,7 +57,7 @@ class PhotoDtoAdapter : AbsDtoAdapter<VKApiPhoto>("VKApiPhoto") {
                 val photoSizeDto: PhotoSizeDto =
                     kJson.decodeFromJsonElement(
                         PhotoSizeDto.serializer(),
-                        sizesArray?.get(i) ?: continue
+                        sizesArray[i]
                     )
                 photo.sizes?.add(photoSizeDto)
                 when (photoSizeDto.type) {

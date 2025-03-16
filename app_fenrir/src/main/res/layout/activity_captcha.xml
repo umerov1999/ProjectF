@@ -4,6 +4,7 @@
     style="?materialCardStyle"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:fitsSystemWindows="true"
     app:cardBackgroundColor="?message_bubble_color"
     app:contentPadding="8dp">
 

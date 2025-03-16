@@ -823,10 +823,6 @@ public abstract class BaseTransientBottomBar<B extends BaseTransientBottomBar<B>
   }
 
   private void showViewImpl() {
-    if (ViewCompat.getAccessibilityPaneTitle(view) == null) {
-      ViewCompat.setAccessibilityPaneTitle(
-          view, getContext().getString(R.string.snackbar_accessibility_pane_title));
-    }
     if (shouldAnimate()) {
       // If animations are enabled, animate it in
       animateViewIn();
@@ -1380,6 +1376,12 @@ public abstract class BaseTransientBottomBar<B extends BaseTransientBottomBar<B>
       delegate.setBaseTransientBottomBar(baseTransientBottomBar);
     }
 
+    /**
+     * Called when the user's input indicates that they want to swipe the given view.
+     *
+     * @param child View the user is attempting to swipe
+     * @return true if the view can be dismissed via swiping, false otherwise
+     */
     @Override
     public boolean canSwipeDismissView(View child) {
       return delegate.canSwipeDismissView(child);
