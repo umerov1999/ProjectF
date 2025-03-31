@@ -18,10 +18,14 @@ class Recorder(val filePath: String, val context: Context) {
         private set
     private var isReleased = false
 
-    @Suppress("DEPRECATION")
     fun prepare() {
         mRecorder =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) MediaRecorder(context) else MediaRecorder()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                MediaRecorder(context)
+            } else {
+                @Suppress("deprecation")
+                MediaRecorder()
+            }
         mRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
         if (isOpusSupported) {
             mRecorder?.setOutputFormat(MediaRecorder.OutputFormat.OGG)

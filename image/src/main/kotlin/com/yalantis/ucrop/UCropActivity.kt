@@ -180,7 +180,6 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
     /**
      * This method extracts all data from the incoming intent and setups views properly.
      */
-    @Suppress("deprecation")
     private fun setImageData(intent: Intent) {
         val inputUri: Uri?
         val outputUri: Uri?
@@ -188,7 +187,9 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
             inputUri = intent.getParcelableExtra(UCrop.EXTRA_INPUT_URI, Uri::class.java)
             outputUri = intent.getParcelableExtra(UCrop.EXTRA_OUTPUT_URI, Uri::class.java)
         } else {
+            @Suppress("deprecation")
             inputUri = intent.getParcelableExtra(UCrop.EXTRA_INPUT_URI)
+            @Suppress("deprecation")
             outputUri = intent.getParcelableExtra(UCrop.EXTRA_OUTPUT_URI)
         }
         processOptions(intent)
@@ -209,7 +210,6 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
      * This method extracts [#optionsBundle][com.yalantis.ucrop.UCrop.Options] from incoming intent
      * and setups Activity, [OverlayView] and [CropImageView] properly.
      */
-    @Suppress("deprecation")
     private fun processOptions(intent: Intent) {
         // Bitmap compression options
         val compressionFormatName =
@@ -254,7 +254,7 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
         mOverlayView?.setDimmedColor(
             intent.getIntExtra(
                 UCrop.Options.EXTRA_DIMMED_LAYER_COLOR,
-                resources.getColor(R.color.ucrop_color_default_dimmed)
+                ContextCompat.getColor(this, R.color.ucrop_color_default_dimmed)
             )
         )
         mOverlayView?.setCircleDimmedLayer(
@@ -272,7 +272,7 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
         mOverlayView?.setCropFrameColor(
             intent.getIntExtra(
                 UCrop.Options.EXTRA_CROP_FRAME_COLOR,
-                resources.getColor(R.color.ucrop_color_default_crop_frame)
+                ContextCompat.getColor(this, R.color.ucrop_color_default_crop_frame)
             )
         )
         mOverlayView?.setCropFrameStrokeWidth(
@@ -302,7 +302,7 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
         mOverlayView?.setCropGridColor(
             intent.getIntExtra(
                 UCrop.Options.EXTRA_CROP_GRID_COLOR,
-                resources.getColor(R.color.ucrop_color_default_crop_grid)
+                ContextCompat.getColor(this, R.color.ucrop_color_default_crop_grid)
             )
         )
         mOverlayView?.setCropGridStrokeWidth(
@@ -317,8 +317,15 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
         val aspectRatioY = intent.getFloatExtra(UCrop.EXTRA_ASPECT_RATIO_Y, 0f)
         val aspectRationSelectedByDefault =
             intent.getIntExtra(UCrop.Options.EXTRA_ASPECT_RATIO_SELECTED_BY_DEFAULT, 0)
-        val aspectRatioList =
+        val aspectRatioList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableArrayListExtra<AspectRatio>(
+                UCrop.Options.EXTRA_ASPECT_RATIO_OPTIONS,
+                AspectRatio::class.java
+            )
+        } else {
+            @Suppress("deprecation")
             intent.getParcelableArrayListExtra<AspectRatio>(UCrop.Options.EXTRA_ASPECT_RATIO_OPTIONS)
+        }
         if (aspectRatioX > 0 && aspectRatioY > 0) {
             mWrapperStateAspectRatio?.visibility = View.GONE
             mGestureCropImageView?.targetAspectRatio = aspectRatioX / aspectRatioY
@@ -466,7 +473,6 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
         )
     }
 
-    @Suppress("deprecation")
     private fun setupAspectRatioWidget(intent: Intent) {
         var aspectRationSelectedByDefault =
             intent.getIntExtra(UCrop.Options.EXTRA_ASPECT_RATIO_SELECTED_BY_DEFAULT, 0)
@@ -477,6 +483,7 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
                 AspectRatio::class.java
             )
         } else {
+            @Suppress("deprecation")
             intent.getParcelableArrayListExtra(UCrop.Options.EXTRA_ASPECT_RATIO_OPTIONS)
         }
         if (aspectRatioList.isNullOrEmpty()) {

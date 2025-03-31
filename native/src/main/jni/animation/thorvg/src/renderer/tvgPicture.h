@@ -114,13 +114,13 @@ struct Picture::Impl : Paint::Impl
         return Result::Success;
     }
 
-    bool bounds(Point* pt4, bool stroking)
+    Result bounds(Point* pt4, Matrix& m, TVG_UNUSED bool obb, TVG_UNUSED bool stroking)
     {
-        pt4[0] = {0.0f, 0.0f};
-        pt4[1] = {w, 0.0f};
-        pt4[2] = {w, h};
-        pt4[3] = {0.0f, h};
-        return true;
+        pt4[0] = Point{0.0f, 0.0f} * m;
+        pt4[1] = Point{w, 0.0f} * m;
+        pt4[2] = Point{w, h} * m;
+        pt4[3] = Point{0.0f, h} * m;
+        return Result::Success;
     }
 
     Result load(const char* filename, ColorReplace *colorReplacement)
@@ -165,7 +165,10 @@ struct Picture::Impl : Paint::Impl
         auto picture = Picture::gen();
         auto dup = PICTURE(picture);
 
-        if (vector) dup->vector = vector->duplicate();
+        if (vector) {
+            dup->vector = vector->duplicate();
+            PAINT(dup->vector)->parent = picture;
+        }
 
         if (loader) {
             dup->loader = loader;
@@ -211,6 +214,7 @@ struct Picture::Impl : Paint::Impl
             } else {
                 vector = loader->paint();
                 if (vector) {
+                    PAINT(vector)->parent = paint;
                     if (w != loader->w || h != loader->h) {
                         if (!resizing) {
                             w = loader->w;

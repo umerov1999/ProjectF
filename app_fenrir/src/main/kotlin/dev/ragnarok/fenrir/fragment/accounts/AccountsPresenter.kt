@@ -347,7 +347,6 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
         )
     }
 
-    @Suppress("DEPRECATION")
     private fun saveExchangeToken(
         context: Context,
         user_id: Long,
@@ -386,7 +385,8 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
             out.write(bom)
             out.write(bytes)
             out.flush()
-            provideApplicationContext().sendBroadcast(
+            context.sendBroadcast(
+                @Suppress("deprecation")
                 Intent(
                     Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                     Uri.fromFile(file)
@@ -582,7 +582,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
     ): Flow<Boolean> {
         return flow {
             delay((data.polling_delay * 1000).toLong())
-            if (isActive() && data.expires_in > Calendar.getInstance().time.time / 1000) {
+            if (isActive() && data.expires_in > Calendar.getInstance().timeInMillis / 1000) {
                 networker.vkAuth().getAuthCodeStatus(
                     q, Constants.API_ID, Utils.getDeviceId(
                         Constants.DEFAULT_ACCOUNT_TYPE,
@@ -681,7 +681,6 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
         }
     }
 
-    @Suppress("DEPRECATION")
     private fun saveAccounts(context: Context, file: File, Users: IOwnersBundle?) {
         var out: FileOutputStream? = null
         try {
@@ -751,7 +750,8 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
             out.write(bom)
             out.write(bytes)
             out.flush()
-            provideApplicationContext().sendBroadcast(
+            context.sendBroadcast(
+                @Suppress("deprecation")
                 Intent(
                     Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                     Uri.fromFile(file)
@@ -839,7 +839,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
         fireLoad(false)
 
         if (Utils.isOfficialVKCurrent && Settings.get()
-                .accounts().anonymToken.expired_at <= Calendar.getInstance().time.time / 1000
+                .accounts().anonymToken.expired_at <= Calendar.getInstance().timeInMillis / 1000
         ) {
             appendJob(
                 networker.vkDirectAuth().get_anonym_token(
@@ -852,7 +852,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                         provideApplicationContext()
                     )
                 ).fromIOToMain {
-                    if (it.token.nonNullNoEmpty() && it.expired_at > Calendar.getInstance().time.time / 1000) {
+                    if (it.token.nonNullNoEmpty() && it.expired_at > Calendar.getInstance().timeInMillis / 1000) {
                         Settings.get().accounts().anonymToken = AnonymToken().set(it)
                     }
                 })

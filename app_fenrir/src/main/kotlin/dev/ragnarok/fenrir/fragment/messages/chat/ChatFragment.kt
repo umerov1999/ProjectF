@@ -240,13 +240,13 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
                     ImageSizeAlertDialog.Builder(requireActivity())
                         .setOnSelectedCallback(object : ImageSizeAlertDialog.OnSelectedCallback {
                             override fun onSizeSelected(size: Int) {
-                                presenter?.fireEditPhotoMaked(size)
+                                presenter?.fireEditPhotoMade(size)
                             }
                         })
                         .show()
                 }
 
-                else -> presenter?.fireEditPhotoMaked(defaultSize)
+                else -> presenter?.fireEditPhotoMade(defaultSize)
             }
         }
     }

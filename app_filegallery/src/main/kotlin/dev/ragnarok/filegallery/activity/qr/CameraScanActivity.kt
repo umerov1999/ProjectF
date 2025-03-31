@@ -13,6 +13,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
+import android.hardware.camera2.CaptureRequest
 import android.os.Build
 import android.os.Bundle
 import android.util.ArrayMap
@@ -24,6 +25,8 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import androidx.annotation.LayoutRes
+import androidx.camera.camera2.interop.Camera2CameraControl
+import androidx.camera.camera2.interop.CaptureRequestOptions
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraInfoUnavailableException
 import androidx.camera.core.CameraSelector
@@ -184,7 +187,6 @@ class CameraScanActivity : NoMainActivity(), AppStyleable {
             .apply(this)
     }
 
-    @Suppress("DEPRECATION")
     private fun getScreenRotation(): Int {
         try {
             var currentDisplay: Display? = null
@@ -193,6 +195,7 @@ class CameraScanActivity : NoMainActivity(), AppStyleable {
             } else {
                 val manager = getSystemService(WINDOW_SERVICE) as WindowManager?
                 if (manager != null) {
+                    @Suppress("deprecation")
                     currentDisplay = manager.defaultDisplay
                 }
             }
@@ -264,7 +267,7 @@ class CameraScanActivity : NoMainActivity(), AppStyleable {
         return op
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "UnsafeOptInUsageError")
     private fun startCamera() {
         val resolution = ResolutionSelector.Builder()
             .setResolutionStrategy(
@@ -338,6 +341,16 @@ class CameraScanActivity : NoMainActivity(), AppStyleable {
                     this, cameraSelector,
                     imageAnalysis, preview
                 )
+                camera?.let { cam ->
+                    val camera2 = Camera2CameraControl.from(cam.cameraControl)
+                    camera2.captureRequestOptions = CaptureRequestOptions.Builder()
+                        .setCaptureRequestOption(CaptureRequest.SENSOR_SENSITIVITY, 1600)
+                        .setCaptureRequestOption(
+                            CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION,
+                            -8
+                        )
+                        .build()
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -383,9 +396,9 @@ class CameraScanActivity : NoMainActivity(), AppStyleable {
         }
     }
 
-    @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val w = window
+        @Suppress("deprecation")
         if (!hasVanillaIceCreamTarget()) {
             w.statusBarColor =
                 if (colored) getStatusBarColor(this) else getStatusBarNonColored(

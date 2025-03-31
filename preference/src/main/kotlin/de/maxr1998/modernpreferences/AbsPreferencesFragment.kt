@@ -20,11 +20,11 @@ abstract class AbsPreferencesFragment : Fragment() {
     protected abstract val keyInstanceState: String
     private var currentSaved: PreferencesAdapter.SavedState? = null
 
-    @Suppress("deprecation")
     private inline fun <reified T : Parcelable> Bundle.getParcelableCompat(key: String): T? {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             getParcelable(key, T::class.java)
         } else {
+            @Suppress("deprecation")
             getParcelable(key)
         }
     }

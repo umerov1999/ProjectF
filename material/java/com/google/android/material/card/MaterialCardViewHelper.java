@@ -143,11 +143,16 @@ class MaterialCardViewHelper {
 
     TypedArray cardViewAttributes =
         card.getContext()
-            .obtainStyledAttributes(attrs, androidx.cardview.R.styleable.CardView, defStyleAttr, androidx.cardview.R.style.CardView);
+            .obtainStyledAttributes(
+                attrs,
+                androidx.cardview.R.styleable.CardView,
+                defStyleAttr,
+                androidx.cardview.R.style.CardView);
     if (cardViewAttributes.hasValue(androidx.cardview.R.styleable.CardView_cardCornerRadius)) {
       // If cardCornerRadius is set, let it override the shape appearance.
       shapeAppearanceModelBuilder.setAllCornerSizes(
-          cardViewAttributes.getDimension(androidx.cardview.R.styleable.CardView_cardCornerRadius, 0));
+          cardViewAttributes.getDimension(
+              androidx.cardview.R.styleable.CardView_cardCornerRadius, 0));
     }
 
     foregroundContentDrawable = new MaterialShapeDrawable();
@@ -199,7 +204,8 @@ class MaterialCardViewHelper {
     if (rippleColor == null) {
       rippleColor =
           ColorStateList.valueOf(
-              MaterialColors.getColor(materialCardView, androidx.appcompat.R.attr.colorControlHighlight));
+              MaterialColors.getColor(
+                  materialCardView, androidx.appcompat.R.attr.colorControlHighlight));
     }
 
     ColorStateList foregroundColor =

@@ -66,7 +66,6 @@ class FriendsByPhonesPresenter(accountId: Long, savedInstanceState: Bundle?) :
         }
     }
 
-    @Suppress("DEPRECATION")
     fun fireExport(file: File) {
         var out: FileOutputStream? = null
         try {
@@ -82,6 +81,7 @@ class FriendsByPhonesPresenter(accountId: Long, savedInstanceState: Bundle?) :
             out.write(bytes)
             out.flush()
             Includes.provideApplicationContext().sendBroadcast(
+                @Suppress("deprecation")
                 Intent(
                     Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                     Uri.fromFile(file)

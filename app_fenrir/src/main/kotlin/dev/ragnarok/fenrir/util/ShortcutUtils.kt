@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 
 object ShortcutUtils {
-    private const val SHURTCUT_ACTION = "com.android.launcher.action.INSTALL_SHORTCUT"
     private const val MAX_DYNAMIC_COUNT = 5
     private fun getLauncherIconSize(context: Context): Int {
         return ContextCompat.getDrawable(context, R.mipmap.ic_launcher)!!.intrinsicWidth
@@ -125,7 +124,6 @@ object ShortcutUtils {
             }
     }
 
-    @Suppress("DEPRECATION")
     private fun sendShortcutBroadcast(
         context: Context,
         shortcutId: String,

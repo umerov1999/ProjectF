@@ -220,7 +220,6 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
         createCustomToast(requireActivity()).showToast(R.string.permission_all_granted_text)
     }
 
-    @Suppress("DEPRECATION")
     private fun fireAudioQR() {
         val audio = MusicPlaybackController.currentAudio ?: return
         val qr = Utils.generateQR(
@@ -243,6 +242,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                     fOutputStream.flush()
                     fOutputStream.close()
                     requireActivity().sendBroadcast(
+                        @Suppress("deprecation")
                         Intent(
                             Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                             Uri.fromFile(file)

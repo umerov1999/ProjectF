@@ -228,10 +228,10 @@ abstract class AbsAttachmentsEditPresenter<V : IBaseAttachmentsEditView> interna
         }
     }
 
-    fun firePhotoMaked() {
+    fun firePhotoMade() {
         view?.notifySystemAboutNewPhoto(currentPhotoCameraUri ?: return)
-        val makedPhoto = LocalPhoto().setFullImageUri(currentPhotoCameraUri)
-        doUploadPhotos(listOf(makedPhoto))
+        val madePhoto = LocalPhoto().setFullImageUri(currentPhotoCameraUri)
+        doUploadPhotos(listOf(madePhoto))
     }
 
     protected open fun doUploadPhotos(photos: List<LocalPhoto>, size: Int) {

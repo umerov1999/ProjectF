@@ -196,7 +196,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                 CustomToast.createCustomToast(this).showToastError("Can't create directory $dir")
                 return
             }
-        } else dir.setLastModified(Calendar.getInstance().time.time)
+        } else dir.setLastModified(Calendar.getInstance().timeInMillis)
         if (prefix != null && Settings.get().main().isPhoto_to_user_dir) {
             val dir_final = File(dir.absolutePath + "/" + prefix)
             if (!dir_final.isDirectory) {
@@ -206,7 +206,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                         .showToastError("Can't create directory $dir")
                     return
                 }
-            } else dir_final.setLastModified(Calendar.getInstance().time.time)
+            } else dir_final.setLastModified(Calendar.getInstance().timeInMillis)
             dir = dir_final
         }
         val DOWNLOAD_DATE_FORMAT: DateFormat =
@@ -358,9 +358,9 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
     override fun hideMenu(hide: Boolean) {}
     override fun openMenu(open: Boolean) {}
 
-    @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val w = window
+        @Suppress("deprecation")
         if (!hasVanillaIceCreamTarget()) {
             w.statusBarColor =
                 if (colored) getStatusBarColor(this) else getStatusBarNonColored(

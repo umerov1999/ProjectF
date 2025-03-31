@@ -18,34 +18,34 @@ import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.installations.local.PersistedInstallationEntry;
 
 class GetAuthTokenListener implements StateListener {
-    private final Utils utils;
-    private final TaskCompletionSource<InstallationTokenResult> resultTaskCompletionSource;
+  private final Utils utils;
+  private final TaskCompletionSource<InstallationTokenResult> resultTaskCompletionSource;
 
-    public GetAuthTokenListener(
-            Utils utils, TaskCompletionSource<InstallationTokenResult> resultTaskCompletionSource) {
-        this.utils = utils;
-        this.resultTaskCompletionSource = resultTaskCompletionSource;
-    }
+  public GetAuthTokenListener(
+      Utils utils, TaskCompletionSource<InstallationTokenResult> resultTaskCompletionSource) {
+    this.utils = utils;
+    this.resultTaskCompletionSource = resultTaskCompletionSource;
+  }
 
-    @Override
-    public boolean onStateReached(PersistedInstallationEntry persistedInstallationEntry) {
-        // AuthTokenListener state is reached when FID is registered and has a valid auth token
-        if (persistedInstallationEntry.isRegistered()
-                && !utils.isAuthTokenExpired(persistedInstallationEntry)) {
-            resultTaskCompletionSource.setResult(
-                    InstallationTokenResult.builder()
-                            .setToken(persistedInstallationEntry.getAuthToken())
-                            .setTokenExpirationTimestamp(persistedInstallationEntry.getExpiresInSecs())
-                            .setTokenCreationTimestamp(persistedInstallationEntry.getTokenCreationEpochInSecs())
-                            .build());
-            return true;
-        }
-        return false;
+  @Override
+  public boolean onStateReached(PersistedInstallationEntry persistedInstallationEntry) {
+    // AuthTokenListener state is reached when FID is registered and has a valid auth token
+    if (persistedInstallationEntry.isRegistered()
+        && !utils.isAuthTokenExpired(persistedInstallationEntry)) {
+      resultTaskCompletionSource.setResult(
+          InstallationTokenResult.builder()
+              .setToken(persistedInstallationEntry.getAuthToken())
+              .setTokenExpirationTimestamp(persistedInstallationEntry.getExpiresInSecs())
+              .setTokenCreationTimestamp(persistedInstallationEntry.getTokenCreationEpochInSecs())
+              .build());
+      return true;
     }
+    return false;
+  }
 
-    @Override
-    public boolean onException(Exception exception) {
-        resultTaskCompletionSource.trySetException(exception);
-        return true;
-    }
+  @Override
+  public boolean onException(Exception exception) {
+    resultTaskCompletionSource.trySetException(exception);
+    return true;
+  }
 }

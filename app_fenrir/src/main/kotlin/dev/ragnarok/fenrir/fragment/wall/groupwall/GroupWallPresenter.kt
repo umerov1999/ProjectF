@@ -356,7 +356,7 @@ class GroupWallPresenter(
             VKApiCommunity.MemberStatus.SENT_REQUEST -> primaryText = R.string.cancel_request
             VKApiCommunity.MemberStatus.INVITED -> {
                 primaryText = R.string.community_join
-                secondaryText = R.string.cancel_invitation
+                secondaryText = R.string.decline_invitation
             }
         }
         val finalPrimaryText = primaryText

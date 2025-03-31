@@ -51,6 +51,7 @@ namespace tvg
     struct Paint::Impl
     {
         Paint* paint = nullptr;
+        Paint* parent = nullptr;
         Mask* maskData = nullptr;
         Paint* clipper = nullptr;
         RenderMethod* renderer = nullptr;
@@ -58,7 +59,6 @@ namespace tvg
 
         struct {
             Matrix m;                 //input matrix
-            Matrix cm;                //multipled parents matrix
             float degree;             //rotation degree
             float scale;              //scale factor
             bool overriding;          //user transform?
@@ -91,11 +91,11 @@ namespace tvg
         virtual ~Impl()
         {
             if (maskData) {
-                maskData->target->unref();
+                PAINT(maskData->target)->unref();
                 tvg::free(maskData);
             }
 
-            if (clipper) clipper->unref();
+            if (clipper) PAINT(clipper)->unref();
 
             if (renderer) {
                 if (rd) renderer->dispose(rd);
@@ -110,13 +110,18 @@ namespace tvg
             return refCnt;
         }
 
-        uint8_t unref(bool free)
+        uint8_t unref(bool free = true)
+        {
+            parent = nullptr;
+            return unrefx(free);
+        }
+
+        uint8_t unrefx(bool free)
         {
             if (refCnt > 0) --refCnt;
             else TVGERR("RENDERER", "Corrupted Reference Count!");
 
             if (free && refCnt == 0) {
-                //TODO: use the global dismiss function?
                 delete(paint);
                 return 0;
             }
@@ -138,45 +143,55 @@ namespace tvg
             return true;
         }
 
-        Matrix& transform(bool origin = false)
+        Matrix& transform()
         {
             //update transform
             if (renderFlag & RenderUpdateFlag::Transform) tr.update();
-            if (origin) return tr.cm;
             return tr.m;
         }
 
-        void clip(Paint* clp)
+        Matrix ptransform()
         {
-            if (clipper) clipper->unref(clipper != clp);
-            clipper = clp;
-            if (!clp) return;
-
-            clipper->ref();
+            auto p = this;
+            auto tm = identity();
+            while (p->parent) {
+                p = PAINT(p->parent);
+                tm = p->transform() * tm;
+            }
+            return tm;
         }
 
-        bool mask(Paint* target, MaskMethod method)
+        Result clip(Paint* clp)
         {
-            //Invalid case
-            if ((!target && method != MaskMethod::None) || (target && method == MaskMethod::None)) return false;
+            if (PAINT(clp)->parent) return Result::InsufficientCondition;
+            if (clipper) PAINT(clipper)->unref(clipper != clp);
+            clipper = clp;
+            if (clp) {
+                clp->ref();
+                PAINT(clp)->parent = parent;
+            }
+            return Result::Success;
+        }
+
+        Result mask(Paint* target, MaskMethod method)
+        {
+            if (target && PAINT(target)->parent) return Result::InsufficientCondition;
 
             if (maskData) {
-                maskData->target->unref(maskData->target != target);
-                //Reset scenario
-                if (!target && method == MaskMethod::None) {
-                    tvg::free(maskData);
-                    maskData = nullptr;
-                    return true;
-                }
-            } else {
-                if (!target && method == MaskMethod::None) return true;
-                maskData = tvg::malloc<Mask*>(sizeof(Mask));
+                PAINT(maskData->target)->unref(maskData->target != target);
+                tvg::free(maskData);
+                maskData = nullptr;
             }
+
+            if (!target && method == MaskMethod::None) return Result::Success;
+
+            maskData = tvg::malloc<Mask*>(sizeof(Mask));
             target->ref();
             maskData->target = target;
+            PAINT(target)->parent = parent;
             maskData->source = paint;
             maskData->method = method;
-            return true;
+            return Result::Success;
         }
 
         MaskMethod mask(const Paint** target) const
@@ -193,12 +208,12 @@ namespace tvg
         void reset()
         {
             if (clipper) {
-                clipper->unref();
+                PAINT(clipper)->unref();
                 clipper = nullptr;
             }
 
             if (maskData) {
-                maskData->target->unref();
+                PAINT(maskData->target)->unref();
                 tvg::free(maskData);
                 maskData = nullptr;
             }
@@ -208,6 +223,7 @@ namespace tvg
             tr.scale = 1.0f;
             tr.overriding = false;
 
+            parent = nullptr;
             blendMethod = BlendMethod::Normal;
             renderFlag = RenderUpdateFlag::None;
             ctxFlag = ContextFlag::Default;
@@ -256,8 +272,8 @@ namespace tvg
 
         RenderRegion bounds(RenderMethod* renderer) const;
         Iterator* iterator();
-        bool bounds(float* x, float* y, float* w, float* h, bool stroking);
-        bool bounds(Point* pt4, bool transformed, bool stroking, bool origin = false);
+        Result bounds(float* x, float* y, float* w, float* h, Matrix* pm, bool stroking);
+        Result bounds(Point* pt4, Matrix* pm, bool obb, bool stroking);
         RenderData update(RenderMethod* renderer, const Matrix& pm, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag pFlag, bool clipper = false);
         bool render(RenderMethod* renderer);
         Paint* duplicate(Paint* ret = nullptr);

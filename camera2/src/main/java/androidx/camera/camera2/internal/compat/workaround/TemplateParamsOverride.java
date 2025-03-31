@@ -30,6 +30,7 @@ import static java.util.Collections.unmodifiableMap;
 import android.hardware.camera2.CaptureRequest;
 
 import androidx.annotation.NonNull;
+import androidx.camera.camera2.internal.compat.quirk.AbnormalStreamWhenImageAnalysisBindWithTemplateRecordQuirk;
 import androidx.camera.camera2.internal.compat.quirk.ImageCaptureFailedForVideoSnapshotQuirk;
 import androidx.camera.camera2.internal.compat.quirk.ImageCaptureFailedWhenVideoCaptureIsBoundQuirk;
 import androidx.camera.camera2.internal.compat.quirk.PreviewDelayWhenVideoCaptureIsBoundQuirk;
@@ -50,6 +51,7 @@ import java.util.Map;
  * @see ImageCaptureFailedWhenVideoCaptureIsBoundQuirk
  * @see TemporalNoiseQuirk
  * @see ImageCaptureFailedForVideoSnapshotQuirk
+ * @see AbnormalStreamWhenImageAnalysisBindWithTemplateRecordQuirk
  */
 public class TemplateParamsOverride {
     private final boolean mWorkaroundByCaptureIntentPreview;

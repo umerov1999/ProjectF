@@ -51,10 +51,7 @@ struct Canvas::Impl
     Result push(Paint* target, Paint* at)
     {
         //You cannot push paints during rendering.
-        if (status == Status::Drawing) {
-            TVG_DELETE(target);
-            return Result::InsufficientCondition;
-        }
+        if (status == Status::Drawing) return Result::InsufficientCondition;
 
         auto ret = scene->push(target, at);
         if (ret != Result::Success) return ret;
@@ -74,7 +71,7 @@ struct Canvas::Impl
         auto flag = RenderUpdateFlag::None;
         if (status == Status::Damaged || force) flag = RenderUpdateFlag::All;
 
-        auto m = Matrix{1, 0, 0, 0, 1, 0, 0, 0, 1};
+        auto m = tvg::identity();
 
         if (!renderer->preUpdate()) return Result::InsufficientCondition;
 

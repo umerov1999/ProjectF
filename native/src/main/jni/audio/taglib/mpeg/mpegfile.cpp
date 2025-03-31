@@ -25,6 +25,7 @@
 
 #include "mpegfile.h"
 
+#include "taglib_config.h"
 #include "id3v2framefactory.h"
 #include "tdebug.h"
 #include "tpropertymap.h"

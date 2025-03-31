@@ -17,15 +17,15 @@ package com.google.firebase.installations;
 import com.google.firebase.installations.local.PersistedInstallationEntry;
 
 interface StateListener {
-    /**
-     * Returns {@code true} if the defined {@link PersistedInstallationEntry} state is reached, {@code
-     * false} otherwise.
-     */
-    boolean onStateReached(PersistedInstallationEntry persistedInstallationEntry);
+  /**
+   * Returns {@code true} if the defined {@link PersistedInstallationEntry} state is reached, {@code
+   * false} otherwise.
+   */
+  boolean onStateReached(PersistedInstallationEntry persistedInstallationEntry);
 
-    /**
-     * Returns {@code true} if an exception is thrown while registering a Firebase Installation,
-     * {@code false} otherwise.
-     */
-    boolean onException(Exception exception);
+  /**
+   * Returns {@code true} if an exception is thrown while registering a Firebase Installation,
+   * {@code false} otherwise.
+   */
+  boolean onException(Exception exception);
 }

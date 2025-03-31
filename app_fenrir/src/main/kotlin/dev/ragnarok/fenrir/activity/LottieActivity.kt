@@ -111,7 +111,6 @@ class LottieActivity : AppCompatActivity() {
         )
     }
 
-    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(currentStyle())
         Utils.prepareDensity(this)
@@ -131,6 +130,7 @@ class LottieActivity : AppCompatActivity() {
             }
             startExportGif()
         }
+        @Suppress("deprecation")
         if (!hasVanillaIceCreamTarget()) {
             val w = window
             w.statusBarColor = CurrentTheme.getStatusBarColor(this)

@@ -1317,9 +1317,9 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             .commitAllowingStateLoss()
     }
 
-    @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val w = window
+        @Suppress("deprecation")
         if (!hasVanillaIceCreamTarget()) {
             w.statusBarColor =
                 if (colored) getStatusBarColor(this) else getStatusBarNonColored(

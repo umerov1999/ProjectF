@@ -206,7 +206,7 @@ class DocLink(val attachment: AbsModel) {
                     if (item.isIs_expired) {
                         context.getString(R.string.is_expired)
                     } else {
-                        val exp = (item.expires - Calendar.getInstance().time.time / 1000) / 3600
+                        val exp = (item.expires - Calendar.getInstance().timeInMillis / 1000) / 3600
                         context.getString(
                             R.string.expires,
                             exp.toString(),

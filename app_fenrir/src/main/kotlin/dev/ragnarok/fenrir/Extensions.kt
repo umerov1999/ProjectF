@@ -391,18 +391,25 @@ fun <T> MutableList<T>.insertAfter(index: Int, element: T) {
     }
 }
 
-@Suppress("DEPRECATION")
 fun Context.getSignature(): Signature? {
     val appInfo = packageManager.getPackageInfo(
         packageName,
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) GET_SIGNING_CERTIFICATES else GET_SIGNATURES
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            GET_SIGNING_CERTIFICATES
+        } else {
+            @Suppress("deprecation")
+            GET_SIGNATURES
+        }
     )
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         if (appInfo.signingInfo?.apkContentsSigners.nonNullNoEmpty()) appInfo.signingInfo?.apkContentsSigners?.get(
             0
         ) else null
     } else {
-        if (appInfo.signatures.nonNullNoEmpty()) appInfo.signatures?.get(0) else null
+        @Suppress("deprecation")
+        if (appInfo.signatures.nonNullNoEmpty()) {
+            appInfo.signatures?.get(0)
+        } else null
     }
 }
 
@@ -446,47 +453,47 @@ inline fun <reified T : Parcelable> Parcel.writeTypedObjectCompat(
     }
 }
 
-@Suppress("deprecation")
 inline fun <reified T : Parcelable> Bundle.getParcelableCompat(key: String): T? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         getParcelable(key, T::class.java)
     } else {
+        @Suppress("deprecation")
         getParcelable(key)
     }
 }
 
-@Suppress("deprecation")
 inline fun <reified T : Serializable> Bundle.getSerializableCompat(key: String): T? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         getSerializable(key, T::class.java)
     } else {
+        @Suppress("deprecation")
         getSerializable(key) as T
     }
 }
 
-@Suppress("deprecation")
 inline fun <reified T : Parcelable> Bundle.getParcelableArrayListCompat(key: String): ArrayList<T>? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         getParcelableArrayList(key, T::class.java)
     } else {
+        @Suppress("deprecation")
         getParcelableArrayList(key)
     }
 }
 
-@Suppress("deprecation")
 inline fun <reified T : Parcelable> Intent.getParcelableExtraCompat(key: String): T? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         getParcelableExtra(key, T::class.java)
     } else {
+        @Suppress("deprecation")
         getParcelableExtra(key)
     }
 }
 
-@Suppress("deprecation")
 inline fun <reified T : Parcelable> Intent.getParcelableArrayListExtraCompat(key: String): ArrayList<T>? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         getParcelableArrayListExtra(key, T::class.java)
     } else {
+        @Suppress("deprecation")
         getParcelableArrayListExtra(key)
     }
 }

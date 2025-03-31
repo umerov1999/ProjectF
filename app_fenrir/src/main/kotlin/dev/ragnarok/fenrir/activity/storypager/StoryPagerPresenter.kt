@@ -266,7 +266,7 @@ class StoryPagerPresenter(
                 view?.showError("Can't create directory $dir")
                 return
             }
-        } else dir.setLastModified(Calendar.getInstance().time.time)
+        } else dir.setLastModified(Calendar.getInstance().timeInMillis)
         photo.photo?.let {
             downloadResult(photo.owner?.fullName?.let { it1 ->
                 makeLegalFilename(
@@ -291,7 +291,7 @@ class StoryPagerPresenter(
                     view?.showError("Can't create directory $dir_final")
                     return
                 }
-            } else dir_final.setLastModified(Calendar.getInstance().time.time)
+            } else dir_final.setLastModified(Calendar.getInstance().timeInMillis)
             dir = dir_final
         }
         val url = photo.getUrlForSize(PhotoSize.W, true)

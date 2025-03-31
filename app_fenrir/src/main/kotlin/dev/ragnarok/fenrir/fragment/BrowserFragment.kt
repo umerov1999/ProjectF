@@ -145,7 +145,7 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
                         .showToastError("Can't create directory $dir_final")
                     return
                 }
-            } else dir_final.setLastModified(Calendar.getInstance().time.time)
+            } else dir_final.setLastModified(Calendar.getInstance().timeInMillis)
             dir = dir_final
         }
         DownloadWorkUtils.doDownloadPhoto(
@@ -202,7 +202,7 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
                             .showToastError("Can't create directory $dir")
                         return@show
                     }
-                } else dir.setLastModified(Calendar.getInstance().time.time)
+                } else dir.setLastModified(Calendar.getInstance().timeInMillis)
                 downloadResult(
                     DownloadWorkUtils.makeLegalFilename(
                         (DownloadWorkUtils.fixStart(owner) ?: typeRes),

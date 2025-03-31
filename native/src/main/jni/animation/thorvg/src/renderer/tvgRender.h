@@ -35,6 +35,8 @@ namespace tvg
 using RenderData = void*;
 using pixel_t = uint32_t;
 
+#define DASH_PATTERN_THRESHOLD 0.001f
+
 enum RenderUpdateFlag : uint8_t {None = 0, Path = 1, Color = 2, Gradient = 4, Stroke = 8, Transform = 16, Image = 32, GradientStroke = 64, Blend = 128, All = 255};
 enum CompositionFlag : uint8_t {Invalid = 0, Opacity = 1, Blending = 2, Masking = 4, PostProcessing = 8};  //Composition Purpose
 
@@ -104,7 +106,7 @@ struct RenderPath
         cmds.clear();
     }
 
-    bool bounds(float* x, float* y, float* w, float* h);
+    bool bounds(Matrix* m, float* x, float* y, float* w, float* h);
 };
 
 struct RenderTrimPath
@@ -127,9 +129,12 @@ struct RenderStroke
     float width = 0.0f;
     RenderColor color{};
     Fill *fill = nullptr;
-    float* dashPattern = nullptr;
-    uint32_t dashCnt = 0;
-    float dashOffset = 0.0f;
+    struct {
+        float* pattern = nullptr;
+        uint32_t count = 0;
+        float offset = 0.0f;
+        float length = 0.0f;
+    } dash;
     float miterlimit = 4.0f;
     RenderTrimPath trim;
     StrokeCap cap = StrokeCap::Square;
@@ -145,15 +150,16 @@ struct RenderStroke
         if (rhs.fill) fill = rhs.fill->duplicate();
         else fill = nullptr;
 
-        tvg::free(dashPattern);
-        if (rhs.dashCnt > 0) {
-            dashPattern = tvg::malloc<float*>(sizeof(float) * rhs.dashCnt);
-            memcpy(dashPattern, rhs.dashPattern, sizeof(float) * rhs.dashCnt);
+        tvg::free(dash.pattern);
+        if (rhs.dash.count > 0) {
+            dash.pattern = tvg::malloc<float*>(sizeof(float) * rhs.dash.count);
+            memcpy(dash.pattern, rhs.dash.pattern, sizeof(float) * rhs.dash.count);
         } else {
-            dashPattern = nullptr;
+            dash.pattern = nullptr;
         }
-        dashCnt = rhs.dashCnt;
-        dashOffset = rhs.dashOffset;
+        dash.count = rhs.dash.count;
+        dash.offset = rhs.dash.offset;
+        dash.length = rhs.dash.length;
         miterlimit = rhs.miterlimit;
         cap = rhs.cap;
         join = rhs.join;
@@ -163,7 +169,7 @@ struct RenderStroke
 
     ~RenderStroke()
     {
-        tvg::free(dashPattern);
+        tvg::free(dash.pattern);
         delete(fill);
     }
 };
@@ -223,9 +229,9 @@ struct RenderShape
     uint32_t strokeDash(const float** dashPattern, float* offset) const
     {
         if (!stroke) return 0;
-        if (dashPattern) *dashPattern = stroke->dashPattern;
-        if (offset) *offset = stroke->dashOffset;
-        return stroke->dashCnt;
+        if (dashPattern) *dashPattern = stroke->dash.pattern;
+        if (offset) *offset = stroke->dash.offset;
+        return stroke->dash.count;
     }
 
     StrokeCap strokeCap() const

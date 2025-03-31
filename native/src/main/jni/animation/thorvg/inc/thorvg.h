@@ -226,7 +226,7 @@ enum class BlendMethod : uint8_t
  *
  * @see Scene::push(SceneEffect effect, ...)
  *
- * @note Experimental API
+ * @since 1.0
  */
 enum class SceneEffect : uint8_t
 {
@@ -259,7 +259,7 @@ enum class CanvasEngine : uint8_t
  * @see Paint::type()
  * @see Fill::type()
  *
- * @note Experimental API
+ * @since 1.0
  */
 enum class Type : uint8_t
 {
@@ -310,6 +310,21 @@ class TVG_API Paint
 {
 public:
     virtual ~Paint();
+
+    /**
+     * @brief Retrieves the parent paint object.
+     *
+     * This function returns a pointer to the parent object if the current paint
+     * belongs to one. Otherwise, it returns @c nullptr.
+     *
+     * @return A pointer to the parent object if available, otherwise @c nullptr.
+     *
+     * @see Scene::push()
+     * @see Canvas::push()
+     *
+     * @since 1.0
+    */
+    const Paint* parent() const noexcept;
 
     /**
      * @brief Sets the angle by which the object is rotated.
@@ -383,6 +398,8 @@ public:
      *
      * @param[in] target The paint of the target object.
      * @param[in] method The method used to mask the source object with the target.
+     *
+     * @retval Result::InsufficientCondition if the target has already belonged to another paint.
      */
     Result mask(Paint* target, MaskMethod method) noexcept;
 
@@ -394,9 +411,10 @@ public:
      * @param[in] clipper The shape object as the clipper.
      *
      * @retval Result::NonSupport If the @p clipper type is not Shape.
+     * @retval Result::InsufficientCondition if the target has already belonged to another paint.
      *
      * @note @p clipper only supports the Shape type.
-     * @note Experimental API
+     * @since 1.0
      */
     Result clip(Paint* clipper) noexcept;
 
@@ -409,7 +427,7 @@ public:
      *
      * @param[in] method The blending method to be set.
      *
-     * @note Experimental API
+     * @since 1.0
      */
     Result blend(BlendMethod method) noexcept;
 
@@ -423,8 +441,6 @@ public:
      * @retval Result::InvalidArguments @p pt4 is @c nullptr.
      * @retval Result::InsufficientCondition If it failed to compute the bounding box (mostly due to invalid path information).
      * 
-     * @note The paint must be pushed into a canvas and updated before calling this function.
-     *
      * @see Paint::bounds(float* x, float* y, folat* w, float* h)
      * @see Canvas::update()
      *
@@ -433,9 +449,9 @@ public:
     Result bounds(Point* pt4) const noexcept;
 
     /**
-     * @brief Retrieves the axis-aligned bounding box (AABB) of the paint object in local space.
+     * @brief Retrieves the axis-aligned bounding box (AABB) of the paint object in canvas space.
      *
-     * This function returns the bounding box of the paint object relative to its local coordinate system, without applying any transformations.
+     * This function returns the bounding box of the paint, as an axis-aligned bounding box (AABB) after transformations are applied.
      *
      * @param[out] x The x-coordinate of the upper-left corner of the bounding box.
      * @param[out] y The y-coordinate of the upper-left corner of the bounding box.
@@ -443,8 +459,6 @@ public:
      * @param[out] h The height of the bounding box.
      *
      * @retval Result::InsufficientCondition If it failed to compute the bounding box (mostly due to invalid path information).
-     *
-     * @note The bounding box is calculated in the object's local space, meaning transformations such as scaling, rotation, or translation are not applied.
      *
      * @see Paint::bounds(Point* pt4)
      * @see Canvas::update()
@@ -1130,7 +1144,7 @@ public:
      * @param[in] simultaneous Determines how to trim multiple paths within a single shape. If set to @c true (default), trimming is applied simultaneously to all paths;
      * Otherwise, all paths are treated as a single entity with a combined length equal to the sum of their individual lengths and are trimmed as such.
      *
-     * @note Experimental API
+     * @since 1.0
      */
     Result trimpath(float begin, float end, bool simultaneous = true) noexcept;
 
@@ -1401,7 +1415,7 @@ public:
      *
      * @see Accessor::id()
      *
-     * @note Experimental API
+     * @since 1.0
      */
     const Paint* paint(uint32_t id) noexcept;
 
@@ -1503,7 +1517,7 @@ public:
      *                   For example, use SceneEffect::GaussianBlur to apply a blur with specific parameters.
      * @param[in] ... Additional variadic parameters required for certain effects (e.g., sigma and direction for GaussianBlur).
      *
-     * @note Experimental API
+     * @since 1.0
      */
     Result push(SceneEffect effect, ...) noexcept;
 
@@ -1553,7 +1567,7 @@ public:
      * @retval Result::InsufficientCondition when the specified @p name cannot be found.
      *
      * @note If the @p name is not specified, ThorVG will select any available font candidate.
-     * @note Experimental API
+     * @since 1.0
      */
     Result font(const char* name, float size, const char* style = nullptr) noexcept;
 
@@ -1565,7 +1579,7 @@ public:
      *
      * @param[in] text The multi-byte text encoded with utf8 string to be rendered.
      *
-     * @note Experimental API
+     * @since 1.0
      */
     Result text(const char* text) noexcept;
 

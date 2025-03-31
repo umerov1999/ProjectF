@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.module.animation
 
 import android.graphics.Bitmap
+import android.graphics.Matrix
 import androidx.core.graphics.createBitmap
 import dev.ragnarok.fenrir.module.FenrirNative
 import java.io.File
@@ -16,7 +17,25 @@ object AnimatedFileFrame {
         stride: Int
     ): Int
 
-    fun getThumbnail(file: File): Bitmap? {
+    fun getDurationMs(file: File): Long {
+        if (!FenrirNative.isNativeLoaded) {
+            return -1
+        }
+        val metaData = IntArray(6)
+        val nPtr = createDecoder(file.absolutePath, metaData)
+        if (nPtr != 0L && (metaData[0] > 3840 || metaData[1] > 3840)) {
+            destroyDecoder(nPtr)
+            return -1
+        }
+        if (nPtr == 0L) {
+            return -1
+        }
+        val ret = metaData[4].toLong()
+        destroyDecoder(nPtr)
+        return ret
+    }
+
+    fun getThumbnail(file: File, positionMs: (duration: Long) -> Long): Bitmap? {
         if (!FenrirNative.isNativeLoaded) {
             return null
         }
@@ -29,10 +48,14 @@ object AnimatedFileFrame {
         if (nPtr == 0L) {
             return null
         }
-        val ret = createBitmap(metaData[0], metaData[1], Bitmap.Config.ARGB_8888)
+        var frameAt = positionMs.invoke(metaData[4].toLong())
+        if (frameAt < 0 || frameAt >= metaData[4].toLong()) {
+            frameAt = (metaData[4] / 2).toLong()
+        }
+        var ret = createBitmap(metaData[0], metaData[1], Bitmap.Config.ARGB_8888)
         if (getFrameAtTime(
                 nPtr,
-                (metaData[4] / 2).toLong(),
+                frameAt,
                 ret,
                 metaData,
                 ret.rowBytes
@@ -43,6 +66,34 @@ object AnimatedFileFrame {
             return null
         }
         destroyDecoder(nPtr)
+        when {
+            metaData[2] == 90 -> {
+                val matrix = Matrix().apply { postRotate(90f) }
+                val ret2 = Bitmap.createBitmap(ret, 0, 0, ret.width, ret.height, matrix, true)
+                ret.recycle()
+                ret = ret2
+            }
+
+            metaData[2] == 180 -> {
+                val matrix = Matrix().apply { postRotate(180f) }
+                val ret2 = Bitmap.createBitmap(ret, 0, 0, ret.width, ret.height, matrix, true)
+                ret.recycle()
+                ret = ret2
+            }
+
+            metaData[2] == 270 -> {
+                val matrix = Matrix().apply { postRotate(270f) }
+                val ret2 = Bitmap.createBitmap(ret, 0, 0, ret.width, ret.height, matrix, true)
+                ret.recycle()
+                ret = ret2
+            }
+        }
         return ret
+    }
+
+    fun getThumbnail(file: File, positionMs: Long = -1): Bitmap? {
+        return getThumbnail(file) {
+            positionMs
+        }
     }
 }

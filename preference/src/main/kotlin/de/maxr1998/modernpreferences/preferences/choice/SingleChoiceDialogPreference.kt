@@ -71,11 +71,11 @@ class SingleChoiceDialogPreference(
     }
 
     class SingleChooseDialog : AbsChooseDialog() {
-        @Suppress("deprecation")
         private inline fun <reified T : Parcelable> Bundle.getParcelableCompat(key: String): T? {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 getParcelable(key, T::class.java)
             } else {
+                @Suppress("deprecation")
                 getParcelable(key)
             }
         }

@@ -101,7 +101,6 @@ static void _dashLineTo(SwDashStroke& dash, const Point* to, const Matrix& trans
 {
     Line cur = {dash.ptCur, *to};
     auto len = cur.length();
-
     if (tvg::zero(len)) {
         _outlineMoveTo(*dash.outline, &dash.ptCur, transform);
     //draw the current line fully
@@ -116,7 +115,7 @@ static void _dashLineTo(SwDashStroke& dash, const Point* to, const Matrix& trans
         }
     //draw the current line partially
     } else {
-        while (len - dash.curLen > 0.0001f) {
+        while (len - dash.curLen > DASH_PATTERN_THRESHOLD) {
             Line left, right;
             if (dash.curLen > 0) {
                 len -= dash.curLen;
@@ -177,7 +176,7 @@ static void _dashCubicTo(SwDashStroke& dash, const Point* ctrl1, const Point* ct
         }
     //draw the current line partially
     } else {
-        while ((len - dash.curLen) > 0.0001f) {
+        while ((len - dash.curLen) > DASH_PATTERN_THRESHOLD) {
             Bezier left, right;
             if (dash.curLen > 0) {
                 len -= dash.curLen;
@@ -244,7 +243,6 @@ static SwOutline* _genDashOutline(const RenderShape* rshape, const Matrix& trans
     if (trimmed) {
         RenderPath trimmedPath;
         if (!rshape->stroke->trim.trim(rshape->path, trimmedPath)) return nullptr;
-
         cmds = trimmedCmds = trimmedPath.cmds.data;
         cmdCnt = trimmedPath.cmds.count;
         pts = trimmedPts = trimmedPath.pts.data;
@@ -263,19 +261,19 @@ static SwOutline* _genDashOutline(const RenderShape* rshape, const Matrix& trans
     if (cmdCnt == 0 || ptsCnt == 0) return nullptr;
 
     SwDashStroke dash;
-    auto offset = 0.0f;
-    dash.cnt = rshape->strokeDash((const float**)&dash.pattern, &offset);
+    dash.pattern = rshape->stroke->dash.pattern;
+    dash.cnt = rshape->stroke->dash.count;
+    auto offset = rshape->stroke->dash.offset;
 
     //offset
-    auto patternLength = 0.0f;
     uint32_t offIdx = 0;
     if (!tvg::zero(offset)) {
-        for (size_t i = 0; i < dash.cnt; ++i) patternLength += dash.pattern[i];
+        auto length = rshape->stroke->dash.length;
         bool isOdd = dash.cnt % 2;
-        if (isOdd) patternLength *= 2;
+        if (isOdd) length *= 2;
 
-        offset = fmodf(offset, patternLength);
-        if (offset < 0) offset += patternLength;
+        offset = fmodf(offset, length);
+        if (offset < 0) offset += length;
 
         for (size_t i = 0; i < dash.cnt * (1 + (size_t)isOdd); ++i, ++offIdx) {
             auto curPattern = dash.pattern[i % dash.cnt];
@@ -510,7 +508,7 @@ bool shapeGenStrokeRle(SwShape* shape, const RenderShape* rshape, const Matrix& 
     auto ret = true;
 
     //Dash style with/without trimming
-    if (rshape->stroke->dashCnt > 0) {
+    if (rshape->stroke->dash.count > 0) {
         shapeOutline = _genDashOutline(rshape, transform, mpool, tid, rshape->trimpath());
         if (!shapeOutline) return false;
         dashStroking = true;

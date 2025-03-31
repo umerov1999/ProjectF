@@ -15,7 +15,6 @@
 package com.google.firebase.installations;
 
 import androidx.annotation.NonNull;
-
 import com.google.firebase.FirebaseException;
 
 /**
@@ -24,45 +23,49 @@ import com.google.firebase.FirebaseException;
  * @hide
  */
 public class FirebaseInstallationsException extends FirebaseException {
-    @NonNull
-    private final Status status;
-
-    public FirebaseInstallationsException(@NonNull String message, @NonNull Status status) {
-        super(message);
-        this.status = status;
-    }
-
-    public FirebaseInstallationsException(
-            @NonNull String message, @NonNull Status status, @NonNull Throwable cause) {
-        super(message, cause);
-        this.status = status;
-    }
+  public enum Status {
+    /**
+     * Indicates that the caller is misconfigured, usually with a bad or misconfigured API Key or
+     * Project.
+     */
+    BAD_CONFIG,
 
     /**
-     * Gets the status for the operation that failed.
-     *
-     * @return the status for the FirebaseInstallationsException
+     * The service is currently unavailable. This is a most likely due to a transient condition and
+     * may be corrected by retrying. We recommend exponential backoff when retrying requests.
      */
-    @NonNull
-    public Status getStatus() {
-        return status;
-    }
+    UNAVAILABLE,
+    /**
+     * Firebase servers have received too many requests in a short period of time from the client.
+     */
+    TOO_MANY_REQUESTS,
+  }
 
-    public enum Status {
-        /**
-         * Indicates that the caller is misconfigured, usually with a bad or misconfigured API Key or
-         * Project.
-         */
-        BAD_CONFIG,
+  @NonNull private final Status status;
 
-        /**
-         * The service is currently unavailable. This is a most likely due to a transient condition and
-         * may be corrected by retrying. We recommend exponential backoff when retrying requests.
-         */
-        UNAVAILABLE,
-        /**
-         * Firebase servers have received too many requests in a short period of time from the client.
-         */
-        TOO_MANY_REQUESTS,
-    }
+  @SuppressWarnings("deprecation")
+  public FirebaseInstallationsException(@NonNull Status status) {
+    this.status = status;
+  }
+
+  public FirebaseInstallationsException(@NonNull String message, @NonNull Status status) {
+    super(message);
+    this.status = status;
+  }
+
+  public FirebaseInstallationsException(
+      @NonNull String message, @NonNull Status status, @NonNull Throwable cause) {
+    super(message, cause);
+    this.status = status;
+  }
+
+  /**
+   * Gets the status for the operation that failed.
+   *
+   * @return the status for the FirebaseInstallationsException
+   */
+  @NonNull
+  public Status getStatus() {
+    return status;
+  }
 }

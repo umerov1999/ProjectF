@@ -143,7 +143,6 @@ class FeedbackVKOfficialAdapter(
         } else DIV_OLD
     }
 
-    @Suppress("DEPRECATION")
     private fun fromHtml(source: String): CharSequence {
         return Html.fromHtml(source, Html.FROM_HTML_MODE_LEGACY)
     }

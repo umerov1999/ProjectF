@@ -89,7 +89,6 @@ internal abstract class BaseDispatcher internal constructor(
         }
     }
 
-    @Suppress("DEPRECATION")
     private fun isNetworkAvailable(): Boolean {
         val nw = connectivityManager?.activeNetwork ?: return false
         val actNw = connectivityManager.getNetworkCapabilities(nw)

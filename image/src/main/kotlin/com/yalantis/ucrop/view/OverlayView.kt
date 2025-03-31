@@ -76,8 +76,6 @@ class OverlayView @JvmOverloads constructor(
         init()
     }
 
-    @get:Deprecated("")
-    @set:Deprecated("")
     var isFreestyleCropEnabled: Boolean
         get() = mFreestyleCropMode == FREESTYLE_CROP_MODE_ENABLE
         set(freestyleCropEnabled) {
@@ -373,7 +371,6 @@ class OverlayView @JvmOverloads constructor(
      *
      * @param canvas - valid canvas object
      */
-    @Suppress("deprecation")
     private fun drawDimmedLayer(canvas: Canvas) {
         canvas.withSave {
             if (mCircleDimmedLayer) {
@@ -397,7 +394,6 @@ class OverlayView @JvmOverloads constructor(
      *
      * @param canvas - valid canvas object
      */
-    @Suppress("deprecation")
     private fun drawCropGrid(canvas: Canvas) {
         if (mShowCropGrid) {
             if (mGridPoints == null && !cropViewRect.isEmpty) {

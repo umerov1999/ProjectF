@@ -424,9 +424,9 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         DownloadWorkUtils.doDownloadPhoto(this, url, dir, file)
     }
 
-    @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val w = window
+        @Suppress("deprecation")
         if (!hasVanillaIceCreamTarget()) {
             w.statusBarColor =
                 if (colored) getStatusBarColor(this) else getStatusBarNonColored(

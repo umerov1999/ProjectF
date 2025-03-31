@@ -30,7 +30,7 @@ class HorizontalStoryAdapter(data: MutableList<Story>) :
                 viewHolder.expires.visibility = View.VISIBLE
                 viewHolder.expires.setText(R.string.is_expired)
             } else {
-                val exp = (item.expires - Calendar.getInstance().time.time / 1000) / 3600
+                val exp = (item.expires - Calendar.getInstance().timeInMillis / 1000) / 3600
                 if (exp <= 0) {
                     viewHolder.expires.visibility = View.INVISIBLE
                 } else {

@@ -1,7 +1,6 @@
 package me.minetsh.imaging.core.clip
 
 import android.graphics.RectF
-import me.minetsh.imaging.core.clip.IMGClip.Anchor.entries
 import kotlin.math.max
 import kotlin.math.min
 

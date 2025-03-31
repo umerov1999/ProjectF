@@ -109,7 +109,6 @@ class Picasso internal constructor(
             add(ResourceRequestHandler(context))
             addAll(extraRequestHandlers)
             add(ContactsPhotoRequestHandler(context))
-            add(MediaStoreRequestHandler(context))
             add(ContentStreamRequestHandler(context))
             add(AssetRequestHandler(context))
             add(FileRequestHandler(context))

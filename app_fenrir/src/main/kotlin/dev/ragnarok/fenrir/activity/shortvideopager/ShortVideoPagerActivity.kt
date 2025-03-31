@@ -291,9 +291,9 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
     override fun hideMenu(hide: Boolean) {}
     override fun openMenu(open: Boolean) {}
 
-    @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val w = window
+        @Suppress("deprecation")
         if (!hasVanillaIceCreamTarget()) {
             w.statusBarColor =
                 if (colored) getStatusBarColor(this) else getStatusBarNonColored(

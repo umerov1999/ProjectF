@@ -229,9 +229,9 @@ class ChatActivityBubbles : NoMainActivity(), PlaceProvider, AppStyleable, Servi
     override fun hideMenu(hide: Boolean) {}
     override fun openMenu(open: Boolean) {}
 
-    @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val w = window
+        @Suppress("deprecation")
         if (!hasVanillaIceCreamTarget()) {
             w.statusBarColor =
                 if (colored) CurrentTheme.getStatusBarColor(this) else CurrentTheme.getStatusBarNonColored(

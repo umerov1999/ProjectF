@@ -194,16 +194,16 @@ struct Scene::Impl : Paint::Impl
         return ret;
     }
 
-    bool bounds(Point* pt4, bool stroking)
+    Result bounds(Point* pt4, Matrix& m, TVG_UNUSED bool obb, bool stroking)
     {
-        if (paints.empty()) return false;
+        if (paints.empty()) return Result::InsufficientCondition;
 
         Point min = {FLT_MAX, FLT_MAX};
         Point max = {-FLT_MAX, -FLT_MAX};
 
         for (auto paint : paints) {
             Point tmp[4];
-            if (!PAINT(paint)->bounds(tmp, true, stroking)) continue;
+            if (PAINT(paint)->bounds(tmp, nullptr, false, stroking) != Result::Success) continue;
             //Merge regions
             for (int i = 0; i < 4; ++i) {
                 if (tmp[i].x < min.x) min.x = tmp[i].x;
@@ -212,12 +212,12 @@ struct Scene::Impl : Paint::Impl
                 if (tmp[i].y > max.y) max.y = tmp[i].y;
             }
         }
-        pt4[0] = min;
-        pt4[1] = {max.x, min.y};
-        pt4[2] = max;
-        pt4[3] = {min.x, max.y};
+        pt4[0] = min * m;
+        pt4[1] = Point{max.x, min.y} * m;
+        pt4[2] = max * m;
+        pt4[3] = Point{min.x, max.y} * m;
 
-        return true;
+        return Result::Success;
     }
 
     Paint* duplicate(Paint* ret)
@@ -229,6 +229,7 @@ struct Scene::Impl : Paint::Impl
 
         for (auto paint : paints) {
             auto cdup = paint->duplicate();
+            PAINT(cdup)->parent = scene;
             cdup->ref();
             dup->paints.push_back(cdup);
         }
@@ -242,7 +243,7 @@ struct Scene::Impl : Paint::Impl
     {
         auto itr = paints.begin();
         while (itr != paints.end()) {
-            (*itr)->unref();
+            PAINT((*itr))->unref();
             paints.erase(itr++);
         }
         return Result::Success;
@@ -250,31 +251,24 @@ struct Scene::Impl : Paint::Impl
 
     Result remove(Paint* paint)
     {
-        owned(paint);
-        paint->unref();
+        if (PAINT(paint)->parent != this->paint) return Result::InsufficientCondition;
+        PAINT(paint)->unref();
         paints.remove(paint);
         return Result::Success;
-    }
-
-    void owned(Paint* paint)
-    {
-#ifdef THORVG_LOG_ENABLED
-        for (auto p : paints) {
-            if (p == paint) return;
-        }
-        TVGERR("RENDERER", "The paint(%p) is not existed from the scene(%p)", paint, this->paint);
-#endif
     }
 
     Result insert(Paint* target, Paint* at)
     {
         if (!target) return Result::InvalidArguments;
+        auto timpl = PAINT(target);
+        if (timpl->parent) return Result::InsufficientCondition;
+
         target->ref();
 
         //Relocated the paint to the current scene space
-        PAINT(target)->renderFlag |= RenderUpdateFlag::Transform;
+        timpl->renderFlag |= RenderUpdateFlag::Transform;
 
-        if (at == nullptr) {
+        if (!at) {
             paints.push_back(target);
         } else {
             //OPTIMIZE: Remove searching?
@@ -282,6 +276,9 @@ struct Scene::Impl : Paint::Impl
             if (itr == paints.end()) return Result::InvalidArguments;
             paints.insert(itr, target);
         }
+        timpl->parent = paint;
+        if (timpl->clipper) PAINT(timpl->clipper)->parent = paint;
+        if (timpl->maskData) PAINT(timpl->maskData->target)->parent = paint;
         return Result::Success;
     }
 

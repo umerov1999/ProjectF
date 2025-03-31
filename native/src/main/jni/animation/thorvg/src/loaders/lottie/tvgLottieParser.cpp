@@ -244,10 +244,10 @@ bool LottieParser::getValue(ColorStop& color)
 
 bool LottieParser::getValue(Array<Point>& pts)
 {
+    Point pt{};
     enterArray();
     while (nextArrayValue()) {
         enterArray();
-        Point pt;
         getValue(pt);
         pts.push(pt);
     }
@@ -474,7 +474,7 @@ void LottieParser::registerSlot(LottieObject* obj, const char* sid)
         (*p)->pairs.push({obj});
         return;
     }
-    comp->slots.push(new LottieSlot(duplicate(sid), obj, type));
+    comp->slots.push(new LottieSlot(context.layer, context.parent, duplicate(sid), obj, type));
 }
 
 
@@ -576,6 +576,7 @@ LottieTransform* LottieParser::parseTransform(bool ddd)
                 else if (transform->coords && KEY_AS("y")) parseProperty<LottieProperty::Type::Float>(transform->coords->y);
                 else if (KEY_AS("x") && expressions) transform->position.exp = getExpression(getStringCopy(), comp, context.layer, context.parent, &transform->position);
                 else if (KEY_AS("sid")) registerSlot<LottieProperty::Type::Position>(transform, getString());
+                else if (KEY_AS("ix")) transform->position.ix = getInt();
                 else skip();
             }
             transform->position.type = LottieProperty::Type::Position;
@@ -1081,10 +1082,6 @@ LottieObject* LottieParser::parseGroup()
             while (nextArrayValue()) parseObject(group->children);
         } else skip();
     }
-    if (group->children.empty()) {
-        delete(group);
-        return nullptr;
-    }
     group->prepare();
 
     return group;
@@ -1181,6 +1178,20 @@ void LottieParser::parseTextRange(LottieText* text)
 }
 
 
+void LottieParser::parseTextFollowPath(LottieText* text)
+{
+    enterObject();
+    auto key = nextObjectKey();
+    if (!key) return;
+    if (!text->followPath) text->followPath = new LottieTextFollowPath;
+    do {
+        if (KEY_AS("m")) text->followPath->maskIdx = getInt();
+        else if (KEY_AS("f")) parseProperty<LottieProperty::Type::Float>(text->followPath->firstMargin);
+        else skip();
+    } while ((key = nextObjectKey()));
+}
+
+
 void LottieParser::parseText(Array<LottieObject*>& parent)
 {
     enterObject();
@@ -1191,11 +1202,7 @@ void LottieParser::parseText(Array<LottieObject*>& parent)
         if (KEY_AS("d")) parseProperty<LottieProperty::Type::TextDoc>(text->doc, text);
         else if (KEY_AS("a")) parseTextRange(text);
         else if (KEY_AS("m")) parseTextAlignmentOption(text);
-        else if (KEY_AS("p"))
-        {
-            TVGLOG("LOTTIE", "Text Follow Path (p) is not supported");
-            skip();
-        }
+        else if (KEY_AS("p")) parseTextFollowPath(text);
         else skip();
     }
     parent.push(text);
@@ -1505,41 +1512,36 @@ bool LottieParser::apply(LottieSlot* slot, bool byDefault)
 
     //OPTIMIZE: we can create the property directly, without object
     LottieObject* obj = nullptr;  //slot object
+    context = {slot->context.layer, slot->context.parent};
 
     switch (slot->type) {
         case LottieProperty::Type::Position: {
             obj = new LottieTransform;
-            context.parent = obj;
             parseSlotProperty<LottieProperty::Type::Position>(static_cast<LottieTransform*>(obj)->position);
             break;
         }
         case LottieProperty::Type::Point: {
             obj = new LottieTransform;
-            context.parent = obj;
             parseSlotProperty<LottieProperty::Type::Point>(static_cast<LottieTransform*>(obj)->scale);
             break;
         }
         case LottieProperty::Type::Float: {
             obj = new LottieTransform;
-            context.parent = obj;
             parseSlotProperty<LottieProperty::Type::Float>(static_cast<LottieTransform*>(obj)->rotation);
             break;
         }
         case LottieProperty::Type::Opacity: {
             obj = new LottieSolid;
-            context.parent = obj;
             parseSlotProperty<LottieProperty::Type::Opacity>(static_cast<LottieSolid*>(obj)->opacity);
             break;
         }
         case LottieProperty::Type::Color: {
             obj = new LottieSolid;
-            context.parent = obj;
             parseSlotProperty<LottieProperty::Type::Color>(static_cast<LottieSolid*>(obj)->color);
             break;
         }
         case LottieProperty::Type::ColorStop: {
             obj = new LottieGradient(&colorReplaceInternal);
-            context.parent = obj;
             while (auto key = nextObjectKey()) {
                 if (KEY_AS("p")) parseColorStop(static_cast<LottieGradient*>(obj));
                 else skip();
@@ -1548,7 +1550,6 @@ bool LottieParser::apply(LottieSlot* slot, bool byDefault)
         }
         case LottieProperty::Type::TextDoc: {
             obj = new LottieText;
-            context.parent = obj;
             parseSlotProperty<LottieProperty::Type::TextDoc>(static_cast<LottieText*>(obj)->doc);
             break;
         }
@@ -1557,7 +1558,6 @@ bool LottieParser::apply(LottieSlot* slot, bool byDefault)
                 if (KEY_AS("p")) obj = parseAsset();
                 else skip();
             }
-            context.parent = obj;
             break;
         }
         default: break;

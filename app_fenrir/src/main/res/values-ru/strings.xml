@@ -819,7 +819,7 @@
     <string name="photo_albums_count">%1$d альбомов</string>
     <string name="links_count">%1$d ссылок</string>
     <string name="posts_count">%1$d постов</string>
-    <string name="cancel_invitation">Отклонить приглашение</string>
+    <string name="decline_invitation">Отклонить</string>
     <string name="invitation_has_been_declined">Приглашение было отклонено</string>
     <string name="request_canceled">Заявка отменена</string>
     <string name="restored">Восстановлено</string>

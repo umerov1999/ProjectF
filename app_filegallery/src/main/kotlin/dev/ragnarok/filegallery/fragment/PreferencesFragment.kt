@@ -134,7 +134,6 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
         }
     }
 
-    @Suppress("DEPRECATION")
     private val exportSettings = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -160,6 +159,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 out.write(bytes)
                 out.flush()
                 provideApplicationContext().sendBroadcast(
+                    @Suppress("deprecation")
                     Intent(
                         Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                         Uri.fromFile(file)
@@ -310,7 +310,6 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
         }
     }
 
-    @Suppress("DEPRECATION")
     private fun createRootScreen() = screen(requireActivity()) {
         subScreen("general_preferences") {
             titleRes = R.string.general_settings
@@ -620,7 +619,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
 
             multiLineText("videos_ext", parentFragmentManager) {
                 titleRes = R.string.video_ext
-                defaultValue = setOf("mp4", "avi", "mpeg")
+                defaultValue = setOf("mp4", "avi", "mov", "mpeg")
                 isSpace = true
                 dependency = "developer_mode"
                 onMultiLineTextChange {
@@ -819,7 +818,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                                 ".SLOGAN"
                             ).absolutePath || sel.absolutePath == File(
                                 Environment.getExternalStorageDirectory(),
-                                ".\$Trash\$"
+                                ".\$Trash$"
                             ).absolutePath || sel.absolutePath == File(
                                 Environment.getExternalStorageDirectory(),
                                 "OplusOS"
@@ -855,6 +854,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         out.write(bytes)
                         out.flush()
                         requireActivity().sendBroadcast(
+                            @Suppress("deprecation")
                             Intent(
                                 Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                                 Uri.fromFile(file)

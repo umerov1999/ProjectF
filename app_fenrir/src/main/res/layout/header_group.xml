@@ -172,8 +172,10 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:ellipsize="end"
                         android:insetTop="3dp"
                         android:insetBottom="3dp"
+                        android:maxLines="1"
                         android:textSize="12sp"
                         app:backgroundTint="@color/button_profile_tint"
                         tools:text="Primary" />
@@ -197,8 +199,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
+                    android:ellipsize="end"
                     android:insetTop="3dp"
                     android:insetBottom="3dp"
+                    android:maxLines="1"
                     android:textSize="12sp"
                     app:backgroundTint="@color/button_profile_tint"
                     tools:text="Secondary" />

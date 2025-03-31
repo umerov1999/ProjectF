@@ -63,11 +63,11 @@ internal inline fun <reified T : Parcelable> Parcel.writeTypedObjectCompat(
     }
 }
 
-@Suppress("deprecation")
 internal inline fun <reified T : Parcelable> Bundle.getParcelableArrayListCompat(key: String): ArrayList<T>? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         getParcelableArrayList(key, T::class.java)
     } else {
+        @Suppress("deprecation")
         getParcelableArrayList(key)
     }
 }

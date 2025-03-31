@@ -79,7 +79,6 @@ class KeepLongpollService : Service() {
         return null
     }
 
-    @Suppress("DEPRECATION")
     private fun startWithNotification() {
         val notificationIntent = Intent(this, KeepLongpollService::class.java)
         notificationIntent.action = ACTION_STOP

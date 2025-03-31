@@ -18,7 +18,6 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingle
 
 object Accounts {
-    @Suppress("DEPRECATION")
     fun showAccountSwitchedToast(context: Activity) {
         if (context.isFinishing || context.isDestroyed) {
             return
@@ -58,6 +57,7 @@ object Accounts {
         subtitle.text = user.fullName
         val toast = Toast(context)
         toast.duration = Toast.LENGTH_SHORT
+        @Suppress("deprecation")
         toast.view = view
         toast.setGravity(Gravity.FILL_HORIZONTAL or Gravity.TOP, 0, 0)
         toast.show()

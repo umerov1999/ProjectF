@@ -296,7 +296,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
 
     override fun onUpdateTimeFile(item: FileItem) {
         val tmp = File(item.file_path ?: return)
-        if (tmp.setLastModified(Calendar.getInstance().time.time)) {
+        if (tmp.setLastModified(Calendar.getInstance().timeInMillis)) {
             showMessage(R.string.success)
             presenter?.loadFiles(
                 back = false, caches = false,

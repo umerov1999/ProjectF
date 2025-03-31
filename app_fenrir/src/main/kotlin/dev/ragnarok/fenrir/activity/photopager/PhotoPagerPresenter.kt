@@ -416,7 +416,7 @@ open class PhotoPagerPresenter internal constructor(
                 view?.showError("Can't create directory $dir")
                 return
             }
-        } else dir.setLastModified(Calendar.getInstance().time.time)
+        } else dir.setLastModified(Calendar.getInstance().timeInMillis)
         val photo = current
         if (photo.albumId == -311) {
             var path = photo.text
@@ -454,7 +454,7 @@ open class PhotoPagerPresenter internal constructor(
                     view?.showError("Can't create directory $dir_final")
                     return
                 }
-            } else dir_final.setLastModified(Calendar.getInstance().time.time)
+            } else dir_final.setLastModified(Calendar.getInstance().timeInMillis)
             dir = dir_final
         }
         val url = photo.getUrlForSize(PhotoSize.W, true)

@@ -73,7 +73,6 @@ class CustomToast private constructor(context: Context) : AbsCustomToast {
         showToastInfo(mContext.resources.getString(message, *params))
     }
 
-    @Suppress("DEPRECATION")
     override fun showToastError(message: String?) {
         /*
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -86,6 +85,7 @@ class CustomToast private constructor(context: Context) : AbsCustomToast {
         subtitle.text = message
         val toast = Toast(mContext)
         toast.duration = duration
+        @Suppress("deprecation")
         toast.view = view
         toast.setGravity(Gravity.CENTER_HORIZONTAL or Gravity.TOP, 0, 0)
         toast.show()
@@ -137,7 +137,6 @@ class CustomToast private constructor(context: Context) : AbsCustomToast {
     }
      */
 
-    @Suppress("DEPRECATION")
     private fun getToast(context: Context, message: String?, bgColor: Int): Toast {
         /*
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -151,6 +150,7 @@ class CustomToast private constructor(context: Context) : AbsCustomToast {
         val textView: TextView = view.findViewById(R.id.toast_text_view)
         if (message != null) textView.text = message
         if (isColorDark(bgColor)) textView.setTextColor(Color.WHITE)
+        @Suppress("deprecation")
         toast.view = view
         val iconIV: ImageView = view.findViewById(R.id.toast_image_view)
         iconIV.setImageResource(R.mipmap.ic_launcher_round)

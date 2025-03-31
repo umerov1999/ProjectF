@@ -50,7 +50,6 @@ internal open class ColorPanelSlideListener(
         return ColorUtils.calculateLuminance(color) < 0.5
     }
 
-    @Suppress("DEPRECATION")
     override fun onSlideChange(percent: Float) {
         try {
             if (isFromUnColoredToColoredStatusBar) {
@@ -72,7 +71,9 @@ internal open class ColorPanelSlideListener(
                             navigationBarColored,
                             navigationBarNonColored
                         ) as Int
+                        @Suppress("deprecation")
                         w.statusBarColor = statusColor
+                        @Suppress("deprecation")
                         w.navigationBarColor = navigationColor
                         invertIcons = !isDark(statusColor)
                     }

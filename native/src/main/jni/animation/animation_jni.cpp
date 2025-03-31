@@ -14,6 +14,7 @@
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
+#include "libavutil/display.h"
 #include <libavutil/eval.h>
 #include <libswscale/swscale.h>
 }
@@ -176,13 +177,13 @@ jlong createDecoder_animation(JNIEnv *env, jstring src,
     }
 
     if (avformat_open_input(&info->fmt_ctx, info->src, nullptr, nullptr) < 0) {
-        LOGE("can't open source file %s, %s", info->src, av_err2str(ret));
+        LOGE("can't open source file %s", info->src);
         delete info;
         return 0;
     }
 
     if (avformat_find_stream_info(info->fmt_ctx, nullptr) < 0) {
-        LOGE("can't find stream information %s, %s", info->src, av_err2str(ret));
+        LOGE("can't find stream information %s", info->src);
         delete info;
         return 0;
     }
@@ -223,7 +224,13 @@ jlong createDecoder_animation(JNIEnv *env, jstring src,
                 dataArr[2] = 0;
             }
         } else {
-            dataArr[2] = 0;
+            uint8_t *displayMatrix = av_stream_get_side_data(info->video_stream,
+                                                             AV_PKT_DATA_DISPLAYMATRIX, nullptr);
+            if (displayMatrix) {
+                dataArr[2] = (int) -av_display_rotation_get((int32_t *) displayMatrix);
+            } else {
+                dataArr[2] = 0;
+            }
         }
         dataArr[4] = (int32_t) (info->fmt_ctx->duration * 1000 / AV_TIME_BASE);
         int video_stream_index = -1;

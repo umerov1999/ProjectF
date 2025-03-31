@@ -130,12 +130,12 @@ open class PhotoPagerPresenter internal constructor(
                 view?.showError("Can't create directory $dir")
                 return false
             }
-        } else dir.setLastModified(Calendar.getInstance().time.time)
+        } else dir.setLastModified(Calendar.getInstance().timeInMillis)
         val photo = current
         var path = photo.text
         val ndx = path?.indexOf('/')
         if (ndx != -1) {
-            path = ndx?.let { path?.substring(0, it) }
+            path = ndx?.let { path.substring(0, it) }
         }
         DownloadResult(path, dir, photo)
         return false
@@ -229,7 +229,7 @@ open class PhotoPagerPresenter internal constructor(
                     view?.showError("Can't create directory $dir_final")
                     return
                 }
-            } else dir_final.setLastModified(Calendar.getInstance().time.time)
+            } else dir_final.setLastModified(Calendar.getInstance().timeInMillis)
             dir = dir_final
         }
         photo.photo_url?.let {

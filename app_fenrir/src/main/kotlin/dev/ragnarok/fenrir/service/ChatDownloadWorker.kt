@@ -384,7 +384,6 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
     }
 
     @SuppressLint("MissingPermission")
-    @Suppress("DEPRECATION")
     private fun doDownloadAsHTML(chat_title: String?, account_id: Long, owner_id: Long) {
         try {
             var owner: Owner? = null
@@ -505,6 +504,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
             output.flush()
             output.close()
             applicationContext.sendBroadcast(
+                @Suppress("deprecation")
                 Intent(
                     Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                     Uri.fromFile(html)
@@ -560,7 +560,6 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
     }
 
     @SuppressLint("MissingPermission")
-    @Suppress("DEPRECATION")
     private fun doJsonDownload(chat_title: String?, account_id: Long, owner_id: Long) {
         try {
             var owner: Owner? = null
@@ -672,6 +671,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
             output.flush()
             output.close()
             applicationContext.sendBroadcast(
+                @Suppress("deprecation")
                 Intent(
                     Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                     Uri.fromFile(html)
@@ -726,7 +726,6 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
         }
     }
 
-    @Suppress("DEPRECATION")
     private fun createForeground() {
         val channel = NotificationChannel(
             "worker_channel",

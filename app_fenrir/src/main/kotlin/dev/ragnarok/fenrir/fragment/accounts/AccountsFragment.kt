@@ -729,7 +729,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
 
             R.id.auth_by_qr -> {
                 if (Utils.isOfficialVKCurrent && Settings.get()
-                        .accounts().anonymToken.expired_at <= Calendar.getInstance().time.time / 1000
+                        .accounts().anonymToken.expired_at <= Calendar.getInstance().timeInMillis / 1000
                 ) {
                     showError(R.string.auth_by_qr_error)
                     return false

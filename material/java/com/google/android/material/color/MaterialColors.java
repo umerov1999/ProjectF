@@ -15,8 +15,6 @@
  */
 package com.google.android.material.color;
 
-import com.google.android.material.R;
-
 import static android.graphics.Color.TRANSPARENT;
 import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
@@ -263,7 +261,10 @@ public class MaterialColors {
   public static int harmonizeWithPrimary(@NonNull Context context, @ColorInt int colorToHarmonize) {
     return harmonize(
         colorToHarmonize,
-        getColor(context, androidx.appcompat.R.attr.colorPrimary, MaterialColors.class.getCanonicalName()));
+        getColor(
+            context,
+            androidx.appcompat.R.attr.colorPrimary,
+            MaterialColors.class.getCanonicalName()));
   }
 
   /**

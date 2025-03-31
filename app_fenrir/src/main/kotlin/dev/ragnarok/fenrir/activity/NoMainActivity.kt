@@ -37,7 +37,6 @@ abstract class NoMainActivity : AppCompatActivity() {
     protected open val noMainContainerViewId: Int
         get() = R.id.fragment
 
-    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(currentStyle())
         Utils.prepareDensity(this)
@@ -45,6 +44,7 @@ abstract class NoMainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         isZoomPhoto = Settings.get().main().isDo_zoom_photo
         setContentView(noMainContentView)
+        @Suppress("deprecation")
         if (!hasVanillaIceCreamTarget()) {
             val w = window
             w.statusBarColor = CurrentTheme.getStatusBarColor(this)

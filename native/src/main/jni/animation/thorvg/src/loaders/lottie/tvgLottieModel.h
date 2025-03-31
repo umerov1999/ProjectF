@@ -57,7 +57,9 @@ struct LottieStroke
         if (dashattr->size + 1 > dashattr->allocated) {
             dashattr->allocated = dashattr->size + 2;
             auto newValues = new LottieFloat[dashattr->allocated];
-            for (uint8_t i = 0; i < dashattr->size; ++i) newValues[i] = LottieFloat(dashattr->values[i]);
+            for (uint8_t i = 0; i < dashattr->size; ++i) {
+                newValues[i].copy(dashattr->values[i]);
+            }
             delete[] dashattr->values;
             dashattr->values = newValues;
         }
@@ -334,6 +336,29 @@ struct LottieMarker
     }
 };
 
+
+struct LottieTextFollowPath
+{
+private:
+    RenderPath path;
+    PathCommand* cmds;
+    uint32_t cmdsCnt;
+    Point* pts;
+    Point* start;
+    float totalLen;
+    float currentLen;
+    Point split(float dLen, float lenSearched, float& angle);
+
+public:
+    LottieFloat firstMargin = 0.0f;
+    LottieMask* mask;
+    int8_t maskIdx = -1;
+
+    Point position(float lenSearched, float& angle);
+    float prepare(LottieMask* mask, float frameNo, float scale, Tween& tween, LottieExpressions* exps);
+};
+
+
 struct LottieText : LottieObject, LottieRenderPooler<tvg::Shape>
 {
     struct AlignOption
@@ -362,11 +387,13 @@ struct LottieText : LottieObject, LottieRenderPooler<tvg::Shape>
 
     LottieTextDoc doc;
     LottieFont* font;
+    LottieTextFollowPath* followPath = nullptr;
     Array<LottieTextRange*> ranges;
 
     ~LottieText()
     {
         ARRAY_FOREACH(p, ranges) delete(*p);
+        delete(followPath);
     }
 };
 
@@ -542,8 +569,7 @@ struct LottieTransform : LottieObject
 
     bool mergeable() override
     {
-        if (!opacity.frames && opacity.value == 255) return true;
-        return false;
+        return true;
     }
 
     LottieProperty* property(uint16_t ix) override
@@ -822,6 +848,7 @@ struct LottieGroup : LottieObject, LottieRenderPooler<tvg::Shape>
 
     void prepare(LottieObject::Type type = LottieObject::Group);
     bool mergeable() override { return allowMerge; }
+    LottieProperty* property(uint16_t ix) override;
 
     LottieObject* content(unsigned long id)
     {
@@ -857,6 +884,8 @@ struct LottieLayer : LottieGroup
     bool mergeable() override { return false; }
     void prepare(RGB24* color = nullptr);
     float remap(LottieComposition* comp, float frameNo, LottieExpressions* exp);
+    LottieProperty* property(uint16_t ix) override;
+    bool assign(const char* layer, uint32_t ix, const char* var, float val);
 
     char* name = nullptr;
     LottieLayer* parent = nullptr;
@@ -923,7 +952,7 @@ struct LottieSlot
     void assign(LottieObject* target, bool byDefault, ColorReplace* colorReplacement);
     void reset();
 
-    LottieSlot(char* sid, LottieObject* obj, LottieProperty::Type type) : sid(sid), type(type)
+    LottieSlot(LottieLayer* layer, LottieObject* parent, char* sid, LottieObject* obj, LottieProperty::Type type) : context{layer, parent}, sid(sid), type(type)
     {
         pairs.push({obj});
     }
@@ -935,9 +964,15 @@ struct LottieSlot
         ARRAY_FOREACH(pair, pairs) delete(pair->prop);
     }
 
+    struct {
+        LottieLayer* layer;
+        LottieObject* parent;
+    } context;
+
     char* sid;
     Array<Pair> pairs;
     LottieProperty::Type type;
+
     bool overridden = false;
 };
 

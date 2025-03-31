@@ -7,7 +7,6 @@ import androidx.annotation.FloatRange
 import com.squareup.picasso3.RequestHandler
 import com.squareup.picasso3.Transformation
 
-@Suppress("DEPRECATION")
 class BlurTransformation(
     @param:FloatRange(
         from = 0.0,
@@ -20,6 +19,7 @@ class BlurTransformation(
 
     private val TAG = BlurTransformation::class.simpleName.orEmpty()
 
+    @Suppress("deprecation")
     private fun blurRenderScriptDeprecated(
         context: Context?,
         inputBitmap: Bitmap?,

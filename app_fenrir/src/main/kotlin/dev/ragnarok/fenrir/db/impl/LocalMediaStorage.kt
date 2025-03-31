@@ -207,9 +207,9 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
             emit(albums)
         }
 
-    @Suppress("DEPRECATION")
     override fun getOldThumbnail(@Content_Local type: Int, content_Id: Long): Bitmap? {
         if (type == Content_Local.PHOTO) {
+            @Suppress("deprecation")
             return MediaStore.Images.Thumbnails.getThumbnail(
                 context.contentResolver,
                 content_Id, MediaStore.Images.Thumbnails.MINI_KIND, null
@@ -234,6 +234,7 @@ internal class LocalMediaStorage(mRepositoryContext: AppStorages) : AbsStorage(m
                 null
             }
         }
+        @Suppress("deprecation")
         return MediaStore.Video.Thumbnails.getThumbnail(
             context.contentResolver,
             content_Id, MediaStore.Video.Thumbnails.MINI_KIND, null

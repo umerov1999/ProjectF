@@ -80,7 +80,6 @@ class RequestExecutePresenter(accountId: Long, savedInstanceState: Bundle?) :
         return hasReadWriteStoragePermission(applicationContext)
     }
 
-    @Suppress("DEPRECATION")
     private fun saveToFile() {
         if (!hasWritePermission()) {
             view?.requestWriteExternalStoragePermission()
@@ -99,6 +98,7 @@ class RequestExecutePresenter(accountId: Long, savedInstanceState: Bundle?) :
             out.write(bytes)
             out.flush()
             applicationContext.sendBroadcast(
+                @Suppress("deprecation")
                 Intent(
                     Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                     Uri.fromFile(file)

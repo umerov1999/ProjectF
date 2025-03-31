@@ -2,8 +2,7 @@
 #define TAGLIB_CONFIG_H
 
 #define   HAVE_MSC_BYTESWAP 1
-
 #define   HAVE_ISO_STRDUP 1
-
 #define   HAVE_ZLIB 1
+
 #endif

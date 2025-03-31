@@ -23,21 +23,21 @@ import com.google.firebase.installations.local.PersistedInstallationEntry;
  */
 record GetIdListener(TaskCompletionSource<String> taskCompletionSource) implements StateListener {
 
-    @Override
-    public boolean onStateReached(PersistedInstallationEntry persistedInstallationEntry) {
-        if (persistedInstallationEntry.isUnregistered()
-                || persistedInstallationEntry.isRegistered()
-                || persistedInstallationEntry.isErrored()) {
-            taskCompletionSource.trySetResult(persistedInstallationEntry.getFirebaseInstallationId());
-            return true;
-        }
-        // Don't update the caller if the PersistedInstallationEntry registration status is
-        // ATTEMPT_MIGRATION or NOT_GENERATED.
-        return false;
+  @Override
+  public boolean onStateReached(PersistedInstallationEntry persistedInstallationEntry) {
+    if (persistedInstallationEntry.isUnregistered()
+            || persistedInstallationEntry.isRegistered()
+            || persistedInstallationEntry.isErrored()) {
+      taskCompletionSource.trySetResult(persistedInstallationEntry.getFirebaseInstallationId());
+      return true;
     }
+    // Don't update the caller if the PersistedInstallationEntry registration status is
+    // ATTEMPT_MIGRATION or NOT_GENERATED.
+    return false;
+  }
 
-    @Override
-    public boolean onException(Exception exception) {
-        return false;
-    }
+  @Override
+  public boolean onException(Exception exception) {
+    return false;
+  }
 }

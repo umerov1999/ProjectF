@@ -1,0 +1,337 @@
+diff -ruN a/com/google/android/material/badge/BadgeDrawable.java b/com/google/android/material/badge/BadgeDrawable.java
+--- a/com/google/android/material/badge/BadgeDrawable.java	2025-03-24 18:37:42.000000000 +0300
++++ b/com/google/android/material/badge/BadgeDrawable.java	2024-05-24 13:50:12.000000000 +0300
+@@ -490,6 +490,17 @@
+     }
+   }
+ 
++  public boolean isBadgeNotSaveColor() {
++    return state.isNotSaveColor();
++  }
++
++  public void setBadgeNotSaveColor(boolean isNotSaveColor) {
++    if (isNotSaveColor != state.isNotSaveColor()) {
++      state.setNotSaveColor(isNotSaveColor);
++      invalidateSelf();
++    }
++  }
++
+   /** Returns whether this badge will display a number. */
+   public boolean hasNumber() {
+     return !state.hasText() && state.hasNumber();
+diff -ruN a/com/google/android/material/badge/BadgeState.java b/com/google/android/material/badge/BadgeState.java
+--- a/com/google/android/material/badge/BadgeState.java	2025-03-24 18:37:42.000000000 +0300
++++ b/com/google/android/material/badge/BadgeState.java	2024-05-14 22:22:38.000000000 +0300
+@@ -207,7 +207,7 @@
+             : storedState.badgeWithTextShapeAppearanceOverlayResId;
+ 
+     currentState.backgroundColor =
+-        storedState.backgroundColor == null
++            (storedState.backgroundColor == null || storedState.notSaveColor)
+             ? readColorFromAttributes(context, a, R.styleable.Badge_backgroundColor)
+             : storedState.backgroundColor;
+ 
+@@ -220,7 +220,7 @@
+ 
+     // Only set the badge text color if this attribute has explicitly been set, otherwise use the
+     // text color specified in the TextAppearance.
+-    if (storedState.badgeTextColor != null) {
++    if (storedState.badgeTextColor != null && !storedState.notSaveColor) {
+       currentState.badgeTextColor = storedState.badgeTextColor;
+     } else if (a.hasValue(R.styleable.Badge_badgeTextColor)) {
+       currentState.badgeTextColor =
+@@ -612,6 +612,15 @@
+     currentState.numberLocale = locale;
+   }
+ 
++  boolean isNotSaveColor() {
++    return currentState.notSaveColor;
++  }
++
++  void setNotSaveColor(boolean notSaveColor) {
++    overridingState.notSaveColor = notSaveColor;
++    currentState.notSaveColor = notSaveColor;
++  }
++
+   /** Deprecated; badges now adjust to within bounds of first ancestor that clips its children */
+   @Deprecated
+   boolean isAutoAdjustedToGrandparentBounds() {
+@@ -659,6 +668,7 @@
+     private int maxCharacterCount = NOT_SET;
+     private int maxNumber = NOT_SET;
+     private Locale numberLocale;
++    private Boolean notSaveColor = false;
+ 
+     @Nullable private CharSequence contentDescriptionForText;
+     @Nullable private CharSequence contentDescriptionNumberless;
+@@ -730,6 +740,7 @@
+       numberLocale = (Locale) in.readSerializable();
+       autoAdjustToWithinGrandparentBounds = (Boolean) in.readSerializable();
+       badgeFixedEdge = (Integer) in.readSerializable();
++      notSaveColor = (Boolean) in.readSerializable();
+     }
+ 
+     public static final Creator<State> CREATOR =
+@@ -786,6 +797,7 @@
+       dest.writeSerializable(numberLocale);
+       dest.writeSerializable(autoAdjustToWithinGrandparentBounds);
+       dest.writeSerializable(badgeFixedEdge);
++      dest.writeSerializable(notSaveColor);
+     }
+   }
+ }
+diff -ruN a/com/google/android/material/badge/ExperimentalBadgeUtils.java b/com/google/android/material/badge/ExperimentalBadgeUtils.java
+--- a/com/google/android/material/badge/ExperimentalBadgeUtils.java	2025-03-24 18:37:42.000000000 +0300
++++ b/com/google/android/material/badge/ExperimentalBadgeUtils.java	2022-06-22 15:35:34.000000000 +0300
+@@ -16,10 +16,8 @@
+ 
+ package com.google.android.material.badge;
+ 
+-import static androidx.annotation.experimental.Experimental.Level.ERROR;
+ import static java.lang.annotation.RetentionPolicy.CLASS;
+ 
+-import androidx.annotation.experimental.Experimental;
+ import java.lang.annotation.ElementType;
+ import java.lang.annotation.Retention;
+ import java.lang.annotation.Target;
+@@ -33,5 +31,4 @@
+   ElementType.FIELD,
+   ElementType.PACKAGE
+ })
+-@Experimental(level = ERROR)
+ public @interface ExperimentalBadgeUtils {}
+diff -ruN a/com/google/android/material/behavior/HideBottomViewOnScrollBehavior.java b/com/google/android/material/behavior/HideBottomViewOnScrollBehavior.java
+--- a/com/google/android/material/behavior/HideBottomViewOnScrollBehavior.java	2025-03-24 18:37:42.000000000 +0300
++++ b/com/google/android/material/behavior/HideBottomViewOnScrollBehavior.java	2025-03-25 18:30:49.735609582 +0300
+@@ -42,6 +42,9 @@
+ import androidx.core.view.ViewCompat;
+ import com.google.android.material.animation.AnimationUtils;
+ import com.google.android.material.motion.MotionUtils;
++
++import java.lang.annotation.Retention;
++import java.lang.annotation.RetentionPolicy;
+ import java.util.LinkedHashSet;
+ 
+ /**
+@@ -108,6 +111,7 @@
+    */
+   @RestrictTo(LIBRARY_GROUP)
+   @IntDef({STATE_SCROLLED_DOWN, STATE_SCROLLED_UP})
++  @Retention(RetentionPolicy.SOURCE)
+   public @interface ScrollState {}
+ 
+   @ScrollState private int currentState = STATE_SCROLLED_UP;
+diff -ruN a/com/google/android/material/behavior/HideViewOnScrollBehavior.java b/com/google/android/material/behavior/HideViewOnScrollBehavior.java
+--- a/com/google/android/material/behavior/HideViewOnScrollBehavior.java	2025-03-24 18:37:42.000000000 +0300
++++ b/com/google/android/material/behavior/HideViewOnScrollBehavior.java	2025-03-25 18:31:22.930002616 +0300
+@@ -48,6 +48,9 @@
+ import com.google.android.material.animation.AnimationUtils;
+ import com.google.android.material.behavior.HideOnScrollView.ViewEdge;
+ import com.google.android.material.motion.MotionUtils;
++
++import java.lang.annotation.Retention;
++import java.lang.annotation.RetentionPolicy;
+ import java.util.LinkedHashSet;
+ 
+ /**
+@@ -114,6 +117,7 @@
+    */
+   @RestrictTo(LIBRARY_GROUP)
+   @IntDef({STATE_SCROLLED_OUT, STATE_SCROLLED_IN})
++  @Retention(RetentionPolicy.SOURCE)
+   public @interface ScrollState {}
+ 
+   @ScrollState private int currentState = STATE_SCROLLED_IN;
+diff -ruN a/com/google/android/material/bottomnavigation/res/values/styles.xml b/com/google/android/material/bottomnavigation/res/values/styles.xml
+--- a/com/google/android/material/bottomnavigation/res/values/styles.xml	2025-03-24 18:37:42.000000000 +0300
++++ b/com/google/android/material/bottomnavigation/res/values/styles.xml	2024-10-31 00:03:14.860478183 +0300
+@@ -81,7 +81,6 @@
+     <item name="itemPaddingTop">@dimen/m3_bottom_nav_item_padding_top</item>
+     <item name="itemPaddingBottom">@dimen/m3_bottom_nav_item_padding_bottom</item>
+     <item name="android:minHeight">@dimen/m3_bottom_nav_min_height</item>
+-    <item name="materialThemeOverlay">@style/ThemeOverlay.Material3.BottomNavigationView</item>
+     <item name="shapeAppearance">@style/ShapeAppearance.M3.Comp.NavigationBar.Container.Shape</item>
+     <item name="activeIndicatorLabelPadding">@dimen/m3_navigation_item_active_indicator_label_padding</item>
+     <item name="iconLabelHorizontalSpacing">@dimen/m3_navigation_item_active_indicator_label_padding</item>
+@@ -89,15 +88,6 @@
+ 
+   <style name="Widget.Material3.BottomNavigationView" parent="Base.Widget.Material3.BottomNavigationView"/>
+ 
+-  <style name="ThemeOverlay.Material3.BottomNavigationView" parent="">
+-    <item name="badgeStyle">@style/Widget.Material3.BottomNavigation.Badge</item>
+-  </style>
+-
+-  <style name="Widget.Material3.BottomNavigation.Badge" parent="Widget.Material3.Badge">
+-    <item name="verticalOffsetWithText">@dimen/m3_nav_badge_with_text_vertical_offset</item>
+-  </style>
+-
+-
+   <style name="Widget.Material3.BottomNavigationView.ActiveIndicator" parent="">
+     <item name="android:width">@dimen/m3_bottom_nav_item_active_indicator_width</item>
+     <item name="android:height">@dimen/m3_bottom_nav_item_active_indicator_height</item>
+diff -ruN a/com/google/android/material/bottomsheet/BottomSheetBehavior.java b/com/google/android/material/bottomsheet/BottomSheetBehavior.java
+--- a/com/google/android/material/bottomsheet/BottomSheetBehavior.java	2025-03-24 18:37:42.000000000 +0300
++++ b/com/google/android/material/bottomsheet/BottomSheetBehavior.java	2025-01-29 14:20:16.413912254 +0300
+@@ -70,6 +70,8 @@
+ import androidx.core.view.accessibility.AccessibilityViewCommand;
+ import androidx.customview.view.AbsSavedState;
+ import androidx.customview.widget.ViewDragHelper;
++import androidx.recyclerview.widget.RecyclerView;
++import androidx.viewpager2.widget.ViewPager2;
+ import com.google.android.material.internal.ViewUtils;
+ import com.google.android.material.internal.ViewUtils.RelativePadding;
+ import com.google.android.material.motion.MaterialBackHandler;
+@@ -1687,6 +1689,19 @@
+   }
+ 
+   @Nullable
++  private View getCurrentViewFromViewPager2(@NonNull ViewPager2 viewPager) {
++    int currentItem = viewPager.getCurrentItem();
++    View child = viewPager.getChildAt(0);
++    if (child instanceof RecyclerView) {
++      if (((RecyclerView) child).getLayoutManager() == null)
++        return null;
++      child = ((RecyclerView) child).getLayoutManager().findViewByPosition(currentItem);
++    }
++
++    return child;
++  }
++
++  @Nullable
+   @VisibleForTesting
+   View findScrollingChild(View view) {
+     if (view.getVisibility() != View.VISIBLE) {
+@@ -1695,6 +1710,12 @@
+     if (view.isNestedScrollingEnabled()) {
+       return view;
+     }
++    if (view instanceof ViewPager2) {
++      View currentViewPagerChild = getCurrentViewFromViewPager2((ViewPager2) view);
++      if (currentViewPagerChild != null) {
++        return findScrollingChild(currentViewPagerChild);
++      }
++    }
+     if (view instanceof ViewGroup) {
+       ViewGroup group = (ViewGroup) view;
+       for (int i = 0, count = group.getChildCount(); i < count; i++) {
+diff -ruN a/com/google/android/material/card/MaterialCardViewHelper.java b/com/google/android/material/card/MaterialCardViewHelper.java
+--- a/com/google/android/material/card/MaterialCardViewHelper.java	2025-03-24 18:37:42.000000000 +0300
++++ b/com/google/android/material/card/MaterialCardViewHelper.java	2025-03-25 18:33:48.279741686 +0300
+@@ -158,7 +158,7 @@
+     foregroundContentDrawable = new MaterialShapeDrawable();
+     setShapeAppearanceModel(shapeAppearanceModelBuilder.build());
+ 
+-    iconFadeAnimInterpolator =
++    iconFadeAnimInterpolator = card.isInEditMode() ? AnimationUtils.LINEAR_INTERPOLATOR :
+         MotionUtils.resolveThemeInterpolator(
+             materialCardView.getContext(),
+             R.attr.motionEasingLinearInterpolator,
+@@ -222,10 +222,15 @@
+ 
+     materialCardView.setBackgroundInternal(insetDrawable(bgDrawable));
+     fgDrawable =
+-        shouldUseClickableForeground() ? getClickableForeground() : foregroundContentDrawable;
++        shouldUseClickableForeground() ? getClickableForeground() : getForegroundContentDrawable();
+     materialCardView.setForeground(insetDrawable(fgDrawable));
+   }
+ 
++  @NonNull
++  private Drawable getForegroundContentDrawable() {
++    return foregroundContentDrawable;
++  }
++
+   boolean isBackgroundOverwritten() {
+     return isBackgroundOverwritten;
+   }
+@@ -301,7 +306,7 @@
+   void updateClickable() {
+     Drawable previousFgDrawable = fgDrawable;
+     fgDrawable =
+-        shouldUseClickableForeground() ? getClickableForeground() : foregroundContentDrawable;
++        shouldUseClickableForeground() ? getClickableForeground() : getForegroundContentDrawable();
+     if (previousFgDrawable != fgDrawable) {
+       updateInsetForeground(fgDrawable);
+     }
+diff -ruN a/com/google/android/material/floatingactionbutton/FloatingActionButtonImpl.java b/com/google/android/material/floatingactionbutton/FloatingActionButtonImpl.java
+--- a/com/google/android/material/floatingactionbutton/FloatingActionButtonImpl.java	2025-03-24 18:37:42.000000000 +0300
++++ b/com/google/android/material/floatingactionbutton/FloatingActionButtonImpl.java	2025-03-25 18:36:11.207475133 +0300
+@@ -177,21 +177,19 @@
+     }
+     shapeDrawable.initializeElevationOverlay(view.getContext());
+ 
+-    final Drawable rippleContent;
+     if (borderWidth > 0) {
+       borderDrawable = createBorderDrawable(borderWidth, backgroundTint);
+-      rippleContent =
+-          new LayerDrawable(
+-              new Drawable[] {checkNotNull(borderDrawable), checkNotNull(shapeDrawable)});
++      rippleDrawable =
++              new RippleDrawable(
++                      RippleUtils.sanitizeRippleDrawableColor(rippleColor), new LayerDrawable(
++                      new Drawable[]{checkNotNull(borderDrawable), checkNotNull(shapeDrawable)}), null);
+     } else {
+       borderDrawable = null;
+-      rippleContent = shapeDrawable;
++      rippleDrawable =
++              new RippleDrawable(
++                      RippleUtils.sanitizeRippleDrawableColor(rippleColor), shapeDrawable, null);
+     }
+ 
+-    rippleDrawable =
+-        new RippleDrawable(
+-            RippleUtils.sanitizeRippleDrawableColor(rippleColor), rippleContent, null);
+-
+     contentBackground = rippleDrawable;
+   }
+ 
+diff -ruN a/com/google/android/material/materialswitch/res/values/dimens.xml b/com/google/android/material/materialswitch/res/values/dimens.xml
+--- a/com/google/android/material/materialswitch/res/values/dimens.xml	2025-03-24 18:37:42.000000000 +0300
++++ b/com/google/android/material/materialswitch/res/values/dimens.xml	2025-01-07 08:14:20.998573006 +0300
+@@ -16,9 +16,9 @@
+   -->
+ 
+ <resources>
+-  <dimen name="mtrl_switch_thumb_size">32dp</dimen>
++  <dimen name="mtrl_switch_thumb_size">24dp</dimen>
+   <dimen name="mtrl_switch_thumb_icon_size">16dp</dimen>
+-  <dimen name="mtrl_switch_track_width">@dimen/m3_comp_switch_track_width</dimen>
+-  <dimen name="mtrl_switch_track_height">@dimen/m3_comp_switch_track_height</dimen>
++  <dimen name="mtrl_switch_track_width">44dp</dimen>
++  <dimen name="mtrl_switch_track_height">24dp</dimen>
+   <dimen name="mtrl_switch_text_padding">16dp</dimen>
+ </resources>
+diff -ruN a/com/google/android/material/snackbar/Snackbar.java b/com/google/android/material/snackbar/Snackbar.java
+--- a/com/google/android/material/snackbar/Snackbar.java	2025-03-24 18:37:42.000000000 +0300
++++ b/com/google/android/material/snackbar/Snackbar.java	2025-03-16 15:37:14.871545725 +0300
+@@ -276,7 +276,7 @@
+   }
+ 
+   @Nullable
+-  private static ViewGroup findSuitableParent(View view) {
++  public static ViewGroup findSuitableParent(View view) {
+     ViewGroup fallback = null;
+     do {
+       if (view instanceof CoordinatorLayout) {
+@@ -388,6 +388,11 @@
+         : userSetDuration;
+   }
+ 
++  public Snackbar setOnClickListener(View.OnClickListener clickListener) {
++    getContentLayout().setOnClickListener(clickListener);
++    return this;
++  }
++
+   /**
+    * Sets the text color of the message specified in {@link #setText(CharSequence)} and {@link
+    * #setText(int)}.
+diff -ruN a/com/google/android/material/tabs/TabLayout.java b/com/google/android/material/tabs/TabLayout.java
+--- a/com/google/android/material/tabs/TabLayout.java	2025-03-24 18:37:42.000000000 +0300
++++ b/com/google/android/material/tabs/TabLayout.java	2025-02-27 10:23:48.575050740 +0300
+@@ -259,6 +259,7 @@
+ 
+   /** @hide */
+   @IntDef(value = {TAB_LABEL_VISIBILITY_UNLABELED, TAB_LABEL_VISIBILITY_LABELED})
++  @Retention(RetentionPolicy.SOURCE)
+   public @interface LabelVisibility {}
+ 
+   /**

@@ -67,7 +67,6 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
     private val DOWNLOAD_DATE_FORMAT: DateFormat =
         SimpleDateFormat("yyyyMMdd_HHmmss", Utils.appLocale)
 
-    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(ThemesController.currentStyle())
         Utils.prepareDensity(this)
@@ -147,6 +146,7 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
                         out.write(bytes)
                         out.flush()
                         Includes.provideApplicationContext().sendBroadcast(
+                            @Suppress("deprecation")
                             Intent(
                                 Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                                 Uri.fromFile(file)
@@ -215,6 +215,7 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
             tab.text = adapter.DeltaOwner.content[position].name
         }.attach()
 
+        @Suppress("deprecation")
         if (!hasVanillaIceCreamTarget()) {
             val w = window
             w.statusBarColor = getStatusBarColor(this)
@@ -282,9 +283,9 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
         disposable.cancel()
     }
 
-    @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val w = window
+        @Suppress("deprecation")
         if (!hasVanillaIceCreamTarget()) {
             w.statusBarColor =
                 if (colored) getStatusBarColor(this) else getStatusBarNonColored(

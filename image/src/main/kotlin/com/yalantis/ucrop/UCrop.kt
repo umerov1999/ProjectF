@@ -455,7 +455,6 @@ class UCrop private constructor(source: Uri, destination: Uri) {
          *
          * @param intent crop result intent
          */
-        @Suppress("deprecation")
         fun getOutput(intent: Intent): Uri? {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 intent.getParcelableExtra(
@@ -463,6 +462,7 @@ class UCrop private constructor(source: Uri, destination: Uri) {
                     Uri::class.java
                 )
             } else {
+                @Suppress("deprecation")
                 intent.getParcelableExtra(EXTRA_OUTPUT_URI)
             }
         }
@@ -501,7 +501,6 @@ class UCrop private constructor(source: Uri, destination: Uri) {
          * @param result crop result Intent
          * @return Throwable that could happen while image processing
          */
-        @Suppress("deprecation")
         fun getError(result: Intent): Throwable? {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 result.getSerializableExtra(
@@ -509,6 +508,7 @@ class UCrop private constructor(source: Uri, destination: Uri) {
                     Throwable::class.java
                 )
             } else {
+                @Suppress("deprecation")
                 result.getSerializableExtra(EXTRA_ERROR) as Throwable?
             }
         }

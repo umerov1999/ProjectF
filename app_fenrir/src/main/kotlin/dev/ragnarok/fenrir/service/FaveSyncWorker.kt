@@ -73,7 +73,6 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
         return mNotifyManager
     }
 
-    @Suppress("DEPRECATION")
     private fun createForeground() {
         val channel = NotificationChannel(
             "worker_channel",
@@ -422,7 +421,6 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
         }
     }
 
-    @Suppress("DEPRECATION")
     override fun doWork(): Result {
         createForeground()
 
@@ -577,6 +575,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
             val file = File(Environment.getExternalStorageDirectory(), "fenrir_fave_sync_log.txt")
             FileOutputStream(file).write(log.toString().toByteArray(Charsets.UTF_8))
             applicationContext.sendBroadcast(
+                @Suppress("deprecation")
                 Intent(
                     Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                     Uri.fromFile(file)

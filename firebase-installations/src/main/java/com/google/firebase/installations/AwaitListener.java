@@ -15,26 +15,24 @@
 package com.google.firebase.installations;
 
 import androidx.annotation.NonNull;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 final class AwaitListener implements OnCompleteListener<Void> {
-    private final CountDownLatch latch = new CountDownLatch(1);
+  private final CountDownLatch latch = new CountDownLatch(1);
 
-    public void onSuccess() {
-        latch.countDown();
-    }
+  public void onSuccess() {
+    latch.countDown();
+  }
 
-    public boolean await(long timeout, TimeUnit unit) throws InterruptedException {
-        return latch.await(timeout, unit);
-    }
+  public boolean await(long timeout, TimeUnit unit) throws InterruptedException {
+    return latch.await(timeout, unit);
+  }
 
-    @Override
-    public void onComplete(@NonNull Task<Void> task) {
-        latch.countDown();
-    }
+  @Override
+  public void onComplete(@NonNull Task<Void> task) {
+    latch.countDown();
+  }
 }

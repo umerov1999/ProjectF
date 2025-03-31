@@ -138,7 +138,6 @@ class UploadManagerImpl(
         )
     }
 
-    @Suppress("DEPRECATION")
     private fun updateNotification(updates: IProgressUpdate?) {
         updates?.let {
             val notificationManager =

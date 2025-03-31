@@ -165,12 +165,12 @@ object DownloadWorkUtils {
         val dir_final = File(Path)
         return if (!dir_final.isDirectory) {
             dir_final.mkdirs()
-        } else dir_final.setLastModified(Calendar.getInstance().time.time)
+        } else dir_final.setLastModified(Calendar.getInstance().timeInMillis)
     }
 
-    @Suppress("DEPRECATION")
     private fun toExternalDownloader(context: Context, url: String, file: DownloadInfo) {
         val downloadRequest = DownloadManager.Request(url.toUri())
+        @Suppress("deprecation")
         downloadRequest.allowScanningByMediaScanner()
         downloadRequest.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
         downloadRequest.setDescription(file.buildFilename())
@@ -196,12 +196,12 @@ object DownloadWorkUtils {
         WorkManager.getInstance(context).enqueue(downloadWork.build())
     }
 
-    @Suppress("DEPRECATION")
     private fun default_file_exist(context: Context, file: DownloadInfo): Boolean {
         val Temp = File(file.build())
         if (Temp.exists()) {
-            if (Temp.setLastModified(Calendar.getInstance().time.time)) {
+            if (Temp.setLastModified(Calendar.getInstance().timeInMillis)) {
                 context.sendBroadcast(
+                    @Suppress("deprecation")
                     Intent(
                         Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                         Uri.fromFile(Temp)
@@ -214,13 +214,13 @@ object DownloadWorkUtils {
         return false
     }
 
-    @Suppress("DEPRECATION")
     private fun track_file_exist(context: Context, file: DownloadInfo): Int {
         val file_name = file.buildFilename()
         val Temp = File(file.build())
         if (Temp.exists()) {
-            if (Temp.setLastModified(Calendar.getInstance().time.time)) {
+            if (Temp.setLastModified(Calendar.getInstance().timeInMillis)) {
                 context.sendBroadcast(
+                    @Suppress("deprecation")
                     Intent(
                         Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                         Uri.fromFile(Temp)
@@ -563,7 +563,6 @@ object DownloadWorkUtils {
             }
         }
 
-        @Suppress("DEPRECATION")
         protected fun doHLSDownload(
             url: String,
             file_v: DownloadInfo
@@ -590,6 +589,7 @@ object DownloadWorkUtils {
                 }
                 File(file_u.build()).delete()
                 applicationContext.sendBroadcast(
+                    @Suppress("deprecation")
                     Intent(
                         Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                         Uri.fromFile(File(file))
@@ -626,7 +626,6 @@ object DownloadWorkUtils {
             return true
         }
 
-        @Suppress("DEPRECATION")
         protected fun doDownload(
             url: String?,
             file_v: DownloadInfo,
@@ -742,6 +741,7 @@ object DownloadWorkUtils {
                     response.close()
                     if (UseMediaScanner) {
                         applicationContext.sendBroadcast(
+                            @Suppress("deprecation")
                             Intent(
                                 Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                                 Uri.fromFile(File(file))
@@ -783,7 +783,6 @@ object DownloadWorkUtils {
             return true
         }
 
-        @Suppress("DEPRECATION")
         private fun createForeground() {
             val channel = NotificationChannel(
                 "worker_channel",
@@ -896,7 +895,6 @@ object DownloadWorkUtils {
 
     }
 
-    @Suppress("DEPRECATION")
     class TrackDownloadWorker(context: Context, workerParams: WorkerParameters) :
         DefaultDownloadWorker(context, workerParams) {
         override fun doWork(): Result {
@@ -977,6 +975,7 @@ object DownloadWorkUtils {
                             )
                             File(pathCover).delete()
                             applicationContext.sendBroadcast(
+                                @Suppress("deprecation")
                                 Intent(
                                     Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                                     Uri.fromFile(File(file_v.build()))

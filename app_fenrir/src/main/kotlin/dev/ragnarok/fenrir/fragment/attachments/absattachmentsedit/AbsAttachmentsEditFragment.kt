@@ -81,7 +81,7 @@ abstract class AbsAttachmentsEditFragment<P : AbsAttachmentsEditPresenter<V>, V 
         registerForActivityResult(ActivityResultContracts.TakePicture()) { result ->
             if (result) {
                 lazyPresenter {
-                    firePhotoMaked()
+                    firePhotoMade()
                 }
             }
         }
@@ -375,10 +375,13 @@ abstract class AbsAttachmentsEditFragment<P : AbsAttachmentsEditPresenter<V>, V 
         }.show()
     }
 
-    @Suppress("DEPRECATION")
     override fun notifySystemAboutNewPhoto(uri: Uri) {
-        val scanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri)
-        requireActivity().sendBroadcast(scanIntent)
+        requireActivity().sendBroadcast(
+            @Suppress("deprecation") Intent(
+                Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                uri
+            )
+        )
     }
 
     override fun setTimerValue(time: Long?) {

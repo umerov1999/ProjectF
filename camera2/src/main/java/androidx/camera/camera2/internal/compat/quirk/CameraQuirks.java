@@ -161,6 +161,11 @@ public class CameraQuirks {
                 ImageCaptureFailedForVideoSnapshotQuirk.load())) {
             quirks.add(new ImageCaptureFailedForVideoSnapshotQuirk());
         }
+        if (quirkSettings.shouldEnableQuirk(
+                AbnormalStreamWhenImageAnalysisBindWithTemplateRecordQuirk.class,
+                AbnormalStreamWhenImageAnalysisBindWithTemplateRecordQuirk.load())) {
+            quirks.add(new AbnormalStreamWhenImageAnalysisBindWithTemplateRecordQuirk());
+        }
 
         Quirks cameraQuirks = new Quirks(quirks);
         Logger.d(TAG, "camera2 CameraQuirks = " + Quirks.toString(cameraQuirks));

@@ -32,6 +32,7 @@
 #include <cstring>
 #include <utility>
 
+#include "taglib_config.h"
 #include "tfilestream.h"
 #include "tpropertymap.h"
 #include "tstringlist.h"

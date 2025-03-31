@@ -511,7 +511,6 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
         onRefresh()
     }
 
-    @Suppress("DEPRECATION")
     fun fireShowQR(context: Context) {
         val qr = generateQR(
             "https://vk.com/" + (if (ownerId < 0) "club" else "id") + abs(
@@ -538,6 +537,7 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
                     fOutputStream.flush()
                     fOutputStream.close()
                     context.sendBroadcast(
+                        @Suppress("deprecation")
                         Intent(
                             Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
                             Uri.fromFile(file)

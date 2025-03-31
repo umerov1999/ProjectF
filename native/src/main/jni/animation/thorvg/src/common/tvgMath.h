@@ -115,6 +115,12 @@ static inline void identity(Matrix* m)
 }
 
 
+static inline constexpr const Matrix identity()
+{
+    return {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f};
+}
+
+
 static inline void scale(Matrix* m, const Point& p)
 {
     m->e11 *= p.x;
@@ -176,6 +182,20 @@ void operator*=(Point& pt, const Matrix& m);
 Point operator*(const Point& pt, const Matrix& m);
 Point normal(const Point& p1, const Point& p2);
 void normalize(Point& pt);
+
+
+static inline constexpr const Point operator*=(Point& pt, const Matrix* m)
+{
+    if (m) pt *= *m;
+    return pt;
+}
+
+
+static inline Point operator*(const Point& pt, const Matrix* m)
+{
+    if (!m) return pt;
+    return pt * *m;
+}
 
 
 static inline Point min(const Point& lhs, const Point& rhs)
@@ -265,6 +285,13 @@ static inline Point operator+(const Point& lhs, const Point& rhs)
 static inline Point operator+(const Point& lhs, const float rhs)
 {
     return {lhs.x + rhs, lhs.y + rhs};
+}
+
+
+static inline void operator+=(Point& lhs, const Point& rhs)
+{
+    lhs.x += rhs.x;
+    lhs.y += rhs.y;
 }
 
 

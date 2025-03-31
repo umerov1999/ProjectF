@@ -116,10 +116,10 @@ struct Shape::Impl : Paint::Impl
         return renderer->region(rd);
     }
 
-    bool bounds(Point* pt4, bool stroking)
+    Result bounds(Point* pt4, Matrix& m, bool obb, bool stroking)
     {
         float x, y, w, h;
-        if (!rs.path.bounds(&x, &y, &w, &h)) return false;
+        if (!rs.path.bounds(obb ? nullptr : &m, &x, &y, &w, &h)) return Result::InsufficientCondition;
 
         //Stroke feathering
         if (stroking && rs.stroke) {
@@ -134,7 +134,14 @@ struct Shape::Impl : Paint::Impl
         pt4[2] = {x + w, y + h};
         pt4[3] = {x, y + h};
 
-        return true;
+        if (obb) {
+            pt4[0] *= m;
+            pt4[1] *= m;
+            pt4[2] *= m;
+            pt4[3] *= m;
+        }
+
+        return Result::Success;
     }
 
     void reserveCmd(uint32_t cmdCnt)
@@ -282,34 +289,28 @@ struct Shape::Impl : Paint::Impl
 
     Result strokeDash(const float* pattern, uint32_t cnt, float offset)
     {
-        if ((cnt == 1) || (!pattern && cnt > 0) || (pattern && cnt == 0)) {
-            return Result::InvalidArguments;
-        }
-
-        for (uint32_t i = 0; i < cnt; i++) {
-            if (pattern[i] < FLOAT_EPSILON) return Result::InvalidArguments;
-        }
-
+        if ((cnt == 1) || (!pattern && cnt > 0) || (pattern && cnt == 0)) return Result::InvalidArguments;
+        if (!rs.stroke) rs.stroke = new RenderStroke;
         //Reset dash
-        if (!pattern && cnt == 0) {
-            tvg::free(rs.stroke->dashPattern);
-            rs.stroke->dashPattern = nullptr;
-        } else {
-            if (!rs.stroke) rs.stroke = new RenderStroke();
-            if (rs.stroke->dashCnt != cnt) {
-                tvg::free(rs.stroke->dashPattern);
-                rs.stroke->dashPattern = nullptr;
-            }
-            if (!rs.stroke->dashPattern) {
-                rs.stroke->dashPattern = tvg::malloc<float*>(sizeof(float) * cnt);
-                if (!rs.stroke->dashPattern) return Result::FailedAllocation;
-            }
+        auto& dash = rs.stroke->dash;
+        if (dash.count != cnt) {
+            tvg::free(dash.pattern);
+            dash.pattern = nullptr;
+        }
+        if (cnt > 0) {
+            if (!dash.pattern) dash.pattern = tvg::malloc<float*>(sizeof(float) * cnt);
+            dash.length = 0.0f;
             for (uint32_t i = 0; i < cnt; ++i) {
-                rs.stroke->dashPattern[i] = pattern[i];
+                if (pattern[i] < DASH_PATTERN_THRESHOLD) {
+                    dash.count = 0;
+                    return Result::InvalidArguments;
+                }
+                dash.pattern[i] = pattern[i];
+                dash.length += dash.pattern[i];
             }
         }
-        rs.stroke->dashCnt = cnt;
-        rs.stroke->dashOffset = offset;
+        rs.stroke->dash.count = cnt;
+        rs.stroke->dash.offset = offset;
         renderFlag |= RenderUpdateFlag::Stroke;
 
         return Result::Success;

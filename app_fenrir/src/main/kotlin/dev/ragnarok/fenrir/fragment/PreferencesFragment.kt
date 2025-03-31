@@ -1761,7 +1761,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
 
             multiLineText("videos_ext", parentFragmentManager) {
                 titleRes = R.string.video_ext
-                defaultValue = setOf("mp4", "avi", "mpeg")
+                defaultValue = setOf("mp4", "avi", "mov", "mpeg")
                 isSpace = true
                 onMultiLineTextChange {
                     requireActivity().recreate()

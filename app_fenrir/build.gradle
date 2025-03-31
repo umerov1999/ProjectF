@@ -146,7 +146,7 @@ dependencies {
     //implementation("com.squareup.okhttp3:logging-interceptor:$okhttpLibraryVersion")
     implementation("com.squareup.okio:okio:$okioVersion")
     implementation("androidx.constraintlayout:constraintlayout:$constraintlayoutVersion")
-    implementation("androidx.biometric:biometric-ktx:$biometricVersion")
+    implementation("androidx.biometric:biometric:$biometricVersion")
     implementation("androidx.documentfile:documentfile:$documentfile")
     implementation("androidx.media:media:$mediaVersion")
     implementation("androidx.media3:media3-exoplayer:$media3Version")

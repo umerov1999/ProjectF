@@ -2817,16 +2817,17 @@ class ChatPresenter(
         }
     }
 
-    @Suppress("DEPRECATION")
-    fun fireEditPhotoMaked(size: Int) {
+    fun fireEditPhotoMade(size: Int) {
         val uri = currentPhotoCameraUri
         currentPhotoCameraUri = null
 
-        val scanIntent = Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri)
-        applicationContext.sendBroadcast(scanIntent)
+        applicationContext.sendBroadcast(
+            @Suppress("deprecation")
+            Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri)
+        )
 
-        val makedPhoto = LocalPhoto().setFullImageUri(uri)
-        fireEditLocalPhotosSelected(listOf(makedPhoto), size)
+        val madePhoto = LocalPhoto().setFullImageUri(uri)
+        fireEditLocalPhotosSelected(listOf(madePhoto), size)
     }
 
     fun fireDeleteForAllClick(ids: ArrayList<Message>) {

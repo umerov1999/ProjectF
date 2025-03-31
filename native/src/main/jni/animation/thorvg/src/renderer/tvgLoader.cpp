@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+#include <atomic>
 #include "tvgInlist.h"
 #include "tvgStr.h"
 #include "tvgLoader.h"
@@ -61,9 +62,10 @@ uintptr_t HASH_KEY(const char* data)
 /* Internal Class Implementation                                        */
 /************************************************************************/
 
-ColorSpace ImageLoader::cs = ColorSpace::ARGB8888;
+//TODO: remove it.
+atomic<ColorSpace> ImageLoader::cs{ColorSpace::ARGB8888};
 
-static Key key;
+static Key _key;
 static Inlist<LoadModule> _activeLoaders;
 
 
@@ -202,8 +204,7 @@ static LoadModule* _findByType(const char* mimeType)
 
 static LoadModule* _findFromCache(const char* filename)
 {
-    ScopedLock lock(key);
-
+    ScopedLock lock(_key);
     INLIST_FOREACH(_activeLoaders, loader) {
         if (loader->cached && loader->hashpath && !strcmp(loader->hashpath, filename)) {
             ++loader->sharing;
@@ -219,8 +220,9 @@ static LoadModule* _findFromCache(const char* data, uint32_t size, const char* m
     auto type = _convert(mimeType);
     if (type == FileType::Unknown) return nullptr;
 
-    ScopedLock lock(key);
     auto key = HASH_KEY(data);
+
+    ScopedLock lock(_key);
 
     INLIST_FOREACH(_activeLoaders, loader) {
         if (loader->type == type && loader->hashkey == key) {
@@ -259,9 +261,9 @@ bool LoaderMgr::term()
 bool LoaderMgr::retrieve(LoadModule* loader)
 {
     if (!loader) return false;
+
     if (loader->close()) {
         if (loader->cached) {
-            ScopedLock lock(key);
             _activeLoaders.remove(loader);
         }
         delete(loader);
@@ -291,7 +293,7 @@ LoadModule* LoaderMgr::loader(const char* filename, bool* invalid, ColorReplace 
             if (allowCache) {
                 loader->cache(duplicate(filename));
                 {
-                    ScopedLock lock(key);
+                    ScopedLock lock(_key);
                     _activeLoaders.back(loader);
                 }
             }
@@ -306,7 +308,7 @@ LoadModule* LoaderMgr::loader(const char* filename, bool* invalid, ColorReplace 
                 if (allowCache) {
                     loader->cache(duplicate(filename));
                     {
-                        ScopedLock lock(key);
+                        ScopedLock lock(_key);
                         _activeLoaders.back(loader);
                     }
                 }
@@ -351,7 +353,7 @@ LoadModule* LoaderMgr::loader(const char* data, uint32_t size, const char* mimeT
             if (loader->open(data, size, rpath, copy, colorReplacementP)) {
                 if (allowCache) {
                     loader->cache(HASH_KEY(data));
-                    ScopedLock lock(key);
+                    ScopedLock lock(_key);
                     _activeLoaders.back(loader);
                 }
                 return loader;
@@ -368,7 +370,7 @@ LoadModule* LoaderMgr::loader(const char* data, uint32_t size, const char* mimeT
             if (loader->open(data, size, rpath, copy, colorReplacementP)) {
                 if (allowCache) {
                     loader->cache(HASH_KEY(data));
-                    ScopedLock lock(key);
+                    ScopedLock lock(_key);
                     _activeLoaders.back(loader);
                 }
                 return loader;
@@ -394,7 +396,7 @@ LoadModule* LoaderMgr::loader(const uint32_t *data, uint32_t w, uint32_t h, Colo
     if (loader->open(data, w, h, cs, copy)) {
         if (!copy) {
             loader->cache(HASH_KEY((const char*)data));
-            ScopedLock lock(key);
+            ScopedLock lock(_key);
             _activeLoaders.back(loader);
         }
         return loader;
@@ -416,7 +418,7 @@ LoadModule* LoaderMgr::loader(const char* name, const char* data, uint32_t size,
     if (loader->open(data, size, "", copy, colorReplacement)) {
         loader->name = duplicate(name);
         loader->cached = true;  //force it.
-        ScopedLock lock(key);
+        ScopedLock lock(_key);
         _activeLoaders.back(loader);
         return loader;
     }
@@ -430,6 +432,7 @@ LoadModule* LoaderMgr::loader(const char* name, const char* data, uint32_t size,
 
 LoadModule* LoaderMgr::font(const char* name)
 {
+    ScopedLock lock(_key);
     INLIST_FOREACH(_activeLoaders, loader) {
         if (loader->type != FileType::Ttf) continue;
         if (loader->cached && tvg::equal(name, static_cast<FontLoader*>(loader)->name)) {
@@ -443,6 +446,7 @@ LoadModule* LoaderMgr::font(const char* name)
 
 LoadModule* LoaderMgr::anyfont()
 {
+    ScopedLock lock(_key);
     INLIST_FOREACH(_activeLoaders, loader) {
         if (loader->cached && loader->type == FileType::Ttf) {
             ++loader->sharing;

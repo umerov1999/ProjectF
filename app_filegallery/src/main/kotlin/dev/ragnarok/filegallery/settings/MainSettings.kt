@@ -278,7 +278,7 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override val videoExt: Set<String>
         get() = getPreferences(app)
-            .getStringSet("videos_ext", setOf("mp4", "avi", "mpeg"))!!
+            .getStringSet("videos_ext", setOf("mp4", "avi", "mov", "mpeg"))!!
 
     override val photoExt: Set<String>
         get() = getPreferences(app)

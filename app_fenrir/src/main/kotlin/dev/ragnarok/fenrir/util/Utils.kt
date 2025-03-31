@@ -757,19 +757,19 @@ object Utils {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && BuildConfig.TARGET_SDK >= Build.VERSION_CODES.VANILLA_ICE_CREAM
     }
 
-    @Suppress("deprecation")
     fun finishActivityImmediate(activity: Activity) {
         activity.finish()
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            @Suppress("deprecation")
             activity.overridePendingTransition(0, 0)
         } else {
             activity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_CLOSE, 0, 0)
         }
     }
 
-    @Suppress("deprecation")
     fun activityTransactionImmediate(activity: Activity) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            @Suppress("deprecation")
             activity.overridePendingTransition(0, 0)
         } else {
             activity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_OPEN, 0, 0)
@@ -1051,7 +1051,6 @@ object Utils {
         view?.backgroundTintList = ColorStateList.valueOf(color)
     }
 
-    @Suppress("DEPRECATION")
     fun setColorFilter(drawable: Drawable?, @ColorInt color: Int) {
         if (drawable == null) {
             return
@@ -1059,6 +1058,7 @@ object Utils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             drawable.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY)
         } else {
+            @Suppress("deprecation")
             drawable.setColorFilter(color, PorterDuff.Mode.MULTIPLY)
         }
     }
@@ -1286,17 +1286,22 @@ object Utils {
         } else density * value
     }
 
-    @Suppress("DEPRECATION")
     fun prepareDensity(context: Context) {
         val metrics = context.resources.displayMetrics
         density = metrics.density
-        scaledDensity = metrics.scaledDensity
+        scaledDensity = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1F, metrics)
+        } else {
+            @Suppress("deprecation")
+            metrics.scaledDensity
+        }
         var display: Display? = null
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             display = context.display
         } else {
             val manager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager?
             if (manager != null) {
+                @Suppress("deprecation")
                 display = manager.defaultDisplay
             }
         }
@@ -1492,8 +1497,12 @@ object Utils {
             }
 
             Lang.RUSSIA -> {
-                Constants.DEVICE_COUNTRY_CODE = "ru"
-                return Locale("ru", "RU")
+                return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+                    Locale.of("ru", "RU")
+                } else {
+                    @Suppress("deprecation")
+                    Locale("ru", "RU")
+                }
             }
 
             Lang.DEFAULT -> {}

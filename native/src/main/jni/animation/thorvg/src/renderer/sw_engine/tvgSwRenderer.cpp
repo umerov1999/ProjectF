@@ -85,7 +85,7 @@ struct SwShapeTask : SwTask
        Additionally, the stroke style should not be dashed. */
     bool antialiasing(float strokeWidth)
     {
-        return strokeWidth < 2.0f || rshape->stroke->dashCnt > 0 || rshape->stroke->strokeFirst || rshape->trimpath() || rshape->stroke->color.a < 255;
+        return strokeWidth < 2.0f || rshape->stroke->dash.count > 0 || rshape->stroke->strokeFirst || rshape->trimpath() || rshape->stroke->color.a < 255;
     }
 
     float validStrokeWidth(bool clipper)
@@ -630,7 +630,7 @@ bool SwRenderer::endComposite(RenderCompositor* cmp)
 
     //Default is alpha blending
     if (p->method == MaskMethod::None) {
-        Matrix m = {1, 0, 0, 0, 1, 0, 0, 0, 1};
+        auto m = tvg::identity();
         return rasterImage(surface, &p->image, m, p->bbox, p->opacity);
     }
 

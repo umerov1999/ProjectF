@@ -29,12 +29,12 @@ abstract class NoMainActivity : AppCompatActivity() {
     protected open val noMainContainerViewId: Int
         get() = R.id.fragment
 
-    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(currentStyle())
         Utils.prepareDensity(this)
         super.onCreate(savedInstanceState)
         setContentView(noMainContentView)
+        @Suppress("deprecation")
         if (!hasVanillaIceCreamTarget()) {
             val w = window
             w.statusBarColor = getStatusBarColor(this)

@@ -809,8 +809,10 @@ public class MaterialCheckBox extends AppCompatCheckBox {
   private ColorStateList getMaterialThemeColorsTintList() {
     if (materialThemeColorsTintList == null) {
       int[] checkBoxColorsList = new int[CHECKBOX_STATES.length];
-      int colorControlActivated = MaterialColors.getColor(this, androidx.appcompat.R.attr.colorControlActivated);
-      int colorError = MaterialColors.getColor(this, androidx.appcompat.R.attr.colorError);
+      int colorControlActivated =
+          MaterialColors.getColor(this, androidx.appcompat.R.attr.colorControlActivated);
+      int colorError =
+          MaterialColors.getColor(this, androidx.appcompat.R.attr.colorError);
       int colorSurface = MaterialColors.getColor(this, R.attr.colorSurface);
       int colorOnSurface = MaterialColors.getColor(this, R.attr.colorOnSurface);
 

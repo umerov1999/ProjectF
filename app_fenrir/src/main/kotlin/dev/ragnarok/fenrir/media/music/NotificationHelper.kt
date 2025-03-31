@@ -22,7 +22,6 @@ class NotificationHelper(private val mService: MusicPlaybackService) {
         .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager?
     private var mNotificationBuilder: NotificationCompat.Builder? = null
 
-    @Suppress("DEPRECATION")
     fun buildNotification(
         context: Context, artistName: String?, trackName: String?,
         isPlaying: Boolean, cover: Bitmap?, mediaSessionToken: MediaSessionCompat.Token?

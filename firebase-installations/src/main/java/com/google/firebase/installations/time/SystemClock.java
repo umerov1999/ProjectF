@@ -25,25 +25,22 @@ package com.google.firebase.installations.time;
  * @hide
  */
 public class SystemClock implements Clock {
-    private static SystemClock singleton;
+  private static SystemClock singleton;
 
-    private SystemClock() {
-    }
+  private SystemClock() {}
 
-    /**
-     * Factory method that always returns the same {@link SystemClock} instance.
-     */
-    public static SystemClock getInstance() {
-        if (singleton == null) {
-            singleton = new SystemClock();
-        }
-        return singleton;
+  /** Factory method that always returns the same {@link SystemClock} instance. */
+  public static SystemClock getInstance() {
+    if (singleton == null) {
+      singleton = new SystemClock();
     }
+    return singleton;
+  }
 
-    @Override
-    public long currentTimeMillis() {
-        // Returns current system time in millis as per
-        // https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis().
-        return System.currentTimeMillis();
-    }
+  @Override
+  public long currentTimeMillis() {
+    // Returns current system time in millis as per
+    // https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#currentTimeMillis().
+    return System.currentTimeMillis();
+  }
 }

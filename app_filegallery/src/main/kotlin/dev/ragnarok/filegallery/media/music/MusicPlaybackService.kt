@@ -115,7 +115,6 @@ class MusicPlaybackService : Service() {
     }
 
     @SuppressLint("WrongConstant")
-    @Suppress("deprecation")
     fun outForeground(removeNotification: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !removeNotification) {
             return

@@ -361,26 +361,13 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         }
     }
 
-    @Suppress("DEPRECATION")
     private fun hasPipPermission(): Boolean {
         val appsOps = getSystemService(APP_OPS_SERVICE) as AppOpsManager?
-        return when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
-                appsOps?.unsafeCheckOpNoThrow(
-                    AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
-                    Process.myUid(),
-                    packageName
-                ) == AppOpsManager.MODE_ALLOWED
-            }
-
-            else -> {
-                appsOps?.checkOpNoThrow(
-                    AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
-                    Process.myUid(),
-                    packageName
-                ) == AppOpsManager.MODE_ALLOWED
-            }
-        }
+        return appsOps?.checkOpNoThrow(
+            AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
+            Process.myUid(),
+            packageName
+        ) == AppOpsManager.MODE_ALLOWED
     }
 
     override fun toPIPScreen() {
@@ -427,9 +414,9 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         mSurfaceView?.setAspectRatio(w, h)
     }
 
-    @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val w = window
+        @Suppress("deprecation")
         if (!hasVanillaIceCreamTarget()) {
             w.statusBarColor =
                 if (colored) getStatusBarColor(this) else getStatusBarNonColored(

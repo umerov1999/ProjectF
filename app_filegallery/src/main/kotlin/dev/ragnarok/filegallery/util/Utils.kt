@@ -92,10 +92,10 @@ object Utils {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && BuildConfig.TARGET_SDK >= Build.VERSION_CODES.VANILLA_ICE_CREAM
     }
 
-    @Suppress("deprecation")
     fun finishActivityImmediate(activity: Activity) {
         activity.finish()
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            @Suppress("deprecation")
             activity.overridePendingTransition(0, 0)
         } else {
             activity.overrideActivityTransition(Activity.OVERRIDE_TRANSITION_CLOSE, 0, 0)
@@ -251,7 +251,6 @@ object Utils {
         } else density * value
     }
 
-    @Suppress("DEPRECATION")
     fun prepareDensity(context: Context) {
         density = context.resources.displayMetrics.density
         var display: Display? = null
@@ -260,6 +259,7 @@ object Utils {
         } else {
             val manager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager?
             if (manager != null) {
+                @Suppress("deprecation")
                 display = manager.defaultDisplay
             }
         }
@@ -375,7 +375,12 @@ object Utils {
             }
 
             Lang.RUSSIA -> {
-                return Locale("ru", "RU")
+                return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+                    Locale.of("ru", "RU")
+                } else {
+                    @Suppress("deprecation")
+                    Locale("ru", "RU")
+                }
             }
 
             Lang.DEFAULT -> {}
@@ -383,7 +388,6 @@ object Utils {
         return Locale.getDefault()
     }
 
-    @Suppress("DEPRECATION")
     private fun setSystemLocaleLegacy(config: Configuration, locale: Locale) {
         config.setLocale(locale)
     }

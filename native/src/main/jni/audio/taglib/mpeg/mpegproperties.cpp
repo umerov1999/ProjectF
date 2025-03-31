@@ -25,6 +25,7 @@
 
 #include "mpegproperties.h"
 
+#include "taglib_config.h"
 #include "tdebug.h"
 #include "mpegfile.h"
 #include "xingheader.h"

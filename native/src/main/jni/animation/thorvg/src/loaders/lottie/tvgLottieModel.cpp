@@ -23,17 +23,140 @@
 #include "tvgMath.h"
 #include "tvgTaskScheduler.h"
 #include "tvgLottieModel.h"
+#include "tvgCompressor.h"
 
 
 /************************************************************************/
 /* Internal Class Implementation                                        */
 /************************************************************************/
 
-
+Point LottieTextFollowPath::split(float dLen, float lenSearched, float& angle)
+{
+    switch (*cmds) {
+        case PathCommand::MoveTo: {
+            angle = 0.0f;
+            break;
+        }
+        case PathCommand::LineTo: {
+            auto dp = *pts - *(pts - 1);
+            angle = tvg::atan2(dp.y, dp.x);
+            break;
+        }
+        case PathCommand::CubicTo: {
+            auto bz = Bezier{*(pts - 1), *pts, *(pts + 1), *(pts + 2)};
+            float t = bz.at(lenSearched - currentLen, dLen);
+            angle = deg2rad(bz.angle(t));
+            return bz.at(t);
+        }
+        case PathCommand::Close: {
+            auto dp = *start - *(pts - 1);
+            angle = tvg::atan2(dp.y, dp.x);
+            break;
+        }
+    }
+    return {};
+}
 
 /************************************************************************/
 /* External Class Implementation                                        */
 /************************************************************************/
+
+float LottieTextFollowPath::prepare(LottieMask* mask, float frameNo, float scale, Tween& tween, LottieExpressions* exps)
+{
+    this->mask = mask;
+    Matrix m{1.0f / scale, 0.0f, 0.0f, 0.0f, 1.0f / scale, 0.0f, 0.0f, 0.0f, 1.0f};
+    mask->pathset(frameNo, path, &m, tween, exps);
+
+    pts = path.pts.data;
+    cmds = path.cmds.data;
+    cmdsCnt = path.cmds.count;
+    totalLen = tvg::length(cmds, cmdsCnt, pts, path.pts.count);
+    currentLen = 0.0f;
+    start = pts;
+
+    return firstMargin(frameNo, tween, exps) / scale;
+}
+
+Point LottieTextFollowPath::position(float lenSearched, float& angle)
+{
+    auto shift = [&]() -> void {
+        switch (*cmds) {
+            case PathCommand::MoveTo:
+                start = pts;
+                ++pts;
+                break;
+            case PathCommand::LineTo:
+                ++pts;
+                break;
+            case PathCommand::CubicTo:
+                pts += 3;
+                break;
+            case PathCommand::Close:
+                break;
+        }
+        ++cmds;
+        --cmdsCnt;
+    };
+
+    auto length = [&]() -> float {
+        switch (*cmds) {
+            case PathCommand::MoveTo: return 0.0f;
+            case PathCommand::LineTo: return tvg::length(pts - 1, pts);
+            case PathCommand::CubicTo: return Bezier{*(pts - 1), *pts, *(pts + 1), *(pts + 2)}.length();
+            case PathCommand::Close: return tvg::length(pts - 1, start);
+        }
+        return 0.0f;
+    };
+
+    //beyond the curve
+    if (lenSearched > totalLen) {
+        //shape is closed -> wrapping
+        if (path.cmds.last() == PathCommand::Close) {
+            lenSearched -= totalLen;
+            pts = path.pts.data;
+            cmds = path.cmds.data;
+            cmdsCnt = path.cmds.count;
+            currentLen = 0.0f;
+        //linear interpolation
+        } else {
+            while (cmdsCnt > 1) shift();
+            switch (*cmds) {
+                case PathCommand::MoveTo:
+                    angle = 0.0f;
+                    return *pts;
+                case PathCommand::LineTo: {
+                    auto len = lenSearched - totalLen;
+                    auto dp = *pts - *(pts - 1);
+                    angle = tvg::atan2(dp.y, dp.x);
+                    return {pts->x + len * cos(angle), pts->y + len * sin(angle)};
+                }
+                case PathCommand::CubicTo: {
+                    auto len = lenSearched - totalLen;
+                    angle = deg2rad(Bezier{*(pts - 1), *pts, *(pts + 1), *(pts + 2)}.angle(0.999f));
+                    return {(pts + 2)->x + len * cos(angle), (pts + 2)->y + len * sin(angle)};
+                }
+                case PathCommand::Close: {
+                    auto len = lenSearched - totalLen;
+                    auto dp = *start - *(pts - 1);
+                    angle = tvg::atan2(dp.y, dp.x);
+                    return {(pts - 1)->x + len * cos(angle), (pts - 1)->y + len * sin(angle)};
+                }
+            }
+        }
+    }
+
+    while (cmdsCnt > 0) {
+        auto dLen = length();
+        if (currentLen + dLen <= lenSearched) {
+            shift();
+            currentLen += dLen;
+            continue;
+        }
+        return split(dLen, lenSearched, angle);
+    }
+    return {};
+}
+
 
 void LottieSlot::reset()
 {
@@ -197,9 +320,7 @@ void LottieFont::prepare()
 {
     if (!data.b64src || !name) return;
 
-    TaskScheduler::async(false);
     Text::load(name, data.b64src, data.size, "ttf", false);
-    TaskScheduler::async(true);
 }
 
 
@@ -210,12 +331,8 @@ void LottieImage::prepare()
     auto picture = Picture::gen();
 
     //force to load a picture on the same thread
-    TaskScheduler::async(false);
-
     if (data.size > 0) picture->load((const char*)data.b64Data, data.size, data.mimeType);
     else picture->load(data.path);
-
-    TaskScheduler::async(true);
 
     picture->size(data.width, data.height);
     picture->ref();
@@ -227,13 +344,11 @@ void LottieImage::prepare()
 void LottieImage::update()
 {
     //Update the picture data
-    TaskScheduler::async(false);
     ARRAY_FOREACH(p, pooler) {
         if (data.size > 0) (*p)->load((const char*)data.b64Data, data.size, data.mimeType);
         else (*p)->load(data.path);
         (*p)->size(data.width, data.height);
     }
-    TaskScheduler::async(true);
 }
 
 
@@ -294,7 +409,7 @@ uint32_t LottieGradient::populate(ColorStop& color, size_t count)
             //generate alpha value
             if (output.count > 0) {
                 auto p = ((*color.input)[cidx] - output.last().offset) / ((*color.input)[aidx] - output.last().offset);
-                cs.a = lerp<uint8_t>(output.last().a, (uint8_t)nearbyint((*color.input)[aidx + 1] * 255.0f), p);
+                cs.a = tvg::lerp<uint8_t>(output.last().a, (uint8_t)nearbyint((*color.input)[aidx + 1] * 255.0f), p);
             } else cs.a = (uint8_t)nearbyint((*color.input)[aidx + 1] * 255.0f);
             cidx += 4;
         } else {
@@ -303,9 +418,9 @@ uint32_t LottieGradient::populate(ColorStop& color, size_t count)
             //generate color value
             if (output.count > 0) {
                 auto p = ((*color.input)[aidx] - output.last().offset) / ((*color.input)[cidx] - output.last().offset);
-                cs.r = lerp<uint8_t>(output.last().r, (uint8_t)nearbyint((*color.input)[cidx + 1] * 255.0f), p);
-                cs.g = lerp<uint8_t>(output.last().g, (uint8_t)nearbyint((*color.input)[cidx + 2] * 255.0f), p);
-                cs.b = lerp<uint8_t>(output.last().b, (uint8_t)nearbyint((*color.input)[cidx + 3] * 255.0f), p);
+                cs.r = tvg::lerp<uint8_t>(output.last().r, (uint8_t)nearbyint((*color.input)[cidx + 1] * 255.0f), p);
+                cs.g = tvg::lerp<uint8_t>(output.last().g, (uint8_t)nearbyint((*color.input)[cidx + 2] * 255.0f), p);
+                cs.b = tvg::lerp<uint8_t>(output.last().b, (uint8_t)nearbyint((*color.input)[cidx + 3] * 255.0f), p);
             } else {
                 cs.r = (uint8_t)nearbyint((*color.input)[cidx + 1] * 255.0f);
                 cs.g = (uint8_t)nearbyint((*color.input)[cidx + 2] * 255.0f);
@@ -414,6 +529,17 @@ LottieGroup::LottieGroup()
 }
 
 
+LottieProperty* LottieGroup::property(uint16_t ix)
+{
+    ARRAY_FOREACH(p, children) {
+        auto child = static_cast<LottieObject*>(*p);
+        if (auto property = child->property(ix)) return property;
+    }
+
+    return nullptr;
+}
+
+
 void LottieGroup::prepare(LottieObject::Type type)
 {
     LottieObject::type = type;
@@ -430,7 +556,7 @@ void LottieGroup::prepare(LottieObject::Type type)
 
         /* Figure out if this group is a simple path drawing.
            In that case, the rendering context can be sharable with the parent's. */
-        if (allowMerge && (child->type == LottieObject::Group || !child->mergeable())) allowMerge = false;
+        if (allowMerge && !child->mergeable()) allowMerge = false;
 
         //Figure out this group has visible contents
         switch (child->type) {
@@ -500,6 +626,16 @@ LottieLayer::~LottieLayer()
 }
 
 
+LottieProperty* LottieLayer::property(uint16_t ix)
+{
+    if (transform) {
+        if (auto property = transform->property(ix)) return property;
+    }
+
+    return LottieGroup::property(ix);
+}
+
+
 void LottieLayer::prepare(RGB24* color)
 {
     /* if layer is hidden, only useful data is its transform matrix.
@@ -538,6 +674,20 @@ float LottieLayer::remap(LottieComposition* comp, float frameNo, LottieExpressio
         frameNo -= startFrame;
     }
     return (frameNo / timeStretch);
+}
+
+
+bool LottieLayer::assign(const char* layer, uint32_t ix, const char* var, float val)
+{
+    //find the target layer by name
+    auto target = layerById(djb2Encode(layer));
+    if (!target) return false;
+
+    //find the target property by ix
+    auto property = target->property(ix);
+    if (property && property->exp) return property->exp->assign(var, val);
+
+    return false;
 }
 
 

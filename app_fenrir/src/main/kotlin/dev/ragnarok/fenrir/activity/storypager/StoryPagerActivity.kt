@@ -202,9 +202,9 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
     override fun hideMenu(hide: Boolean) {}
     override fun openMenu(open: Boolean) {}
 
-    @Suppress("DEPRECATION")
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val w = window
+        @Suppress("deprecation")
         if (!hasVanillaIceCreamTarget()) {
             w.statusBarColor =
                 if (colored) getStatusBarColor(this) else getStatusBarNonColored(
@@ -363,7 +363,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         }
         if (story.expires <= 0) mExpires?.visibility = View.GONE else {
             mExpires?.visibility = View.VISIBLE
-            val exp = (story.expires - Calendar.getInstance().time.time / 1000) / 3600
+            val exp = (story.expires - Calendar.getInstance().timeInMillis / 1000) / 3600
             mExpires?.text = getString(
                 R.string.expires,
                 exp.toString(),

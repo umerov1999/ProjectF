@@ -122,7 +122,8 @@ public class MaterialRadioButton extends AppCompatRadioButton {
 
   private ColorStateList getMaterialThemeColorsTintList() {
     if (materialThemeColorsTintList == null) {
-      int colorControlActivated = MaterialColors.getColor(this, androidx.appcompat.R.attr.colorControlActivated);
+      int colorControlActivated =
+          MaterialColors.getColor(this, androidx.appcompat.R.attr.colorControlActivated);
       int colorOnSurface = MaterialColors.getColor(this, R.attr.colorOnSurface);
       int colorSurface = MaterialColors.getColor(this, R.attr.colorSurface);
 

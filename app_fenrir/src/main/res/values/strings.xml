@@ -1029,7 +1029,7 @@
     <string name="photo_albums_count">%1$d albums</string>
     <string name="links_count">%1$d links</string>
     <string name="posts_count">%1$d posts</string>
-    <string name="cancel_invitation">Decline invitation</string>
+    <string name="decline_invitation">Decline</string>
     <string name="invitation_has_been_declined">The invitation was declined</string>
     <string name="request_canceled">Request canceled</string>
     <string name="restored">Restored</string>

@@ -78,7 +78,7 @@ class MessageAttachmentsFragment :
         registerForActivityResult(ActivityResultContracts.TakePicture()) { result ->
             if (result) {
                 lazyPresenter {
-                    firePhotoMaked()
+                    firePhotoMade()
                 }
             }
         }
