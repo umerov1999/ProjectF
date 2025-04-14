@@ -51,7 +51,7 @@ import kotlinx.serialization.json.internal.writeJson
  *        Should be able to parse [JsonElement] from [transformDeserialize] function.
  *        Usually, default [serializer] is sufficient.
  */
-abstract class JsonTransformingSerializer<T : Any>(
+abstract class JsonTransformingSerializer<T : Any?>(
     private val tSerializer: KSerializer<T>
 ) : KSerializer<T> {
 

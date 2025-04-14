@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.module.animation.thorvg
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.ColorFilter
@@ -75,7 +76,7 @@ class ThorVGLottieDrawable : Drawable, Animatable {
         mLottieState.updateFrameInterval()
     }
 
-    private constructor(state: LottieDrawableState) {
+    internal constructor(state: LottieDrawableState) {
         mLottieState = state
     }
 
@@ -442,7 +443,8 @@ class ThorVGLottieDrawable : Drawable, Animatable {
             }
         }
 
-        fun init(
+        @SuppressLint("SyntheticAccessor")
+        internal fun init(
             filePath: String,
             canDeleteError: Boolean,
             colorReplacement: IntArray?,
@@ -473,7 +475,8 @@ class ThorVGLottieDrawable : Drawable, Animatable {
             return this
         }
 
-        fun init(
+        @SuppressLint("SyntheticAccessor")
+        internal fun init(
             @RawRes rawRes: Int,
             colorReplacement: IntArray?,
             useMoveColor: Boolean
@@ -499,6 +502,7 @@ class ThorVGLottieDrawable : Drawable, Animatable {
             return this
         }
 
+        @SuppressLint("SyntheticAccessor")
         fun destroy() {
             if (mBuffer != null) {
                 mBuffer?.recycle()
@@ -507,11 +511,13 @@ class ThorVGLottieDrawable : Drawable, Animatable {
             nDestroy(mNativePtr)
         }
 
+        @SuppressLint("SyntheticAccessor")
         fun setBufferSize(width: Int, height: Int) {
             mBuffer = createBitmap(width, height, Bitmap.Config.ARGB_8888)
             mBuffer?.let { nSetBufferSize(mNativePtr, it, width.toFloat(), height.toFloat()) }
         }
 
+        @SuppressLint("SyntheticAccessor")
         fun getBuffer(frame: Int): Bitmap? {
             mBuffer?.let { nGetFrame(mNativePtr, it, frame) }
             return mBuffer

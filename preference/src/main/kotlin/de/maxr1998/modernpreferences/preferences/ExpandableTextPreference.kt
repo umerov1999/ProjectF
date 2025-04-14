@@ -25,6 +25,7 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.core.content.withStyledAttributes
 import androidx.core.view.isVisible
 import de.maxr1998.modernpreferences.Preference
 import de.maxr1998.modernpreferences.PreferencesAdapter
@@ -72,7 +73,7 @@ class ExpandableTextPreference(key: String) : Preference(key) {
                 monospace -> Typeface.MONOSPACE
                 else -> Typeface.SANS_SERIF
             }
-            with(context.obtainStyledAttributes(intArrayOf(R.attr.expandableTextBackgroundColor))) {
+            context.withStyledAttributes(null, intArrayOf(R.attr.expandableTextBackgroundColor)) {
                 setBackgroundColor(
                     getColor(
                         0,
@@ -82,7 +83,6 @@ class ExpandableTextPreference(key: String) : Preference(key) {
                         )
                     )
                 )
-                recycle()
             }
             isEnabled = enabled
         }

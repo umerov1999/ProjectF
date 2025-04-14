@@ -218,7 +218,7 @@ private sealed class AbstractJsonTreeEncoder(
     }
 }
 
-private val SerialDescriptor.requiresTopLevelTag: Boolean
+internal val SerialDescriptor.requiresTopLevelTag: Boolean
     get() = kind is PrimitiveKind || kind === SerialKind.ENUM
 
 internal const val PRIMITIVE_TAG = "primitive" // also used in JsonPrimitiveInput

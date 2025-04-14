@@ -14,7 +14,6 @@
 
 package com.google.firebase.installations.local;
 
-import androidx.annotation.NonNull;
 import com.google.firebase.FirebaseApp;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -22,6 +21,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+
+import org.jspecify.annotations.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -188,7 +188,7 @@ class ThorVGLottie2Gif internal constructor(private val builder: Builder) {
             }
         }
 
-        private inline fun inMainThread(crossinline function: () -> Unit): Job {
+        internal inline fun inMainThread(crossinline function: () -> Unit): Job {
             return CoroutineScope(Dispatchers.Main + coroutineExceptionHandlerEmpty).launch {
                 function.invoke()
             }

@@ -14,9 +14,10 @@
 
 package com.google.firebase.installations.remote;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import com.google.auto.value.AutoValue;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This class represents a set of values describing a FIS Auth Token Result.
@@ -42,7 +43,6 @@ public abstract class TokenResult {
   public abstract String getToken();
 
   /** The timestamp, before the auth-token expires for this Firebase Installation. */
-  @NonNull
   public abstract long getTokenExpirationTimestamp();
 
   @Nullable
@@ -52,8 +52,7 @@ public abstract class TokenResult {
   public abstract Builder toBuilder();
 
   /** Returns a default Builder object to create an InstallationResponse object */
-  @NonNull
-  public static TokenResult.Builder builder() {
+  public static TokenResult.@NonNull Builder builder() {
     return new AutoValue_TokenResult.Builder().setTokenExpirationTimestamp(0);
   }
 

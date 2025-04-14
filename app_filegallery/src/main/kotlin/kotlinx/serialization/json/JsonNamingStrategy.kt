@@ -145,7 +145,7 @@ fun interface JsonNamingStrategy {
                 "kotlinx.serialization.json.JsonNamingStrategy.KebabCase"
         }
 
-        private fun convertCamelCase(
+        internal fun convertCamelCase(
             serialName: String,
             delimiter: Char
         ) = buildString(serialName.length * 2) {

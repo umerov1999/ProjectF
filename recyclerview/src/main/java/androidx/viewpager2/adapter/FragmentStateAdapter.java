@@ -32,8 +32,6 @@ import android.view.ViewParent;
 import android.widget.FrameLayout;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.annotation.RequiresOptIn;
 import androidx.collection.ArraySet;
@@ -47,6 +45,9 @@ import androidx.lifecycle.LifecycleEventObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -359,7 +360,7 @@ public abstract class FragmentStateAdapter extends
             mLifecycle.addObserver(new LifecycleEventObserver() {
                 @Override
                 public void onStateChanged(@NonNull LifecycleOwner source,
-                        @NonNull Lifecycle.Event event) {
+                        Lifecycle.@NonNull Event event) {
                     if (shouldDelayFragmentTransactions()) {
                         return;
                     }
@@ -610,7 +611,7 @@ public abstract class FragmentStateAdapter extends
         mLifecycle.addObserver(new LifecycleEventObserver() {
             @Override
             public void onStateChanged(@NonNull LifecycleOwner source,
-                    @NonNull Lifecycle.Event event) {
+                    Lifecycle.@NonNull Event event) {
                 if (event == Lifecycle.Event.ON_DESTROY) {
                     handler.removeCallbacks(runnable);
                     source.getLifecycle().removeObserver(this);
@@ -907,7 +908,7 @@ public abstract class FragmentStateAdapter extends
          */
         @NonNull
         public OnPostEventListener onFragmentMaxLifecyclePreUpdated(@NonNull Fragment fragment,
-                @NonNull Lifecycle.State maxLifecycleState) {
+                Lifecycle.@NonNull State maxLifecycleState) {
             return NO_OP;
         }
 

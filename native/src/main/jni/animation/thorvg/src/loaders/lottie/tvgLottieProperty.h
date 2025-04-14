@@ -186,16 +186,17 @@ struct LottieExpression
 //Property would have an either keyframes or single value.
 struct LottieProperty
 {
-    enum class Type : uint8_t { Point = 0, Float, Opacity, Color, PathSet, ColorStop, Position, TextDoc, Image, Invalid };
+    enum class Type : uint8_t {Invalid = 0, Integer, Float, Scalar, Vector, PathSet, Color, Opacity, ColorStop, TextDoc, Image};
 
     LottieExpression* exp = nullptr;
     Type type;
     uint8_t ix;  //property index
 
-    //TODO: Apply common bodies?
+    LottieProperty(Type type = Type::Invalid) : type(type) {}
     virtual ~LottieProperty() {}
+
     virtual uint32_t frameCnt() = 0;
-    virtual uint32_t nearest(float time) = 0;
+    virtual uint32_t nearest(float frameNo) = 0;
     virtual float frameNo(int32_t key) = 0;
 
     bool copy(LottieProperty* rhs, bool shallow)
@@ -316,19 +317,22 @@ float _loop(T* frames, float frameNo, LottieExpression* exp)
 }
 
 
-template<typename Frame, typename Value, bool Scalar = 1>
+template<typename Frame, typename Value, LottieProperty::Type PType = LottieProperty::Type::Invalid, bool Scalar = 1>
 struct LottieGenericProperty : LottieProperty
 {
+    using MyProperty = LottieGenericProperty<Frame, Value, PType, Scalar>;
+
     //Property has an either keyframes or single value.
     Array<Frame>* frames = nullptr;
     Value value;
 
-    LottieGenericProperty(Value v) : value(v) {}
-    LottieGenericProperty() {}
+    LottieGenericProperty(Value v) : LottieProperty(PType), value(v) {}
 
-    LottieGenericProperty(const LottieGenericProperty<Frame, Value>& rhs)
+    LottieGenericProperty() : LottieProperty(PType) {}
+
+    LottieGenericProperty(const MyProperty& rhs)
     {
-        copy(const_cast<LottieGenericProperty<Frame, Value>&>(rhs));
+        copy(const_cast<MyProperty&>(rhs));
     }
 
     ~LottieGenericProperty()
@@ -384,7 +388,7 @@ struct LottieGenericProperty : LottieProperty
         if (exps && exp) {
             Value out{};
             frameNo = _loop(frames, frameNo, exp);
-            if (exps->result<LottieGenericProperty<Frame, Value>>(frameNo, out, exp)) return out;
+            if (exps->result<MyProperty>(frameNo, out, exp)) return out;
         }
 
         if (!frames) return value;
@@ -402,7 +406,7 @@ struct LottieGenericProperty : LottieProperty
         return tvg::lerp(operator()(frameNo, exps), operator()(tween.frameNo, exps), tween.progress);
     }
 
-    void copy(LottieGenericProperty<Frame, Value, Scalar>& rhs, bool shallow = true)
+    void copy(MyProperty& rhs, bool shallow = true)
     {
         if (LottieProperty::copy(&rhs, shallow)) return;
 
@@ -414,7 +418,10 @@ struct LottieGenericProperty : LottieProperty
                 frames = new Array<Frame>;
                 *frames = *rhs.frames;
             }
-        } else value = rhs.value;
+        } else {
+            frames = nullptr;
+            value = rhs.value;
+        }
     }
 
     float angle(float frameNo)
@@ -452,6 +459,8 @@ struct LottiePathSet : LottieProperty
 {
     Array<LottieScalarFrame<PathSet>>* frames = nullptr;
     PathSet value;
+
+    LottiePathSet() : LottieProperty(LottieProperty::Type::PathSet) {}
 
     ~LottiePathSet()
     {
@@ -638,7 +647,7 @@ struct LottieColorStop : LottieProperty
     uint16_t count = 0;     //colorstop count
     bool populated = false;
 
-    LottieColorStop() {}
+    LottieColorStop() : LottieProperty(LottieProperty::Type::ColorStop) {}
 
     LottieColorStop(const LottieColorStop& rhs)
     {
@@ -801,6 +810,7 @@ struct LottieColorStop : LottieProperty
                 *frames = *rhs.frames;
             }
         } else {
+            frames = nullptr;
             value = rhs.value;
             rhs.value = ColorStop();
         }
@@ -817,7 +827,7 @@ struct LottieTextDoc : LottieProperty
     Array<LottieScalarFrame<TextDocument>>* frames = nullptr;
     TextDocument value;
 
-    LottieTextDoc() {}
+    LottieTextDoc() : LottieProperty(LottieProperty::Type::TextDoc) {}
 
     LottieTextDoc(const LottieTextDoc& rhs)
     {
@@ -923,6 +933,7 @@ struct LottieTextDoc : LottieProperty
                 *frames = *rhs.frames;
             }
         } else {
+            frames = nullptr;
             value = rhs.value;
             rhs.value.text = nullptr;
             rhs.value.name = nullptr;
@@ -944,7 +955,7 @@ struct LottieBitmap : LottieProperty
     float width = 0.0f;
     float height = 0.0f;
 
-    LottieBitmap() {}
+    LottieBitmap() : LottieProperty(LottieProperty::Type::Image) {}
 
     LottieBitmap(const LottieBitmap& rhs)
     {
@@ -966,7 +977,7 @@ struct LottieBitmap : LottieProperty
     }
 
     uint32_t frameCnt() override { return 0; }
-    uint32_t nearest(float time) override { return 0; }
+    uint32_t nearest(float frameNo) override { return 0; }
     float frameNo(int32_t key) override { return 0; }
 
     void copy(LottieBitmap& rhs, bool shallow = true)
@@ -976,7 +987,6 @@ struct LottieBitmap : LottieProperty
         if (shallow) {
             b64Data = rhs.b64Data;
             mimeType = rhs.mimeType;
-
             rhs.b64Data = nullptr;
             rhs.mimeType = nullptr;
         } else {
@@ -985,19 +995,17 @@ struct LottieBitmap : LottieProperty
             b64Data = duplicate(rhs.b64Data);
             if (rhs.mimeType) mimeType = duplicate(rhs.mimeType);
         }
-
         size = rhs.size;
         width = rhs.width;
         height = rhs.height;
     }
 };
 
-
-using LottieScalar = LottieGenericProperty<LottieScalarFrame<Point>, Point>;
-using LottieFloat = LottieGenericProperty<LottieScalarFrame<float>, float>;
-using LottieOpacity = LottieGenericProperty<LottieScalarFrame<uint8_t>, uint8_t>;
-using LottieColor = LottieGenericProperty<LottieScalarFrame<RGB24>, RGB24>;
-using LottieInteger = LottieGenericProperty<LottieScalarFrame<int8_t>, int8_t>;
-using LottieVector = LottieGenericProperty<LottieVectorFrame<Point>, Point, 0>;
+using LottieFloat = LottieGenericProperty<LottieScalarFrame<float>, float, LottieProperty::Type::Float>;
+using LottieInteger = LottieGenericProperty<LottieScalarFrame<int8_t>, int8_t, LottieProperty::Type::Integer>;
+using LottieScalar = LottieGenericProperty<LottieScalarFrame<Point>, Point, LottieProperty::Type::Scalar>;
+using LottieVector = LottieGenericProperty<LottieVectorFrame<Point>, Point, LottieProperty::Type::Vector, 0>;
+using LottieColor = LottieGenericProperty<LottieScalarFrame<RGB24>, RGB24, LottieProperty::Type::Color>;
+using LottieOpacity = LottieGenericProperty<LottieScalarFrame<uint8_t>, uint8_t, LottieProperty::Type::Opacity>;
 
 #endif //_TVG_LOTTIE_PROPERTY_H_

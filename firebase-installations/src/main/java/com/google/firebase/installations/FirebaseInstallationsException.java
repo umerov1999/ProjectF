@@ -14,8 +14,9 @@
 
 package com.google.firebase.installations;
 
-import androidx.annotation.NonNull;
 import com.google.firebase.FirebaseException;
+
+import org.jspecify.annotations.NonNull;
 
 /**
  * The class for all Exceptions thrown by {@link FirebaseInstallations}.

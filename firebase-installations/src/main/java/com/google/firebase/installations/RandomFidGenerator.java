@@ -14,10 +14,11 @@
 
 package com.google.firebase.installations;
 
-import androidx.annotation.NonNull;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.UUID;
+
+import org.jspecify.annotations.NonNull;
 
 /** @hide */
 public class RandomFidGenerator {

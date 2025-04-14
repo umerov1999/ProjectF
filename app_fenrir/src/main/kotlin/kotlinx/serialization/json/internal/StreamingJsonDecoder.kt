@@ -406,7 +406,7 @@ internal class JsonDecoderForUnsignedTypes(
     override fun decodeShort(): Short = lexer.parseString("UShort") { toUShort().toShort() }
 }
 
-private inline fun <T> AbstractJsonLexer.parseString(
+internal inline fun <T> AbstractJsonLexer.parseString(
     expectedType: String,
     block: String.() -> T
 ): T {

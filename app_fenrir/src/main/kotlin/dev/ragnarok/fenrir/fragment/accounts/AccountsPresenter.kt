@@ -770,15 +770,15 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
     }
 
     companion object {
-        private fun tryExtractAccessToken(url: String): String? {
+        internal fun tryExtractAccessToken(url: String): String? {
             return VKStringUtils.extractPattern(url, "access_token=(.*?)&")
         }
 
-        private fun tryExtractUserId(url: String): String? {
+        internal fun tryExtractUserId(url: String): String? {
             return VKStringUtils.extractPattern(url, "user_id=(\\d*)")
         }
 
-        private fun getUserIdByAccessToken(
+        internal fun getUserIdByAccessToken(
             @AccountType type: Int,
             accessToken: String
         ): Flow<Long> {

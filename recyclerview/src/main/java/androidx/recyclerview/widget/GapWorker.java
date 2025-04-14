@@ -18,7 +18,7 @@ package androidx.recyclerview.widget;
 import android.annotation.SuppressLint;
 import android.view.View;
 
-import androidx.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import androidx.tracing.Trace;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ final class GapWorker implements Runnable {
      * are pooled in the ArrayList, and never removed to avoid allocations, but always cleared
      * in between calls.
      */
-    private ArrayList<Task> mTasks = new ArrayList<>();
+    private final ArrayList<Task> mTasks = new ArrayList<>();
 
     /**
      * Prefetch information associated with a specific RecyclerView.

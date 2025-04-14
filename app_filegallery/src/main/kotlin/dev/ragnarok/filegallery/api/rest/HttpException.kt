@@ -6,7 +6,7 @@ class HttpException(val code: Int) : RuntimeException(
     )
 ) {
     companion object {
-        private fun getMessage(code: Int): String {
+        internal fun getMessage(code: Int): String {
             return "HTTP $code"
         }
     }

@@ -14,10 +14,11 @@
 
 package com.google.firebase.installations.local;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import com.google.auto.value.AutoValue;
 import com.google.firebase.installations.local.PersistedInstallation.RegistrationStatus;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This class represents a persisted fid entry in {@link PersistedInstallation}, which contains a
@@ -31,8 +32,7 @@ public abstract class PersistedInstallationEntry {
   @Nullable
   public abstract String getFirebaseInstallationId();
 
-  @NonNull
-  public abstract PersistedInstallation.RegistrationStatus getRegistrationStatus();
+  public abstract PersistedInstallation.@NonNull RegistrationStatus getRegistrationStatus();
 
   @Nullable
   public abstract String getAuthToken();
@@ -128,8 +128,7 @@ public abstract class PersistedInstallationEntry {
   public abstract Builder toBuilder();
 
   /** Returns a default Builder object to create an PersistedInstallationEntry object */
-  @NonNull
-  public static PersistedInstallationEntry.Builder builder() {
+  public static PersistedInstallationEntry.@NonNull Builder builder() {
     return new AutoValue_PersistedInstallationEntry.Builder()
         .setTokenCreationEpochInSecs(0)
         .setRegistrationStatus(RegistrationStatus.ATTEMPT_MIGRATION)
@@ -143,7 +142,7 @@ public abstract class PersistedInstallationEntry {
 
     @NonNull
     public abstract Builder setRegistrationStatus(
-        @NonNull PersistedInstallation.RegistrationStatus value);
+        PersistedInstallation.@NonNull RegistrationStatus value);
 
     @NonNull
     public abstract Builder setAuthToken(@Nullable String value);

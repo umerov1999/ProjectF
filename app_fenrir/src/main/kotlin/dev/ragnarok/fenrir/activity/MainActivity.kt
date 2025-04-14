@@ -1051,12 +1051,12 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         mTargetPage = null
     }
 
-    private val navigationView: AbsNavigationView?
+    internal val navigationView: AbsNavigationView?
         get() {
             return findViewById(R.id.additional_navigation_menu)
         }
 
-    private fun openNavigationPage(item: AbsMenuItem, menu: Boolean) {
+    internal fun openNavigationPage(item: AbsMenuItem, menu: Boolean) {
         openNavigationPage(item, true, menu)
     }
 
@@ -1233,12 +1233,12 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         }
     }
 
-    private val frontFragment: Fragment?
+    internal val frontFragment: Fragment?
         get() = supportFragmentManager.findFragmentById(mainContainerViewId)
 
-    private val isChatFragment: Boolean
+    internal val isChatFragment: Boolean
         get() = frontFragment is ChatFragment
-    private val isFragmentWithoutNavigation: Boolean
+    internal val isFragmentWithoutNavigation: Boolean
         get() = frontFragment is CommentsFragment ||
                 frontFragment is PostCreateFragment
 

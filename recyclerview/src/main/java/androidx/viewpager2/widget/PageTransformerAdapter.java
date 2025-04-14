@@ -18,7 +18,7 @@ package androidx.viewpager2.widget;
 
 import android.view.View;
 
-import androidx.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback;
 import androidx.viewpager2.widget.ViewPager2.PageTransformer;

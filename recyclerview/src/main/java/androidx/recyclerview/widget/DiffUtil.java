@@ -17,8 +17,9 @@
 package androidx.recyclerview.widget;
 
 import androidx.annotation.IntRange;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -95,8 +96,7 @@ public class DiffUtil {
      * @return A DiffResult that contains the information about the edit sequence to convert the
      * old list into the new list.
      */
-    @NonNull
-    public static DiffResult calculateDiff(@NonNull Callback cb) {
+    public static @NonNull DiffResult calculateDiff(@NonNull Callback cb) {
         return calculateDiff(cb, true);
     }
 
@@ -113,8 +113,7 @@ public class DiffUtil {
      * @return A DiffResult that contains the information about the edit sequence to convert the
      * old list into the new list.
      */
-    @NonNull
-    public static DiffResult calculateDiff(@NonNull Callback cb, boolean detectMoves) {
+    public static @NonNull DiffResult calculateDiff(@NonNull Callback cb, boolean detectMoves) {
         final int oldSize = cb.getOldListSize();
         final int newSize = cb.getNewListSize();
 
@@ -176,8 +175,7 @@ public class DiffUtil {
     /**
      * Finds a middle snake in the given range.
      */
-    @Nullable
-    private static Snake midPoint(
+    private static @Nullable Snake midPoint(
             Range range,
             Callback cb,
             CenteredArray forward,
@@ -201,8 +199,7 @@ public class DiffUtil {
         return null;
     }
 
-    @Nullable
-    private static Snake forward(
+    private static @Nullable Snake forward(
             Range range,
             Callback cb,
             CenteredArray forward,
@@ -258,8 +255,7 @@ public class DiffUtil {
         return null;
     }
 
-    @Nullable
-    private static Snake backward(
+    private static @Nullable Snake backward(
             Range range,
             Callback cb,
             CenteredArray forward,
@@ -385,8 +381,7 @@ public class DiffUtil {
          * @param newItemPosition The position of the item in the new list
          * @return A payload object that represents the change between the two items.
          */
-        @Nullable
-        public Object getChangePayload(int oldItemPosition, int newItemPosition) {
+        public @Nullable Object getChangePayload(int oldItemPosition, int newItemPosition) {
             return null;
         }
     }
@@ -457,8 +452,7 @@ public class DiffUtil {
          * @see Callback#getChangePayload(int, int)
          */
         @SuppressWarnings({"unused"})
-        @Nullable
-        public Object getChangePayload(@NonNull T oldItem, @NonNull T newItem) {
+        public @Nullable Object getChangePayload(@NonNull T oldItem, @NonNull T newItem) {
             return null;
         }
     }
@@ -525,8 +519,7 @@ public class DiffUtil {
          * Extract the diagonal of the snake to make reasoning easier for the rest of the
          * algorithm where we try to produce a path and also find moves.
          */
-        @NonNull
-        Diagonal toDiagonal() {
+        @NonNull Diagonal toDiagonal() {
             if (hasAdditionOrRemoval()) {
                 if (reverse) {
                     // snake edge it at the end
@@ -821,7 +814,7 @@ public class DiffUtil {
          *                displaying the new list.
          * @see AdapterListUpdateCallback
          */
-        public void dispatchUpdatesTo(@NonNull final RecyclerView.Adapter adapter) {
+        public void dispatchUpdatesTo(final RecyclerView.@NonNull Adapter adapter) {
             dispatchUpdatesTo(new AdapterListUpdateCallback(adapter));
         }
 
@@ -952,8 +945,7 @@ public class DiffUtil {
             batchingCallback.dispatchLastEvent();
         }
 
-        @Nullable
-        private static PostponedUpdate getPostponedUpdate(
+        private static @Nullable PostponedUpdate getPostponedUpdate(
                 Collection<PostponedUpdate> postponedUpdates,
                 int posInList,
                 boolean removal) {

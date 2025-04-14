@@ -223,11 +223,11 @@ internal object JsonArraySerializer : KSerializer<JsonArray> {
     }
 }
 
-private fun verify(encoder: Encoder) {
+internal fun verify(encoder: Encoder) {
     encoder.asJsonEncoder()
 }
 
-private fun verify(decoder: Decoder) {
+internal fun verify(decoder: Decoder) {
     decoder.asJsonDecoder()
 }
 
@@ -249,7 +249,7 @@ internal fun Encoder.asJsonEncoder() = this as? JsonEncoder
  * Used to resolve cyclic dependencies between recursive serializable structures.
  */
 @OptIn(ExperimentalSerializationApi::class)
-private fun defer(deferred: () -> SerialDescriptor): SerialDescriptor = object : SerialDescriptor {
+internal fun defer(deferred: () -> SerialDescriptor): SerialDescriptor = object : SerialDescriptor {
 
     private val original: SerialDescriptor by lazy(deferred)
 

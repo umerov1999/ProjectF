@@ -15,13 +15,14 @@
 package com.google.firebase.installations;
 
 import android.text.TextUtils;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import com.google.firebase.installations.local.PersistedInstallationEntry;
 import com.google.firebase.installations.time.Clock;
 import com.google.firebase.installations.time.SystemClock;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Util methods used for {@link FirebaseInstallations}.

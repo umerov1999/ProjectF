@@ -41,7 +41,7 @@ public:
     bool apply(LottieSlot* slot, bool byDefault);
     const char* sid(bool first = false);
     void captureSlots(const char* key);
-    template<LottieProperty::Type type = LottieProperty::Type::Invalid> void registerSlot(LottieObject* obj, const char* sid);
+    void registerSlot(LottieObject* obj, const char* sid, LottieProperty::Type type);
 
     LottieComposition* comp = nullptr;
     const char* dirName = nullptr;       //base resource directory
@@ -74,8 +74,8 @@ private:
     template<typename T> bool parseTangent(const char *key, LottieScalarFrame<T>& value);
     template<typename T> void parseKeyFrame(T& prop);
     template<typename T> void parsePropertyInternal(T& prop);
-    template<LottieProperty::Type type = LottieProperty::Type::Invalid, typename T> void parseProperty(T& prop, LottieObject* obj = nullptr);
-    template<LottieProperty::Type type = LottieProperty::Type::Invalid, typename T> void parseSlotProperty(T& prop);
+    template<typename T> void parseProperty(T& prop, LottieObject* obj = nullptr);
+    template<typename T> void parseSlotProperty(T& prop);
 
     LottieObject* parseObject();
     LottieObject* parseAsset();
@@ -101,7 +101,8 @@ private:
     void parseFontData(LottieFont* font, const char* data);
     LottieMarker* parseMarker();
 
-    void parseEffect(LottieEffect* effect, void(LottieParser::*func)(LottieEffect*, int));
+    bool parseEffect(LottieEffect* effect, void(LottieParser::*func)(LottieEffect*, int));
+    void parseCustom(LottieEffect* effect, int idx);
     void parseStroke(LottieEffect* effect, int idx);
     void parseTritone(LottieEffect* effect, int idx);
     void parseTint(LottieEffect* effect, int idx);
@@ -127,7 +128,7 @@ private:
     void parseFonts();
     void parseChars(Array<LottieGlyph*>& glyphs);
     void parseMarkers();
-    void parseEffect(LottieEffect* effect);
+    bool parseEffect(LottieEffect* effect);
     void postProcess(Array<LottieGlyph*>& glyphs);
 
     //Current parsing context

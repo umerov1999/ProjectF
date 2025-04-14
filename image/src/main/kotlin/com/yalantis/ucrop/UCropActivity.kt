@@ -734,7 +734,7 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
             })
     }
 
-    private fun setResultUri(
+    internal fun setResultUri(
         uri: Uri?,
         resultAspectRatio: Float,
         offsetX: Int,
@@ -753,7 +753,7 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
         )
     }
 
-    private fun setResultError(throwable: Throwable?) {
+    internal fun setResultError(throwable: Throwable?) {
         setResult(UCrop.RESULT_ERROR, Intent().putExtra(UCrop.EXTRA_ERROR, throwable))
     }
 

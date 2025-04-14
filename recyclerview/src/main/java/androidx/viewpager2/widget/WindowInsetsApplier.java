@@ -20,11 +20,12 @@ import android.content.pm.ApplicationInfo;
 import android.os.Build;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.jspecify.annotations.NonNull;
 
 /**
  * An {@link OnApplyWindowInsetsListener} that applies {@link WindowInsetsCompat WindowInsets} to

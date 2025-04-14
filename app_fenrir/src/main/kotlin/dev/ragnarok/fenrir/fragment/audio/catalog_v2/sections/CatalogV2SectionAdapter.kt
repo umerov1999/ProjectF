@@ -310,7 +310,7 @@ class CatalogV2SectionAdapter(
     ///////////////////////////////////////SUB_HOLDERS////////////////////////////////////////////////
 
     ///////////////////////////////////////PLAYLIST_HOLDER////////////////////////////////////////////
-    private fun onDelete(index: Int, album: AudioPlaylist) {
+    internal fun onDelete(index: Int, album: AudioPlaylist) {
         audioListDisposable += mAudioInteractor.deletePlaylist(account_id, album.id, album.owner_id)
             .fromIOToMain({
                 getItems().removeAt(index)
@@ -323,7 +323,7 @@ class CatalogV2SectionAdapter(
             }
     }
 
-    private fun onAddPlaylist(album: AudioPlaylist) {
+    internal fun onAddPlaylist(album: AudioPlaylist) {
         audioListDisposable += mAudioInteractor.followPlaylist(
             account_id,
             album.id,
@@ -715,14 +715,14 @@ class CatalogV2SectionAdapter(
     }
 
     @get:DrawableRes
-    private val audioCoverSimple: Int
+    internal val audioCoverSimple: Int
         get() = if (isAudio_round_icon) R.drawable.audio_button else R.drawable.audio_button_material
 
-    private val transformCover: Transformation by lazy {
+    internal val transformCover: Transformation by lazy {
         if (isAudio_round_icon) RoundTransformation() else PolyTransformation()
     }
 
-    private fun updateAudioStatus(holder: AudioHolder, audio: Audio) {
+    internal fun updateAudioStatus(holder: AudioHolder, audio: Audio) {
         if (audio != currAudio) {
             holder.visual.setImageResource(audio.songIcon)
             holder.play_cover.clearColorFilter()
@@ -783,7 +783,7 @@ class CatalogV2SectionAdapter(
             .show()
     }
 
-    private fun doMenu(holder: AudioHolder, position: Int, view: View, audio: Audio) {
+    internal fun doMenu(holder: AudioHolder, position: Int, view: View, audio: Audio) {
         val menus = ModalBottomSheetDialogFragment.Builder()
         menus.add(
             OptionRequest(
@@ -1097,7 +1097,7 @@ class CatalogV2SectionAdapter(
         }
     }
 
-    private fun doPlay(position: Int, audio: Audio) {
+    internal fun doPlay(position: Int, audio: Audio) {
         if (MusicPlaybackController.isNowPlayingOrPreparingOrPaused(audio)) {
             if (!Settings.get().main().isUse_stop_audio) {
                 MusicPlaybackController.playOrPause()

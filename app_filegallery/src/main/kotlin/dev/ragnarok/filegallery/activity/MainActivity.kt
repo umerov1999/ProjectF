@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
     private val mainContainerViewId: Int
         get() = R.id.fragment
 
-    private val frontFragment: Fragment?
+    internal val frontFragment: Fragment?
         get() = supportFragmentManager.findFragmentById(mainContainerViewId)
 
     private fun startEnterPinActivity() {

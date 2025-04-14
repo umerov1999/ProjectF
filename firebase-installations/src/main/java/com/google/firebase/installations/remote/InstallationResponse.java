@@ -14,9 +14,10 @@
 
 package com.google.firebase.installations.remote;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import com.google.auto.value.AutoValue;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /** @hide */
 @AutoValue
@@ -49,8 +50,7 @@ public abstract class InstallationResponse {
   public abstract Builder toBuilder();
 
   /** Returns a default Builder object to create an InstallationResponse object */
-  @NonNull
-  public static InstallationResponse.Builder builder() {
+  public static InstallationResponse.@NonNull Builder builder() {
     return new AutoValue_InstallationResponse.Builder();
   }
 

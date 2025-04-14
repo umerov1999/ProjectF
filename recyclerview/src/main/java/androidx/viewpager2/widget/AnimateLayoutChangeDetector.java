@@ -17,14 +17,16 @@
 package androidx.viewpager2.widget;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 import static androidx.viewpager2.widget.ViewPager2.ORIENTATION_HORIZONTAL;
 
 import android.animation.LayoutTransition;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
 import java.util.Comparator;

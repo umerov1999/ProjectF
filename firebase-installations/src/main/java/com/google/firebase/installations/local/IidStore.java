@@ -21,8 +21,6 @@ import android.content.SharedPreferences;
 import android.util.Base64;
 import android.util.Log;
 import androidx.annotation.GuardedBy;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.google.firebase.FirebaseApp;
 import java.security.KeyFactory;
@@ -33,6 +31,9 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Read existing iid only for default (first initialized) instance of this firebase application.*

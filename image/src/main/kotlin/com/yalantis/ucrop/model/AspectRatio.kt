@@ -17,7 +17,7 @@ class AspectRatio : Parcelable {
         this.aspectRatioY = aspectRatioY
     }
 
-    private constructor(parcel: Parcel) {
+    internal constructor(parcel: Parcel) {
         aspectRatioTitle = parcel.readString()
         aspectRatioX = parcel.readFloat()
         aspectRatioY = parcel.readFloat()

@@ -16,15 +16,15 @@
 
 package androidx.recyclerview.widget;
 
-import androidx.annotation.NonNull;
 import androidx.collection.LongSparseArray;
+
+import org.jspecify.annotations.NonNull;
 
 /**
  * Used by {@link ConcatAdapter} to isolate item ids between nested adapters, if necessary.
  */
 interface StableIdStorage {
-    @NonNull
-    StableIdLookup createStableIdLookup();
+    @NonNull StableIdLookup createStableIdLookup();
 
     /**
      * Interface that provides {@link NestedAdapterWrapper}s a way to map their local stable ids
@@ -41,9 +41,8 @@ interface StableIdStorage {
     class NoStableIdStorage implements StableIdStorage {
         private final StableIdLookup mNoIdLookup = localId -> RecyclerView.NO_ID;
 
-        @NonNull
         @Override
-        public StableIdLookup createStableIdLookup() {
+        public @NonNull StableIdLookup createStableIdLookup() {
             return mNoIdLookup;
         }
     }
@@ -54,9 +53,8 @@ interface StableIdStorage {
     class SharedPoolStableIdStorage implements StableIdStorage {
         private final StableIdLookup mSameIdLookup = localId -> localId;
 
-        @NonNull
         @Override
-        public StableIdLookup createStableIdLookup() {
+        public @NonNull StableIdLookup createStableIdLookup() {
             return mSameIdLookup;
         }
     }
@@ -73,9 +71,8 @@ interface StableIdStorage {
             return mNextStableId++;
         }
 
-        @NonNull
         @Override
-        public StableIdLookup createStableIdLookup() {
+        public @NonNull StableIdLookup createStableIdLookup() {
             return new WrapperStableIdLookup();
         }
 

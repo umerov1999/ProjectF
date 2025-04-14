@@ -65,6 +65,7 @@ float LottieTextFollowPath::prepare(LottieMask* mask, float frameNo, float scale
 {
     this->mask = mask;
     Matrix m{1.0f / scale, 0.0f, 0.0f, 0.0f, 1.0f / scale, 0.0f, 0.0f, 0.0f, 1.0f};
+    path.clear();
     mask->pathset(frameNo, path, &m, tween, exps);
 
     pts = path.pts.data;
@@ -109,10 +110,10 @@ Point LottieTextFollowPath::position(float lenSearched, float& angle)
     };
 
     //beyond the curve
-    if (lenSearched > totalLen) {
+    if (lenSearched >= totalLen) {
         //shape is closed -> wrapping
         if (path.cmds.last() == PathCommand::Close) {
-            lenSearched -= totalLen;
+            while (lenSearched > totalLen) lenSearched -= totalLen;
             pts = path.pts.data;
             cmds = path.cmds.data;
             cmdsCnt = path.cmds.count;
@@ -147,7 +148,7 @@ Point LottieTextFollowPath::position(float lenSearched, float& angle)
 
     while (cmdsCnt > 0) {
         auto dLen = length();
-        if (currentLen + dLen <= lenSearched) {
+        if (currentLen + dLen < lenSearched) {
             shift();
             currentLen += dLen;
             continue;
@@ -182,19 +183,26 @@ void LottieSlot::assign(LottieObject* target, bool byDefault, ColorReplace* colo
     ARRAY_FOREACH(pair, pairs) {
         //backup the original properties before overwriting
         switch (type) {
-            case LottieProperty::Type::Position: {
-                if (copy) pair->prop = new LottieVector(static_cast<LottieTransform*>(pair->obj)->position);
-                pair->obj->override(&static_cast<LottieTransform*>(target)->position, shallow, !copy);
+            case LottieProperty::Type::Float: {
+                if (copy) pair->prop = new LottieFloat(static_cast<LottieTransform*>(pair->obj)->rotation);
+                pair->obj->override(&static_cast<LottieTransform*>(target)->rotation, shallow, !copy);
                 break;
             }
-            case LottieProperty::Type::Point: {
+            case LottieProperty::Type::Scalar: {
                 if (copy) pair->prop = new LottieScalar(static_cast<LottieTransform*>(pair->obj)->scale);
                 pair->obj->override(&static_cast<LottieTransform*>(target)->scale, shallow, !copy);
                 break;
             }
-            case LottieProperty::Type::Float: {
-                if (copy) pair->prop = new LottieFloat(static_cast<LottieTransform*>(pair->obj)->rotation);
-                pair->obj->override(&static_cast<LottieTransform*>(target)->rotation, shallow, !copy);
+            case LottieProperty::Type::Vector: {
+                if (copy) pair->prop = new LottieVector(static_cast<LottieTransform*>(pair->obj)->position);
+                pair->obj->override(&static_cast<LottieTransform*>(target)->position, shallow, !copy);
+                break;
+            }
+            case LottieProperty::Type::Color: {
+                auto color = static_cast<LottieSolid*>(pair->obj)->color;
+                colorReplacement->getCustomColorLottie32(color.value.rgb[0], color.value.rgb[1], color.value.rgb[2]);
+                if (copy) pair->prop = new LottieColor(color);
+                pair->obj->override(&color, shallow, !copy);
                 break;
             }
             case LottieProperty::Type::Opacity: {
@@ -203,13 +211,6 @@ void LottieSlot::assign(LottieObject* target, bool byDefault, ColorReplace* colo
                     else pair->prop = new LottieOpacity(static_cast<LottieSolid*>(pair->obj)->opacity);
                 }
                 pair->obj->override(&static_cast<LottieSolid*>(target)->opacity, shallow, !copy);
-                break;
-            }
-            case LottieProperty::Type::Color: {
-                auto color = static_cast<LottieSolid*>(pair->obj)->color;
-                colorReplacement->getCustomColorLottie32(color.value.rgb[0], color.value.rgb[1], color.value.rgb[2]);
-                if (copy) pair->prop = new LottieColor(color);
-                pair->obj->override(&color, shallow, !copy);
                 break;
             }
             case LottieProperty::Type::ColorStop: {

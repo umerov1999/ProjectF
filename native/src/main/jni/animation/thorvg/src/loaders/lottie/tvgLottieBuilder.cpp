@@ -190,7 +190,7 @@ void LottieBuilder::updateTransform(LottieGroup* parent, LottieObject** child, f
 }
 
 
-void LottieBuilder::updateGroup(LottieGroup* parent, LottieObject** child, float frameNo, TVG_UNUSED Inlist<RenderContext>& pcontexts, RenderContext* ctx, uint8_t skip)
+void LottieBuilder::updateGroup(LottieGroup* parent, LottieObject** child, float frameNo, TVG_UNUSED Inlist<RenderContext>& pcontexts, RenderContext* ctx)
 {
     auto group = static_cast<LottieGroup*>(*child);
 
@@ -207,7 +207,7 @@ void LottieBuilder::updateGroup(LottieGroup* parent, LottieObject** child, float
     auto propagator = group->mergeable() ? ctx->propagator : static_cast<Shape*>(PAINT(ctx->propagator)->duplicate(group->pooling()));
     contexts.back(new RenderContext(*ctx, propagator, group->mergeable()));
 
-    updateChildren(group, frameNo, contexts, skip);
+    updateChildren(group, frameNo, contexts);
 }
 
 
@@ -770,7 +770,7 @@ void LottieBuilder::updateTrimpath(TVG_UNUSED LottieGroup* parent, LottieObject*
 }
 
 
-void LottieBuilder::updateChildren(LottieGroup* parent, float frameNo, Inlist<RenderContext>& contexts, uint8_t skip)
+void LottieBuilder::updateChildren(LottieGroup* parent, float frameNo, Inlist<RenderContext>& contexts)
 {
     contexts.head->begin = parent->children.end() - 1;
 
@@ -782,7 +782,7 @@ void LottieBuilder::updateChildren(LottieGroup* parent, float frameNo, Inlist<Re
             //Here switch-case statements are more performant than virtual methods.
             switch ((*child)->type) {
                 case LottieObject::Group: {
-                    updateGroup(parent, child, frameNo, contexts, ctx, skip);
+                    updateGroup(parent, child, frameNo, contexts, ctx);
                     break;
                 }
                 case LottieObject::Transform: {
@@ -841,14 +841,14 @@ void LottieBuilder::updateChildren(LottieGroup* parent, float frameNo, Inlist<Re
             }
 
             //stop processing for those invisible contents
-            if (stop || ctx->propagator->opacity() == skip) break;
+            if (stop || ctx->propagator->opacity() == 0) break;
         }
         delete(ctx);
     }
 }
 
 
-void LottieBuilder::updatePrecomp(LottieComposition* comp, LottieLayer* precomp, float frameNo, uint8_t skip)
+void LottieBuilder::updatePrecomp(LottieComposition* comp, LottieLayer* precomp, float frameNo)
 {
     if (precomp->children.empty()) return;
 
@@ -856,7 +856,7 @@ void LottieBuilder::updatePrecomp(LottieComposition* comp, LottieLayer* precomp,
 
     ARRAY_REVERSE_FOREACH(c, precomp->children) {
         auto child = static_cast<LottieLayer*>(*c);
-        if (!child->matteSrc) updateLayer(comp, precomp->scene, child, frameNo, skip);
+        if (!child->matteSrc) updateLayer(comp, precomp->scene, child, frameNo);
     }
 
     //clip the layer viewport
@@ -866,13 +866,13 @@ void LottieBuilder::updatePrecomp(LottieComposition* comp, LottieLayer* precomp,
 }
 
 
-void LottieBuilder::updatePrecomp(LottieComposition* comp, LottieLayer* precomp, float frameNo, Tween& tween, uint8_t skip)
+void LottieBuilder::updatePrecomp(LottieComposition* comp, LottieLayer* precomp, float frameNo, Tween& tween)
 {
     //record & recover the tweening frame number before remapping
     auto record = tween.frameNo;
     tween.frameNo = precomp->remap(comp, record, exps);
 
-    updatePrecomp(comp, precomp, frameNo, skip);
+    updatePrecomp(comp, precomp, frameNo);
 
     tween.frameNo = record;
 }
@@ -968,7 +968,7 @@ void LottieBuilder::updateText(LottieLayer* layer, float frameNo)
             Point layout = {doc.bbox.pos.x, doc.bbox.pos.y + ascent - doc.shift};
 
             //horizontal alignment
-            layout.x += -1.0f * doc.bbox.size.x * doc.justify + (cursor.x * scale) * doc.justify;
+            layout.x += doc.justify * (-1.0f * doc.bbox.size.x + cursor.x * scale);
 
             //new text group, single scene based on text-grouping
             scene->push(textGroup);
@@ -1082,25 +1082,13 @@ void LottieBuilder::updateText(LottieLayer* layer, float frameNo)
                         opacity = (uint8_t)(opacity - f * (opacity - range->style.opacity(frameNo, tween, exps)));
                         shape->opacity(opacity);
 
-                        auto rangeColor = range->style.fillColor(frameNo, tween, exps); //TODO: use flag to check whether it was really set
-                        if (tvg::equal(f, 1.0f)) color = rangeColor;
-                        else {
-                            color.rgb[0] = tvg::lerp<uint8_t>(color.rgb[0], rangeColor.rgb[0], f);
-                            color.rgb[1] = tvg::lerp<uint8_t>(color.rgb[1], rangeColor.rgb[1], f);
-                            color.rgb[2] = tvg::lerp<uint8_t>(color.rgb[2], rangeColor.rgb[2], f);
-                        }
+                        range->color(frameNo, color, strokeColor, f, tween, exps);
+
                         fillOpacity = (uint8_t)(fillOpacity - f * (fillOpacity - range->style.fillOpacity(frameNo, tween, exps)));
                         shape->fill(color.rgb[0], color.rgb[1], color.rgb[2], fillOpacity);
 
-                        shape->strokeWidth(f * range->style.strokeWidth(frameNo, tween, exps) / scale);
+                        if (range->style.flags.strokeWidth) shape->strokeWidth(f * range->style.strokeWidth(frameNo, tween, exps) / scale);
                         if (shape->strokeWidth() > 0.0f) {
-                            auto rangeColor = range->style.strokeColor(frameNo, tween, exps); //TODO: use flag to check whether it was really set
-                            if (tvg::equal(f, 1.0f)) strokeColor = rangeColor;
-                            else {
-                                strokeColor.rgb[0] = tvg::lerp<uint8_t>(strokeColor.rgb[0], rangeColor.rgb[0], f);
-                                strokeColor.rgb[1] = tvg::lerp<uint8_t>(strokeColor.rgb[1], rangeColor.rgb[1], f);
-                                strokeColor.rgb[2] = tvg::lerp<uint8_t>(strokeColor.rgb[2], rangeColor.rgb[2], f);
-                            }
                             strokeOpacity = (uint8_t)(strokeOpacity - f * (strokeOpacity - range->style.strokeOpacity(frameNo, tween, exps)));
                             shape->strokeFill(strokeColor.rgb[0], strokeColor.rgb[1], strokeColor.rgb[2], strokeOpacity);
                             shape->order(doc.stroke.below);
@@ -1259,9 +1247,7 @@ bool LottieBuilder::updateMatte(LottieComposition* comp, float frameNo, Scene* s
     auto target = layer->matteTarget;
     if (!target) return true;
 
-    auto skip = (layer->matteType == MaskMethod::InvAlpha || layer->matteType == MaskMethod::InvLuma) ? 255 : 0;
-
-    updateLayer(comp, scene, target, frameNo, skip);
+    updateLayer(comp, scene, target, frameNo);
 
     if (target->scene) {
         layer->scene->mask(target->scene, layer->matteType);
@@ -1382,7 +1368,7 @@ void LottieBuilder::updateEffect(LottieLayer* layer, float frameNo)
 }
 
 
-void LottieBuilder::updateLayer(LottieComposition* comp, Scene* scene, LottieLayer* layer, float frameNo, uint8_t skip)
+void LottieBuilder::updateLayer(LottieComposition* comp, Scene* scene, LottieLayer* layer, float frameNo)
 {
     layer->scene = nullptr;
 
@@ -1392,7 +1378,7 @@ void LottieBuilder::updateLayer(LottieComposition* comp, Scene* scene, LottieLay
     updateTransform(layer, frameNo);
 
     //full transparent scene. no need to perform
-    if (layer->type != LottieLayer::Null && layer->cache.opacity == skip) return;
+    if (layer->type != LottieLayer::Null && layer->cache.opacity == 0) return;
 
     //Prepare render data
     layer->scene = Scene::gen();
@@ -1407,8 +1393,8 @@ void LottieBuilder::updateLayer(LottieComposition* comp, Scene* scene, LottieLay
 
     switch (layer->type) {
         case LottieLayer::Precomp: {
-            if (!tweening()) updatePrecomp(comp, layer, frameNo, skip);
-            else updatePrecomp(comp, layer, frameNo, tween, skip);
+            if (!tweening()) updatePrecomp(comp, layer, frameNo);
+            else updatePrecomp(comp, layer, frameNo, tween);
             break;
         }
         case LottieLayer::Solid: {
@@ -1427,7 +1413,7 @@ void LottieBuilder::updateLayer(LottieComposition* comp, Scene* scene, LottieLay
             if (!layer->children.empty()) {
                 Inlist<RenderContext> contexts;
                 contexts.back(new RenderContext(layer->pooling()));
-                updateChildren(layer, frameNo, contexts, skip);
+                updateChildren(layer, frameNo, contexts);
                 contexts.free();
             }
             break;
@@ -1464,9 +1450,9 @@ static void _buildReference(LottieComposition* comp, LottieLayer* layer)
 
 static void _buildHierarchy(LottieGroup* parent, LottieLayer* child)
 {
-    if (child->pidx == -1) return;
+    if (child->pix == -1) return;
 
-    if (child->matteTarget && child->pidx == child->matteTarget->idx) {
+    if (child->matteTarget && child->pix == child->matteTarget->ix) {
         child->parent = child->matteTarget;
         return;
     }
@@ -1474,11 +1460,11 @@ static void _buildHierarchy(LottieGroup* parent, LottieLayer* child)
     ARRAY_FOREACH(p, parent->children) {
         auto parent = static_cast<LottieLayer*>(*p);
         if (child == parent) continue;
-        if (child->pidx == parent->idx) {
+        if (child->pix == parent->ix) {
             child->parent = parent;
             break;
         }
-        if (parent->matteTarget && parent->matteTarget->idx == child->pidx) {
+        if (parent->matteTarget && parent->matteTarget->ix == child->pix) {
             child->parent = parent->matteTarget;
             break;
         }
@@ -1520,12 +1506,12 @@ static bool _buildComposition(LottieComposition* comp, LottieLayer* parent)
 
         if (child->matteType != MaskMethod::None) {
             //no index of the matte layer is provided: the layer above is used as the matte source
-            if (child->mid == -1) {
+            if (child->mix == -1) {
                 if (p > parent->children.begin()) {
                     child->matteTarget = static_cast<LottieLayer*>(*(p - 1));
                 }
             //matte layer is specified by an index.
-            } else child->matteTarget = parent->layerByIdx(child->mid);
+            } else child->matteTarget = parent->layerByIdx(child->mix);
         }
 
         if (child->matteTarget) {
@@ -1568,7 +1554,7 @@ bool LottieBuilder::update(LottieComposition* comp, float frameNo)
 
     ARRAY_REVERSE_FOREACH(child, root->children) {
         auto layer = static_cast<LottieLayer*>(*child);
-        if (!layer->matteSrc) updateLayer(comp, root->scene, layer, frameNo, 0);
+        if (!layer->matteSrc) updateLayer(comp, root->scene, layer, frameNo);
     }
 
     return true;

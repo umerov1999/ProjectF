@@ -22,8 +22,6 @@ import android.net.TrafficStats;
 import android.text.TextUtils;
 import android.util.JsonReader;
 import android.util.Log;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.heartbeatinfo.HeartBeatController;
@@ -49,6 +47,9 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Http client that sends request to Firebase Installations backend API.
@@ -296,7 +297,6 @@ public class FirebaseInstallationServiceClient {
    * @param projectID Project Id
    * @param refreshToken a token used to authenticate FIS requests
    */
-  @NonNull
   public void deleteFirebaseInstallation(
       @NonNull String apiKey,
       @NonNull String fid,

@@ -185,7 +185,7 @@ class ImageHeaderParser(v: InputStream) {
         fun read(buffer: ByteArray?, byteCount: Int): Int
     }
 
-    private class RandomAccessReader(data: ByteArray, length: Int) {
+    internal class RandomAccessReader(data: ByteArray, length: Int) {
         private val data: ByteBuffer = ByteBuffer.wrap(data)
             .order(ByteOrder.BIG_ENDIAN)
             .limit(length) as ByteBuffer
@@ -281,7 +281,7 @@ class ImageHeaderParser(v: InputStream) {
         private const val EXIF_SEGMENT_TYPE = 0xE1
         private const val ORIENTATION_TAG_TYPE = 0x0112
         private val BYTES_PER_FORMAT = intArrayOf(0, 1, 1, 2, 4, 8, 1, 1, 2, 4, 8, 4, 8)
-        private fun parseExifSegment(segmentData: RandomAccessReader): Int {
+        internal fun parseExifSegment(segmentData: RandomAccessReader): Int {
             val headerOffsetSize = JPEG_EXIF_SEGMENT_PREAMBLE.length
             val byteOrderIdentifier = segmentData.getInt16(headerOffsetSize)
             val byteOrder: ByteOrder =
@@ -374,7 +374,7 @@ class ImageHeaderParser(v: InputStream) {
             return ifdOffset + 2 + 12 * tagIndex
         }
 
-        private fun handles(imageMagicNumber: Int): Boolean {
+        internal fun handles(imageMagicNumber: Int): Boolean {
             return imageMagicNumber and EXIF_MAGIC_NUMBER == EXIF_MAGIC_NUMBER || imageMagicNumber == MOTOROLA_TIFF_MAGIC_NUMBER || imageMagicNumber == INTEL_TIFF_MAGIC_NUMBER
         }
 

@@ -691,7 +691,7 @@ class CommentsPresenter(
             .setItems(items) { dialog, item ->
                 appendJob(
                     interactor.reportComment(
-                        authorId, comment.fromId, comment.getObjectId(), item
+                        authorId, comment.commented.sourceOwnerId, comment.getObjectId(), item
                     )
                         .fromIOToMain({ p ->
                             if (p == 1) view?.customToast?.showToast(

@@ -23,7 +23,7 @@ import android.annotation.SuppressLint;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
 
-import androidx.annotation.NonNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -662,8 +662,8 @@ public class DefaultItemAnimator extends SimpleItemAnimator {
      * </ul>
      */
     @Override
-    public boolean canReuseUpdatedViewHolder(@NonNull RecyclerView.ViewHolder viewHolder,
-            @NonNull List<Object> payloads) {
+    public boolean canReuseUpdatedViewHolder(RecyclerView.@NonNull ViewHolder viewHolder,
+                                             @NonNull List<Object> payloads) {
         return !payloads.isEmpty() || super.canReuseUpdatedViewHolder(viewHolder, payloads);
     }
 }

@@ -208,7 +208,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         })
     }
 
-    private fun resolveControlsVisibility() {
+    internal fun resolveControlsVisibility() {
         val actionBar = supportActionBar ?: return
         if (actionBar.isShowing) {
             actionBar.hide()

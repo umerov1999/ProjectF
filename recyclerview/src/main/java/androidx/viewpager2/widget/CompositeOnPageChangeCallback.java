@@ -16,9 +16,10 @@
 
 package androidx.viewpager2.widget;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback;
+
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;

@@ -127,7 +127,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
         }
     }
 
-    private fun isMain(): Boolean {
+    internal fun isMain(): Boolean {
         return requireArguments().getString(Extra.ARTIST)
             .isNullOrEmpty() && requireArguments().getString(Extra.QUERY)
             .isNullOrEmpty() && requireArguments().getString(Extra.URL)

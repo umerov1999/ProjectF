@@ -40,8 +40,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.RestrictTo;
@@ -56,6 +54,9 @@ import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.R;
 import androidx.viewpager2.adapter.StatefulAdapter;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 
@@ -1019,8 +1020,8 @@ public final class ViewPager2 extends ViewGroup {
         }
 
         @Override
-        public boolean performAccessibilityAction(@NonNull RecyclerView.Recycler recycler,
-                @NonNull RecyclerView.State state, int action, @Nullable Bundle args) {
+        public boolean performAccessibilityAction(RecyclerView.@NonNull Recycler recycler,
+                                                  RecyclerView.@NonNull State state, int action, @Nullable Bundle args) {
             if (mAccessibilityProvider.handlesLmPerformAccessibilityAction(action)) {
                 return mAccessibilityProvider.onLmPerformAccessibilityAction(action);
             }
@@ -1028,23 +1029,23 @@ public final class ViewPager2 extends ViewGroup {
         }
 
         @Override
-        public void onInitializeAccessibilityNodeInfo(@NonNull RecyclerView.Recycler recycler,
-                @NonNull RecyclerView.State state, @NonNull AccessibilityNodeInfoCompat info) {
+        public void onInitializeAccessibilityNodeInfo(RecyclerView.@NonNull Recycler recycler,
+                                                      RecyclerView.@NonNull State state, @NonNull AccessibilityNodeInfoCompat info) {
             super.onInitializeAccessibilityNodeInfo(recycler, state, info);
             mAccessibilityProvider.onLmInitializeAccessibilityNodeInfo(info);
         }
 
         @Override
         public void onInitializeAccessibilityNodeInfoForItem(
-                @NonNull RecyclerView.Recycler recycler,
-                @NonNull RecyclerView.State state, @NonNull View host,
+                RecyclerView.@NonNull Recycler recycler,
+                RecyclerView.@NonNull State state, @NonNull View host,
                 @NonNull AccessibilityNodeInfoCompat info) {
             mAccessibilityProvider.onLmInitializeAccessibilityNodeInfoForItem(host, info);
         }
 
         @Override
-        protected void calculateExtraLayoutSpace(@NonNull RecyclerView.State state,
-                @NonNull int[] extraLayoutSpace) {
+        protected void calculateExtraLayoutSpace(RecyclerView.@NonNull State state,
+                                                 int @NonNull [] extraLayoutSpace) {
             int pageLimit = getOffscreenPageLimit();
             if (pageLimit == OFFSCREEN_PAGE_LIMIT_DEFAULT) {
                 // Only do custom prefetching of offscreen pages if requested

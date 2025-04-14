@@ -1424,7 +1424,7 @@ class TouchImageView @JvmOverloads constructor(
      * to the bounds of the bitmap size.
      * @return Coordinates of the point touched, in the coordinate system of the original drawable.
      */
-    private fun transformCoordTouchToBitmap(x: Float, y: Float, clipToBitmap: Boolean): PointF {
+    internal fun transformCoordTouchToBitmap(x: Float, y: Float, clipToBitmap: Boolean): PointF {
         touchMatrix.getValues(floatMatrix)
         val origW = drawable.intrinsicWidth.toFloat()
         val origH = drawable.intrinsicHeight.toFloat()
@@ -1447,7 +1447,7 @@ class TouchImageView @JvmOverloads constructor(
      * @param by y-coordinate in original bitmap coordinate system
      * @return Coordinates of the point in the view's coordinate system.
      */
-    private fun transformCoordBitmapToTouch(bx: Float, by: Float): PointF {
+    internal fun transformCoordBitmapToTouch(bx: Float, by: Float): PointF {
         touchMatrix.getValues(floatMatrix)
         val origW = drawable.intrinsicWidth.toFloat()
         val origH = drawable.intrinsicHeight.toFloat()

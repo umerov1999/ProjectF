@@ -62,11 +62,11 @@ class IMGStickerAdjustHelper(private val mContainer: IMGStickerView, private val
 
     companion object {
         private const val TAG = "IMGStickerAdjustHelper"
-        private fun toDegrees(v: Float, v1: Float): Double {
+        internal fun toDegrees(v: Float, v1: Float): Double {
             return Math.toDegrees(atan2(v.toDouble(), v1.toDouble()))
         }
 
-        private fun toLength(x1: Float, y1: Float, x2: Float, y2: Float): Double {
+        internal fun toLength(x1: Float, y1: Float, x2: Float, y2: Float): Double {
             return sqrt(((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)).toDouble())
         }
     }

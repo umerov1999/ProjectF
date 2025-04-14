@@ -297,10 +297,11 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
         }
 
         override fun onBindViewHolder(holder: Holder, position: Int) {
-            when (position) {
+            val tmpPos = position
+            when (tmpPos) {
                 0, 1, 2, 3, 4, 5, 6 -> {
                     val gridView = holder.itemView.findViewById<GridView>(R.id.Emoji_GridView)
-                    val mData: Array<Emojicon> = views[position].clone()
+                    val mData: Array<Emojicon> = views[tmpPos].clone()
                     val mAdapter = EmojiAdapter(holder.itemView.context, mData)
                     mAdapter.setEmojiClickListener(object : OnEmojiconClickedListener {
                         override fun onEmojiconClicked(emojicon: Emojicon) {
@@ -334,7 +335,7 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
                         holder.itemView.findViewById(R.id.grid_stickers)
                     PicassoPauseOnScrollListener.addListener(recyclerView)
                     val mAdaptert =
-                        StickersAdapter(holder.itemView.context, stickersGridViews[position - 8])
+                        StickersAdapter(holder.itemView.context, stickersGridViews[tmpPos - 8])
                     mAdaptert.setStickerClickedListener(object : OnStickerClickedListener {
                         override fun onStickerClick(sticker: Sticker) {
                             mEmojiconPopup.onStickerClickedListener?.onStickerClick(sticker)
@@ -342,7 +343,7 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
                     })
                     val gridLayoutManager = GridLayoutManager(holder.itemView.context, 4)
                     recyclerView.layoutManager = gridLayoutManager
-                    var title = stickersGridViews[position - 8].title
+                    var title = stickersGridViews[tmpPos - 8].title
                     if (title.nonNullNoEmpty() && title == "recent") title =
                         recyclerView.context.getString(R.string.usages)
                     holder.itemView.findViewById<TextView>(R.id.header_sticker).text =
