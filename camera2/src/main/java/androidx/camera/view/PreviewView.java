@@ -32,8 +32,6 @@ import android.graphics.Rect;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Rational;
 import android.util.Size;
@@ -44,6 +42,7 @@ import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -52,8 +51,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.UiThread;
@@ -91,6 +88,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
@@ -131,30 +131,24 @@ public final class PreviewView extends FrameLayout {
 
     // Synthetic access
     @SuppressWarnings("WeakerAccess")
-    @NonNull
-    ImplementationMode mImplementationMode = DEFAULT_IMPL_MODE;
+    @NonNull ImplementationMode mImplementationMode = DEFAULT_IMPL_MODE;
 
     @VisibleForTesting
-    @Nullable
-    PreviewViewImplementation mImplementation;
+    @Nullable PreviewViewImplementation mImplementation;
 
-    @NonNull
-    final ScreenFlashView mScreenFlashView;
+    final @NonNull ScreenFlashView mScreenFlashView;
 
-    @NonNull
-    final PreviewTransformation mPreviewTransform = new PreviewTransformation();
+    final @NonNull PreviewTransformation mPreviewTransform = new PreviewTransformation();
     boolean mUseDisplayRotation = true;
 
     // Synthetic access
     @SuppressWarnings("WeakerAccess")
-    @NonNull
-    final MutableLiveData<StreamState> mPreviewStreamStateLiveData =
+    final @NonNull MutableLiveData<StreamState> mPreviewStreamStateLiveData =
             new MutableLiveData<>(StreamState.IDLE);
 
     // Synthetic access
     @SuppressWarnings("WeakerAccess")
-    @Nullable
-    final AtomicReference<PreviewStreamStateObserver> mActiveStreamStateObserver =
+    final @Nullable AtomicReference<PreviewStreamStateObserver> mActiveStreamStateObserver =
             new AtomicReference<>();
     // Synthetic access
     @SuppressWarnings("WeakerAccess")
@@ -162,31 +156,25 @@ public final class PreviewView extends FrameLayout {
 
     // Synthetic access
     @SuppressWarnings("WeakerAccess")
-    @Nullable
-    OnFrameUpdateListener mOnFrameUpdateListener;
+    @Nullable OnFrameUpdateListener mOnFrameUpdateListener;
     // Synthetic access
     @SuppressWarnings("WeakerAccess")
-    @Nullable
-    Executor mOnFrameUpdateListenerExecutor;
+    @Nullable Executor mOnFrameUpdateListenerExecutor;
 
-    @NonNull
-    PreviewViewMeteringPointFactory mPreviewViewMeteringPointFactory =
+    @NonNull PreviewViewMeteringPointFactory mPreviewViewMeteringPointFactory =
             new PreviewViewMeteringPointFactory(mPreviewTransform);
 
     // Detector for zoom-to-scale.
-    @NonNull
-    private final ZoomGestureDetector mZoomGestureDetector;
+    private final @NonNull ZoomGestureDetector mZoomGestureDetector;
 
     // Synthetic access
     @SuppressWarnings("WeakerAccess")
-    @Nullable
-    CameraInfoInternal mCameraInfoInternal;
+    @Nullable CameraInfoInternal mCameraInfoInternal;
 
-    @Nullable
-    private MotionEvent mTouchUpEvent;
+    private @Nullable MotionEvent mTouchUpEvent;
 
-    @NonNull
-    private final DisplayRotationListener mDisplayRotationListener = new DisplayRotationListener();
+    private final @NonNull DisplayRotationListener mDisplayRotationListener =
+            new DisplayRotationListener();
 
     private final OnLayoutChangeListener mOnLayoutChangeListener =
             (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
@@ -204,6 +192,7 @@ public final class PreviewView extends FrameLayout {
 
         @Override
         @AnyThread
+        @SuppressWarnings("WrongThread") // View.getContext()
         public void onSurfaceRequested(@NonNull SurfaceRequest surfaceRequest) {
             if (!Threads.isMainThread()) {
                 // Post on main thread to ensure thread safety.
@@ -217,7 +206,7 @@ public final class PreviewView extends FrameLayout {
             // PreviewViewMeteringPointFactory will convert the coordinates from previewView (x,y)
             // to sensor coordinates and then to normalized coordinates. Thus sensor rect is needed.
             mPreviewViewMeteringPointFactory.setSensorRect(
-                    camera.getCameraControlInternal().getSensorRect());
+                    camera.getCameraInfoInternal().getSensorRect());
             surfaceRequest.setTransformationInfoListener(
                     getMainExecutor(getContext()),
                     transformationInfo -> {
@@ -423,7 +412,7 @@ public final class PreviewView extends FrameLayout {
      * {@code preview.setSurfaceProvider(previewView.getSurfaceProvider())}.
      */
     @UiThread
-    public void setImplementationMode(@NonNull final ImplementationMode implementationMode) {
+    public void setImplementationMode(final @NonNull ImplementationMode implementationMode) {
         checkMainThread();
         mImplementationMode = implementationMode;
 
@@ -443,8 +432,7 @@ public final class PreviewView extends FrameLayout {
      * @return The {@link ImplementationMode} for {@link PreviewView}.
      */
     @UiThread
-    @NonNull
-    public ImplementationMode getImplementationMode() {
+    public @NonNull ImplementationMode getImplementationMode() {
         checkMainThread();
         return mImplementationMode;
     }
@@ -463,8 +451,7 @@ public final class PreviewView extends FrameLayout {
      * @see ImplementationMode
      */
     @UiThread
-    @NonNull
-    public Preview.SurfaceProvider getSurfaceProvider() {
+    public Preview.@NonNull SurfaceProvider getSurfaceProvider() {
         checkMainThread();
         return mSurfaceProvider;
     }
@@ -486,7 +473,7 @@ public final class PreviewView extends FrameLayout {
      * @attr name app:scaleType
      */
     @UiThread
-    public void setScaleType(@NonNull final ScaleType scaleType) {
+    public void setScaleType(final @NonNull ScaleType scaleType) {
         checkMainThread();
         mPreviewTransform.setScaleType(scaleType);
         redrawPreview();
@@ -502,8 +489,7 @@ public final class PreviewView extends FrameLayout {
      * @return The {@link ScaleType} currently applied to the preview.
      */
     @UiThread
-    @NonNull
-    public ScaleType getScaleType() {
+    public @NonNull ScaleType getScaleType() {
         checkMainThread();
         return mPreviewTransform.getScaleType();
     }
@@ -528,8 +514,7 @@ public final class PreviewView extends FrameLayout {
      * @see #getPreviewStreamState()
      */
     @UiThread
-    @NonNull
-    public MeteringPointFactory getMeteringPointFactory() {
+    public @NonNull MeteringPointFactory getMeteringPointFactory() {
         checkMainThread();
         return mPreviewViewMeteringPointFactory;
     }
@@ -553,8 +538,7 @@ public final class PreviewView extends FrameLayout {
      * state with {@link LiveData#getValue()}, or register an observer with
      * {@link LiveData#observe} .
      */
-    @NonNull
-    public LiveData<StreamState> getPreviewStreamState() {
+    public @NonNull LiveData<StreamState> getPreviewStreamState() {
         return mPreviewStreamStateLiveData;
     }
 
@@ -578,8 +562,7 @@ public final class PreviewView extends FrameLayout {
      * displayed on the {@link PreviewView}, or null if the camera preview hasn't started yet.
      */
     @UiThread
-    @Nullable
-    public Bitmap getBitmap() {
+    public @Nullable Bitmap getBitmap() {
         checkMainThread();
         return mImplementation == null ? null : mImplementation.getBitmap();
     }
@@ -597,8 +580,7 @@ public final class PreviewView extends FrameLayout {
      * @see UseCaseGroup
      */
     @UiThread
-    @Nullable
-    public ViewPort getViewPort() {
+    public @Nullable ViewPort getViewPort() {
         checkMainThread();
         if (getDisplay() == null) {
             // Returns null if the layout is not ready.
@@ -647,8 +629,7 @@ public final class PreviewView extends FrameLayout {
      */
     @UiThread
     @SuppressLint("WrongConstant")
-    @Nullable
-    public ViewPort getViewPort(@ImageOutputConfig.RotationValue int targetRotation) {
+    public @Nullable ViewPort getViewPort(@ImageOutputConfig.RotationValue int targetRotation) {
         checkMainThread();
         if (getWidth() == 0 || getHeight() == 0) {
             return null;
@@ -708,7 +689,7 @@ public final class PreviewView extends FrameLayout {
     // Synthetic access
     @SuppressWarnings("WeakerAccess")
     static boolean shouldUseTextureView(@NonNull SurfaceRequest surfaceRequest,
-            @NonNull final ImplementationMode implementationMode) {
+            final @NonNull ImplementationMode implementationMode) {
 
         // TODO(b/159127402): use TextureView if target rotation is not display rotation.
         boolean isLegacyDevice = surfaceRequest.getCamera().getCameraInfoInternal()
@@ -975,9 +956,8 @@ public final class PreviewView extends FrameLayout {
     /**
      * Get the {@link CameraController}.
      */
-    @Nullable
     @UiThread
-    public CameraController getController() {
+    public @Nullable CameraController getController() {
         checkMainThread();
         return mCameraController;
     }
@@ -999,8 +979,7 @@ public final class PreviewView extends FrameLayout {
      * @see CoordinateTransform
      */
     @TransformExperimental
-    @Nullable
-    public OutputTransform getOutputTransform() {
+    public @Nullable OutputTransform getOutputTransform() {
         checkMainThread();
         Matrix matrix = null;
         try {
@@ -1057,8 +1036,7 @@ public final class PreviewView extends FrameLayout {
      * @see ImageInfo#getSensorToBufferTransformMatrix()
      */
     @UiThread
-    @Nullable
-    public Matrix getSensorToViewTransform() {
+    public @Nullable Matrix getSensorToViewTransform() {
         checkMainThread();
         if (getWidth() == 0 || getHeight() == 0) {
             return null;
@@ -1096,24 +1074,14 @@ public final class PreviewView extends FrameLayout {
     }
 
     private void startListeningToDisplayChange() {
-        DisplayManager displayManager = getDisplayManager();
-        if (displayManager == null) {
-            return;
-        }
-        displayManager.registerDisplayListener(mDisplayRotationListener,
-                new Handler(Looper.getMainLooper()));
+        getViewTreeObserver().addOnGlobalLayoutListener(mDisplayRotationListener);
     }
 
     private void stopListeningToDisplayChange() {
-        DisplayManager displayManager = getDisplayManager();
-        if (displayManager == null) {
-            return;
-        }
-        displayManager.unregisterDisplayListener(mDisplayRotationListener);
+        getViewTreeObserver().removeOnGlobalLayoutListener(mDisplayRotationListener);
     }
 
-    @Nullable
-    private DisplayManager getDisplayManager() {
+    private @Nullable DisplayManager getDisplayManager() {
         Context context = getContext();
         if (context == null) {
             return null;
@@ -1153,8 +1121,7 @@ public final class PreviewView extends FrameLayout {
     // Workaround to expose getScreenFlash as experimental, so that other APIs already using it also
     // don't need to be annotated with experimental (e.g. PreviewView.setController)
     @UiThread
-    @Nullable
-    private ImageCapture.ScreenFlash getScreenFlashInternal() {
+    private ImageCapture.@Nullable ScreenFlash getScreenFlashInternal() {
         return mScreenFlashView.getScreenFlash();
     }
 
@@ -1180,10 +1147,8 @@ public final class PreviewView extends FrameLayout {
      * @see ScreenFlashView#getScreenFlash()
      * @see ImageCapture#FLASH_MODE_SCREEN
      */
-    @ExperimentalPreviewViewScreenFlash
     @UiThread
-    @Nullable
-    public ImageCapture.ScreenFlash getScreenFlash() {
+    public ImageCapture.@Nullable ScreenFlash getScreenFlash() {
         return getScreenFlashInternal();
     }
 
@@ -1195,7 +1160,6 @@ public final class PreviewView extends FrameLayout {
      * @see #getScreenFlash()
      * @see ImageCapture#FLASH_MODE_SCREEN
      */
-    @ExperimentalPreviewViewScreenFlash
     public void setScreenFlashOverlayColor(@ColorInt int color) {
         mScreenFlashView.setBackgroundColor(color);
     }
@@ -1210,21 +1174,26 @@ public final class PreviewView extends FrameLayout {
      */
     // Synthetic access
     @SuppressWarnings("WeakerAccess")
-    class DisplayRotationListener implements DisplayManager.DisplayListener {
-        @Override
-        public void onDisplayAdded(int displayId) {
-        }
+    class DisplayRotationListener implements ViewTreeObserver.OnGlobalLayoutListener {
+        private int mPreviousRotation = -1;
 
+        @SuppressLint("WrongConstant")
         @Override
-        public void onDisplayRemoved(int displayId) {
-        }
-
-        @Override
-        public void onDisplayChanged(int displayId) {
+        public void onGlobalLayout() {
             Display display = getDisplay();
-            if (display != null && display.getDisplayId() == displayId) {
+            int currentRotation;
+
+            if (display != null) {
+                currentRotation = display.getRotation();
+            } else {
+                return;
+            }
+
+            // For the first callback event, only caches the value.
+            if (mPreviousRotation != -1 && mPreviousRotation != currentRotation) {
                 redrawPreview();
             }
+            mPreviousRotation = currentRotation;
         }
     }
 }

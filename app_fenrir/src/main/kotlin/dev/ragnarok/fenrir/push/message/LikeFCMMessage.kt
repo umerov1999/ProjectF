@@ -22,7 +22,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getPostPreviewPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getSimpleGalleryPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getVideoPreviewPlace
 import dev.ragnarok.fenrir.util.AppPerms
-import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
+import dev.ragnarok.fenrir.util.Utils.makeImmutablePendingIntent
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -157,7 +157,7 @@ class LikeFCMMessage {
             context,
             from_id.hashCode(),
             intent,
-            makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
+            makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
         )
         builder.setContentIntent(contentIntent)
         val notification = builder.build()

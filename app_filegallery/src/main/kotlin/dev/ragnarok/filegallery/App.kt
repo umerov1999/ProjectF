@@ -3,12 +3,14 @@ package dev.ragnarok.filegallery
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.camera.core.ImageProcessingUtil
+import androidx.camera.core.impl.utils.SurfaceUtil
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.filegallery.activity.crash.CrashUtils
 import dev.ragnarok.filegallery.media.music.MusicPlaybackController
 import dev.ragnarok.filegallery.picasso.PicassoInstance
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.util.Camera2ImageProcessingUtil
+import dev.ragnarok.filegallery.util.Camera2SurfaceUtil
 import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.existfile.FileExistJVM
 import dev.ragnarok.filegallery.util.existfile.FileExistNative
@@ -38,6 +40,7 @@ class App : Application() {
         if (FenrirNative.isNativeLoaded) {
             MusicPlaybackController.tracksExist = FileExistNative()
             ImageProcessingUtil.setProcessingUtil(Camera2ImageProcessingUtil)
+            SurfaceUtil.setSurfaceUtil(Camera2SurfaceUtil)
         } else {
             MusicPlaybackController.tracksExist = FileExistJVM()
         }

@@ -61,6 +61,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.graphics.Insets;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -287,6 +288,9 @@ public class SearchView extends FrameLayout
     if (isHiddenOrHiding() || searchBar == null) {
       return;
     }
+    if (searchBar != null) {
+      searchBar.setPlaceholderText(editText.getText().toString());
+    }
     searchViewAnimationHelper.startBackProgress(backEvent);
   }
 
@@ -511,9 +515,13 @@ public class SearchView extends FrameLayout
           boolean isRtl = ViewUtils.isLayoutRtl(toolbar);
           int paddingLeft = isRtl ? initialPadding.end : initialPadding.start;
           int paddingRight = isRtl ? initialPadding.start : initialPadding.end;
-          toolbar.setPadding(
-              paddingLeft + insets.getSystemWindowInsetLeft(), initialPadding.top,
-              paddingRight + insets.getSystemWindowInsetRight(), initialPadding.bottom);
+          Insets systemBarCutoutInsets =
+              insets.getInsets(
+                  WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+          paddingLeft += systemBarCutoutInsets.left;
+          paddingRight += systemBarCutoutInsets.right;
+
+          toolbar.setPadding(paddingLeft, initialPadding.top, paddingRight, initialPadding.bottom);
           return insets;
         });
   }
@@ -526,7 +534,11 @@ public class SearchView extends FrameLayout
     ViewCompat.setOnApplyWindowInsetsListener(
         statusBarSpacer,
         (v, insets) -> {
-          int systemWindowInsetTop = insets.getSystemWindowInsetTop();
+          int systemWindowInsetTop =
+              insets.getInsets(
+                      WindowInsetsCompat.Type.systemBars()
+                          | WindowInsetsCompat.Type.displayCutout())
+                  .top;
           setUpStatusBarSpacer(systemWindowInsetTop);
           if (!statusBarSpacerEnabledOverride) {
             setStatusBarSpacerEnabledInternal(systemWindowInsetTop > 0);
@@ -542,8 +554,11 @@ public class SearchView extends FrameLayout
     ViewCompat.setOnApplyWindowInsetsListener(
         divider,
         (v, insets) -> {
-          layoutParams.leftMargin = leftMargin + insets.getSystemWindowInsetLeft();
-          layoutParams.rightMargin = rightMargin + insets.getSystemWindowInsetRight();
+          Insets systemBarCutoutInsets =
+              insets.getInsets(
+                  WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+          layoutParams.leftMargin = leftMargin + systemBarCutoutInsets.left;
+          layoutParams.rightMargin = rightMargin + systemBarCutoutInsets.right;
           return insets;
         });
   }
@@ -881,7 +896,12 @@ public class SearchView extends FrameLayout
         || currentTransitionState.equals(TransitionState.HIDING)) {
       return;
     }
-    searchViewAnimationHelper.hide();
+    if (searchBar != null && searchBar.isAttachedToWindow()) {
+      searchBar.setPlaceholderText(editText.getText().toString());
+      searchBar.post(searchViewAnimationHelper::hide);
+    } else {
+      searchViewAnimationHelper.hide();
+    }
   }
 
   /** Updates the visibility of the {@link SearchView} without an animation. */

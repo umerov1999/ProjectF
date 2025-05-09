@@ -121,7 +121,7 @@ class NotificationHelper(private val mService: MusicPlaybackService) {
             mService,
             0,
             intent,
-            Utils.makeMutablePendingIntent(PendingIntent.FLAG_UPDATE_CURRENT)
+            Utils.makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
         )
     }
 
@@ -138,7 +138,7 @@ class NotificationHelper(private val mService: MusicPlaybackService) {
                     mService,
                     ACTION_PLAY_PAUSE,
                     action,
-                    Utils.makeMutablePendingIntent(0)
+                    Utils.makeImmutablePendingIntent(PendingIntent.FLAG_ONE_SHOT)
                 )
                 return pendingIntent
             }
@@ -151,7 +151,7 @@ class NotificationHelper(private val mService: MusicPlaybackService) {
                     mService,
                     ACTION_NEXT,
                     action,
-                    Utils.makeMutablePendingIntent(0)
+                    Utils.makeImmutablePendingIntent(PendingIntent.FLAG_ONE_SHOT)
                 )
                 return pendingIntent
             }
@@ -164,7 +164,7 @@ class NotificationHelper(private val mService: MusicPlaybackService) {
                     mService,
                     ACTION_PREV,
                     action,
-                    Utils.makeMutablePendingIntent(0)
+                    Utils.makeImmutablePendingIntent(PendingIntent.FLAG_ONE_SHOT)
                 )
                 return pendingIntent
             }
@@ -177,7 +177,7 @@ class NotificationHelper(private val mService: MusicPlaybackService) {
                     mService,
                     SWIPE_DISMISS_ACTION,
                     action,
-                    Utils.makeMutablePendingIntent(0)
+                    Utils.makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
                 )
                 return pendingIntent
             }

@@ -47,6 +47,7 @@ import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.ShortcutUtils.chatOpenIntent
 import dev.ragnarok.fenrir.util.Utils.createOkHttp
 import dev.ragnarok.fenrir.util.Utils.declOfNum
+import dev.ragnarok.fenrir.util.Utils.makeImmutablePendingIntent
 import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 import kotlinx.coroutines.flow.Flow
@@ -388,7 +389,7 @@ object NotificationHelper {
             context,
             message.getObjectId(),
             ReadIntent,
-            makeMutablePendingIntent(PendingIntent.FLAG_UPDATE_CURRENT)
+            makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
         )
         val directPendingIntent = PendingIntent.getService(
             context,
@@ -415,7 +416,7 @@ object NotificationHelper {
             context,
             message.getObjectId(),
             intent,
-            makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
+            makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
         )
         builder.setContentIntent(contentIntent)
         builder.addAction(actionDirectReply)
@@ -480,7 +481,7 @@ object NotificationHelper {
                 context,
                 url.hashCode(),
                 intent,
-                makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
+                makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
             )
             builder.setContentIntent(contentIntent)
         }
@@ -626,7 +627,7 @@ object NotificationHelper {
                 context,
                 0,
                 intentQuick,
-                makeMutablePendingIntent(PendingIntent.FLAG_UPDATE_CURRENT)
+                makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
             )
             val bubbleBuilder = NotificationCompat.BubbleMetadata.Builder(
                 bubbleIntent,

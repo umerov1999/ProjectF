@@ -19,17 +19,16 @@ package androidx.camera.core.impl.utils;
 import android.graphics.ImageFormat;
 import android.view.Surface;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.camera.core.ImageProcessingUtil_JNI;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class SurfaceUtil {
-    private static final String TAG = "SurfaceUtil";
-    public static final String JNI_LIB_NAME = "surface_util_jni";
-
-    static {
-        System.loadLibrary(JNI_LIB_NAME);
+    private static SurfaceUtil_JNI jcall_util;
+    public static void setSurfaceUtil(SurfaceUtil_JNI pjcall_util) {
+        jcall_util = pjcall_util;
     }
-
     private SurfaceUtil() {
     }
 
@@ -54,15 +53,12 @@ public class SurfaceUtil {
     /**
      * Returns the surface pixel format.
      */
-    @NonNull
-    public static SurfaceInfo getSurfaceInfo(@NonNull Surface surface) {
-        int[] surfaceInfoArray = nativeGetSurfaceInfo(surface);
+    public static @NonNull SurfaceInfo getSurfaceInfo(@NonNull Surface surface) {
+        int[] surfaceInfoArray = jcall_util.nativeGetSurfaceInfo(surface);
         SurfaceInfo surfaceInfo = new SurfaceInfo();
         surfaceInfo.format = surfaceInfoArray[0];
         surfaceInfo.width = surfaceInfoArray[1];
         surfaceInfo.height = surfaceInfoArray[2];
         return surfaceInfo;
     }
-
-    private static native int[] nativeGetSurfaceInfo(@Nullable Surface surface);
 }

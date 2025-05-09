@@ -41,7 +41,7 @@ import dev.ragnarok.fenrir.util.AppTextUtils.getDateFromUnixTime
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.CheckDirectory
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.makeLegalFilename
 import dev.ragnarok.fenrir.util.Utils.appLocale
-import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
+import dev.ragnarok.fenrir.util.Utils.makeImmutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.inMainThread
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingle
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingleSafe
@@ -521,7 +521,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                 applicationContext,
                 peer_title.hashCode(),
                 intent_open,
-                makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
+                makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
             )
             mBuilder.setContentIntent(ReadPendingIntent)
             mBuilder.setContentText(
@@ -688,7 +688,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                 applicationContext,
                 peer_title.hashCode(),
                 intent_open,
-                makeMutablePendingIntent(PendingIntent.FLAG_UPDATE_CURRENT)
+                makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
             )
             mBuilder.setContentIntent(ReadPendingIntent)
             mBuilder.setContentText(

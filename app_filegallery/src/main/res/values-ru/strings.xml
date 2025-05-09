@@ -80,7 +80,6 @@
     <string name="show_photos_line">Показывать трекбар с фотками</string>
     <string name="music_settings">Плеер и музыка</string>
     <string name="audio_round_icon">Круглые обложки аудио</string>
-    <string name="use_long_click_download">Скачивать по долгому нажатию</string>
     <string name="revert_play_audio">Кнопка плей - меню</string>
     <string name="player_has_background">Фон плеера</string>
     <string name="player_background">Настройка фона плеера</string>

@@ -19,7 +19,7 @@ import dev.ragnarok.fenrir.push.OwnerInfo.Companion.getRx
 import dev.ragnarok.fenrir.settings.theme.ThemesController.toastColor
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.Logger.wtf
-import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
+import dev.ragnarok.fenrir.util.Utils.makeImmutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 import java.util.regex.Pattern
 
@@ -77,7 +77,7 @@ class NewPostPushMessage {
             context,
             url.hashCode(),
             intent,
-            makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
+            makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
         )
         builder.setContentIntent(contentIntent)
         val notification = builder.build()

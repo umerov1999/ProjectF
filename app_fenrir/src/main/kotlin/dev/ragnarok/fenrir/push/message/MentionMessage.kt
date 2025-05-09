@@ -16,7 +16,7 @@ import dev.ragnarok.fenrir.longpoll.NotificationHelper
 import dev.ragnarok.fenrir.place.PlaceFactory.getMessagesLookupPlace
 import dev.ragnarok.fenrir.settings.theme.ThemesController.toastColor
 import dev.ragnarok.fenrir.util.AppPerms
-import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
+import dev.ragnarok.fenrir.util.Utils.makeImmutablePendingIntent
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -45,7 +45,7 @@ class MentionMessage {
             context,
             message_id,
             intent,
-            makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
+            makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
         )
         builder.setContentIntent(contentIntent)
         val notification = builder.build()

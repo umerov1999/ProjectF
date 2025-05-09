@@ -18,16 +18,23 @@ package androidx.camera.core.impl;
 
 import android.graphics.ImageFormat;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.hardware.camera2.CaptureRequest;
+import android.util.Range;
 import android.util.Size;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.camera.core.CameraInfo;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.DynamicRange;
+import androidx.camera.core.UseCase;
+import androidx.camera.core.featurecombination.ExperimentalFeatureCombination;
+import androidx.camera.core.featurecombination.Feature;
 import androidx.core.util.Preconditions;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -49,16 +56,14 @@ public interface CameraInfoInternal extends CameraInfo {
      *
      * @return the camera id
      */
-    @NonNull
-    String getCameraId();
+    @NonNull String getCameraId();
 
     /**
      * Returns the camera characteristics of this camera. The actual type is determined by the
      * underlying camera implementation. For camera2 implementation, the actual type of the
      * returned object is {@link android.hardware.camera2.CameraCharacteristics}.
      */
-    @NonNull
-    Object getCameraCharacteristics();
+    @NonNull Object getCameraCharacteristics();
 
     /**
      * Returns the camera characteristics of the specified physical camera id associated with
@@ -69,8 +74,7 @@ public interface CameraInfoInternal extends CameraInfo {
      * implementation. For camera2 implementation, the actual type of the returned object is
      * {@link android.hardware.camera2.CameraCharacteristics}.
      */
-    @Nullable
-    Object getPhysicalCameraCharacteristics(@NonNull String physicalCameraId);
+    @Nullable Object getPhysicalCameraCharacteristics(@NonNull String physicalCameraId);
 
     /**
      * Adds a {@link CameraCaptureCallback} which will be invoked when session capture request is
@@ -88,24 +92,20 @@ public interface CameraInfoInternal extends CameraInfo {
     void removeSessionCaptureCallback(@NonNull CameraCaptureCallback callback);
 
     /** Returns a list of quirks related to the camera. */
-    @NonNull
-    Quirks getCameraQuirks();
+    @NonNull Quirks getCameraQuirks();
 
     /** Returns the {@link EncoderProfilesProvider} associated with this camera. */
-    @NonNull
-    EncoderProfilesProvider getEncoderProfilesProvider();
+    @NonNull EncoderProfilesProvider getEncoderProfilesProvider();
 
     /** Returns the {@link Timebase} of frame output by this camera. */
-    @NonNull
-    Timebase getTimebase();
+    @NonNull Timebase getTimebase();
 
     /**
      * Returns the supported output formats of this camera.
      *
      * @return a set of supported output format, or an empty set if no output format is supported.
      */
-    @NonNull
-    Set<Integer> getSupportedOutputFormats();
+    @NonNull Set<Integer> getSupportedOutputFormats();
 
     /**
      * Returns the supported resolutions of this camera based on the input image format.
@@ -113,8 +113,7 @@ public interface CameraInfoInternal extends CameraInfo {
      * @param format an image format from {@link ImageFormat} or {@link PixelFormat}.
      * @return a list of supported resolutions, or an empty list if the format is not supported.
      */
-    @NonNull
-    List<Size> getSupportedResolutions(int format);
+    @NonNull List<Size> getSupportedResolutions(int format);
 
     /**
      * Returns the supported high resolutions of this camera based on the input image format.
@@ -122,16 +121,52 @@ public interface CameraInfoInternal extends CameraInfo {
      * @param format an image format from {@link ImageFormat} or {@link PixelFormat}.
      * @return a list of supported resolutions, or an empty list if the format is not supported.
      */
-    @NonNull
-    List<Size> getSupportedHighResolutions(int format);
+    @NonNull List<Size> getSupportedHighResolutions(int format);
 
     /**
      * Returns the supported dynamic ranges of this camera.
      *
      * @return a set of supported dynamic range, or an empty set if no dynamic range is supported.
      */
+    @NonNull Set<DynamicRange> getSupportedDynamicRanges();
+
+    /** Returns if high speed capturing is supported on the device. */
+    boolean isHighSpeedSupported();
+
+    /** Returns the supported high speed frame rate ranges. */
     @NonNull
-    Set<DynamicRange> getSupportedDynamicRanges();
+    Set<Range<Integer>> getSupportedHighSpeedFrameRateRanges();
+
+    /**
+     * Returns the supported high speed frame rate ranges for a given size.
+     *
+     * @param size one of the sizes returned by {@link #getSupportedHighSpeedResolutions()}.
+     * @return a set of supported high speed frame rate ranges for a given size, or an empty set
+     * if the size is not supported.
+     */
+    @NonNull
+    Set<Range<Integer>> getSupportedHighSpeedFrameRateRangesFor(@NonNull Size size);
+
+    /** Returns the supported high speed resolutions. */
+    @NonNull
+    List<Size> getSupportedHighSpeedResolutions();
+
+    /**
+     * Returns the supported high speed resolutions for a given frame rate range.
+     *
+     * @param fpsRange one of the frame rate ranges returned by
+     * {@link #getSupportedHighSpeedFrameRateRanges()}.
+     * @return a list of supported high speed resolutions for the given frame rate range, or an
+     * empty list if the frame rate range is not supported.
+     */
+    @NonNull
+    List<Size> getSupportedHighSpeedResolutionsFor(@NonNull Range<Integer> fpsRange);
+
+    /**
+     * Gets the full sensor rect.
+     */
+    @NonNull
+    Rect getSensorRect();
 
     /**
      * Returns if preview stabilization is supported on the device.
@@ -159,8 +194,7 @@ public interface CameraInfoInternal extends CameraInfo {
      * specific class for further use in implementation module. Returns <code>this</code> if this
      * instance is the implementation instance.
      */
-    @NonNull
-    default CameraInfoInternal getImplementation() {
+    default @NonNull CameraInfoInternal getImplementation() {
         return this;
     }
 
@@ -179,9 +213,8 @@ public interface CameraInfoInternal extends CameraInfo {
     }
 
     /** {@inheritDoc} */
-    @NonNull
     @Override
-    default CameraSelector getCameraSelector() {
+    default @NonNull CameraSelector getCameraSelector() {
         return new CameraSelector.Builder()
                 .addCameraFilter(cameraInfos -> {
                     final String cameraId = getCameraId();
@@ -198,5 +231,56 @@ public interface CameraInfoInternal extends CameraInfo {
                 })
                 .addCameraFilter(new LensFacingCameraFilter(getLensFacing()))
                 .build();
+    }
+
+    /** Checks if a use case combination is supported. */
+    default boolean isUseCaseCombinationSupported(@NonNull List<@NonNull UseCase> useCases) {
+        return isUseCaseCombinationSupported(useCases, CameraMode.DEFAULT);
+    }
+
+    /** Checks if a use case combination is supported for some specific camera mode. */
+    default boolean isUseCaseCombinationSupported(
+            @NonNull List<@NonNull UseCase> useCases,
+            @CameraMode.Mode int cameraMode
+    ) {
+        return isUseCaseCombinationSupported(useCases, cameraMode, false);
+    }
+
+    /**
+     * Checks if a use case combination is supported for some specific camera mode and the option to
+     * allow feature combination resolutions.
+     */
+    default boolean isUseCaseCombinationSupported(@NonNull List<@NonNull UseCase> useCases,
+            int cameraMode, boolean allowFeatureCombinationResolutions) {
+        return isUseCaseCombinationSupported(useCases, cameraMode,
+                allowFeatureCombinationResolutions, CameraConfigs.defaultConfig());
+    }
+
+    /**
+     * Checks if a use case combination is supported for some specific camera mode,
+     * {@link CameraConfig}, and the option to allow feature combination resolutions.
+     */
+    default boolean isUseCaseCombinationSupported(@NonNull List<@NonNull UseCase> useCases,
+            int cameraMode, boolean allowFeatureCombinationResolutions,
+            @NonNull CameraConfig cameraConfig) {
+        return false;
+    }
+
+    @ExperimentalFeatureCombination
+    @Override
+    default boolean isFeatureCombinationSupported(@NonNull Set<@NonNull UseCase> useCases,
+            @NonNull Set<@NonNull Feature> features) {
+        for (UseCase useCase : useCases) {
+            useCase.setFeatureCombination(features);
+        }
+
+        boolean isSupported = isUseCaseCombinationSupported(new ArrayList<>(useCases),
+                CameraMode.DEFAULT, true);
+
+        for (UseCase useCase : useCases) {
+            useCase.setFeatureCombination(Collections.emptySet());
+        }
+
+        return isSupported;
     }
 }

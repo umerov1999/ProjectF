@@ -476,11 +476,6 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 }
             }
 
-            switch("use_long_click_download") {
-                defaultValue = false
-                titleRes = R.string.use_long_click_download
-            }
-
             switch("revert_play_audio") {
                 defaultValue = false
                 titleRes = R.string.revert_play_audio

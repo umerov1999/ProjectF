@@ -29,6 +29,11 @@
   <dimen name="m3_comp_fab_small_icon_size">24dp</dimen>
   <macro name="m3_comp_fab_small_container_shape">?attr/shapeAppearanceCornerMedium</macro>
 
+  <!-- Generated from token set (md.comp.fab.medium) in context (platform=android, audience=3p). -->
+  <dimen name="m3_comp_fab_medium_container_height">80dp</dimen>
+  <dimen name="m3_comp_fab_medium_icon_size">28dp</dimen>
+  <macro name="m3_comp_fab_medium_container_shape">?attr/shapeAppearanceCornerLargeIncreased</macro>
+
   <!-- Generated from token set (md.comp.fab.large) in context (platform=android, audience=3p). -->
   <dimen name="m3_comp_fab_large_container_height">96dp</dimen>
   <dimen name="m3_comp_fab_large_icon_size">36dp</dimen>
@@ -59,6 +64,21 @@
   <!-- Group: Enabled -->
   <macro name="m3_comp_fab_tertiary_container_container_color">?attr/colorTertiaryContainer</macro>
   <macro name="m3_comp_fab_tertiary_container_icon_color">?attr/colorOnTertiaryContainer</macro>
+
+  <!-- Generated from token set (md.comp.fab.primary) in context (platform=android, audience=3p). -->
+  <!-- Group: Enabled -->
+  <macro name="m3_comp_fab_primary_container_color">?attr/colorPrimary</macro>
+  <macro name="m3_comp_fab_primary_icon_color">?attr/colorOnPrimary</macro>
+
+  <!-- Generated from token set (md.comp.fab.secondary) in context (platform=android, audience=3p). -->
+  <!-- Group: Enabled -->
+  <macro name="m3_comp_fab_secondary_container_color">?attr/colorSecondary</macro>
+  <macro name="m3_comp_fab_secondary_icon_color">?attr/colorOnSecondary</macro>
+
+  <!-- Generated from token set (md.comp.fab.tertiary) in context (platform=android, audience=3p). -->
+  <!-- Group: Enabled -->
+  <macro name="m3_comp_fab_tertiary_container_color">?attr/colorTertiary</macro>
+  <macro name="m3_comp_fab_tertiary_icon_color">?attr/colorOnTertiary</macro>
 
   <!-- Generated from token set (md.comp.fab.surface) in context (platform=android, audience=3p). -->
   <!-- Group: Enabled - Container -->

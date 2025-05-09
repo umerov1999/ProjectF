@@ -19,7 +19,7 @@ import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.AppPerms
-import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
+import dev.ragnarok.fenrir.util.Utils.makeImmutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CompositeJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
 
@@ -84,7 +84,11 @@ class KeepLongpollService : Service() {
         notificationIntent.action = ACTION_STOP
         notificationIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         val pendingIntent =
-            PendingIntent.getService(this, 0, notificationIntent, makeMutablePendingIntent(0))
+            PendingIntent.getService(
+                this, 0, notificationIntent, makeImmutablePendingIntent(
+                    PendingIntent.FLAG_CANCEL_CURRENT
+                )
+            )
 
         val channel = NotificationChannel(
             KEEP_LONGPOLL_CHANNEL,

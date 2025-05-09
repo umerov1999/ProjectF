@@ -32,10 +32,9 @@ import android.opengl.Matrix;
 import android.util.Size;
 import android.view.Surface;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
+import androidx.camera.core.CompositionSettings;
 import androidx.camera.core.DynamicRange;
-import androidx.camera.core.LayoutSettings;
 import androidx.camera.core.Logger;
 import androidx.camera.core.SurfaceOutput;
 import androidx.camera.core.processing.OpenGlRenderer;
@@ -46,6 +45,8 @@ import androidx.camera.core.processing.util.GLUtils.SamplerShaderProgram;
 import androidx.camera.core.processing.util.GraphicDeviceInfo;
 import androidx.camera.core.processing.util.OutputSurface;
 import androidx.core.util.Preconditions;
+
+import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
 
@@ -60,21 +61,18 @@ public final class DualOpenGlRenderer extends OpenGlRenderer {
     private int mPrimaryExternalTextureId = -1;
     private int mSecondaryExternalTextureId = -1;
 
-    @NonNull
-    private final LayoutSettings mPrimaryLayoutSettings;
-    @NonNull
-    private final LayoutSettings mSecondaryLayoutSettings;
+    private final @NonNull CompositionSettings mPrimaryCompositionSettings;
+    private final @NonNull CompositionSettings mSecondaryCompositionSettings;
 
     public DualOpenGlRenderer(
-            @NonNull LayoutSettings primaryLayoutSettings,
-            @NonNull LayoutSettings secondaryLayoutSettings) {
-        mPrimaryLayoutSettings = primaryLayoutSettings;
-        mSecondaryLayoutSettings = secondaryLayoutSettings;
+            @NonNull CompositionSettings primaryCompositionSettings,
+            @NonNull CompositionSettings secondaryCompositionSettings) {
+        mPrimaryCompositionSettings = primaryCompositionSettings;
+        mSecondaryCompositionSettings = secondaryCompositionSettings;
     }
 
-    @NonNull
     @Override
-    public GraphicDeviceInfo init(@NonNull DynamicRange dynamicRange,
+    public @NonNull GraphicDeviceInfo init(@NonNull DynamicRange dynamicRange,
             @NonNull Map<InputFormat, ShaderProvider> shaderProviderOverrides) {
         GraphicDeviceInfo graphicDeviceInfo = super.init(dynamicRange, shaderProviderOverrides);
         mPrimaryExternalTextureId = createTexture();
@@ -138,11 +136,11 @@ public final class DualOpenGlRenderer extends OpenGlRenderer {
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
         // Primary Camera
         renderInternal(outputSurface, surfaceOutput, primarySurfaceTexture,
-                mPrimaryLayoutSettings, mPrimaryExternalTextureId, true);
+                mPrimaryCompositionSettings, mPrimaryExternalTextureId, true);
         // Secondary Camera
         // Only use primary camera info for output surface
         renderInternal(outputSurface, surfaceOutput, secondarySurfaceTexture,
-                mSecondaryLayoutSettings, mSecondaryExternalTextureId, true);
+                mSecondaryCompositionSettings, mSecondaryExternalTextureId, true);
 
         EGLExt.eglPresentationTimeANDROID(mEglDisplay, outputSurface.getEglSurface(), timestampNs);
 
@@ -157,7 +155,7 @@ public final class DualOpenGlRenderer extends OpenGlRenderer {
             @NonNull OutputSurface outputSurface,
             @NonNull SurfaceOutput surfaceOutput,
             @NonNull SurfaceTexture surfaceTexture,
-            @NonNull LayoutSettings layoutSettings,
+            @NonNull CompositionSettings compositionSettings,
             int externalTextureId,
             boolean isPrimary) {
         useAndConfigureProgramWithTexture(externalTextureId);
@@ -179,13 +177,13 @@ public final class DualOpenGlRenderer extends OpenGlRenderer {
         }
 
         float[] transTransform = getTransformMatrix(
-                new Size((int) (outputSurface.getWidth() * layoutSettings.getWidth()),
-                        (int) (outputSurface.getHeight() * layoutSettings.getHeight())),
+                new Size((int) (outputSurface.getWidth() * compositionSettings.getScale().first),
+                        (int) (outputSurface.getHeight() * compositionSettings.getScale().second)),
                 new Size(outputSurface.getWidth(), outputSurface.getHeight()),
-                layoutSettings);
+                compositionSettings);
         currentProgram.updateTransformMatrix(transTransform);
 
-        currentProgram.updateAlpha(layoutSettings.getAlpha());
+        currentProgram.updateAlpha(compositionSettings.getAlpha());
 
         GLES20.glEnable(GLES20.GL_BLEND);
         GLES20.glBlendFuncSeparate(
@@ -200,11 +198,10 @@ public final class DualOpenGlRenderer extends OpenGlRenderer {
         GLES20.glDisable(GLES20.GL_BLEND);
     }
 
-    @NonNull
-    private static float[] getTransformMatrix(
+    private static float @NonNull [] getTransformMatrix(
             @NonNull Size overlaySize,
             @NonNull Size backgroundSize,
-            @NonNull LayoutSettings layoutSettings) {
+            @NonNull CompositionSettings compositionSettings) {
         float[] aspectRatioMatrix = create4x4IdentityMatrix();
         float[] overlayFrameAnchorMatrix = create4x4IdentityMatrix();
         float[] transformationMatrix = create4x4IdentityMatrix();
@@ -217,12 +214,15 @@ public final class DualOpenGlRenderer extends OpenGlRenderer {
                 /* z= */ 1.0f);
 
         // Translate the image.
-        Matrix.translateM(
-                overlayFrameAnchorMatrix,
-                /* mOffset= */ 0,
-                layoutSettings.getOffsetX() / layoutSettings.getWidth(),
-                layoutSettings.getOffsetY()  / layoutSettings.getHeight(),
-                /* z= */ 0.0f);
+        if (compositionSettings.getScale().first != 0.0f
+                || compositionSettings.getScale().second != 0.0f) {
+            Matrix.translateM(
+                    overlayFrameAnchorMatrix,
+                    /* mOffset= */ 0,
+                    compositionSettings.getOffset().first / compositionSettings.getScale().first,
+                    compositionSettings.getOffset().second / compositionSettings.getScale().second,
+                    /* z= */ 0.0f);
+        }
 
         // Correct for aspect ratio of image in output frame.
         Matrix.multiplyMM(

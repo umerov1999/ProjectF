@@ -23,7 +23,7 @@ import dev.ragnarok.fenrir.push.OwnerInfo.Companion.getRx
 import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.PersistentLogger.logThrowable
-import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
+import dev.ragnarok.fenrir.util.Utils.makeImmutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 import kotlin.math.abs
 
@@ -84,7 +84,7 @@ class WallPublishFCMMessage {
             context,
             link.postId,
             intent,
-            makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
+            makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
         )
         builder.setContentIntent(contentIntent)
         val notification = builder.build()

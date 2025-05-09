@@ -21,6 +21,9 @@
 #Camera2
 -keep public class androidx.camera.camera2.Camera2Config$DefaultProvider { *; }
 -keep,allowshrinking class ** extends androidx.camera.core.impl.Quirk
+-keepclassmembers class * extends android.hardware.camera2.CameraCaptureSession$CaptureCallback {
+    public void onReadoutStarted(android.hardware.camera2.CameraCaptureSession,android.hardware.camera2.CaptureRequest,long,long);
+}
 
 
 #Firebase Installation

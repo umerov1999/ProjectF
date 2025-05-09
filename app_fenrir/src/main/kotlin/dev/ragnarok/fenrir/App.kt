@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.camera.core.ImageProcessingUtil
+import androidx.camera.core.impl.utils.SurfaceUtil
 import dev.ragnarok.fenrir.activity.crash.CrashUtils
 import dev.ragnarok.fenrir.domain.Repository.messages
 import dev.ragnarok.fenrir.longpoll.NotificationHelper
@@ -13,6 +14,7 @@ import dev.ragnarok.fenrir.service.ErrorLocalizer
 import dev.ragnarok.fenrir.service.KeepLongpollService
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Camera2ImageProcessingUtil
+import dev.ragnarok.fenrir.util.Camera2SurfaceUtil
 import dev.ragnarok.fenrir.util.PersistentLogger
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
@@ -50,6 +52,7 @@ class App : Application() {
         if (FenrirNative.isNativeLoaded) {
             MusicPlaybackController.tracksExist = FileExistNative()
             ImageProcessingUtil.setProcessingUtil(Camera2ImageProcessingUtil)
+            SurfaceUtil.setSurfaceUtil(Camera2SurfaceUtil)
         } else {
             MusicPlaybackController.tracksExist = FileExistJVM()
         }

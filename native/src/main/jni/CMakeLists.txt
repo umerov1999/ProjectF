@@ -454,12 +454,13 @@ add_library(fenrir_jni
         jni_call.cpp
         animation/thorvg_jni.cpp
         animation/animation_jni.cpp
-        animation/image_processing_util_jni.cpp
         audio/ffmpeg/to_mp4_audio_jni.cpp
         audio/ffmpeg/ffmpeg_jni.cpp
         audio/ts/mpegts_demux_jni.cpp
         audio/taglib/taglib_jni.cpp
         audio/opus/opus_jni.cc
+        camerax/image_processing_util_jni.cpp
+        camerax/surface_util_jni.cpp
         compress/zstd/jni_bufferdecompress_zstd.c
         compress/zstd/jni_directbuffercompress_zstd.c
         compress/zstd/jni_directbufferdecompress_zstd.c

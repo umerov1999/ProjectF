@@ -88,4 +88,19 @@ public interface ImageProcessingUtil_JNI {
             int width,
             int height,
             @ImageOutputConfig.RotationDegreesValue int rotationDegrees);
+
+    int nativeGetYUVImageVUOff(
+            @NonNull ByteBuffer srcByteBufferV,
+            @NonNull ByteBuffer srcByteBufferU
+    );
+
+    /**
+     * Creates ByteBuffer from the offset of the input byte buffer.
+     */
+    @NonNull
+    ByteBuffer nativeNewDirectByteBuffer(
+            @NonNull ByteBuffer byteBuffer,
+            int offset,
+            int capacity
+    );
 }

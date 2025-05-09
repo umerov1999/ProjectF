@@ -41,7 +41,7 @@ import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.Logger.d
 import dev.ragnarok.fenrir.util.Logger.wtf
 import dev.ragnarok.fenrir.util.Unixtime.now
-import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
+import dev.ragnarok.fenrir.util.Utils.makeImmutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CompositeJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayedFlow
@@ -332,7 +332,7 @@ class KeyExchangeService : Service() {
             this,
             messageId,
             intent,
-            makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
+            makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
         )
         builder.setContentIntent(contentIntent)
         val apply = createIntentForApply(this, message, accountId, peerId, messageId)
@@ -340,7 +340,7 @@ class KeyExchangeService : Service() {
             this,
             messageId,
             apply,
-            makeMutablePendingIntent(PendingIntent.FLAG_UPDATE_CURRENT)
+            makeImmutablePendingIntent(PendingIntent.FLAG_UPDATE_CURRENT)
         )
         val applyAction = NotificationCompat.Action(
             R.drawable.check,

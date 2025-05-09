@@ -17,7 +17,7 @@ import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.settings.theme.ThemesController.toastColor
 import dev.ragnarok.fenrir.util.AppPerms
-import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
+import dev.ragnarok.fenrir.util.Utils.makeImmutablePendingIntent
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -45,7 +45,7 @@ class BirthdayFCMMessage {
             context,
             user_id.hashCode(),
             intent,
-            makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
+            makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
         )
         builder.setContentIntent(contentIntent)
         val notification = builder.build()

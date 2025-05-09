@@ -867,7 +867,7 @@ object DownloadWorkUtils {
                         applicationContext,
                         id.hashCode(),
                         deleteIntent,
-                        Utils.makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
+                        Utils.makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
                     )
                     val actionDelete = NotificationCompat.Action.Builder(
                         R.drawable.ic_outline_delete,
@@ -1033,7 +1033,7 @@ object DownloadWorkUtils {
                         applicationContext,
                         id.hashCode(),
                         DeleteIntent,
-                        Utils.makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
+                        Utils.makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
                     )
                     val actionDelete = NotificationCompat.Action.Builder(
                         R.drawable.ic_outline_delete,

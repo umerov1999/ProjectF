@@ -18,12 +18,14 @@ package androidx.camera.core.impl;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.CameraUnavailableException;
 import androidx.camera.core.InitializationException;
 import androidx.camera.core.concurrent.CameraCoordinator;
+import androidx.camera.core.internal.StreamSpecsCalculator;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Set;
 
@@ -39,18 +41,22 @@ public interface CameraFactory {
         /**
          * Creates a new, initialized instance of a CameraFactory.
          *
-         * @param context the android context
-         * @param threadConfig the thread config to run the camera operations
-         * @param availableCamerasLimiter a CameraSelector used to specify which cameras will be
-         *                                 loaded and available to CameraX.
+         * @param context                       the android context
+         * @param threadConfig                  the thread config to run the camera operations
+         * @param availableCamerasLimiter       a CameraSelector used to specify which cameras will
+         *                                      be loaded and available to CameraX.
          * @param cameraOpenRetryMaxTimeoutInMs the max timeout for camera open retry.
+         * @param streamSpecsCalculator         the {@link StreamSpecsCalculator} instance to use.
          * @return the factory instance
          * @throws InitializationException if it fails to create the factory.
          */
-        @NonNull CameraFactory newInstance(@NonNull Context context,
+        @NonNull
+        CameraFactory newInstance(@NonNull Context context,
                 @NonNull CameraThreadConfig threadConfig,
                 @Nullable CameraSelector availableCamerasLimiter,
-                long cameraOpenRetryMaxTimeoutInMs) throws InitializationException;
+                long cameraOpenRetryMaxTimeoutInMs,
+                @NonNull StreamSpecsCalculator streamSpecsCalculator)
+                throws InitializationException;
     }
 
     /**
@@ -63,24 +69,21 @@ public interface CameraFactory {
      * @throws IllegalArgumentException   if the given camera id is not on the available
      *                                    camera id list.
      */
-    @NonNull
-    CameraInternal getCamera(@NonNull String cameraId) throws CameraUnavailableException;
+    @NonNull CameraInternal getCamera(@NonNull String cameraId) throws CameraUnavailableException;
 
     /**
      * Gets the ids of all available cameras.
      *
      * @return the list of available cameras
      */
-    @NonNull
-    Set<String> getAvailableCameraIds();
+    @NonNull Set<String> getAvailableCameraIds();
 
     /**
      * Gets the {@link CameraCoordinator}.
      *
      * @return the instance of {@link CameraCoordinator}.
      */
-    @NonNull
-    CameraCoordinator getCameraCoordinator();
+    @NonNull CameraCoordinator getCameraCoordinator();
 
     /**
      * Gets the camera manager instance that is used to access the camera API.
@@ -89,6 +92,13 @@ public interface CameraFactory {
      * is CameraManagerCompat in camera2 implementation, it could be some other type in
      * other implementation.
      */
-    @Nullable
-    Object getCameraManager();
+    @Nullable Object getCameraManager();
+
+    /**
+     * Gets the {@link StreamSpecsCalculator} instance that is used to calculate the stream specs
+     * based on CameraX configurations and camera device capabilities.
+     */
+    default @NonNull StreamSpecsCalculator getStreamSpecsCalculator() {
+        return StreamSpecsCalculator.NO_OP_STREAM_SPECS_CALCULATOR;
+    }
 }

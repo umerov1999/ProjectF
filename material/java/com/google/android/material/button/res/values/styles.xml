@@ -17,6 +17,23 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+  <!-- Styles for M3 Expressive Button Groups. -->
+
+  <!-- M3 Expressive Button Group. -->
+  <style name="Widget.Material3Expressive.MaterialButtonGroup" parent="Widget.Material3.MaterialButtonGroup"/>
+
+  <!-- M3 Expressive Connected Button Group. -->
+  <style name="Widget.Material3Expressive.MaterialButtonGroup.Connected" parent="Widget.Material3.MaterialButtonGroup.Connected">
+    <item name="innerCornerSize">@xml/m3expressive_connected_buttons_inner_corner_size_state_list</item>
+  </style>
+
+  <!-- M3 Expressive Connected Button Toggle Group (Segmented Button). -->
+  <style name="Widget.Material3Expressive.MaterialButtonToggleGroup" parent="Widget.Material3.MaterialButtonToggleGroup">
+    <item name="innerCornerSize">@xml/m3expressive_connected_buttons_inner_corner_size_state_list</item>
+    <item name="shapeAppearance">@style/ShapeAppearance.M3.Comp.ButtonGroup.Connected.Small.Container.Shape</item>
+    <item name="android:spacing">@dimen/m3_comp_button_group_connected_small_between_space</item>
+  </style>
+
   <!-- Styles for M3 Expressive Buttons. -->
 
   <!-- M3 Expressive filled button style. -->
@@ -530,13 +547,35 @@
     <item name="shapeAppearance">@style/ShapeAppearance.M3.Sys.Shape.Corner.Full</item>
   </style>
 
+<style name="Widget.Material3.SplitButton.LeadingButton.Filled" parent="Widget.Material3.Button">
+    <item name="android:paddingTop">6dp</item>
+    <item name="android:paddingBottom">6dp</item>
+    <item name="android:paddingStart">@dimen/m3_comp_split_button_small_leading_button_leading_space</item>
+    <item name="android:paddingEnd">@dimen/m3_comp_split_button_small_leading_button_trailing_space</item>
+    <item name="android:minWidth">@dimen/mtrl_min_touch_target_size</item>
+    <item name="iconSize">20dp</item>
+  </style>
+
+  <style name="Widget.Material3.SplitButton.LeadingButton.Filled.Tonal" parent="Widget.Material3.Button.TonalButton">
+    <item name="android:paddingTop">6dp</item>
+    <item name="android:paddingBottom">6dp</item>
+    <item name="android:paddingStart">@dimen/m3_comp_split_button_small_leading_button_leading_space</item>
+    <item name="android:paddingEnd">@dimen/m3_comp_split_button_small_leading_button_trailing_space</item>
+    <item name="android:minWidth">@dimen/mtrl_min_touch_target_size</item>
+    <item name="iconSize">20dp</item>
+  </style>
+
   <style name="Widget.Material3.SplitButton.IconButton.Filled" parent="Widget.Material3.Button.IconButton.Filled">
     <item name="android:insetLeft">0dp</item>
     <item name="android:paddingTop">6dp</item>
     <item name="android:paddingBottom">6dp</item>
+    <item name="android:paddingStart">14dp</item>
+    <item name="android:paddingEnd">14dp</item>
+    <item name="android:minWidth">@dimen/mtrl_min_touch_target_size</item>
     <item name="android:textColor">@color/m3_button_foreground_color_selector</item>
     <item name="iconTint">@color/m3_button_foreground_color_selector</item>
     <item name="backgroundTint">@color/m3_button_background_color_selector</item>
+    <item name="opticalCenterEnabled">true</item>
     <item name="materialThemeOverlay">
       @style/ThemeOverlay.Material3.SplitButton.IconButton.Filled
     </item>
@@ -546,9 +585,13 @@
     <item name="android:insetLeft">0dp</item>
     <item name="android:paddingTop">6dp</item>
     <item name="android:paddingBottom">6dp</item>
+    <item name="android:paddingStart">14dp</item>
+    <item name="android:paddingEnd">14dp</item>
+    <item name="android:minWidth">@dimen/mtrl_min_touch_target_size</item>
     <item name="android:textColor">@color/m3_button_foreground_color_selector</item>
     <item name="iconTint">@color/m3_button_foreground_color_selector</item>
     <item name="backgroundTint">@color/m3_button_background_color_selector</item>
+    <item name="opticalCenterEnabled">true</item>
     <item name="materialThemeOverlay">
       @style/ThemeOverlay.Material3.SplitButton.IconButton.Filled.Tonal
     </item>

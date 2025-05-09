@@ -21,7 +21,7 @@ import dev.ragnarok.fenrir.push.NotificationScheduler.INSTANCE
 import dev.ragnarok.fenrir.push.OwnerInfo.Companion.getRx
 import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.AppPerms
-import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
+import dev.ragnarok.fenrir.util.Utils.makeImmutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -85,7 +85,7 @@ class WallPostFCMMessage {
                     app,
                     owner_id.hashCode(),
                     intent,
-                    makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
+                    makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
                 )
                 builder.setContentIntent(contentIntent)
                 val notification = builder.build()
@@ -122,7 +122,7 @@ class WallPostFCMMessage {
             context,
             post_id,
             intent,
-            makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
+            makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
         )
         builder.setContentIntent(contentIntent)
         val notification = builder.build()

@@ -19,6 +19,7 @@
   <inspection_tool class="AndroidLintActivityIconColor" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintAdapterViewChildren" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintAddJavascriptInterface" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintAligned16KB" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintAllCaps" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintAllowAllHostnameVerifier" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintAlwaysShowAction" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -62,6 +63,7 @@
   <inspection_tool class="AndroidLintCommitTransaction" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintConstantLocale" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintContentDescription" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintCoreLibDesugaringV1" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintCredManMissingDal" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintCredentialDependency" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintCredentialManagerMisuse" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -300,6 +302,7 @@
   <inspection_tool class="AndroidLintReportShortcutUsage" enabled="false" level="INFO" enabled_by_default="false" />
   <inspection_tool class="AndroidLintRequiredSize" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintRequiresFeature" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintRequiresWindowSdk" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintResAuto" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintReservedSystemPermission" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintResourceAsColor" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -364,6 +367,7 @@
   <inspection_tool class="AndroidLintTooDeepLayout" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintTooManyViews" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintTranslucentOrientation" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintTrimLambda" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintTrustAllX509TrustManager" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintTypographyDashes" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintTypographyEllipsis" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -376,6 +380,7 @@
   <inspection_tool class="AndroidLintUnknownId" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintUnknownIdInLayout" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintUnlocalizedSms" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintUnnecessaryArrayInit" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintUnnecessaryRequiredFeature" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintUnprotectedSMSBroadcastReceiver" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintUnsafeDynamicallyLoadedCode" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -444,6 +449,7 @@
   <inspection_tool class="AndroidLintWrongCommentType" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintWrongConstant" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintWrongFolder" enabled="false" level="ERROR" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintWrongGradleMethod" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintWrongRegion" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintWrongSdkInt" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintWrongThread" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -509,7 +515,9 @@
   <inspection_tool class="CanBeParameter" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="CanBePrimaryConstructorProperty" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="CanBeVal" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="CanConvertToMultiDollarString" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="CanSealedSubClassBeObject" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+  <inspection_tool class="CanUnescapeDollarLiteral" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="CapturingCleaner" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="CascadeIf" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="CastCanBeRemovedNarrowingVariableType" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -890,6 +898,7 @@
   <inspection_tool class="IndexOfReplaceableByContains" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="InfiniteLoopStatement" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="InfinitePropertiesLabel" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="InfiniteRecursion" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="InfiniteTransitionLabel" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="InfixCallToOrdinary" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="InjectedReferences" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -1101,6 +1110,7 @@
     <option name="m_requireAnnotationsFirst" value="true" />
   </inspection_tool>
   <inspection_tool class="MisspelledHeader" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+  <inspection_tool class="MoveFieldAssignmentToInitializer" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="MoveLambdaOutsideParentheses" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="MoveVariableDeclarationIntoWhen" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="MultiCatchCanBeSplit" enabled="false" level="INFORMATION" enabled_by_default="false" />

@@ -452,7 +452,7 @@ class PostDownload(private val context: Context) {
                     context,
                     peer_title.hashCode(),
                     intent_open,
-                    Utils.makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
+                    Utils.makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
                 )
                 mBuilder.setContentIntent(ReadPendingIntent)
                 mBuilder.setContentText(

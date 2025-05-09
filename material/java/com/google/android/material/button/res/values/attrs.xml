@@ -37,7 +37,11 @@
   <attr name="materialButtonGroupStyle" format="reference"/>
   <!-- Style to use for MaterialSplitButtons in this theme. -->
   <attr name="materialSplitButtonStyle" format="reference"/>
-<!-- Style to use for Filled Material Icon Only Split Buttons in this theme. -->
+  <!-- Style to use for leading Filled Button in Split Buttons in this theme. -->
+  <attr name="materialSplitButtonLeadingFilledStyle" format="reference" />
+  <!-- Style to use for leading Filled Tonal Button in Split Buttons in this theme. -->
+  <attr name="materialSplitButtonLeadingFilledTonalStyle" format="reference" />
+  <!-- Style to use for Filled Material Icon Only Split Buttons in this theme. -->
   <attr name="materialSplitButtonIconFilledStyle" format="reference" />
   <!-- Style to use for Filled Tonal Material Icon Only Split Buttons in this theme. -->
   <attr name="materialSplitButtonIconFilledTonalStyle" format="reference" />
@@ -46,6 +50,7 @@
 
   <declare-styleable name="MaterialButton">
     <!-- Whether the button can be checked. -->
+    <attr name="android:checked" />
     <attr name="android:checkable" />
     <attr name="android:insetLeft" />
     <attr name="android:insetRight" />
@@ -112,6 +117,8 @@
     <attr name="rippleColor" />
     <!-- Whether the button toggles the checked state when clicked. -->
     <attr name="toggleCheckedStateOnClick" format="boolean" />
+    <!-- Whether to enable optical center. -->
+    <attr name="opticalCenterEnabled" format="boolean"/>
   </declare-styleable>
 
   <declare-styleable name="MaterialButtonGroup">

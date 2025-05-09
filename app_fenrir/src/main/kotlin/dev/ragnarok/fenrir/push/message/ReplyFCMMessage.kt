@@ -23,7 +23,7 @@ import dev.ragnarok.fenrir.push.OwnerInfo.Companion.getRx
 import dev.ragnarok.fenrir.settings.Settings.get
 import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.Logger.e
-import dev.ragnarok.fenrir.util.Utils.makeMutablePendingIntent
+import dev.ragnarok.fenrir.util.Utils.makeImmutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 
 class ReplyFCMMessage {
@@ -90,7 +90,7 @@ class ReplyFCMMessage {
             context,
             reply_id,
             intent,
-            makeMutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
+            makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
         )
         builder.setContentIntent(contentIntent)
         val notification = builder.build()

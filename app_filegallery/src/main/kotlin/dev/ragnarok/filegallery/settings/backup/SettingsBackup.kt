@@ -35,7 +35,6 @@ class SettingsBackup {
         var validate_tls: Boolean? = null
         var picasso_dispatcher: String? = null
         var audio_round_icon: Boolean? = null
-        var use_long_click_download: Boolean? = null
         var revert_play_audio: Boolean? = null
         var player_has_background: Boolean? = null
         var player_background: String? = null
