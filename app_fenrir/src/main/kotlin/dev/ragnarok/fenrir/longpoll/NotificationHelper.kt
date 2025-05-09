@@ -627,7 +627,7 @@ object NotificationHelper {
                 context,
                 0,
                 intentQuick,
-                makeImmutablePendingIntent(PendingIntent.FLAG_CANCEL_CURRENT)
+                makeMutablePendingIntent(PendingIntent.FLAG_UPDATE_CURRENT)
             )
             val bubbleBuilder = NotificationCompat.BubbleMetadata.Builder(
                 bubbleIntent,
