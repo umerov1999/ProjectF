@@ -32,8 +32,7 @@
 /************************************************************************/
 /* Internal Class Implementation                                        */
 /************************************************************************/
-static atomic<int32_t> initEngineCnt{};
-static atomic<int32_t> rendererCnt{};
+static atomic<int32_t> rendererCnt{-1};
 static SwMpool* globalMpool = nullptr;
 static uint32_t threadsCnt = 0;
 
@@ -85,7 +84,7 @@ struct SwShapeTask : SwTask
        Additionally, the stroke style should not be dashed. */
     bool antialiasing(float strokeWidth)
     {
-        return strokeWidth < 2.0f || rshape->stroke->dash.count > 0 || rshape->stroke->strokeFirst || rshape->trimpath() || rshape->stroke->color.a < 255;
+        return strokeWidth < 2.0f || rshape->stroke->dash.count > 0 || rshape->stroke->first || rshape->trimpath() || rshape->stroke->color.a < 255;
     }
 
     float validStrokeWidth(bool clipper)
@@ -119,39 +118,32 @@ struct SwShapeTask : SwTask
 
         auto strokeWidth = validStrokeWidth(clipper);
         SwBBox renderRegion{};
-        auto visibleFill = false;
-
-        //This checks also for the case, if the invisible shape turned to visible by alpha.
-        auto prepareShape = !shapePrepared(&shape) && flags & (RenderUpdateFlag::Color | RenderUpdateFlag::Gradient);
+        auto updateShape = flags & (RenderUpdateFlag::Path | RenderUpdateFlag::Transform | RenderUpdateFlag::Clip);
+        auto updateFill = false;
 
         //Shape
-        if (flags & (RenderUpdateFlag::Path | RenderUpdateFlag::Transform) || prepareShape) {
-            auto alpha = rshape->color.a;
-            alpha = MULTIPLY(alpha, opacity);
-            visibleFill = (alpha > 0 || rshape->fill);
-            shapeReset(&shape);
-            if (visibleFill || clipper) {
-                if (!shapePrepare(&shape, rshape, transform, bbox, renderRegion, mpool, tid, clips.count > 0 ? true : false)) {
-                    visibleFill = false;
+        if (updateShape || flags & (RenderUpdateFlag::Color | RenderUpdateFlag::Gradient)) {
+            updateFill = (MULTIPLY(rshape->color.a, opacity) || rshape->fill);
+            if (updateShape) shapeReset(&shape);
+            if (updateFill || clipper) {
+                if (shapePrepare(&shape, rshape, transform, bbox, renderRegion, mpool, tid, clips.count > 0 ? true : false)) {
+                    if (!shapeGenRle(&shape, rshape, antialiasing(strokeWidth))) goto err;
+                } else {
+                    updateFill = false;
                     renderRegion.reset();
                 }
             }
         }
         //Fill
-        if (flags & (RenderUpdateFlag::Path |RenderUpdateFlag::Gradient | RenderUpdateFlag::Transform | RenderUpdateFlag::Color)) {
-            if (visibleFill || clipper) {
-                if (!shapeGenRle(&shape, rshape, antialiasing(strokeWidth))) goto err;
-            }
+        if (updateFill) {
             if (auto fill = rshape->fill) {
                 auto ctable = (flags & RenderUpdateFlag::Gradient) ? true : false;
                 if (ctable) shapeResetFill(&shape);
                 if (!shapeGenFillColors(&shape, fill, transform, surface, opacity, ctable)) goto err;
-            } else {
-                shapeDelFill(&shape);
             }
         }
         //Stroke
-        if (flags & (RenderUpdateFlag::Path | RenderUpdateFlag::Stroke | RenderUpdateFlag::Transform)) {
+        if (updateShape || flags & RenderUpdateFlag::Stroke) {
             if (strokeWidth > 0.0f) {
                 shapeResetStroke(&shape, rshape, transform);
                 if (!shapeGenStrokeRle(&shape, rshape, transform, bbox, renderRegion, mpool, tid)) goto err;
@@ -253,15 +245,6 @@ struct SwImageTask : SwTask
 };
 
 
-static void _termEngine()
-{
-    if (rendererCnt > 0) return;
-
-    mpoolTerm(globalMpool);
-    globalMpool = nullptr;
-}
-
-
 static void _renderFill(SwShapeTask* task, SwSurface* surface, uint8_t opacity)
 {
     if (auto fill = task->rshape->fill) {
@@ -291,6 +274,21 @@ static void _renderStroke(SwShapeTask* task, SwSurface* surface, uint8_t opacity
 /* External Class Implementation                                        */
 /************************************************************************/
 
+SwRenderer::SwRenderer()
+{
+    if (TaskScheduler::onthread()) {
+        TVGLOG("SW_RENDERER", "Running on a non-dominant thread!, Renderer(%p)", this);
+        mpool = mpoolInit(threadsCnt);
+        sharedMpool = false;
+    } else {
+        mpool = globalMpool;
+        sharedMpool = true;
+    }
+
+    ++rendererCnt;
+}
+
+
 SwRenderer::~SwRenderer()
 {
     clearCompositors();
@@ -300,8 +298,6 @@ SwRenderer::~SwRenderer()
     if (!sharedMpool) mpoolTerm(mpool);
 
     --rendererCnt;
-
-    if (rendererCnt == 0 && initEngineCnt == 0) _termEngine();
 }
 
 
@@ -429,7 +425,7 @@ bool SwRenderer::renderShape(RenderData data)
     if (task->opacity == 0) return true;
 
     //Main raster stage
-    if (task->rshape->stroke && task->rshape->stroke->strokeFirst) {
+    if (task->rshape->strokeFirst()) {
         _renderStroke(task, surface, task->opacity);
         _renderFill(task, surface, task->opacity);
     } else {
@@ -788,59 +784,30 @@ RenderData SwRenderer::prepare(const RenderShape& rshape, RenderData data, const
 }
 
 
-SwRenderer::SwRenderer()
-{
-    if (TaskScheduler::onthread()) {
-        TVGLOG("SW_RENDERER", "Running on a non-dominant thread!, Renderer(%p)", this);
-        mpool = mpoolInit(threadsCnt);
-        sharedMpool = false;
-    } else {
-        mpool = globalMpool;
-        sharedMpool = true;
-    }
-}
-
-
-bool SwRenderer::init(uint32_t threads)
-{
-    if ((initEngineCnt++) > 0) return true;
-
-    threadsCnt = threads;
-
-    //Share the memory pool among the renderer
-    globalMpool = mpoolInit(threads);
-    if (!globalMpool) {
-        --initEngineCnt;
-        return false;
-    }
-
-    return true;
-}
-
-
-int32_t SwRenderer::init()
-{
-#ifdef THORVG_SW_OPENMP_SUPPORT
-    omp_set_num_threads(TaskScheduler::threads());
-#endif
-
-    return initEngineCnt;
-}
-
-
 bool SwRenderer::term()
 {
-    if ((--initEngineCnt) > 0) return true;
+    if (rendererCnt > 0) return false;
 
-    initEngineCnt = 0;
-
-   _termEngine();
+    mpoolTerm(globalMpool);
+    globalMpool = nullptr;
+    rendererCnt = -1;
 
     return true;
 }
 
-SwRenderer* SwRenderer::gen()
+
+SwRenderer* SwRenderer::gen(uint32_t threads)
 {
-    ++rendererCnt;
-    return new SwRenderer();
+    //initialize engine
+    if (rendererCnt == -1) {
+#ifdef THORVG_SW_OPENMP_SUPPORT
+        omp_set_num_threads(threads);
+#endif
+        //Share the memory pool among the renderer
+        globalMpool = mpoolInit(threads);
+        threadsCnt = threads;
+        rendererCnt = 0;
+    }
+
+    return new SwRenderer;
 }

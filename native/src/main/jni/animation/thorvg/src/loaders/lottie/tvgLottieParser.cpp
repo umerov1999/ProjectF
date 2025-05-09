@@ -569,11 +569,15 @@ LottieTransform* LottieParser::parseTransform(bool ddd)
             enterObject();
             while (auto key = nextObjectKey()) {
                 if (KEY_AS("k")) parsePropertyInternal(transform->position);
-                else if (KEY_AS("s") && getBool()) transform->coords = new LottieTransform::SeparateCoord;
-                //check separateCoord to figure out whether "x(expression)" / "x(coord)"
-                else if (transform->coords && KEY_AS("x")) parseProperty(transform->coords->x);
-                else if (transform->coords && KEY_AS("y")) parseProperty(transform->coords->y);
-                else if (KEY_AS("x") && expressions) transform->position.exp = getExpression(getStringCopy(), comp, context.layer, context.parent, &transform->position);
+                else if (KEY_AS("x"))
+                {
+                    //check separateCoord to figure out whether "x(expression)" / "x(coord)"
+                    if (peekType() == kStringType) {
+                        if (expressions) transform->position.exp = getExpression(getStringCopy(), comp, context.layer, context.parent, &transform->position);
+                        else skip();
+                    } else parseProperty(transform->separateCoord()->x);
+                }
+                else if (KEY_AS("y")) parseProperty(transform->separateCoord()->y);
                 else if (KEY_AS("sid")) registerSlot(transform, getString(), LottieProperty::Type::Vector);
                 else if (KEY_AS("ix")) transform->position.ix = getInt();
                 else skip();
@@ -843,7 +847,7 @@ LottieOffsetPath* LottieParser::parseOffsetPath()
     while (auto key = nextObjectKey()) {
         if (parseCommon(offsetPath, key)) continue;
         else if (KEY_AS("a")) parseProperty(offsetPath->offset);
-        else if (KEY_AS("lj")) offsetPath->join = (StrokeJoin) getInt();
+        else if (KEY_AS("lj")) offsetPath->join = (StrokeJoin) (getInt() - 1);
         else if (KEY_AS("ml")) parseProperty(offsetPath->miterLimit);
         else skip();
     }
@@ -1419,6 +1423,7 @@ void LottieParser::parseEffects(LottieLayer* layer)
                 else invalid = false;
             }
             else if (effect && KEY_AS("nm")) effect->nm = djb2Encode(getString());
+            else if (effect && KEY_AS("mn")) effect->mn = djb2Encode(getString());
             else if (effect && KEY_AS("ix")) effect->ix = getInt();
             else if (effect && KEY_AS("en")) effect->enable = getInt();
             else if (effect && KEY_AS("ef")) parseEffect(effect);

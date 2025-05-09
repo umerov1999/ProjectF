@@ -37,8 +37,19 @@ using pixel_t = uint32_t;
 
 #define DASH_PATTERN_THRESHOLD 0.001f
 
-enum RenderUpdateFlag : uint8_t {None = 0, Path = 1, Color = 2, Gradient = 4, Stroke = 8, Transform = 16, Image = 32, GradientStroke = 64, Blend = 128, All = 255};
+enum RenderUpdateFlag : uint16_t {None = 0, Path = 1, Color = 2, Gradient = 4, Stroke = 8, Transform = 16, Image = 32, GradientStroke = 64, Blend = 128, Clip = 256, All = 0xffff};
 enum CompositionFlag : uint8_t {Invalid = 0, Opacity = 1, Blending = 2, Masking = 4, PostProcessing = 8};  //Composition Purpose
+
+static inline void operator|=(RenderUpdateFlag& a, const RenderUpdateFlag b)
+{
+    a = RenderUpdateFlag(uint16_t(a) | uint16_t(b));
+}
+
+static inline RenderUpdateFlag operator|(const RenderUpdateFlag a, const RenderUpdateFlag b)
+{
+    return RenderUpdateFlag(uint16_t(a) | uint16_t(b));
+}
+
 
 struct RenderSurface
 {
@@ -139,7 +150,7 @@ struct RenderStroke
     RenderTrimPath trim;
     StrokeCap cap = StrokeCap::Square;
     StrokeJoin join = StrokeJoin::Bevel;
-    bool strokeFirst = false;
+    bool first = false;
 
     void operator=(const RenderStroke& rhs)
     {
@@ -163,7 +174,7 @@ struct RenderStroke
         miterlimit = rhs.miterlimit;
         cap = rhs.cap;
         join = rhs.join;
-        strokeFirst = rhs.strokeFirst;
+        first = rhs.first;
         trim = rhs.trim;
     }
 
@@ -200,6 +211,11 @@ struct RenderShape
     {
         if (!stroke) return false;
         return stroke->trim.valid();
+    }
+
+    bool strokeFirst() const
+    {
+        return (stroke && stroke->first) ? true : false;
     }
 
     float strokeWidth() const

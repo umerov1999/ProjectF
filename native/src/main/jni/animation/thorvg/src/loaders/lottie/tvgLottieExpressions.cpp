@@ -175,9 +175,8 @@ static unsigned long _idByName(jerry_value_t args)
 
 static jerry_value_t _toComp(const jerry_call_info_t* info, const jerry_value_t args[], const jerry_length_t argsCnt)
 {
-    TVGLOG("LOTTIE", "toComp is not supported in expressions!");
-
-    return jerry_undefined();
+    auto layer = static_cast<LottieLayer*>(jerry_object_get_native_ptr(info->function, nullptr));
+    return _point2d(_point2d(args[0]) * layer->cache.matrix);
 }
 
 
@@ -469,8 +468,6 @@ static jerry_value_t _addsub(const jerry_value_t args[], float addsub)
 }
 
 
-
-
 static jerry_value_t _muldiv(const jerry_value_t arg1, float arg2)
 {
     //1d
@@ -637,7 +634,7 @@ static jerry_value_t _content(const jerry_call_info_t* info, const jerry_value_t
     switch (target->type) {
         case LottieObject::Group: return _buildGroup(static_cast<LottieGroup*>(target), data->frameNo);
         case LottieObject::Path: {
-            jerry_value_t obj = jerry_object();
+            auto obj = jerry_object();
             jerry_object_set_native_ptr(obj, nullptr, &static_cast<LottiePath*>(target)->pathset);
             jerry_object_set_sz(obj, "path", obj);
             return obj;
@@ -689,6 +686,7 @@ static jerry_value_t _nearestKey(const jerry_call_info_t* info, const jerry_valu
 
     return obj;
 }
+
 
 static jerry_value_t _property(const jerry_call_info_t* info, const jerry_value_t args[], const jerry_length_t argsCnt)
 {
@@ -1266,8 +1264,11 @@ static void _buildMath(jerry_value_t context)
 }
 
 
-void LottieExpressions::buildGlobal(LottieExpression* exp)
+void LottieExpressions::buildGlobal(float frameNo, LottieExpression* exp)
 {
+    tvg::free(static_cast<ExpContent*>(jerry_object_get_native_ptr(comp, &freeCb)));
+    jerry_object_set_native_ptr(comp, &freeCb, _expcontent(exp, frameNo, exp->layer));
+
     auto index = jerry_number(exp->layer->ix);
     jerry_object_set_sz(global, EXP_INDEX, index);
     jerry_value_free(index);
@@ -1382,7 +1383,7 @@ jerry_value_t LottieExpressions::evaluate(float frameNo, LottieExpression* exp)
 {
     if (exp->disabled && exp->writables.empty()) return jerry_undefined();
 
-    buildGlobal(exp);
+    buildGlobal(frameNo, exp);
 
     //main composition
     buildComp(exp->comp, frameNo, exp);

@@ -16,7 +16,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
 
     //auto threads = std::thread::hardware_concurrency();
     auto threads = 4;
-    if (tvg::Initializer::init(threads, tvg::CanvasEngine::Sw) == tvg::Result::Success) {
+    if (tvg::Initializer::init(threads) == tvg::Result::Success) {
         fenrirNativeThorVGInited = true;
     }
 
@@ -24,6 +24,6 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
 }
 
 extern "C" JNIEXPORT void JNI_OnUnload(JavaVM *, void *) {
-    tvg::Initializer::term(tvg::CanvasEngine::Sw);
+    tvg::Initializer::term();
     fenrirNativeThorVGInited = false;
 }

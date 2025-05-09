@@ -89,8 +89,6 @@ namespace tvg {
 
     uint16_t THORVG_VERSION_NUMBER();
 
-    #define PIMPL(INST, CLASS) ((CLASS::Impl*)INST->pImpl)   //Access to pimpl
-
     #define TVG_DELETE(PAINT) \
     if (PAINT->refCnt() == 0) delete(PAINT)
 
@@ -118,6 +116,8 @@ namespace tvg {
     {
         std::free(ptr);
     }
+
+    extern int engineInit;
 }
 
 #endif //_TVG_COMMON_H_

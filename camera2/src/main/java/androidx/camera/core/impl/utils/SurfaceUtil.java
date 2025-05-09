@@ -19,10 +19,7 @@ package androidx.camera.core.impl.utils;
 import android.graphics.ImageFormat;
 import android.view.Surface;
 
-import androidx.camera.core.ImageProcessingUtil_JNI;
-
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 public class SurfaceUtil {
     private static SurfaceUtil_JNI jcall_util;

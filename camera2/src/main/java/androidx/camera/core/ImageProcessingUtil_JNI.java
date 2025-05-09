@@ -3,9 +3,10 @@ package androidx.camera.core;
 import android.graphics.Bitmap;
 import android.view.Surface;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.camera.core.impl.ImageOutputConfig;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 
@@ -29,7 +30,7 @@ public interface ImageProcessingUtil_JNI {
                                              int sourceStride, int destinationStride, int width, int height,
                                              boolean isCopyBufferToBitmap);
 
-    int nativeWriteJpegToSurface(@NonNull byte[] jpegArray,
+    int nativeWriteJpegToSurface(byte @NonNull [] jpegArray,
                                  @NonNull Surface surface);
 
     int nativeConvertAndroid420ToABGR(

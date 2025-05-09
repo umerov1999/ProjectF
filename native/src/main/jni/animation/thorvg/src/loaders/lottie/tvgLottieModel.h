@@ -88,6 +88,7 @@ struct LottieEffect
     virtual ~LottieEffect() {}
 
     unsigned long nm;  //encoded by djb2
+    unsigned long mn;  //encoded by djb2
     int16_t ix;
     Type type;
     bool enable = false;
@@ -474,7 +475,7 @@ struct LottieText : LottieObject, LottieRenderPooler<tvg::Shape>
     }
 
     LottieTextDoc doc;
-    LottieFont* font;
+    LottieFont* font = nullptr;
     LottieTextFollowPath* followPath = nullptr;
     Array<LottieTextRange*> ranges;
 
@@ -637,6 +638,12 @@ struct LottieTransform : LottieObject
         LottieFloat x = 0.0f;
         LottieFloat y = 0.0f;
     };
+
+    SeparateCoord* separateCoord()
+    {
+        if (!coords) coords = new SeparateCoord;
+        return coords;
+    }
 
     struct RotationEx
     {
@@ -1011,7 +1018,7 @@ struct LottieLayer : LottieGroup
     LottieEffect* effectById(unsigned long id)
     {
         ARRAY_FOREACH(p, effects) {
-            if (id == (*p)->nm) return *p;
+            if (id == (*p)->nm || id == (*p)->mn) return *p;
         }
         return nullptr;
     }
