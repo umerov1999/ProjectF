@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -62,15 +64,17 @@ android {
         encoding = "utf-8"
     }
 
-    kotlinOptions {
-        jvmTarget = "21"
-        freeCompilerArgs = ["-opt-in=kotlin.contracts.ExperimentalContracts",
-                            "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
-                            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                            "-opt-in=kotlinx.serialization.internal.CoreFriendModuleApi",
-                            "-opt-in=kotlinx.serialization.SealedSerializationApi",
-                            "-opt-in=kotlinx.serialization.InternalSerializationApi",
-                            "-opt-in=kotlin.RequiresOptIn", "-opt-in=kotlin.ExperimentalStdlibApi"]
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
+            freeCompilerArgs = ["-opt-in=kotlin.contracts.ExperimentalContracts",
+                                "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
+                                "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                                "-opt-in=kotlinx.serialization.internal.CoreFriendModuleApi",
+                                "-opt-in=kotlinx.serialization.SealedSerializationApi",
+                                "-opt-in=kotlinx.serialization.InternalSerializationApi",
+                                "-opt-in=kotlin.RequiresOptIn", "-opt-in=kotlin.ExperimentalStdlibApi"]
+        }
     }
 
     buildTypes {

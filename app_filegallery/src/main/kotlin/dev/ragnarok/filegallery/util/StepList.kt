@@ -23,6 +23,16 @@ class StepList<T>(private val list: List<T>, private val key: String? = null) {
         return curVl
     }
 
+    fun reset() {
+        PreferenceScreen.getPreferences(Includes.provideApplicationContext()).edit {
+            putInt(
+                key,
+                0
+            )
+        }
+        currentItem = 0
+    }
+
     init {
         key?.let {
             currentItem =

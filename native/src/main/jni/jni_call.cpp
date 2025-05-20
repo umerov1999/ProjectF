@@ -6,6 +6,8 @@
 
 bool fenrirNativeThorVGInited = false;
 
+extern jint FFMPEG_JNI_OnLoad(JNIEnv *env);
+
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
     JNIEnv *env = nullptr;
     srand((unsigned int) time(nullptr));
@@ -20,6 +22,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *) {
         fenrirNativeThorVGInited = true;
     }
 
+    FFMPEG_JNI_OnLoad(env);
     return JNI_VERSION_1_6;
 }
 

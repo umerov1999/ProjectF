@@ -7,7 +7,7 @@ import dev.ragnarok.fenrir.settings.Settings
 internal class CustomTokenVKApiInterceptor(
     override val token: String?,
     v: String,
-    @AccountType private val accountType: Int,
+    @param:AccountType private val accountType: Int,
     override val customDeviceName: String?,
     private val account_id: Long?
 ) : AbsVKApiInterceptor(

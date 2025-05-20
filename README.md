@@ -13,7 +13,7 @@
 
 <b>Инструкция по сборке:</b><br>
 Требуется:<br>
-  1) Android Studio Meerkat 2024.3.2 или выше. Kotlin 2.1.*
+  1) Android Studio Meerkat 2024.3.2 или выше. Kotlin 2.2.*
   2) Android SDK 36
   3) Android NDK 29.0.13113456
   

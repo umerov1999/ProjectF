@@ -527,15 +527,21 @@ class MusicPlaybackService : Service() {
     }
 
     internal fun updateMetadata() {
-        updateNotification()
         mMediaMetadataCompat = MediaMetadataCompat.Builder()
             .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artistName)
             .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, albumName)
             .putString(MediaMetadataCompat.METADATA_KEY_TITLE, trackName)
-            //.putBitmap(MediaMetadataCompat.METADATA_KEY_ART, Utils.firstNonNull(CoverBitmap, BitmapFactory.decodeResource(getResources(), R.drawable.generic_audio_nowplaying_service)))
+            .putBitmap(
+                MediaMetadataCompat.METADATA_KEY_ART, Utils.firstNonNull(
+                    coverBitmap, BitmapFactory.decodeResource(
+                        resources, R.drawable.generic_audio_nowplaying_service
+                    )
+                )
+            )
             .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration())
             .build()
         mMediaSession?.setMetadata(mMediaMetadataCompat)
+        updateNotification()
     }
 
     /**
@@ -561,14 +567,14 @@ class MusicPlaybackService : Service() {
             }
             mPlayer?.setDataSource(audio)
             if (audio.thumb_image_big != null && UpdateMeta) {
-                coverAudio = audio.thumb_image_big
-                albumTitle = audio.album_title
-                fetchCoverAndUpdateMetadata()
-                notifyChange(META_CHANGED)
-            } else {
-                fetchCoverAndUpdateMetadata()
-                notifyChange(META_CHANGED)
+                coverAudio =
+                    Utils.firstNonEmptyString(audio.thumb_image_very_big, audio.thumb_image_big)
             }
+            if (UpdateMeta) {
+                albumTitle = audio.album_title
+            }
+            fetchCoverAndUpdateMetadata()
+            notifyChange(META_CHANGED)
         }
     }
 

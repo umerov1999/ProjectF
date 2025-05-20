@@ -22,21 +22,6 @@
   free(var##_mem);                  \
   var = 0
 
-static void weave_pixels(const uint8_t* src_u,
-                        const uint8_t* src_v,
-                        int src_pixel_stride_uv,
-                        uint8_t* dst_uv,
-                        int width) {
-    int i;
-    for (i = 0; i < width; ++i) {
-        dst_uv[0] = *src_u;
-        dst_uv[1] = *src_v;
-        dst_uv += 2;
-        src_u += src_pixel_stride_uv;
-        src_v += src_pixel_stride_uv;
-    }
-}
-
 static libyuv::RotationMode get_rotation_mode(int rotation) {
     libyuv::RotationMode mode = libyuv::kRotate0;
     switch (rotation) {

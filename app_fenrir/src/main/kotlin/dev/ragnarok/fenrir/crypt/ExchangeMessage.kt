@@ -94,7 +94,7 @@ class ExchangeMessage : Parcelable {
     class Builder(
         val version: Int,
         val sessionId: Long,
-        @SessionState val sessionState: Int
+        @param:SessionState val sessionState: Int
     ) {
         var publicKey: String? = null
         var aesKey: String? = null

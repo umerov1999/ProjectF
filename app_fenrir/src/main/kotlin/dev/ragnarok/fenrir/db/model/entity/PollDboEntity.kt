@@ -142,7 +142,7 @@ class PollDboEntity : DboEntity() {
 
     @Keep
     @Serializable
-    class BackgroundPointEntity(@ColorInt var color: Int, var position: Float)
+    class BackgroundPointEntity(@param:ColorInt var color: Int, var position: Float)
 
     @Keep
     @Serializable

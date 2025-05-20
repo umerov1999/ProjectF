@@ -103,7 +103,7 @@ class AttachmentsRepository(
 
     private open class Event(
         override val accountId: Long,
-        @AttachToType override val attachToType: Int,
+        @param:AttachToType override val attachToType: Int,
         override val attachToId: Int
     ) : IBaseEvent
 

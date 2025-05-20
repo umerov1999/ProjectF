@@ -28,7 +28,7 @@ internal class DrawableTargetAction(
     private val noFade: Boolean,
     private val placeholderDrawable: Drawable?,
     private val errorDrawable: Drawable?,
-    @DrawableRes val errorResId: Int
+    @param:DrawableRes val errorResId: Int
 ) : Action(picasso, data) {
     override fun complete(result: Result) {
         if (result is Bitmap) {

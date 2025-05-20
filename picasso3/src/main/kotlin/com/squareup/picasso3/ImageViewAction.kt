@@ -27,7 +27,7 @@ internal class ImageViewAction(
     target: ImageView,
     data: Request,
     private val errorDrawable: Drawable?,
-    @DrawableRes val errorResId: Int,
+    @param:DrawableRes val errorResId: Int,
     private val noFade: Boolean,
     var callback: Callback?
 ) : Action(picasso, data) {

@@ -16,8 +16,6 @@
 
 package com.google.zxing.aztec.encoder;
 
-import androidx.annotation.NonNull;
-
 import java.nio.charset.StandardCharsets;
 
 import java.util.ArrayList;
@@ -25,6 +23,8 @@ import java.util.List;
 import java.util.Locale;
 
 import com.google.zxing.common.BitArray;
+
+import org.jspecify.annotations.NonNull;
 
 /**
  * State represents all information about a sequence necessary to generate the current output.

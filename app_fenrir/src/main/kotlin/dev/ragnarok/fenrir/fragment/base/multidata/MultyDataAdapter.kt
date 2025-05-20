@@ -6,7 +6,7 @@ import dev.ragnarok.fenrir.model.DataWrapper
 
 abstract class MultyDataAdapter<T, VH : RecyclerView.ViewHolder>(
     private var fullData: List<DataWrapper<T>>,
-    @StringRes private var titles: Array<Int?>
+    @param:StringRes private var titles: Array<Int?>
 ) : RecyclerView.Adapter<VH>() {
     fun setData(wrappers: List<DataWrapper<T>>, titles: Array<Int?>) {
         fullData = wrappers

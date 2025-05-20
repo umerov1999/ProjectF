@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.31.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 4.0.2 FATAL_ERROR)
 project(fenrir_jni C CXX ASM)
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")

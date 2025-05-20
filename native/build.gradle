@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("com.android.library")
     id("kotlin-android")
@@ -42,10 +44,13 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
         encoding = "utf-8"
     }
-    kotlinOptions {
-        jvmTarget = "21"
-        freeCompilerArgs = ["-opt-in=kotlin.contracts.ExperimentalContracts",
-                            "-opt-in=kotlinx.coroutines.DelicateCoroutinesApi"]
+
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
+            freeCompilerArgs = ["-opt-in=kotlin.contracts.ExperimentalContracts",
+                                "-opt-in=kotlinx.coroutines.DelicateCoroutinesApi"]
+        }
     }
 
     externalNativeBuild {

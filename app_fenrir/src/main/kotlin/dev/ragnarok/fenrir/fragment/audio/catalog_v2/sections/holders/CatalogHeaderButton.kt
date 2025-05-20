@@ -39,7 +39,11 @@ class CatalogHeaderButton @JvmOverloads constructor(context: Context, attrs: Att
                 if (simpleText?.visibility != VISIBLE) {
                     simpleText?.visibility = VISIBLE
                 }
-                simpleText?.text = catalogAction.title
+                if (catalogAction.title.isNullOrEmpty() || catalogAction.title == "global_catalog_action_open_section_title") {
+                    simpleText?.text = simpleText?.context?.getString(R.string.open)
+                } else {
+                    simpleText?.text = catalogAction.title
+                }
                 simpleText?.setOnClickListener {
                     if (context is Activity) {
                         if (catalogAction.action?.type == "open_url") {

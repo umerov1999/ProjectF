@@ -27,7 +27,7 @@ internal class BitmapTargetAction(
     target: BitmapTarget,
     data: Request,
     private val errorDrawable: Drawable?,
-    @DrawableRes val errorResId: Int
+    @param:DrawableRes val errorResId: Int
 ) : Action(picasso, data) {
     private val targetReference = WeakReference(target)
 

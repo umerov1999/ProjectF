@@ -37,5 +37,5 @@ class MessageUpdate(val accountId: Long, val messageId: Int) {
 
     class ImportantUpdate(val important: Boolean)
     class DeleteUpdate(val deleted: Boolean, val deletedForAll: Boolean)
-    class StatusUpdate(@MessageStatus val status: Int, val vkid: Int?)
+    class StatusUpdate(@param:MessageStatus val status: Int, val vkid: Int?)
 }

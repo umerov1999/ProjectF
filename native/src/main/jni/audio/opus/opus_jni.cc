@@ -16,6 +16,7 @@
 
 #include <jni.h>
 
+#include <cstdint>
 #include <cstdlib>
 
 #include "opus.h"              // NOLINT

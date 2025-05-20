@@ -373,8 +373,7 @@ class MusicPlaybackService : Service() {
         if (Constants.IS_DEBUG) Log.v(TAG, "Scheduling shutdown in $IDLE_DELAY ms")
         shutdownDelayedDisposable.set(
             delayTaskFlow(IDLE_DELAY.toLong())
-                .toMain { terminate() }
-        )
+                .toMain { terminate() })
     }
 
     private fun cancelShutdown() {
@@ -517,15 +516,21 @@ class MusicPlaybackService : Service() {
     }
 
     internal fun updateMetadata() {
-        updateNotification()
         mMediaMetadataCompat = MediaMetadataCompat.Builder()
             .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artistName)
             .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, albumName)
             .putString(MediaMetadataCompat.METADATA_KEY_TITLE, trackName)
-            //.putBitmap(MediaMetadataCompat.METADATA_KEY_ART, Utils.firstNonNull(CoverBitmap, BitmapFactory.decodeResource(getResources(), R.drawable.generic_audio_nowplaying_service)))
+            .putBitmap(
+                MediaMetadataCompat.METADATA_KEY_ART, Utils.firstNonNull(
+                    coverBitmap, BitmapFactory.decodeResource(
+                        resources, R.drawable.generic_audio_nowplaying_service
+                    )
+                )
+            )
             .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration())
             .build()
         mMediaSession?.setMetadata(mMediaMetadataCompat)
+        updateNotification()
     }
 
     /**
@@ -550,13 +555,12 @@ class MusicPlaybackService : Service() {
             mPlayer?.setDataSource(audio)
             if (audio.thumb_image != null && UpdateMeta) {
                 coverAudio = audio.thumb_image
-                albumTitle = audio.artist
-                fetchCoverAndUpdateMetadata()
-                notifyChange(META_CHANGED)
-            } else {
-                fetchCoverAndUpdateMetadata()
-                notifyChange(META_CHANGED)
             }
+            if (UpdateMeta) {
+                albumTitle = audio.artist
+            }
+            fetchCoverAndUpdateMetadata()
+            notifyChange(META_CHANGED)
         }
     }
 

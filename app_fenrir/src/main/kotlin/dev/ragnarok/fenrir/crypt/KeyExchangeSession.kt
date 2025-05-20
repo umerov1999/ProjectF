@@ -7,7 +7,7 @@ class KeyExchangeSession private constructor(
     val id: Long,
     val accountId: Long,
     val peerId: Long,
-    @KeyLocationPolicy val keyLocationPolicy: Int
+    @param:KeyLocationPolicy val keyLocationPolicy: Int
 ) {
 
     private val messageIds: MutableSet<Int> = HashSet()

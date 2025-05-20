@@ -15,7 +15,7 @@ import dev.ragnarok.fenrir.putBoolean
 class OptionRequest(
     val id: Int,
     val title: String?,
-    @DrawableRes val icon: Int?,
+    @param:DrawableRes val icon: Int?,
     val singleLine: Boolean
 ) : Parcelable {
 

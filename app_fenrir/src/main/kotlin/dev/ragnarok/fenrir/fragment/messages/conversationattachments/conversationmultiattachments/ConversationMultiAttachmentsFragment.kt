@@ -471,7 +471,7 @@ class ConversationMultiAttachmentsFragment :
         goToPostEditor(requireActivity(), accountId, post)
     }
 
-    inner class FrameAdapter(@AttachmentConversationType private var data: List<Int>) :
+    inner class FrameAdapter(@param:AttachmentConversationType private var data: List<Int>) :
         RecyclerView.Adapter<FrameAdapter.Holder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
             return Holder(

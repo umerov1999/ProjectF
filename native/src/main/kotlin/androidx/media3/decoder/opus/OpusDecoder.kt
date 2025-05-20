@@ -294,11 +294,8 @@ class OpusDecoder(
             throw OpusDecoderException("Invalid header length")
         }
         channelCount = getChannelCount(headerBytes)
-        if (channelCount > 8) {
-            throw OpusDecoderException("Invalid channel count: $channelCount")
-        }
         val gain = readSignedLittleEndian16(headerBytes, 16)
-        val streamMap = ByteArray(8)
+        val streamMap = ByteArray(channelCount.coerceAtLeast(8))
         val numStreams: Int
         val numCoupled: Int
         if (headerBytes[18] == 0.toByte()) { // Channel mapping

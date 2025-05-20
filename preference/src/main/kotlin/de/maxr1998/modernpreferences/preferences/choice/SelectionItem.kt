@@ -16,10 +16,10 @@ import de.maxr1998.modernpreferences.preferences.Badge
  */
 data class SelectionItem(
     val key: String,
-    @StringRes
+    @param:StringRes
     val titleRes: Int,
     val title: CharSequence,
-    @StringRes
+    @param:StringRes
     val summaryRes: Int,
     val summary: CharSequence?,
     val badgeInfo: Badge?

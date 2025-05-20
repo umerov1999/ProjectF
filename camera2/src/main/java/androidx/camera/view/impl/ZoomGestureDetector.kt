@@ -58,8 +58,8 @@ public class ZoomGestureDetector
 @JvmOverloads
 constructor(
     private val context: Context,
-    @Px private val spanSlop: Int = ViewConfiguration.get(context).scaledTouchSlop * 2,
-    @Px private val minSpan: Int = DEFAULT_MIN_SPAN,
+    @param:Px private val spanSlop: Int = ViewConfiguration.get(context).scaledTouchSlop * 2,
+    @param:Px private val minSpan: Int = DEFAULT_MIN_SPAN,
     private val listener: OnZoomGestureListener
 ) {
     /**
@@ -72,9 +72,9 @@ constructor(
      */
     public abstract class ZoomEvent
     private constructor(
-        @IntRange(from = 0) public val eventTime: Long,
-        @Px @IntRange(from = 0) public val focusX: Int,
-        @Px @IntRange(from = 0) public val focusY: Int
+        @param:IntRange(from = 0) public val eventTime: Long,
+        @param:Px @param:IntRange(from = 0) public val focusX: Int,
+        @param:Px @param:IntRange(from = 0) public val focusY: Int
     ) {
         /**
          * The beginning of a zoom gesture. Reported by new pointers going down.
@@ -105,7 +105,7 @@ constructor(
             @IntRange(from = 0) eventTime: Long,
             @Px @IntRange(from = 0) focusX: Int,
             @Px @IntRange(from = 0) focusY: Int,
-            @FloatRange(from = 0.0, fromInclusive = false) public val incrementalScaleFactor: Float
+            @param:FloatRange(from = 0.0, fromInclusive = false) public val incrementalScaleFactor: Float
         ) : ZoomEvent(eventTime, focusX, focusY)
 
         /**
@@ -123,7 +123,7 @@ constructor(
             @IntRange(from = 0) eventTime: Long,
             @Px @IntRange(from = 0) focusX: Int,
             @Px @IntRange(from = 0) focusY: Int,
-            @FloatRange(from = 0.0, fromInclusive = false) public val incrementalScaleFactor: Float
+            @param:FloatRange(from = 0.0, fromInclusive = false) public val incrementalScaleFactor: Float
         ) : ZoomEvent(eventTime, focusX, focusY)
     }
 

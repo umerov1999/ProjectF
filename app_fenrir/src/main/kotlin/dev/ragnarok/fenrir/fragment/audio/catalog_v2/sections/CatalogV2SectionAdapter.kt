@@ -196,7 +196,7 @@ class CatalogV2SectionAdapter(
 
     inner class ItemViewHolder(
         itemView: View,
-        @CATALOG_V2_HOLDER private val type: Int
+        @param:CATALOG_V2_HOLDER private val type: Int
     ) : IViewHolder(itemView) {
         val list: VP2NestedRecyclerView = itemView.findViewById(R.id.list)
 

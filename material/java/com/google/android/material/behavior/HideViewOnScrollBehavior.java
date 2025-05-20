@@ -355,11 +355,11 @@ public class HideViewOnScrollBehavior<V extends View> extends Behavior<V> {
       child.clearAnimation();
     }
     updateCurrentState(child, STATE_SCROLLED_OUT);
-    int targetTranslationY = size + additionalHiddenOffset;
+    int targetTranslation = size + additionalHiddenOffset;
     if (animate) {
-      animateChildTo(child, targetTranslationY, exitAnimDuration, exitAnimInterpolator);
+      animateChildTo(child, targetTranslation, exitAnimDuration, exitAnimInterpolator);
     } else {
-      child.setTranslationY(targetTranslationY);
+      hideOnScrollViewDelegate.setViewTranslation(child, targetTranslation);
     }
   }
 
@@ -424,5 +424,27 @@ public class HideViewOnScrollBehavior<V extends View> extends Behavior<V> {
    */
   public boolean isDisabledOnTouchExploration() {
     return disableOnTouchExploration;
+  }
+
+  /**
+   * A utility function to get the {@link HideViewOnScrollBehavior} associated with the {@code
+   * view}.
+   *
+   * @param view The {@link View} with {@link HideViewOnScrollBehavior}.
+   * @return The {@link HideViewOnScrollBehavior} associated with the {@code view}.
+   */
+  @NonNull
+  @SuppressWarnings("unchecked")
+  public static <V extends View> HideViewOnScrollBehavior<V> from(@NonNull V view) {
+    ViewGroup.LayoutParams params = view.getLayoutParams();
+    if (!(params instanceof LayoutParams)) {
+      throw new IllegalArgumentException("The view is not a child of CoordinatorLayout");
+    }
+    CoordinatorLayout.Behavior<?> behavior = ((LayoutParams) params).getBehavior();
+    if (!(behavior instanceof HideViewOnScrollBehavior)) {
+      throw new IllegalArgumentException(
+          "The view is not associated with HideViewOnScrollBehavior");
+    }
+    return (HideViewOnScrollBehavior<V>) behavior;
   }
 }

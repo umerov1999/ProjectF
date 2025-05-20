@@ -51,7 +51,7 @@ class FfmpegAudioDecoder(
      * Returns the encoding of output audio.
      */
     val encoding: @C.PcmEncoding Int
-    private val outputBufferSize: Int
+    private var outputBufferSize: Int
     private var nativeContext // May be reassigned on resetting the codec.
             : Long
     private var hasOutputFormat = false
@@ -104,8 +104,15 @@ class FfmpegAudioDecoder(
         }
         val inputData = Util.castNonNull(inputBuffer.data)
         val inputSize = inputData.limit()
-        var outputData = outputBuffer.init(inputBuffer.timeUs, outputBufferSize)
-        val result = ffmpegDecode(nativeContext, inputData, inputSize, outputData, outputBufferSize)
+        outputBuffer.init(inputBuffer.timeUs, outputBufferSize)
+        val result = ffmpegDecode(
+            nativeContext,
+            inputData,
+            inputSize,
+            outputBuffer,
+            outputBuffer.data!!,
+            outputBufferSize
+        )
         when {
             result == AUDIO_DECODER_ERROR_OTHER -> {
                 return FfmpegDecoderException("Error decoding (see logcat).")
@@ -139,12 +146,22 @@ class FfmpegAudioDecoder(
                 hasOutputFormat = true
             }
         }
-        // Get a new reference to the output ByteBuffer in case the native decode method reallocated the
-        // buffer to grow its size.
-        outputData = checkNotNull(outputBuffer.data)
-        outputData.position(0)
-        outputData.limit(result)
+        outputBuffer.data?.position(0)
+        outputBuffer.data?.limit(result)
         return null
+    }
+
+
+    // Called from native code
+    /** @noinspection unused
+     */
+    private fun growOutputBuffer(
+        outputBuffer: SimpleDecoderOutputBuffer,
+        requiredSize: Int
+    ): ByteBuffer {
+        // Use it for new buffer so that hopefully we won't need to reallocate again
+        outputBufferSize = requiredSize
+        return outputBuffer.grow(requiredSize)
     }
 
     override fun release() {
@@ -165,6 +182,7 @@ class FfmpegAudioDecoder(
         context: Long,
         inputData: ByteBuffer,
         inputSize: Int,
+        decoderOutputBuffer: SimpleDecoderOutputBuffer,
         outputData: ByteBuffer,
         outputSize: Int
     ): Int
@@ -175,9 +193,8 @@ class FfmpegAudioDecoder(
     private external fun ffmpegRelease(context: Long)
 
     companion object {
-        // Output buffer sizes when decoding PCM mu-law streams, which is the maximum FFmpeg outputs.
-        private const val OUTPUT_BUFFER_SIZE_16BIT = 65536
-        private const val OUTPUT_BUFFER_SIZE_32BIT = OUTPUT_BUFFER_SIZE_16BIT * 2
+        private const val INITIAL_OUTPUT_BUFFER_SIZE_16BIT = 65536
+        private const val INITIAL_OUTPUT_BUFFER_SIZE_32BIT = INITIAL_OUTPUT_BUFFER_SIZE_16BIT * 2
         private const val AUDIO_DECODER_ERROR_INVALID_DATA = -1
         private const val AUDIO_DECODER_ERROR_OTHER = -2
 
@@ -244,7 +261,8 @@ class FfmpegAudioDecoder(
         codecName = checkNotNull(FfmpegLibrary.getCodecName(format.sampleMimeType))
         extraData = getExtraData(format.sampleMimeType, format.initializationData)
         encoding = if (outputFloat) C.ENCODING_PCM_FLOAT else C.ENCODING_PCM_16BIT
-        outputBufferSize = if (outputFloat) OUTPUT_BUFFER_SIZE_32BIT else OUTPUT_BUFFER_SIZE_16BIT
+        outputBufferSize =
+            if (outputFloat) INITIAL_OUTPUT_BUFFER_SIZE_32BIT else INITIAL_OUTPUT_BUFFER_SIZE_16BIT
         nativeContext = ffmpegInitialize(
             codecName,
             extraData,

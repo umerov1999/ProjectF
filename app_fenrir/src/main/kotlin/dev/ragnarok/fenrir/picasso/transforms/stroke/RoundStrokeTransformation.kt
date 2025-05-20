@@ -6,7 +6,7 @@ import com.squareup.picasso3.RequestHandler
 import com.squareup.picasso3.Transformation
 import dev.ragnarok.fenrir.picasso.transforms.stroke.ImageWithStrokeHelper.getRoundedBitmap
 
-class RoundStrokeTransformation(@ColorInt private val strokeFirst: Int) : Transformation {
+class RoundStrokeTransformation(@param:ColorInt private val strokeFirst: Int) : Transformation {
     override fun key(): String {
         return "${TAG}($strokeFirst)"
     }

@@ -1,9 +1,11 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("com.android.library")
     id("kotlin-android")
 }
 
-//1.13.0-alpha13
+//1.14.0-alpha01
 
 def srcDirs = [
         'com/google/android/material/animation',
@@ -41,6 +43,7 @@ def srcDirs = [
         'com/google/android/material/motion',
         'com/google/android/material/navigation',
         'com/google/android/material/navigationrail',
+        'com/google/android/material/overflow',
         'com/google/android/material/progressindicator',
         'com/google/android/material/radiobutton',
         'com/google/android/material/resources',
@@ -93,8 +96,10 @@ android {
         encoding = "utf-8"
         aaptOptions.additionalParameters "--no-version-vectors"
     }
-    kotlinOptions {
-        jvmTarget = "21"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
+        }
     }
     lint {
         checkOnly 'NewApi'

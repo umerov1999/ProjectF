@@ -25,7 +25,7 @@ import kotlin.math.cos
 
 class AudioPlayerBackgroundDrawable(
     private val bitmap: Bitmap,
-    @ColorInt private val surface: Int
+    @param:ColorInt private val surface: Int
 ) : Drawable(),
     Animatable {
     private val startTimeMillis: Long = SystemClock.uptimeMillis()

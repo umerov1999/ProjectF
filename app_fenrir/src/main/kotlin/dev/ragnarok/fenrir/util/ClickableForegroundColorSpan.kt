@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 
 class ClickableForegroundColorSpan(
-    @ColorInt private val mColor: Int,
+    @param:ColorInt private val mColor: Int,
     private val mOnHashTagClickListener: OnHashTagClickListener?
 ) : ClickableSpan() {
     override fun updateDrawState(ds: TextPaint) {

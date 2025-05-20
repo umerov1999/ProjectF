@@ -27,7 +27,7 @@ import com.squareup.picasso3.RequestHandler.Result.Bitmap
 internal abstract class RemoteViewsAction(
     picasso: Picasso,
     data: Request,
-    @DrawableRes val errorResId: Int,
+    @param:DrawableRes val errorResId: Int,
     val target: RemoteViewsTarget,
     var callback: Callback?
 ) : Action(picasso, data) {

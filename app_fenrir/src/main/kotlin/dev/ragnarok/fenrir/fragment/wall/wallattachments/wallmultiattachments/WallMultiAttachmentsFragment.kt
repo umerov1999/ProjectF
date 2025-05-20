@@ -445,7 +445,7 @@ class WallMultiAttachmentsFragment :
         goToPostEditor(requireActivity(), accountId, post)
     }
 
-    inner class FrameAdapter(@AttachmentWallType private var data: List<Int>) :
+    inner class FrameAdapter(@param:AttachmentWallType private var data: List<Int>) :
         RecyclerView.Adapter<FrameAdapter.Holder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
             return Holder(

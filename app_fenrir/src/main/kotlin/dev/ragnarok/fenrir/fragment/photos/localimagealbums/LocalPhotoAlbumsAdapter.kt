@@ -18,7 +18,7 @@ import dev.ragnarok.fenrir.settings.Settings
 class LocalPhotoAlbumsAdapter(
     context: Context,
     private var data: List<LocalImageAlbum>,
-    @Content_Local private val type: Int
+    @param:Content_Local private val type: Int
 ) : RecyclerView.Adapter<LocalPhotoAlbumsAdapter.Holder>() {
     private val isDark: Boolean = Settings.get().ui().isDarkModeEnabled(context)
     private var clickListener: ClickListener? = null
