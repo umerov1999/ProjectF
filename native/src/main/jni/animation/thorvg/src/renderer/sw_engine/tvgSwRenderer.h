@@ -46,8 +46,6 @@ public:
     bool postRender() override;
     void dispose(RenderData data) override;
     RenderRegion region(RenderData data) override;
-    RenderRegion viewport() override;
-    bool viewport(const RenderRegion& vp) override;
     bool blend(BlendMethod method) override;
     ColorSpace colorSpace() override;
     const RenderSurface* mainSurface() override;
@@ -55,6 +53,8 @@ public:
     bool clear() override;
     bool sync() override;
     bool target(pixel_t* data, uint32_t stride, uint32_t w, uint32_t h, ColorSpace cs);
+
+    SwSurface* request(int channelSize, bool square);
 
     RenderCompositor* target(const RenderRegion& region, ColorSpace cs, CompositionFlag flags) override;
     bool beginComposite(RenderCompositor* cmp, MaskMethod method, uint8_t opacity) override;
@@ -74,13 +74,11 @@ private:
     Array<SwTask*>       tasks;                       //async task list
     Array<SwSurface*>    compositors;                 //render targets cache list
     SwMpool*             mpool;                       //private memory pool
-    RenderRegion         vport;                       //viewport
     bool                 sharedMpool;                 //memory-pool behavior policy
 
     SwRenderer();
     ~SwRenderer();
 
-    SwSurface* request(int channelSize, bool square);
     RenderData prepareCommon(SwTask* task, const Matrix& transform, const Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flags);
 };
 

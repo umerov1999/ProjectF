@@ -228,6 +228,7 @@ class JsonObject(
  * Since this class also implements [List] interface, you can use
  * traditional methods like [List.get] or [List.getOrNull] to obtain Json elements.
  */
+@Suppress("JavaDefaultMethodsNotOverriddenByDelegation")
 @Serializable(JsonArraySerializer::class)
 class JsonArray(private val content: List<JsonElement>) : JsonElement(),
     List<JsonElement> by content {

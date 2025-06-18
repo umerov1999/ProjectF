@@ -1,5 +1,6 @@
 package dev.ragnarok.filegallery.activity.crash
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -19,6 +20,7 @@ import java.util.Locale
 object CrashUtils {
     private const val TAG = "CrashUtils"
 
+    @SuppressLint("DefaultUncaughtExceptionDelegation")
     fun install(context: Context) {
         try {
             Thread.setDefaultUncaughtExceptionHandler { _, throwable ->

@@ -63,6 +63,8 @@ import dev.ragnarok.fenrir.activity.NoMainActivity
 import dev.ragnarok.fenrir.activity.slidr.Slidr
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrConfig
 import dev.ragnarok.fenrir.listener.AppStyleable
+import dev.ragnarok.fenrir.module.FenrirNative
+import dev.ragnarok.fenrir.module.camerax.ImageToolsNative
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.CurrentTheme.getNavigationBarColor
@@ -85,7 +87,6 @@ class CameraScanActivity : NoMainActivity(), AppStyleable {
     private var flashButton: FloatingActionButton? = null
     private val reader: MultiFormatReader = MultiFormatReader()
     private var isFlash = false
-    private var mYBuffer = ByteArray(0)
     private var mDecorView: View? = null
     private var mFocusView: View? = null
     private var focusHideJob = CancelableJob()
@@ -228,19 +229,38 @@ class CameraScanActivity : NoMainActivity(), AppStyleable {
         return result.text
     }
 
-    private fun toYBuffer(image: ImageProxy): RotatedImage {
+    private fun toYBuffer(image: ImageProxy, flip: Boolean): RotatedImage? {
         var tmpRotationDegrees = image.imageInfo.rotationDegrees
         if (tmpRotationDegrees % 90 != 0) {
             tmpRotationDegrees = 0
+        }
+        if (FenrirNative.isNativeLoaded) {
+            val yPlane = image.getPlanes()[0]
+            val result = ImageToolsNative.rotateBuffer(
+                yPlane.getBuffer(),
+                yPlane.rowStride,
+                image.width,
+                image.height,
+                tmpRotationDegrees,
+                flip
+            )
+            if (result == null) {
+                return null
+            } else {
+                val op = RotatedImage(result, image.width, image.height)
+                if (tmpRotationDegrees != 180 && tmpRotationDegrees != 0) {
+                    op.height = image.width
+                    op.width = image.height
+                }
+                return op
+            }
         }
 
         val yPlane = image.getPlanes()[0]
         val yBuffer = yPlane.getBuffer()
         yBuffer.rewind()
         val ySize = yBuffer.remaining()
-        if (mYBuffer.size != ySize) {
-            mYBuffer = ByteArray(ySize)
-        }
+        val mYBuffer = ByteArray(ySize)
 
         val widthImage = image.width
         val heightImage = image.height
@@ -291,12 +311,17 @@ class CameraScanActivity : NoMainActivity(), AppStyleable {
         imageAnalysis.setAnalyzer(
             ContextCompat.getMainExecutor(this)
         ) { imageProxy ->
-            if (ImageFormat.YUV_420_888 != imageProxy.getFormat() && ImageFormat.YUV_422_888 != imageProxy.getFormat() && ImageFormat.YUV_444_888 != imageProxy.getFormat() && imageProxy.planes.size == 3) {
+            if (ImageFormat.YUV_420_888 != imageProxy.getFormat() || imageProxy.planes.size < 1) {
                 imageProxy.close()
                 return@setAnalyzer
             }
 
-            val ui = toYBuffer(imageProxy)
+            val ui =
+                toYBuffer(imageProxy, cameraSelector.lensFacing == CameraSelector.LENS_FACING_FRONT)
+            if (ui == null) {
+                imageProxy.close()
+                return@setAnalyzer
+            }
 
             val imageWidth = ui.width
             val imageHeight = ui.height

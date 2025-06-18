@@ -31,7 +31,7 @@ struct Canvas::Impl
 {
     Scene* scene;
     RenderMethod* renderer;
-    RenderRegion vport = {0, 0, INT32_MAX, INT32_MAX};
+    RenderRegion vport = {{0, 0}, {INT32_MAX, INT32_MAX}};
     Status status = Status::Synced;
 
     Impl() : scene(Scene::gen())
@@ -71,10 +71,9 @@ struct Canvas::Impl
         auto flag = RenderUpdateFlag::None;
         if (status == Status::Damaged || force) flag = RenderUpdateFlag::All;
 
-        auto m = tvg::identity();
-
         if (!renderer->preUpdate()) return Result::InsufficientCondition;
 
+        auto m = tvg::identity();
         if (paint) PAINT(paint)->update(renderer, m, clips, 255, flag);
         else PAINT(scene)->update(renderer, m, clips, 255, flag);
 
@@ -87,13 +86,9 @@ struct Canvas::Impl
     Result draw(bool clear)
     {
         if (status == Status::Drawing) return Result::InsufficientCondition;
-
         if (clear && !renderer->clear()) return Result::InsufficientCondition;
-
         if (scene->paints().empty()) return Result::InsufficientCondition;
-
         if (status == Status::Damaged) update(nullptr, false);
-
         if (!renderer->preRender()) return Result::InsufficientCondition;
 
         if (!PAINT(scene)->render(renderer) || !renderer->postRender()) return Result::InsufficientCondition;
@@ -119,11 +114,11 @@ struct Canvas::Impl
     {
         if (status != Status::Damaged && status != Status::Synced) return Result::InsufficientCondition;
 
-        RenderRegion val = {x, y, w, h};
+        RenderRegion val = {{x, y}, {x + w, y + h}};
         //intersect if the target buffer is already set.
         auto surface = renderer->mainSurface();
         if (surface && surface->w > 0 && surface->h > 0) {
-            val.intersect({0, 0, (int32_t)surface->w, (int32_t)surface->h});
+            val.intersect({{0, 0}, {(int32_t)surface->w, (int32_t)surface->h}});
         }
         if (vport == val) return Result::Success;
         renderer->viewport(val);

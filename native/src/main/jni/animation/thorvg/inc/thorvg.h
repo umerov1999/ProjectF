@@ -67,6 +67,7 @@ namespace tvg
 
 class RenderMethod;
 class Animation;
+class Shape;
 
 /**
  * @defgroup ThorVG ThorVG
@@ -231,9 +232,9 @@ enum class BlendMethod : uint8_t
 enum class SceneEffect : uint8_t
 {
     ClearAll = 0,      ///< Reset all previously applied scene effects, restoring the scene to its original state.
-    GaussianBlur,      ///< Apply a blur effect with a Gaussian filter. Param(3) = {sigma(float)[> 0], direction(int)[both: 0 / horizontal: 1 / vertical: 2], border(int)[duplicate: 0 / wrap: 1], quality(int)[0 - 100]}
+    GaussianBlur,      ///< Apply a blur effect with a Gaussian filter. Param(4) = {sigma(float)[> 0], direction(int)[both: 0 / horizontal: 1 / vertical: 2], border(int)[duplicate: 0 / wrap: 1], quality(int)[0 - 100]}
     DropShadow,        ///< Apply a drop shadow effect with a Gaussian Blur filter. Param(8) = {color_R(int)[0 - 255], color_G(int)[0 - 255], color_B(int)[0 - 255], opacity(int)[0 - 255], angle(double)[0 - 360], distance(double), blur_sigma(double)[> 0], quality(int)[0 - 100]}
-    Fill,              ///< Override the scene content color with a given fill information (Experimental API). Param(5) = {color_R(int)[0 - 255], color_G(int)[0 - 255], color_B(int)[0 - 255], opacity(int)[0 - 255]}
+    Fill,              ///< Override the scene content color with a given fill information (Experimental API). Param(4) = {color_R(int)[0 - 255], color_G(int)[0 - 255], color_B(int)[0 - 255], opacity(int)[0 - 255]}
     Tint,              ///< Tinting the current scene color with a given black, white color paramters (Experimental API). Param(7) = {black_R(int)[0 - 255], black_G(int)[0 - 255], black_B(int)[0 - 255], white_R(int)[0 - 255], white_G(int)[0 - 255], white_B(int)[0 - 255], intensity(float)[0 - 100]}
     Tritone            ///< Apply a tritone color effect to the scene using three color parameters for shadows, midtones, and highlights (Experimental API). Param(9) = {Shadow_R(int)[0 - 255], Shadow_G(int)[0 - 255], Shadow_B(int)[0 - 255], Midtone_R(int)[0 - 255], Midtone_G(int)[0 - 255], Midtone_B(int)[0 - 255], Highlight_R(int)[0 - 255], Highlight_G(int)[0 - 255], Highlight_B(int)[0 - 255]}
 };
@@ -398,13 +399,13 @@ public:
      *
      * @param[in] clipper The shape object as the clipper.
      *
-     * @retval Result::NonSupport If the @p clipper type is not Shape.
-     * @retval Result::InsufficientCondition if the target has already belonged to another paint.
+     * @retval Result::InsufficientCondition if the @p clipper has already belonged to another paint.
      *
-     * @note @p clipper only supports the Shape type.
+     * @see Paint::clip()
+     *
      * @since 1.0
      */
-    Result clip(Paint* clipper) noexcept;
+    Result clip(Shape* clipper) noexcept;
 
     /**
      * @brief Sets the blending method for the paint object.
@@ -479,6 +480,19 @@ public:
      * @since 0.5
      */
     MaskMethod mask(const Paint** target) const noexcept;
+
+    /**
+     * @brief Get the clipper shape of the paint object.
+     *
+     * This function returns the clipper that has been previously set to this paint object.
+     *
+     * @return The shape object used as the clipper, or @c nullptr if no clipper is set.
+     *
+     * @see Paint::clip(Shape* clipper)
+     *
+     * @since 1.0
+     */
+    Shape* clip() const noexcept;
 
     /**
      * @brief Increment the reference count for the Paint instance.
@@ -721,16 +735,12 @@ public:
     Result remove(Paint* paint = nullptr) noexcept;
 
     /**
-     * @brief Request the canvas to update the paint objects.
+     * @brief Requests the canvas to update the paint for up-to-date render preparation.
      *
-     * If a @c nullptr is passed all paint objects retained by the Canvas are updated,
-     * otherwise only the paint to which the given @p paint points.
-     *
-     * @param[in] paint A pointer to the Paint object or @c nullptr.
-     *
-     * @note The Update behavior can be asynchronous if the assigned thread number is greater than zero.
+     * @note Only modified paint instances will undergo the internal update process.
+     * @note The update operation may be asynchronous if the assigned thread count is greater than zero.
      */
-    Result update(Paint* paint = nullptr) noexcept;
+    Result update() noexcept;
 
     /**
      * @brief Requests the canvas to render Paint objects.

@@ -245,7 +245,7 @@ internal class ExtensionTypeEncoder(
                 when (type) {
                     MsgPackType.Ext.EXT8 -> (size ?: return).toByte().splitToByteArray()
                     MsgPackType.Ext.EXT16 -> (size ?: return).toShort().splitToByteArray()
-                    MsgPackType.Ext.EXT32 -> (size ?: return).toInt().splitToByteArray()
+                    MsgPackType.Ext.EXT32 -> (size ?: return).splitToByteArray()
                     else -> throw MsgPackSerializationException.serialization(
                         result,
                         "Unexpected extension type: $type"

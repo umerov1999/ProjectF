@@ -318,13 +318,13 @@ class UCropActivity : AppCompatActivity(), MenuProvider {
         val aspectRationSelectedByDefault =
             intent.getIntExtra(UCrop.Options.EXTRA_ASPECT_RATIO_SELECTED_BY_DEFAULT, 0)
         val aspectRatioList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableArrayListExtra<AspectRatio>(
+            intent.getParcelableArrayListExtra(
                 UCrop.Options.EXTRA_ASPECT_RATIO_OPTIONS,
                 AspectRatio::class.java
             )
         } else {
             @Suppress("deprecation")
-            intent.getParcelableArrayListExtra<AspectRatio>(UCrop.Options.EXTRA_ASPECT_RATIO_OPTIONS)
+            intent.getParcelableArrayListExtra(UCrop.Options.EXTRA_ASPECT_RATIO_OPTIONS)
         }
         if (aspectRatioX > 0 && aspectRatioY > 0) {
             mWrapperStateAspectRatio?.visibility = View.GONE

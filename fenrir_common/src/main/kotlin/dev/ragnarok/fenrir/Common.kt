@@ -18,7 +18,7 @@ object Common {
     private fun randomRange(min: Int, max: Int): Int {
         var pMax = max
         pMax -= min
-        return (Math.random() * ++pMax).toInt() + min
+        return (Math.random() * pMax + 1).toInt() + min
     }
 
     private fun getColorFromAttrs(resId: Int, context: Context, defaultColor: String): Int {

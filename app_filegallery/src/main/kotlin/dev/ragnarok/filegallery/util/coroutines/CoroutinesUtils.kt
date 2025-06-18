@@ -214,8 +214,9 @@ object CoroutinesUtils {
     }
 
     inline fun <reified T> List<Flow<T>>.mergeFlows(): Flow<Boolean> {
+        val th = this
         return flow {
-            for (i in this@mergeFlows) {
+            for (i in th) {
                 i.single()
             }
             emit(true)

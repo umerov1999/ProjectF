@@ -175,14 +175,14 @@ class AuthApi(private val service: IDirectLoginServiceProvider) : IAuthApi {
                     device_id,
                     DEVICE_COUNTRY_CODE
                 )
-                    .map {
-                        if (it.error != null) {
+                    .map { res ->
+                        if (res.error != null) {
                             throw AuthException(
-                                it.error.orEmpty(),
-                                it.errorDescription
+                                res.error.orEmpty(),
+                                res.errorDescription
                             )
                         } else {
-                            it
+                            res
                         }
                     }
             }

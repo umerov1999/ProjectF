@@ -12,9 +12,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ScrollView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.drawable.toDrawable
+import androidx.core.widget.NestedScrollView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import de.maxr1998.modernpreferences.R
@@ -303,7 +303,7 @@ class ColorPickerDialogBuilder private constructor(context: Context, theme: Int 
                 )
             colorPickerView = ColorPickerView(context)
             pickerContainer.addView(colorPickerView, layoutParamsForColorPickerView)
-            val t = ScrollView(context)
+            val t = NestedScrollView(context)
             t.layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT

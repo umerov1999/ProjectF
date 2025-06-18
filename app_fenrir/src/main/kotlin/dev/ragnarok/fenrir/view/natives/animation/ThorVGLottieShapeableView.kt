@@ -108,7 +108,10 @@ class ThorVGLottieShapeableView @JvmOverloads constructor(
         if (ch == null) {
             return
         }
-        if (filePathTmp == ch.absolutePath && deleteInvalidFileTmp == true && colorReplacementTmp == colorReplacement && useMoveColorTmp == useMoveColor && loadedFrom == LoadedFrom.FILE) {
+        if (filePathTmp == ch.absolutePath && deleteInvalidFileTmp && colorReplacementTmp.contentEquals(
+                colorReplacement
+            ) && useMoveColorTmp == useMoveColor && loadedFrom == LoadedFrom.FILE
+        ) {
             return
         }
         clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = false)
@@ -136,7 +139,7 @@ class ThorVGLottieShapeableView @JvmOverloads constructor(
             }
             return
         }
-        if (filePathTmp == url && colorReplacementTmp == colorReplacement && useMoveColorTmp == useMoveColor && loadedFrom == LoadedFrom.NET) {
+        if (filePathTmp == url && colorReplacementTmp.contentEquals(colorReplacement) && useMoveColorTmp == useMoveColor && loadedFrom == LoadedFrom.NET) {
             return
         }
         clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
@@ -186,7 +189,7 @@ class ThorVGLottieShapeableView @JvmOverloads constructor(
         if (!FenrirNative.isNativeLoaded || resId == -1) {
             return
         }
-        if (rawResTmp == resId && colorReplacementTmp == colorReplacement && useMoveColorTmp == useMoveColor && loadedFrom == LoadedFrom.RES) {
+        if (rawResTmp == resId && colorReplacementTmp.contentEquals(colorReplacement) && useMoveColorTmp == useMoveColor && loadedFrom == LoadedFrom.RES) {
             return
         }
         clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)
@@ -208,7 +211,10 @@ class ThorVGLottieShapeableView @JvmOverloads constructor(
         if (!FenrirNative.isNativeLoaded || !file.exists()) {
             return
         }
-        if (filePathTmp == file.absolutePath && deleteInvalidFileTmp == deleteInvalidFile && colorReplacementTmp == colorReplacement && useMoveColorTmp == useMoveColor && loadedFrom == LoadedFrom.FILE) {
+        if (filePathTmp == file.absolutePath && deleteInvalidFileTmp == deleteInvalidFile && colorReplacementTmp.contentEquals(
+                colorReplacement
+            ) && useMoveColorTmp == useMoveColor && loadedFrom == LoadedFrom.FILE
+        ) {
             return
         }
         clearAnimationDrawable(callSuper = true, clearState = true, cancelTask = true)

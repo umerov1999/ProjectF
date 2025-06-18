@@ -155,7 +155,7 @@ object ViewUtils {
         if (fragment.isResumed) {
             swipeRefreshLayout.isRefreshing = true
         } else {
-            swipeRefreshLayout.post(Runnable { swipeRefreshLayout.isRefreshing = true })
+            swipeRefreshLayout.post { swipeRefreshLayout.isRefreshing = true }
         }
     }
 

@@ -70,10 +70,12 @@ class MySearchView : FrameLayout {
         if (isInEditMode) {
             return
         }
-        if (!isFetchedListQueries) {
-            loadQueries()
-        } else {
-            updateQueriesAdapter()
+        if (searchId > 0) {
+            if (!isFetchedListQueries) {
+                loadQueries()
+            } else {
+                updateQueriesAdapter()
+            }
         }
     }
 
@@ -108,7 +110,7 @@ class MySearchView : FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.custom_searchview, this)
         val a = context.obtainStyledAttributes(attrs, R.styleable.MySearchView)
         searchId = try {
-            a.getInt(R.styleable.MySearchView_search_source_id, id)
+            a.getInt(R.styleable.MySearchView_search_source_id, 0)
         } finally {
             a.recycle()
         }
@@ -168,15 +170,17 @@ class MySearchView : FrameLayout {
     private fun onSubmitQuery() {
         val query: CharSequence? = mInput?.text
         if (query.trimmedNonNullNoEmpty()) {
-            mQueryDisposable.set(
-                stores.searchQueriesStore().insertQuery(searchId, query.toString())
-                    .fromIOToMain({
-                        if (!listQueries.contains(query.toString())) {
-                            listQueries.add(0, query.toString())
-                            updateQueriesAdapter()
-                        }
-                    }, { Log.e(TAG, it.localizedMessage.orEmpty()) })
-            )
+            if (searchId > 0) {
+                mQueryDisposable.set(
+                    stores.searchQueriesStore().insertQuery(searchId, query.toString())
+                        .fromIOToMain({
+                            if (!listQueries.contains(query.toString())) {
+                                listQueries.add(0, query.toString())
+                                updateQueriesAdapter()
+                            }
+                        }, { Log.e(TAG, it.localizedMessage.orEmpty()) })
+                )
+            }
             if (mOnQueryChangeListener != null && mOnQueryChangeListener?.onQueryTextSubmit(query.toString()) == true) {
                 val imm =
                     context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?

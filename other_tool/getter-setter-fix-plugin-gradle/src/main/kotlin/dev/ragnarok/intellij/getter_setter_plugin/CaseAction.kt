@@ -24,6 +24,9 @@ open class CaseActionAction : AnAction() {
                 var uppers = 0
                 var lowers = 0
                 for (i in selected) {
+                    if (!i.isLetter()) {
+                        continue
+                    }
                     if (i.isLowerCase()) {
                         lowers++
                     } else {

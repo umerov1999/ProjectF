@@ -15,12 +15,13 @@
 #include "fenrir_native.h"
 
 #define align_buffer_64(var, size)                                           \
-  uint8_t* var##_mem = (uint8_t*)(malloc((size) + 63));         /* NOLINT */ \
-  uint8_t* var = (uint8_t*)(((intptr_t)(var##_mem) + 63) & ~63) /* NOLINT */
+  auto* var##_mem = new uint8_t[(size) + 63];         /* NOLINT */ \
+  auto* var = reinterpret_cast<uint8_t *>(((intptr_t)(var##_mem) + 63) & ~63) /* NOLINT */
 
 #define free_aligned_buffer_64(var) \
-  free(var##_mem);                  \
-  var = 0
+  delete[] var##_mem;                  \
+  var##_mem = nullptr;                 \
+  var = nullptr
 
 static libyuv::RotationMode get_rotation_mode(int rotation) {
     libyuv::RotationMode mode = libyuv::kRotate0;
@@ -655,9 +656,9 @@ extern "C" JNIEXPORT jint Java_dev_ragnarok_fenrir_module_camerax_ImageProcessin
         jobject,
         jobject byte_buffer_v,
         jobject byte_buffer_u) {
-    uint8_t *byte_buffer_v_ptr =
+    auto *byte_buffer_v_ptr =
             static_cast<uint8_t *>(env->GetDirectBufferAddress(byte_buffer_v));
-    uint8_t *byte_buffer_u_ptr =
+    auto *byte_buffer_u_ptr =
             static_cast<uint8_t *>(env->GetDirectBufferAddress(byte_buffer_u));
     return byte_buffer_v_ptr - byte_buffer_u_ptr;
 }
@@ -673,7 +674,7 @@ Java_dev_ragnarok_fenrir_module_camerax_ImageProcessingUtilNative_nativeNewDirec
         jint offset,
         jint capacity) {
 
-    uint8_t *byte_buffer_ptr =
+    auto *byte_buffer_ptr =
             static_cast<uint8_t *>(env->GetDirectBufferAddress(byte_buffer));
 
     // Create the ByteBuffers

@@ -639,8 +639,8 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                                                         R.string.success,
                                                         "#AA48BE2D".toColor()
                                                     )
-                                                }, {
-                                                    view?.showThrowable(it)
+                                                }, { e ->
+                                                    view?.showThrowable(e)
                                                 })
                                         )
                                     }
@@ -649,8 +649,8 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                         }
                         emit(true)
                     } else {
-                        checkQRAuthState(q, token, data).collect {
-                            emit(it)
+                        checkQRAuthState(q, token, data).collect { uy ->
+                            emit(uy)
                         }
                     }
                 }
@@ -676,7 +676,9 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                         if (rt.status != 0 && rt.polling_delay > 0) {
                             appendJob(checkQRAuthState(q, it, rt).hiddenIO())
                         }
-                    }, { showError(it) })
+                    }, { e ->
+                        showError(e)
+                    })
             )
         }
     }

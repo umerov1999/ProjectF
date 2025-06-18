@@ -27,6 +27,12 @@
 /* Internal Class Implementation                                        */
 /************************************************************************/
 
+static bool _colinear(const Point* p)
+{
+    return tvg::zero(*p - *(p + 1)) && tvg::zero(*(p + 2) - *(p + 3));
+}
+
+
 static void _roundCorner(Array<PathCommand>& cmds, Array<Point>& pts, Point& prev, Point& curr, Point& next, float r)
 {
     auto lenPrev = length(prev - curr);
@@ -115,9 +121,12 @@ void LottieOffsetModifier::corner(RenderPath& out, Line& line, Line& nextLine, u
                 auto norm = normal(line.pt1, line.pt2);
                 auto nextNorm = normal(nextLine.pt1, nextLine.pt2);
                 auto miterDirection = (norm + nextNorm) / length(norm + nextNorm);
+                if (1.0f <= miterLimit * fabsf(miterDirection.x * norm.x + miterDirection.y * norm.y)) {
+                    out.cmds.push(PathCommand::LineTo);
+                    out.pts.push(intersect);
+                }
                 out.cmds.push(PathCommand::LineTo);
-                if (1.0f <= miterLimit * fabsf(miterDirection.x * norm.x + miterDirection.y * norm.y)) out.pts.push(intersect);
-                else out.pts.push(nextLine.pt1);
+                out.pts.push(nextLine.pt1);
             } else {
                 out.cmds.push(PathCommand::LineTo);
                 out.pts.push(nextLine.pt1);
@@ -192,14 +201,10 @@ bool LottieRoundnessModifier::modifyPath(PathCommand* inCmds, uint32_t inCmdsCnt
                 break;
             }
             case PathCommand::CubicTo: {
-                auto& prev = inPts[iPts - 1];
-                auto& curr = inPts[iPts + 2];
-                if (iCmds < inCmdsCnt - 1 &&
-                    tvg::zero(inPts[iPts - 1] - inPts[iPts]) &&
-                    tvg::zero(inPts[iPts + 1] - inPts[iPts + 2])) {
-                    if (inCmds[iCmds + 1] == PathCommand::CubicTo &&
-                        tvg::zero(inPts[iPts + 2] - inPts[iPts + 3]) &&
-                        tvg::zero(inPts[iPts + 4] - inPts[iPts + 5])) {
+                if (iCmds < inCmdsCnt - 1 && _colinear(inPts + iPts - 1)) {
+                    auto& prev = inPts[iPts - 1];
+                    auto& curr = inPts[iPts + 2];
+                    if (inCmds[iCmds + 1] == PathCommand::CubicTo && _colinear(inPts + iPts + 2)) {
                         _roundCorner(path.cmds, path.pts, prev, curr, inPts[iPts + 5], r);
                         iPts += 3;
                         break;

@@ -321,7 +321,7 @@ class UserWallPresenter(
 
     @SuppressLint("ResourceType")
     private fun resolvePrimaryActionButton() {
-        @StringRes var title: Int? = null
+        @StringRes var title: Int?
         if (accountId == ownerId) {
             title = R.string.edit_status
         } else {

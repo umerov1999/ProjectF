@@ -352,25 +352,21 @@ static void _repeat(LottieGroup* parent, Shape* path, RenderContext* ctx)
 
         for (int i = 0; i < repeater->cnt; ++i) {
             auto multiplier = repeater->offset + static_cast<float>(i);
-
             ARRAY_FOREACH(p, propagators) {
                 auto shape = static_cast<Shape*>((*p)->duplicate());
                 SHAPE(shape)->rs.path = SHAPE(path)->rs.path;
+                auto opacity = tvg::lerp<uint8_t>(repeater->startOpacity, repeater->endOpacity, static_cast<float>(i + 1) / repeater->cnt);
+                shape->opacity(MULTIPLY((*p)->opacity(), opacity));
 
-                auto opacity = repeater->interpOpacity ? tvg::lerp<uint8_t>(repeater->startOpacity, repeater->endOpacity, static_cast<float>(i + 1) / repeater->cnt) : repeater->startOpacity;
-                shape->opacity(opacity);
-
-                Matrix m;
-                tvg::identity(&m);
+                auto m = tvg::identity();
                 translate(&m, repeater->position * multiplier + repeater->anchor);
                 scale(&m, {powf(repeater->scale.x * 0.01f, multiplier), powf(repeater->scale.y * 0.01f, multiplier)});
                 rotate(&m, repeater->rotation * multiplier);
                 translateR(&m, -repeater->anchor);
-                m = repeater->transform * m;
 
                 Matrix inv;
                 inverse(&repeater->transform, &inv);
-                shape->transform(m * (inv * shape->transform()));
+                shape->transform((repeater->transform * m) * (inv * shape->transform()));
                 shapes.push(shape);
             }
         }
@@ -613,7 +609,7 @@ void LottieBuilder::updatePolygon(LottieGroup* parent, LottiePolyStar* star, flo
     auto radius = star->outerRadius(frameNo, tween, exps);
     auto outerRoundness = star->outerRoundness(frameNo, tween, exps) * 0.01f;
 
-    auto angle = deg2rad(-90.0f);
+    auto angle = -MATH_PI2;
     auto anglePerPoint = 2.0f * MATH_PI / float(ptsCnt);
     auto direction = star->clockwise ? 1.0f : -1.0f;
     auto hasRoundness = !tvg::zero(outerRoundness);
@@ -641,6 +637,7 @@ void LottieBuilder::updatePolygon(LottieGroup* parent, LottiePolyStar* star, flo
     auto in = Point{x, y} * transform;
     shape->moveTo(in.x, in.y);
 
+    auto coeff = anglePerPoint * radius * outerRoundness * POLYGON_MAGIC_NUMBER;
     for (size_t i = 0; i < ptsCnt; i++) {
         auto previousX = x;
         auto previousY = y;
@@ -649,16 +646,11 @@ void LottieBuilder::updatePolygon(LottieGroup* parent, LottiePolyStar* star, flo
 
         if (hasRoundness) {
             auto cp1Theta = tvg::atan2(previousY, previousX) - MATH_PI2 * direction;
-            auto cp1Dx = cosf(cp1Theta);
-            auto cp1Dy = sinf(cp1Theta);
+            auto cp1x = coeff * cosf(cp1Theta);
+            auto cp1y = coeff * sinf(cp1Theta);
             auto cp2Theta = tvg::atan2(y, x) - MATH_PI2 * direction;
-            auto cp2Dx = cosf(cp2Theta);
-            auto cp2Dy = sinf(cp2Theta);
-
-            auto cp1x = radius * outerRoundness * POLYGON_MAGIC_NUMBER * cp1Dx;
-            auto cp1y = radius * outerRoundness * POLYGON_MAGIC_NUMBER * cp1Dy;
-            auto cp2x = radius * outerRoundness * POLYGON_MAGIC_NUMBER * cp2Dx;
-            auto cp2y = radius * outerRoundness * POLYGON_MAGIC_NUMBER * cp2Dy;
+            auto cp2x = coeff * cosf(cp2Theta);
+            auto cp2y = coeff * sinf(cp2Theta);
 
             auto in2 = Point{previousX - cp1x, previousY - cp1y} * transform;
             auto in3 = Point{x + cp2x, y + cp2y} * transform;
@@ -682,8 +674,7 @@ void LottieBuilder::updatePolystar(LottieGroup* parent, LottieObject** child, fl
     auto star = static_cast<LottiePolyStar*>(*child);
 
     //Optimize: Can we skip the individual coords transform?
-    Matrix matrix;
-    tvg::identity(&matrix);
+    auto matrix = tvg::identity();
     translate(&matrix, star->position(frameNo, tween, exps));
     rotate(&matrix, star->rotation(frameNo, tween, exps));
 
@@ -743,7 +734,6 @@ void LottieBuilder::updateRepeater(TVG_UNUSED LottieGroup* parent, LottieObject*
     r.startOpacity = repeater->startOpacity(frameNo, tween, exps);
     r.endOpacity = repeater->endOpacity(frameNo, tween, exps);
     r.inorder = repeater->inorder;
-    r.interpOpacity = (r.startOpacity == r.endOpacity) ? false : true;
     ctx->repeaters.push(r);
 
     ctx->merging = nullptr;
@@ -938,7 +928,7 @@ void LottieBuilder::updateText(LottieLayer* layer, float frameNo)
 
     if (!p || !text->font) return;
 
-    if (text->font->origin != LottieFont::Origin::Embedded) {
+    if (text->font->origin != LottieFont::Origin::Local || text->font->chars.empty()) {
         _fontText(doc, layer->scene);
         return;
     }
@@ -1178,8 +1168,8 @@ void LottieBuilder::updateMasks(LottieLayer* layer, float frameNo)
 {
     if (layer->masks.count == 0) return;
 
-    //Introduce an intermediate scene for embracing the matte + masking
-    if (layer->matteTarget) {
+    //Introduce an intermediate scene for embracing matte + masking or precomp clipping + masking replaced by clipping
+    if (layer->matteTarget || layer->type == LottieLayer::Precomp) {
         auto scene = Scene::gen();
         scene->push(layer->scene);
         layer->scene = scene;
@@ -1196,7 +1186,6 @@ void LottieBuilder::updateMasks(LottieLayer* layer, float frameNo)
         auto method = mask->method;
         auto opacity = mask->opacity(frameNo);
         auto expand = mask->expand(frameNo);
-        auto fastTrack = false;  //single clipping
 
         //the first mask
         if (!pShape) {
@@ -1207,7 +1196,6 @@ void LottieBuilder::updateMasks(LottieLayer* layer, float frameNo)
             if (layer->masks.count == 1 && compMethod == MaskMethod::Alpha) {
                 layer->scene->opacity(MULTIPLY(layer->scene->opacity(), opacity));
                 layer->scene->clip(pShape);
-                fastTrack = true;
             } else {
                 layer->scene->mask(pShape, compMethod);
             }
@@ -1233,9 +1221,6 @@ void LottieBuilder::updateMasks(LottieLayer* layer, float frameNo)
             auto offset = LottieOffsetModifier(expand);
             mask->pathset(frameNo, SHAPE(pShape)->rs.path, nullptr, tween, exps, &offset);
         }
-
-        if (fastTrack) return;
-
         pOpacity = opacity;
         pMethod = method;
     }
@@ -1245,7 +1230,7 @@ void LottieBuilder::updateMasks(LottieLayer* layer, float frameNo)
 bool LottieBuilder::updateMatte(LottieComposition* comp, float frameNo, Scene* scene, LottieLayer* layer)
 {
     auto target = layer->matteTarget;
-    if (!target) return true;
+    if (!target || target->type == LottieLayer::Null) return true;
 
     updateLayer(comp, scene, target, frameNo);
 

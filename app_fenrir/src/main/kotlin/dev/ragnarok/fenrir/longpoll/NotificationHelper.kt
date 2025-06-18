@@ -453,7 +453,7 @@ object NotificationHelper {
         pTitle: String?,
         url: String?
     ) {
-        var title = pTitle
+        val title = pTitle
         val hideBody = Settings.get()
             .security()
             .needHideMessagesBodyForNotif

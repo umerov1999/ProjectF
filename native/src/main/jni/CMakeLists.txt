@@ -461,6 +461,7 @@ add_library(fenrir_jni
         audio/taglib/taglib_jni.cpp
         audio/opus/opus_jni.cc
         camerax/image_processing_util_jni.cpp
+        camerax/image_tools_jni.cpp
         camerax/surface_util_jni.cpp
         compress/zstd/jni_bufferdecompress_zstd.c
         compress/zstd/jni_directbuffercompress_zstd.c

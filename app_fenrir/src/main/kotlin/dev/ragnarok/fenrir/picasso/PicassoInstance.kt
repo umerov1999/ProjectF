@@ -86,14 +86,6 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
                     .addHeader("User-Agent", UserAgentTool.USER_AGENT_CURRENT_ACCOUNT).build()
                 chain.proceed(request)
             }).addInterceptor(UncompressDefaultInterceptor)
-        /*
-        if (Settings.get().main().isLimit_cache) {
-            builder.addNetworkInterceptor(Interceptor { chain: Interceptor.Chain ->
-                chain.proceed(chain.request()).newBuilder()
-                    .header("Cache-Control", "max-age=86400").build()
-            })
-        }
-         */
         ProxyUtil.applyProxyConfig(builder, proxySettings.activeProxy)
         BitmapSafeResize.setMaxResolution(Settings.get().main().maxBitmapResolution)
         BitmapSafeResize.setHardwareRendering(Settings.get().main().rendering_mode)

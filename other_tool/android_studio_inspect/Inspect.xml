@@ -144,6 +144,7 @@
   <inspection_tool class="KotlinConstantConditions" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="KotlinObjectExtensionRegistration" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="KotlinObjectRegisteredAsExtension" enabled="false" level="ERROR" enabled_by_default="false" />
+  <inspection_tool class="KotlinUnreachableCode" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="LeakableMapKey" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="LightServiceMigrationCode" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="LightServiceMigrationXML" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -166,7 +167,6 @@
   <inspection_tool class="MarkdownUnresolvedHeaderReference" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="MarkdownUnresolvedLinkLabel" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="MaskedAssertion" enabled="false" level="WARNING" enabled_by_default="false" />
-  <inspection_tool class="MemberVisibilityCanBePrivate" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="MetaAnnotationWithoutRuntimeRetention" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="MethodName" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="MethodParameterType" enabled="false" level="ERROR" enabled_by_default="false" />

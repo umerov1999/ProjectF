@@ -1,6 +1,12 @@
 package dev.ragnarok.fenrir.module.animation
 
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.ColorFilter
+import android.graphics.Paint
+import android.graphics.PixelFormat
+import android.graphics.Rect
+import android.graphics.RectF
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.os.SystemClock
@@ -139,7 +145,7 @@ class AnimatedFileDrawable(
         scheduleNextGetFrame()
     }
 
-    private suspend fun loadFrameRunnable() {
+    private fun loadFrameRunnable() {
         if (!isRecycled) {
             try {
                 if (nativePtr != 0L || metaData[0] == 0 || metaData[1] == 0) {

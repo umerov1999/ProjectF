@@ -56,10 +56,7 @@ class PicassoInstance @SuppressLint("CheckResult") private constructor(
             .connectTimeout(Constants.PICASSO_TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(Constants.PICASSO_TIMEOUT, TimeUnit.SECONDS)
             .callTimeout(Constants.PICASSO_TIMEOUT, TimeUnit.SECONDS)
-            .cache(cache_data).addNetworkInterceptor(Interceptor { chain: Interceptor.Chain ->
-                chain.proceed(chain.request()).newBuilder()
-                    .header("Cache-Control", "max-age=86400").build()
-            })
+            .cache(cache_data)
             .addInterceptor(Interceptor { chain: Interceptor.Chain ->
                 val request = chain.request().newBuilder()
                     .addHeader("User-Agent", Constants.USER_AGENT).build()

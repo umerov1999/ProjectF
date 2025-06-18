@@ -2089,14 +2089,14 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     it.recycle()
                     val d = Drawable.createFromPath(file.absolutePath)
                     if (light) {
-                        preferencesAdapter?.applyToPreference("chat_light_background") {
-                            it.icon(d)
-                            it.requestRebind()
+                        preferencesAdapter?.applyToPreference("chat_light_background") { p ->
+                            p.icon(d)
+                            p.requestRebind()
                         }
                     } else {
-                        preferencesAdapter?.applyToPreference("chat_dark_background") {
-                            it.icon(d)
-                            it.requestRebind()
+                        preferencesAdapter?.applyToPreference("chat_dark_background") { p ->
+                            p.icon(d)
+                            p.requestRebind()
                         }
                     }
                 }

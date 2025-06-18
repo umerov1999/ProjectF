@@ -13,9 +13,10 @@
 
 <b>Инструкция по сборке:</b><br>
 Требуется:<br>
-  1) Android Studio Meerkat 2024.3.2 или выше. Kotlin 2.2.*
+  1) Android Studio Narwhal 2025.1.1 или выше. Kotlin 2.2.*
   2) Android SDK 36
-  3) Android NDK 29.0.13113456
+  3) Android NDK 29.0.13599879
+  4) CMake 4.0.2
   
   Если не работает музыка в Fenrir Kate, обновите kate_receipt_gms_token в app.build_config.<br>
   Взять токен можно из Kate Mobile Extra Mod
@@ -30,6 +31,14 @@
         ./ffmpeg.sh<br>
         после синхронизации репозитория ffmpeg введите min sdk version<br>
         после сборки ffmpeg соберите native в Android Studio и поместите native-release.aar в compiled_native<br>
+  2.1) Вариант 2. Далее нужно собрать нативную библиотеку:<br>
+        Раскомментировать [include ":native"] в settings.gradle<br>
+        Раскомментировать [implementation project(":native")] в app*/build.gradle<br>
+        Удалить [implementation fileTree('../compiled_native') { include '*.aar' }] в app*/build.gradle<br>
+        cd native<br>
+        ./ffmpeg.sh<br>
+        после синхронизации репозитория ffmpeg введите min sdk version<br>
+        после сборки ffmpeg можете собирать проект<br>
   3) Выберите flavor - fenrir или kate и Debug или Release и соберите apk :)
 
 Локальный медиа сервер https://github.com/umerov1999/FenrirMediaServer/releases

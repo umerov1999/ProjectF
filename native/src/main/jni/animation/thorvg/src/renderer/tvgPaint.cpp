@@ -58,7 +58,7 @@ static Result _clipRect(RenderMethod* renderer, const Point* pts, const Matrix& 
         if (tmp[i].y > max.y) max.y = tmp[i].y;
     }
 
-    float region[4] = {float(before.x), float(before.x + before.w), float(before.y), float(before.y + before.h)};
+    float region[4] = {float(before.min.x), float(before.max.x), float(before.min.y), float(before.max.y)};
 
     //figure out if the clipper is a superset of the current viewport(before) region
     if (min.x <= region[0] && max.x >= region[1] && min.y <= region[2] && max.y >= region[3]) {
@@ -66,7 +66,7 @@ static Result _clipRect(RenderMethod* renderer, const Point* pts, const Matrix& 
         return Result::Success;
     //figure out if the clipper is totally outside of the viewport
     } else if (max.x <= region[0] || min.x >= region[1] || max.y <= region[2] || min.y >= region[3]) {
-        renderer->viewport({0, 0, 0, 0});
+        renderer->viewport({});
         return Result::Success;
     }
     return Result::InsufficientCondition;
@@ -122,13 +122,13 @@ static Result _compFastTrack(RenderMethod* renderer, Paint* cmpTarget, const Mat
         if (v1.x > v2.x) std::swap(v1.x, v2.x);
         if (v1.y > v2.y) std::swap(v1.y, v2.y);
 
-        after.x = static_cast<int32_t>(nearbyint(v1.x));
-        after.y = static_cast<int32_t>(nearbyint(v1.y));
-        after.w = static_cast<int32_t>(nearbyint(v2.x)) - after.x;
-        after.h = static_cast<int32_t>(nearbyint(v2.y)) - after.y;
+        after.min.x = static_cast<int32_t>(nearbyint(v1.x));
+        after.min.y = static_cast<int32_t>(nearbyint(v1.y));
+        after.max.x = static_cast<int32_t>(nearbyint(v2.x));
+        after.max.y = static_cast<int32_t>(nearbyint(v2.y));
 
-        if (after.w < 0) after.w = 0;
-        if (after.h < 0) after.h = 0;
+        if (after.max.x < after.min.x) after.max.x = after.min.x;
+        if (after.max.y < after.min.y) after.max.y = after.min.y;
 
         after.intersect(before);
         renderer->viewport(after);
@@ -168,7 +168,7 @@ Paint* Paint::Impl::duplicate(Paint* ret)
     ret->pImpl->opacity = opacity;
 
     if (maskData) ret->mask(maskData->target->duplicate(), maskData->method);
-    if (clipper) ret->clip(clipper->duplicate());
+    if (clipper) ret->clip(static_cast<Shape*>(clipper->duplicate()));
 
     return ret;
 }
@@ -185,7 +185,7 @@ bool Paint::Impl::render(RenderMethod* renderer)
         PAINT_METHOD(region, bounds(renderer));
 
         if (MASK_REGION_MERGING(maskData->method)) region.add(PAINT(maskData->target)->bounds(renderer));
-        if (region.w == 0 || region.h == 0) return true;
+        if (region.invalid()) return true;
         cmp = renderer->target(region, MASK_TO_COLORSPACE(renderer, maskData->method), CompositionFlag::Masking);
         if (renderer->beginComposite(cmp, MaskMethod::None, 255)) {
             maskData->target->pImpl->render(renderer);
@@ -203,8 +203,15 @@ bool Paint::Impl::render(RenderMethod* renderer)
 }
 
 
-RenderData Paint::Impl::update(RenderMethod* renderer, const Matrix& pm, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag pFlag, bool clipper)
+RenderData Paint::Impl::update(RenderMethod* renderer, const Matrix& pm, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flag, bool clipper)
 {
+    bool ret;
+    PAINT_METHOD(ret, skip((flag | renderFlag)));
+
+    if (ret) return rd;
+
+    cmpFlag = CompositionFlag::Invalid;  //must clear after the rendering
+
     if (this->renderer != renderer) {
         if (this->renderer) TVGERR("RENDERER", "paint's renderer has been changed!");
         renderer->ref();
@@ -240,7 +247,7 @@ RenderData Paint::Impl::update(RenderMethod* renderer, const Matrix& pm, Array<R
             }
         }
         if (compFastTrack == Result::InsufficientCondition) {
-            trd = PAINT(target)->update(renderer, pm, clips, 255, pFlag, false);
+            trd = PAINT(target)->update(renderer, pm, clips, 255, flag, false);
         }
     }
 
@@ -256,24 +263,21 @@ RenderData Paint::Impl::update(RenderMethod* renderer, const Matrix& pm, Array<R
             pclip->ctxFlag |= ContextFlag::FastTrack;
             compFastTrack = Result::Success;
         } else {
-            trd = pclip->update(renderer, pm, clips, 255, pFlag, true);
+            trd = pclip->update(renderer, pm, clips, 255, flag, true);
             clips.push(trd);
             compFastTrack = Result::InsufficientCondition;
         }
     }
 
     /* 3. Main Update */
-    auto newFlag = pFlag | renderFlag;
-    renderFlag = RenderUpdateFlag::None;
     opacity = MULTIPLY(opacity, this->opacity);
-
-    RenderData rd = nullptr;
-
-    PAINT_METHOD(rd, update(renderer, pm * tr.m, clips, opacity, newFlag, clipper));
+    PAINT_METHOD(ret, update(renderer, pm * tr.m, clips, opacity, (flag | renderFlag), clipper));
 
     /* 4. Composition Post Processing */
     if (compFastTrack == Result::Success) renderer->viewport(viewport);
     else if (this->clipper) clips.pop();
+
+    renderFlag = RenderUpdateFlag::None;
 
     return rd;
 }
@@ -376,13 +380,15 @@ Paint* Paint::duplicate() const noexcept
 }
 
 
-Result Paint::clip(Paint* clipper) noexcept
+Result Paint::clip(Shape* clipper) noexcept
 {
-    if (clipper && clipper->type() != Type::Shape) {
-        TVGERR("RENDERER", "Clipping only supports the Shape!");
-        return Result::NonSupport;
-    }
     return pImpl->clip(clipper);
+}
+
+
+Shape* Paint::clip() const noexcept
+{
+    return pImpl->clipper;
 }
 
 

@@ -295,7 +295,7 @@ private:
         void putString(const char *value) {
             type = Types::TYPE_STRING;
             auto sz = strlen(value);
-            char *tmp = (char *) malloc(sz + 1);
+            char *tmp = new char[sz + 1];
             memcpy(tmp, value, sz);
             tmp[sz] = 0;
             numeric.longValue = (int64_t) (intptr_t) tmp;
@@ -308,7 +308,7 @@ private:
 
         void putBinary(int8_t *value, int32_t size) {
             type = Types::TYPE_BINARY;
-            auto *tmp = (int8_t *) malloc(size + sizeof(int32_t));
+            auto *tmp = new int8_t[size + sizeof(int32_t)];
             memcpy(tmp, &size, sizeof(int32_t));
             if (size > 0) {
                 memcpy(tmp + sizeof(int32_t), value, size);
@@ -709,7 +709,7 @@ Java_dev_ragnarok_fenrir_module_parcel_ParcelNative_readString(JNIEnv *env, jobj
     jstring res;
     if (ret != nullptr) {
         res = env->NewStringUTF(ret);
-        free(ret);
+        delete[] ret;
     } else {
         res = nullptr;
     }
@@ -742,7 +742,7 @@ Java_dev_ragnarok_fenrir_module_parcel_ParcelNative_readBinary(JNIEnv *env, jobj
         if (sz > 0) {
             env->SetByteArrayRegion(res, 0, sz, ret + sizeof(int32_t));
         }
-        free(ret);
+        delete[] ret;
     } else {
         res = nullptr;
     }

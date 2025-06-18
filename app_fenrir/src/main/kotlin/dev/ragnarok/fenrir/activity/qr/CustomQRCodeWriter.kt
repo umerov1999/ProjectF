@@ -17,7 +17,7 @@ import kotlin.math.roundToInt
 class CustomQRCodeWriter {
     private val radii = FloatArray(8)
     private lateinit var input: ByteMatrix
-    private var imageBloks = 0
+    private var imageBlocks = 0
     private var imageBlockX = 0
     private var sideQuadSize = 0
     var imageSize = 0
@@ -83,12 +83,12 @@ class CustomQRCodeWriter {
         val rect = GradientDrawable()
         rect.shape = GradientDrawable.RECTANGLE
         rect.cornerRadii = radii
-        imageBloks = ((size - 32) / 4.65f / multiple).roundToInt()
-        if (imageBloks % 2 != inputWidth % 2) {
-            imageBloks++
+        imageBlocks = ((size - 32) / 4.65f / multiple).roundToInt()
+        if (imageBlocks % 2 != inputWidth % 2) {
+            imageBlocks++
         }
-        imageBlockX = (inputWidth - imageBloks) / 2
-        imageSize = imageBloks * multiple - 24
+        imageBlockX = (inputWidth - imageBlocks) / 2
+        imageSize = imageBlocks * multiple - 24
         val imageX = (size - imageSize) / 2
         for (a in 0..2) {
             var x: Int
@@ -230,7 +230,7 @@ class CustomQRCodeWriter {
     }
 
     private fun has(x: Int, y: Int): Boolean {
-        if (x >= imageBlockX && x < imageBlockX + imageBloks && y >= imageBlockX && y < imageBlockX + imageBloks) {
+        if (x >= imageBlockX && x < imageBlockX + imageBlocks && y >= imageBlockX && y < imageBlockX + imageBlocks) {
             return false
         }
         if ((x < sideQuadSize || x >= input.width - sideQuadSize) && y < sideQuadSize) {

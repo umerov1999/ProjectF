@@ -125,8 +125,8 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
                                 Constants.SECRET,
                                 sid,
                                 Constants.AUTH_API_VERSION,
-                                true,
-                                true
+                                libverify_support = true,
+                                allow_callreset = true
                             )
                             .delayedFlow(1000)
                             .fromIOToMain({ }) {

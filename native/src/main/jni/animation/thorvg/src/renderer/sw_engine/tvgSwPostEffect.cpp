@@ -61,7 +61,7 @@ static inline int _gaussianRemap(int end, int idx)
 
 //TODO: SIMD OPTIMIZATION?
 template<int border = 0>
-static void _gaussianFilter(uint8_t* dst, uint8_t* src, int32_t stride, int32_t w, int32_t h, const SwBBox& bbox, int32_t dimension, bool flipped)
+static void _gaussianFilter(uint8_t* dst, uint8_t* src, int32_t stride, int32_t w, int32_t h, const RenderRegion& bbox, int32_t dimension, bool flipped)
 {
     if (flipped) {
         src += (bbox.min.x * stride + bbox.min.y) << 2;
@@ -136,17 +136,17 @@ static int _gaussianInit(SwGaussianBlur* data, float sigma, int quality)
 
 bool effectGaussianBlurRegion(RenderEffectGaussianBlur* params)
 {
-    //bbox region expansion for feathering
-    auto& region = params->extend;
+    //region expansion for feathering
+    auto& bbox = params->extend;
     auto extra = static_cast<SwGaussianBlur*>(params->rd)->extends;
 
     if (params->direction != 2) {
-        region.x = -extra;
-        region.w = extra * 2;
+        bbox.min.x = -extra;
+        bbox.max.x = extra;
     }
     if (params->direction != 1) {
-        region.y = -extra;
-        region.h = extra * 2;
+        bbox.min.y = -extra;
+        bbox.max.y = extra;
     }
 
     return true;
@@ -230,7 +230,7 @@ struct SwDropShadow : SwGaussianBlur
 
 
 //TODO: SIMD OPTIMIZATION?
-static void _dropShadowFilter(uint32_t* dst, uint32_t* src, int stride, int w, int h, const SwBBox& bbox, int32_t dimension, uint32_t color, bool flipped)
+static void _dropShadowFilter(uint32_t* dst, uint32_t* src, int stride, int w, int h, const RenderRegion& bbox, int32_t dimension, uint32_t color, bool flipped)
 {
     if (flipped) {
         src += (bbox.min.x * stride + bbox.min.y);
@@ -267,20 +267,20 @@ static void _dropShadowFilter(uint32_t* dst, uint32_t* src, int stride, int w, i
 }
 
 
-static void _dropShadowShift(uint32_t* dst, uint32_t* src, int dstride, int sstride, SwBBox& region, SwPoint& offset, uint8_t opacity, bool direct)
+static void _dropShadowShift(uint32_t* dst, uint32_t* src, int dstride, int sstride, RenderRegion& bbox, SwPoint& offset, uint8_t opacity, bool direct)
 {
-    src += (region.min.y * sstride + region.min.x);
-    dst += (region.min.y * dstride + region.min.x);
+    src += (bbox.min.y * sstride + bbox.min.x);
+    dst += (bbox.min.y * dstride + bbox.min.x);
 
-    auto w = region.max.x - region.min.x;
-    auto h = region.max.y - region.min.y;
+    auto w = bbox.max.x - bbox.min.x;
+    auto h = bbox.max.y - bbox.min.y;
     auto translucent = (direct || opacity < 255);
 
     //shift offset
-    if (region.min.x + offset.x < 0) src -= offset.x;
+    if (bbox.min.x + offset.x < 0) src -= offset.x;
     else dst += offset.x;
 
-    if (region.min.y + offset.y < 0) src -= (offset.y * sstride);
+    if (bbox.min.y + offset.y < 0) src -= (offset.y * sstride);
     else dst += (offset.y * dstride);
 
     for (auto y = 0; y < h; ++y) {
@@ -294,20 +294,19 @@ static void _dropShadowShift(uint32_t* dst, uint32_t* src, int dstride, int sstr
 
 bool effectDropShadowRegion(RenderEffectDropShadow* params)
 {
-    //bbox region expansion for feathering
-    auto& region = params->extend;
+    //region expansion for feathering
+    auto& bbox = params->extend;
     auto& offset = static_cast<SwDropShadow*>(params->rd)->offset;
     auto extra = static_cast<SwDropShadow*>(params->rd)->extends;
 
-    region.x = -extra;
-    region.w = extra * 2;
-    region.y = -extra;
-    region.h = extra * 2;
+    bbox.min = {-extra, -extra};
+    bbox.max = {extra, extra};
 
-    region.x = std::min(region.x + (int32_t)offset.x, region.x);
-    region.y = std::min(region.y + (int32_t)offset.y, region.y);
-    region.w += abs(offset.x);
-    region.h += abs(offset.y);
+    if (offset.x < 0) bbox.min.x += (int32_t) offset.x;
+    else bbox.max.x += offset.x;
+
+    if (offset.y < 0) bbox.min.y += (int32_t) offset.y;
+    else bbox.max.y += offset.y;
 
     return true;
 }

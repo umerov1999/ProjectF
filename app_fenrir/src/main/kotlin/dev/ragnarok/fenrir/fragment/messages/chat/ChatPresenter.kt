@@ -695,9 +695,9 @@ class ChatPresenter(
                         iterator.remove()
                     }
                 }
-                val st = emptyTaskFlow()
+                var st = emptyTaskFlow()
                 if (delete.isNotEmpty()) {
-                    st.andThen(
+                    st = st.andThen(
                         Stores.instance
                             .messages()
                             .deleteMessages(messagesOwnerId, delete)
@@ -831,9 +831,9 @@ class ChatPresenter(
                 list.add(i.getObjectId())
             }
         }
-        val st = emptyTaskFlow()
+        var st = emptyTaskFlow()
         if (list.isNotEmpty()) {
-            st.andThen(messagesRepository.enqueueAgainList(messagesOwnerId, list))
+            st = st.andThen(messagesRepository.enqueueAgainList(messagesOwnerId, list))
         }
         return st.map {
             list.isNotEmpty()

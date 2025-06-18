@@ -94,13 +94,11 @@ static void inline cRasterPixels(PIXEL_T* dst, PIXEL_T val, uint32_t offset, int
 
 static bool inline cRasterTranslucentRle(SwSurface* surface, const SwRle* rle, const RenderColor& c)
 {
-    auto span = rle->spans;
-
     //32bit channels
     if (surface->channelSize == sizeof(uint32_t)) {
         auto color = surface->join(c.r, c.g, c.b, c.a);
         uint32_t src;
-        for (uint32_t i = 0; i < rle->size; ++i, ++span) {
+        ARRAY_FOREACH(span, rle->spans) {
             auto dst = &surface->buf32[span->y * surface->stride + span->x];
             if (span->coverage < 255) src = ALPHA_BLEND(color, span->coverage);
             else src = color;
@@ -112,7 +110,7 @@ static bool inline cRasterTranslucentRle(SwSurface* surface, const SwRle* rle, c
     //8bit grayscale
     } else if (surface->channelSize == sizeof(uint8_t)) {
         uint8_t src;
-        for (uint32_t i = 0; i < rle->size; ++i, ++span) {
+        ARRAY_FOREACH(span, rle->spans) {
             auto dst = &surface->buf8[span->y * surface->stride + span->x];
             if (span->coverage < 255) src = MULTIPLY(span->coverage, c.a);
             else src = c.a;
@@ -126,29 +124,26 @@ static bool inline cRasterTranslucentRle(SwSurface* surface, const SwRle* rle, c
 }
 
 
-static bool inline cRasterTranslucentRect(SwSurface* surface, const SwBBox& region, const RenderColor& c)
+static bool inline cRasterTranslucentRect(SwSurface* surface, const RenderRegion& bbox, const RenderColor& c)
 {
-    auto h = static_cast<uint32_t>(region.max.y - region.min.y);
-    auto w = static_cast<uint32_t>(region.max.x - region.min.x);
-
     //32bits channels
     if (surface->channelSize == sizeof(uint32_t)) {
         auto color = surface->join(c.r, c.g, c.b, c.a);
-        auto buffer = surface->buf32 + (region.min.y * surface->stride) + region.min.x;
+        auto buffer = surface->buf32 + (bbox.min.y * surface->stride) + bbox.min.x;
         auto ialpha = 255 - c.a;
-        for (uint32_t y = 0; y < h; ++y) {
+        for (uint32_t y = 0; y < bbox.h(); ++y) {
             auto dst = &buffer[y * surface->stride];
-            for (uint32_t x = 0; x < w; ++x, ++dst) {
+            for (uint32_t x = 0; x < bbox.w(); ++x, ++dst) {
                 *dst = color + ALPHA_BLEND(*dst, ialpha);
             }
         }
     //8bit grayscale
     } else if (surface->channelSize == sizeof(uint8_t)) {
-        auto buffer = surface->buf8 + (region.min.y * surface->stride) + region.min.x;
+        auto buffer = surface->buf8 + (bbox.min.y * surface->stride) + bbox.min.x;
         auto ialpha = ~c.a;
-        for (uint32_t y = 0; y < h; ++y) {
+        for (uint32_t y = 0; y < bbox.h(); ++y) {
             auto dst = &buffer[y * surface->stride];
-            for (uint32_t x = 0; x < w; ++x, ++dst) {
+            for (uint32_t x = 0; x < bbox.w(); ++x, ++dst) {
                 *dst = c.a + MULTIPLY(*dst, ialpha);
             }
         }

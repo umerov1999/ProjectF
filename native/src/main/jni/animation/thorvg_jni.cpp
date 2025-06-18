@@ -409,7 +409,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottieDrawable_nGetFrame(
             info->isCanvasPushed = true;
             info->canvas->push(info->animation->picture());
         } else {
-            info->canvas->update(info->animation->picture());
+            info->canvas->update();
         }
         if (info->canvas->draw(true) == tvg::Result::Success) {
             info->canvas->sync();
@@ -561,7 +561,7 @@ Java_dev_ragnarok_fenrir_module_animation_thorvg_ThorVGLottie2Gif_lottie2gif(JNI
         for (auto p = 0.0f; p < duration; p += delay) {
             auto frameNo = info.animation->totalFrame() * (p / duration);
             info.animation->frame(frameNo);
-            info.canvas->update(info.animation->picture());
+            info.canvas->update();
             if (info.canvas->draw(true) == tvg::Result::Success) {
                 info.canvas->sync();
             }

@@ -8,8 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.LinearLayout
-import android.widget.ScrollView
 import androidx.core.content.withStyledAttributes
+import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import dev.ragnarok.fenrir.R
@@ -18,7 +18,7 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.Utils
 
-class BotKeyboardView : ScrollView {
+class BotKeyboardView : NestedScrollView {
     private val buttonViews = ArrayList<View>()
     private val isFullSize = if (isInEditMode) false else Settings.get().ui().isEmojis_full_screen
     private var container: LinearLayout? = null
@@ -68,20 +68,10 @@ class BotKeyboardView : ScrollView {
         init(context)
     }
 
-    constructor(
-        context: Context,
-        attrs: AttributeSet?,
-        defStyleAttr: Int,
-        defStyleRes: Int
-    ) : super(context, attrs, defStyleAttr, defStyleRes) {
-        initializeAttributes(context, attrs)
-        init(context)
-    }
-
     private fun init(context: Context) {
         container = LinearLayout(context)
         container?.orientation = LinearLayout.VERTICAL
-        addView(container)
+        container?.let { addView(it) }
         if (needTrackKeyboard) {
             listenKeyboardSize()
         }
