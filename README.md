@@ -1,11 +1,11 @@
 # Fenrir VK
-Первый языческий
+Первый языческий<br>
 
-За основу взят проект Phoenix (R)
+За основу взят проект Phoenix (R)<br>
 
-<b>Языки: Русский, английский</b>
+<b>Языки: Русский, Английский</b>
 
-По поводу функционала и т.д. - многие существующие моды и т.д. построены на официальном приложении. Этот клиент написан с нуля, поэтому многих привычных функций не будет, либо будут выглядить иначе.
+Многие существующие моды и т.д. построены на официальном приложении. Этот клиент написан с нуля, поэтому многих привычных функций не будет, либо будут выглядить иначе.<br>
 
 <b>Скриншоты:</b>
 
@@ -19,11 +19,11 @@
   4. CMake 4.0.2<br>
   
   Если не работает музыка в Fenrir Kate, обновите kate_receipt_gms_token в app.build_config.<br>
-  Взять токен можно из Kate Mobile Extra Mod
+  Взять токен можно из Kate Mobile Extra Mod<br>
   
 <b>Компиляция:</b>
 
-  1. Для релизных сборок вам нужен сертификат.
+  1. Для релизных сборок вам нужен сертификат.<br>
   keytool -genkey -v -keystore Fenrir.keystore -alias fenrir -storetype PKCS12 -keyalg RSA -keysize 2048 -validity 10000<br>
   2. Вариант 1. Далее нужно собрать нативную библиотеку:<br>
   Создать папку compiled_native, раскомментировать [include ":native"] в settings.gradle<br>
@@ -41,16 +41,16 @@
   после сборки ffmpeg можете собирать проект<br>
   4. Выберите flavor - fenrir или kate и Debug или Release и соберите apk :)<br>
 
-Локальный медиа сервер https://github.com/umerov1999/FenrirMediaServer/releases
+Локальный медиа сервер https://github.com/umerov1999/FenrirMediaServer/releases <br>
 
 <b>Старые репозитории:</b>
 
-  1. https://github.com/umerov1999/Old_Fenrir-for-VK Release 1
-  2. https://github.com/umerov1999/Old2_Fenrir-for-VK Release 2
-  3. https://github.com/umerov1999/Fenrir-for-VK Финальный релиз
+  1. https://github.com/umerov1999/Old_Fenrir-for-VK Release 1<br>
+  2. https://github.com/umerov1999/Old2_Fenrir-for-VK Release 2<br>
+  3. https://github.com/umerov1999/Fenrir-for-VK Финальный релиз<br>
 
 # FileGallery
-Просмотр фото, видео, аудио, тэги
+Просмотр фото, видео, аудио, тэги<br>
 
 <b>Языки: Русский, Английский</b>
 
