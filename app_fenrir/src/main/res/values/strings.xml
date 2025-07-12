@@ -1718,7 +1718,6 @@
     <string name="select_custom_icon">Change App icon</string>
     <string name="messages_menu_down">Message action menu at the bottom</string>
     <string name="my">My</string>
-    <string name="registration_date">Registration date</string>
     <string name="not_permitted">No permissions granted! Function not available</string>
     <string name="dialog_send_helper">You can forward it by swiping the dialogue</string>
     <string name="playlist_helper">You can add audio only to your playlists (long click on the playlist)</string>
@@ -1728,10 +1727,6 @@
     <string name="radius">Radius</string>
     <string name="gps">GPS</string>
     <string name="restore_login_info">Login: %1$s, Password %2$s, Validation %3$s</string>
-    <string name="registration_date_info">Registered: %1$s\nAuth: %2$s\nWall Changed %3$s</string>
-    <string name="registered_at">Registered: %1$s</string>
-    <string name="auth_at">Auth: %1$s</string>
-    <string name="changes_wall">Wall Changed: %1$s</string>
     <string name="all_photos">All Photos</string>
     <string name="detect_qr">Detect QR</string>
     <string name="show_photos_line">Show photos carousel</string>
@@ -1892,7 +1887,6 @@
     <string name="audio_catalog_v2">Audio Catalog v2</string>
     <string name="sync">Sync</string>
     <string name="faves_sync">Fave Content Sync</string>
-    <string name="experimental">Experimental</string>
     <string name="action_catalog_v2_find_friends">Find friends</string>
     <string name="action_catalog_v2_find_groups">Find groups</string>
     <string name="action_catalog_v2_recent">Recent</string>

@@ -10,7 +10,7 @@ public class ZstdDictTrainer {
     private final List<Integer> sampleSizes;
     private final int dictSize;
     private long filledSize;
-    private int level;
+    private final int level;
 
     public ZstdDictTrainer(int sampleSize, int dictSize) {
         this(sampleSize, dictSize, Zstd.defaultCompressionLevel());

@@ -106,18 +106,18 @@ namespace tvg
             }
         }
 
-        uint8_t ref()
+        uint16_t ref()
         {
             return ++refCnt;
         }
 
-        uint8_t unref(bool free = true)
+        uint16_t unref(bool free = true)
         {
             parent = nullptr;
             return unrefx(free);
         }
 
-        uint8_t unrefx(bool free)
+        uint16_t unrefx(bool free)
         {
             if (refCnt > 0) --refCnt;
 
@@ -127,6 +127,16 @@ namespace tvg
             }
 
             return refCnt;
+        }
+
+        void damage(const RenderRegion& vport)
+        {
+            if (renderer) renderer->damage(rd, vport);
+        }
+
+        void damage()
+        {
+            if (renderer) renderer->damage(rd, bounds(renderer));
         }
 
         void mark(CompositionFlag flag)

@@ -961,6 +961,7 @@ struct LottieGroup : LottieObject, LottieRenderPooler<tvg::Shape>
 
     Scene* scene = nullptr;
     Array<LottieObject*> children;
+    BlendMethod blendMethod = BlendMethod::Normal;
 
     bool reqFragment : 1;   //requirement to fragment the render context
     bool buildDone : 1;     //completed in building the composition.
@@ -1010,7 +1011,6 @@ struct LottieLayer : LottieGroup
     } cache;
 
     MaskMethod matteType = MaskMethod::None;
-    BlendMethod blendMethod = BlendMethod::Normal;
     Type type = Null;
     bool autoOrient = false;
     bool matteSrc = false;
@@ -1092,6 +1092,11 @@ struct LottieSlot
 struct LottieComposition
 {
     ~LottieComposition();
+
+    void clear()
+    {
+        if (root && root->scene) root->scene->remove();
+    }
 
     float duration() const
     {

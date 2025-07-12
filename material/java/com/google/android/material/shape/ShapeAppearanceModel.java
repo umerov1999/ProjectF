@@ -533,10 +533,14 @@ public class ShapeAppearanceModel {
     // Note: we need to wrap shape appearance and shape appearance overlay to workaround b/230755281
     context = new ContextThemeWrapper(context, shapeAppearanceResId);
     if (shapeAppearanceOverlayResId != 0) {
-      context = new ContextThemeWrapper(context, shapeAppearanceOverlayResId);
+      context.getTheme().applyStyle(shapeAppearanceOverlayResId, /* force= */ true);
     }
     TypedArray a = context.obtainStyledAttributes(R.styleable.ShapeAppearance);
+    return builder(a, defaultCornerSize);
+  }
 
+  @NonNull
+  private static Builder builder(TypedArray a, @NonNull CornerSize defaultCornerSize) {
     try {
       int cornerFamily = a.getInt(R.styleable.ShapeAppearance_cornerFamily, CornerFamily.ROUNDED);
       int cornerFamilyTopLeft =

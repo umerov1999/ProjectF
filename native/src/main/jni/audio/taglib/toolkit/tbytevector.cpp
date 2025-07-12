@@ -120,7 +120,8 @@ T toNumber(const ByteVector &v, size_t offset, size_t length, bool mostSignifica
   T sum = 0;
   for(size_t i = 0; i < length; i++) {
     const size_t shift = (mostSignificantByteFirst ? length - 1 - i : i) * 8;
-    sum |= static_cast<T>(static_cast<unsigned char>(v[static_cast<int>(offset + i)])) << shift;
+    sum |= static_cast<T>(
+      static_cast<T>(static_cast<unsigned char>(v[static_cast<int>(offset + i)])) << shift);
   }
 
   return sum;
@@ -236,7 +237,7 @@ long double toFloat80(const ByteVector &v, size_t offset)
       debug("toFloat80() - can't handle the infinity or NaN. Returning 0.");
       return 0.0;
     }
-    val = ::ldexp(static_cast<long double>(fraction), exponent - 16383 - 63);
+    val = ::ldexpl(static_cast<long double>(fraction), exponent - 16383 - 63);
   }
 
   if(negative)

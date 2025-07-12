@@ -19,10 +19,6 @@
   <public name="overflowLinearLayoutOverflowButtonStyle" type="attr"/>
   <public name="overflowLinearLayoutPopupMenuStyle" type="attr"/>
 
-  <public name="overflowButtonIcon" type="attr"/>
-  <public name="layout_overflowIcon" type="attr"/>
-  <public name="layout_overflowText" type="attr"/>
-
   <public name="Widget.Material3.OverflowLinearLayout" type="style"/>
   <public name="ThemeOverlay.Material3.OverflowLinearLayout" type="style"/>
   <public name="Widget.Material3.OverflowLinearLayout.CheckBox" type="style"/>

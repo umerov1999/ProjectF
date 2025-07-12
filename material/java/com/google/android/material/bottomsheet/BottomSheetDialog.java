@@ -48,10 +48,13 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.core.view.insets.Protection;
+import androidx.core.view.insets.ProtectionLayout;
 import com.google.android.material.internal.EdgeToEdgeUtils;
 import com.google.android.material.internal.ViewUtils;
 import com.google.android.material.motion.MaterialBackOrchestrator;
 import com.google.android.material.shape.MaterialShapeDrawable;
+import java.util.List;
 
 /**
  * Base class for {@link android.app.Dialog}s styled as a bottom sheet.
@@ -79,6 +82,8 @@ public class BottomSheetDialog extends AppCompatDialog {
   private CoordinatorLayout coordinator;
   private FrameLayout bottomSheet;
 
+  private ProtectionLayout protectionLayout;
+
   boolean dismissWithAnimation;
 
   boolean cancelable = true;
@@ -87,6 +92,7 @@ public class BottomSheetDialog extends AppCompatDialog {
   private EdgeToEdgeCallback edgeToEdgeCallback;
   private boolean edgeToEdgeEnabled;
   @Nullable private MaterialBackOrchestrator backOrchestrator;
+  private List<Protection> protectionsList;
 
   public BottomSheetDialog(@NonNull Context context) {
     this(context, 0);
@@ -279,11 +285,29 @@ public class BottomSheetDialog extends AppCompatDialog {
     return edgeToEdgeEnabled;
   }
 
+  /**
+   * Set the {@link Protection}s applied to this BottomSheetDialog.
+   *
+   * @param protections the list of {@link Protection}s to apply. This value will override the
+   *     existing Protections. An empty list will clear the Protections.
+   */
+  public void setProtections(@NonNull List<Protection> protections) {
+    protectionsList = protections;
+    if (protectionLayout != null) {
+      protectionLayout.setProtections(protections);
+      protectionLayout.setVisibility(protections.isEmpty() ? View.GONE : View.VISIBLE);
+    }
+  }
+
   /** Creates the container layout which must exist to find the behavior */
   private FrameLayout ensureContainerAndBehavior() {
     if (container == null) {
       container =
           (FrameLayout) View.inflate(getContext(), R.layout.design_bottom_sheet_dialog, null);
+      protectionLayout = (ProtectionLayout) container.findViewById(R.id.protection_layout);
+      if (protectionsList != null) {
+        setProtections(protectionsList);
+      }
 
       coordinator = (CoordinatorLayout) container.findViewById(R.id.coordinator);
       bottomSheet = (FrameLayout) container.findViewById(R.id.design_bottom_sheet);

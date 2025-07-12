@@ -25,6 +25,7 @@ import android.content.res.TypedArray;
 import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -183,6 +184,11 @@ public class MaterialButtonToggleGroup extends MaterialButtonGroup {
     attributes.recycle();
 
     setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+  }
+
+  @Override
+  boolean isOverflowSupported() {
+    return false;
   }
 
   @Override
@@ -529,6 +535,7 @@ public class MaterialButtonToggleGroup extends MaterialButtonGroup {
     if (skipCheckedStateTracker) {
       return;
     }
+    button.playSoundEffect(SoundEffectConstants.CLICK);
     checkInternal(button.getId(), isChecked);
   }
 }

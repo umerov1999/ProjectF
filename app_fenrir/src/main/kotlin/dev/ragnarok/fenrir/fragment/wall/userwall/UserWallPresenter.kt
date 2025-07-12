@@ -5,15 +5,8 @@ import android.content.Context
 import android.os.Bundle
 import androidx.annotation.StringRes
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import dev.ragnarok.fenrir.Constants
-import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.UserAgentTool
-import dev.ragnarok.fenrir.api.HttpLoggerAndParser.toRequestBuilder
-import dev.ragnarok.fenrir.api.HttpLoggerAndParser.vkHeader
-import dev.ragnarok.fenrir.api.ProxyUtil
 import dev.ragnarok.fenrir.api.model.VKApiUser
-import dev.ragnarok.fenrir.api.rest.HttpException
 import dev.ragnarok.fenrir.domain.IAccountsInteractor
 import dev.ragnarok.fenrir.domain.IFaveInteractor
 import dev.ragnarok.fenrir.domain.IOwnersRepository
@@ -33,7 +26,6 @@ import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PostFilter
-import dev.ragnarok.fenrir.model.RegistrationInfoResult
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.model.UserDetails
 import dev.ragnarok.fenrir.model.criteria.WallCriteria
@@ -41,20 +33,9 @@ import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.ShortcutUtils.createWallShortcutRx
-import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.concurrent.TimeUnit
-import java.util.regex.Pattern
-import kotlin.coroutines.cancellation.CancellationException
 
 class UserWallPresenter(
     accountId: Long,
@@ -260,21 +241,6 @@ class UserWallPresenter(
             accountId,
             ownerId,
             user
-        )
-    }
-
-    fun fireHeaderProductsClick() {
-        view?.openProducts(
-            accountId,
-            ownerId,
-            user
-        )
-    }
-
-    fun fireHeaderProductServicesClick() {
-        view?.openProductServices(
-            accountId,
-            ownerId
         )
     }
 
@@ -609,103 +575,6 @@ class UserWallPresenter(
     fun renameLocal(name: String?) {
         Settings.get().main().setUserNameChanges(ownerId, name)
         onUserInfoUpdated()
-    }
-
-    private fun parseResponse(str: String, pattern: Pattern): String? {
-        val matcher = pattern.matcher(str)
-        return if (matcher.find()) {
-            matcher.group(1)
-        } else null
-    }
-
-    private fun getRegistrationDate(owner_id: Long): Flow<RegistrationInfoResult> {
-        return flow {
-            val builder: OkHttpClient.Builder = OkHttpClient.Builder()
-                .readTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
-                .connectTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
-                .writeTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
-                .callTimeout(Constants.API_TIMEOUT, TimeUnit.SECONDS)
-                .addInterceptor(Interceptor { chain: Interceptor.Chain ->
-                    val request =
-                        chain.toRequestBuilder(false).vkHeader(true).addHeader(
-                            "User-Agent", UserAgentTool.USER_AGENT_CURRENT_ACCOUNT
-                        ).build()
-                    chain.proceed(request)
-                })
-            ProxyUtil.applyProxyConfig(builder, Includes.proxySettings.activeProxy)
-            val request: Request = Request.Builder()
-                .url("https://vk.com/foaf.php?id=$owner_id").build()
-
-            val call = builder.build().newCall(request)
-            try {
-                val response = call.execute()
-                if (!response.isSuccessful) {
-                    throw HttpException(response.code)
-                } else {
-                    val resp = response.body.string()
-                    val locale = Utils.appLocale
-                    var registered: String? = null
-                    var auth: String? = null
-                    var changes: String? = null
-                    var tmp =
-                        parseResponse(
-                            resp,
-                            Pattern.compile("ya:created dc:date=\"(.*?)\"")
-                        )
-                    if (tmp.nonNullNoEmpty()) {
-                        registered = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", locale).parse(
-                            tmp
-                        )?.let {
-                            DateFormat.getDateInstance(1).format(
-                                it
-                            )
-                        }
-                    }
-                    tmp = parseResponse(
-                        resp,
-                        Pattern.compile("ya:lastLoggedIn dc:date=\"(.*?)\"")
-                    )
-                    if (tmp.nonNullNoEmpty()) {
-                        auth = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", locale).parse(
-                            tmp
-                        )?.let {
-                            DateFormat.getDateInstance(1).format(
-                                it
-                            )
-                        }
-                    }
-                    tmp = parseResponse(
-                        resp,
-                        Pattern.compile("ya:modified dc:date=\"(.*?)\"")
-                    )
-                    if (tmp.nonNullNoEmpty()) {
-                        changes = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZ", locale).parse(
-                            tmp
-                        )?.let {
-                            DateFormat.getDateInstance(1).format(
-                                it
-                            )
-                        }
-                    }
-                    emit(
-                        RegistrationInfoResult().setRegistered(registered).setAuth(auth)
-                            .setChanges(changes)
-                    )
-                }
-                response.close()
-            } catch (e: CancellationException) {
-                call.cancel()
-                throw e
-            }
-        }
-    }
-
-    fun fireGetRegistrationDate() {
-        appendJob(
-            getRegistrationDate(ownerId).fromIOToMain({
-                view?.showRegistrationDate(it)
-            }, { showError(it) })
-        )
     }
 
     fun fireReport(context: Context) {

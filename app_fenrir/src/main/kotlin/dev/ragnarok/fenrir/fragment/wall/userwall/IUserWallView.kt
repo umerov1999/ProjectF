@@ -6,7 +6,6 @@ import dev.ragnarok.fenrir.fragment.wall.IWallView
 import dev.ragnarok.fenrir.model.FriendsCounters
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.PostFilter
-import dev.ragnarok.fenrir.model.RegistrationInfoResult
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.model.UserDetails
 
@@ -16,8 +15,6 @@ interface IUserWallView : IWallView, IProgressView {
     fun setupPrimaryActionButton(@DrawableRes resourceId: Int?)
     fun openFriends(accountId: Long, userId: Long, tab: Int, counters: FriendsCounters?)
     fun openGroups(accountId: Long, userId: Long, user: User?)
-    fun openProducts(accountId: Long, ownerId: Long, owner: Owner?)
-    fun openProductServices(accountId: Long, ownerId: Long)
     fun openGifts(accountId: Long, ownerId: Long, owner: Owner?)
     fun showEditStatusDialog(initialValue: String?)
     fun showAddToFriendsMessageDialog()
@@ -45,7 +42,6 @@ interface IUserWallView : IWallView, IProgressView {
     fun invalidateOptionsMenu()
     fun displayBaseUserInfo(user: User)
     fun openUserDetails(accountId: Long, user: User, details: UserDetails)
-    fun showRegistrationDate(registrationInfoResult: RegistrationInfoResult)
 
     fun displayUserCover(blacklisted: Boolean, resource: String?, supportOpen: Boolean)
 }

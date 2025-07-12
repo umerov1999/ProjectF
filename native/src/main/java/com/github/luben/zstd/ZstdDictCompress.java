@@ -5,7 +5,8 @@ import java.nio.ByteBuffer;
 public class ZstdDictCompress extends SharedDictBase {
 
     private long nativePtr;
-    private ByteBuffer sharedDict = null;
+    private ByteBuffer sharedDict;
+
     @SuppressWarnings("UnusedAssignment")
     private int level = Zstd.defaultCompressionLevel();
 
@@ -19,7 +20,7 @@ public class ZstdDictCompress extends SharedDictBase {
      * Get the byte buffer that backs this dict, if any, or null if not backed by a byte buffer.
      */
     public ByteBuffer getByReferenceBuffer() {
-        return sharedDict;
+	return sharedDict;
     }
 
     /**
@@ -63,7 +64,7 @@ public class ZstdDictCompress extends SharedDictBase {
      * @param level  compression level
      */
     public ZstdDictCompress(ByteBuffer dict, int level) {
-        this(dict, level, false);
+	this(dict, level, false);
     }
 
     /**
@@ -95,6 +96,7 @@ public class ZstdDictCompress extends SharedDictBase {
         // nativePtr == 0.
         storeFence();
     }
+
 
     int level() {
         return level;

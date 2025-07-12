@@ -6,7 +6,7 @@ public class ZstdDictDecompress extends SharedDictBase {
 
     private long nativePtr;
 
-    private ByteBuffer sharedDict = null;
+    private ByteBuffer sharedDict;
 
     private native void init(byte[] dict, int dict_offset, int dict_size);
 
@@ -18,7 +18,7 @@ public class ZstdDictDecompress extends SharedDictBase {
      * Get the byte buffer that backs this dict, if any, or null if not backed by a byte buffer.
      */
     public ByteBuffer getByReferenceBuffer() {
-        return sharedDict;
+	return sharedDict;
     }
 
     /**
@@ -56,7 +56,7 @@ public class ZstdDictDecompress extends SharedDictBase {
      * @param dict   Direct ByteBuffer containing dictionary using position and limit to define range in buffer.
      */
     public ZstdDictDecompress(ByteBuffer dict) {
-        this(dict, false);
+	this(dict, false);
     }
 
     /**
@@ -67,6 +67,7 @@ public class ZstdDictDecompress extends SharedDictBase {
      * @param byReference tell the native part to use the byte buffer directly and not copy the data when true.
      */
     public ZstdDictDecompress(ByteBuffer dict, boolean byReference) {
+
         int length = dict.limit() - dict.position();
         if (!dict.isDirect()) {
             throw new IllegalArgumentException("dict must be a direct buffer");
@@ -86,6 +87,7 @@ public class ZstdDictDecompress extends SharedDictBase {
         // nativePtr == 0.
         storeFence();
     }
+
 
     @Override
      void doClose() {

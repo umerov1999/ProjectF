@@ -55,8 +55,8 @@ public class ZstdInputStreamNoFinalizer extends FilterInputStream {
     public ZstdInputStreamNoFinalizer(InputStream inStream, BufferPool bufferPool) throws IOException {
         super(inStream);
         this.bufferPool = bufferPool;
-        this.srcByteBuffer = Zstd.getArrayBackedBuffer(bufferPool, srcBuffSize);
-        this.src = srcByteBuffer.array();
+        srcByteBuffer = Zstd.getArrayBackedBuffer(bufferPool, srcBuffSize);
+        src = srcByteBuffer.array();
         // memory barrier
         synchronized(this) {
             stream = createDStream();

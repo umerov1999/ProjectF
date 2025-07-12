@@ -1481,7 +1481,6 @@
     <string name="select_custom_icon">Сменить иконку приложения</string>
     <string name="messages_menu_down">Меню действий с сообщениями внизу</string>
     <string name="my">Мои</string>
-    <string name="registration_date">Дата регистрации</string>
     <string name="not_permitted">Разрешения не предоставлены! Функция не доступна</string>
     <string name="dialog_send_helper">Переслать можно свайпом диалога</string>
     <string name="playlist_helper">Добавлять аудио можно только в свои плейлисты (лонгклик по плейлисту)</string>
@@ -1491,10 +1490,6 @@
     <string name="radius">Радиус</string>
     <string name="gps">Геолокация</string>
     <string name="restore_login_info">Логин: %1$s, Пароль %2$s, Валидация %3$s</string>
-    <string name="registration_date_info">Зарегистрирован: %1$s\nАвторизация: %2$s\nИзменение стены %3$s</string>
-    <string name="registered_at">Зарегистрирован: %1$s</string>
-    <string name="auth_at">Авторизация: %1$s</string>
-    <string name="changes_wall">Изменение стены: %1$s</string>
     <string name="all_photos">Все фото</string>
     <string name="detect_qr">Распознать QR</string>
     <string name="show_photos_line">Показывать трекбар с фотками</string>
@@ -1565,7 +1560,7 @@
     <string name="assign_administrator">Назначить администратором</string>
     <string name="do_convert">Конвертируется…</string>
     <string name="recording_to_opus">Запись голосовых в opus</string>
-    <string name="recording_to_opus_summary">Эксперементально, Android 10 и выше</string>
+    <string name="recording_to_opus_summary">Android 10 и выше</string>
     <string name="do_convert_request">Конвертировать?</string>
     <string name="play_audio_after_current">Играть следующим</string>
     <string name="viewpager_page_transform">Анимация Viewpager2</string>
@@ -1655,7 +1650,6 @@
     <string name="audio_catalog_v2">Аудио каталог v2</string>
     <string name="sync">Синхронизация</string>
     <string name="faves_sync">Прогрузить закладки</string>
-    <string name="experimental">Экспериментально</string>
     <string name="action_catalog_v2_find_friends">Найти людей</string>
     <string name="action_catalog_v2_find_groups">Найти группы</string>
     <string name="action_catalog_v2_recent">Недавние</string>

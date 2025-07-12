@@ -23,6 +23,7 @@
 #include <algorithm>
 #include "tvgCommon.h"
 #include "tvgMath.h"
+#include "tvgScene.h"
 #include "tvgLottieModel.h"
 #include "tvgLottieBuilder.h"
 #include "tvgLottieExpressions.h"
@@ -197,11 +198,18 @@ void LottieBuilder::updateGroup(LottieGroup* parent, LottieObject** child, float
     if (!group->visible) return;
 
     //Prepare render data
-    group->scene = parent->scene;
+    if (group->blendMethod == parent->blendMethod) {
+        group->scene = parent->scene;
+    } else {
+        group->scene = tvg::Scene::gen();
+        group->scene->blend(group->blendMethod);
+        parent->scene->push(group->scene);
+    }
+
     group->reqFragment |= ctx->reqFragment;
 
     //generate a merging shape to consolidate partial shapes into a single entity
-    if (group->mergeable()) _draw(parent, nullptr, ctx);
+    if (group->mergeable()) _draw(group, nullptr, ctx);
 
     Inlist<RenderContext> contexts;
     auto propagator = group->mergeable() ? ctx->propagator : static_cast<Shape*>(PAINT(ctx->propagator)->duplicate(group->pooling()));
@@ -219,15 +227,9 @@ static void _updateStroke(LottieStroke* stroke, float frameNo, RenderContext* ct
     ctx->propagator->strokeMiterlimit(stroke->miterLimit);
 
     if (stroke->dashattr) {
-        auto size = stroke->dashattr->size == 1 ? 2 : stroke->dashattr->size;
-        auto dashes = (float*)alloca(size * sizeof(float));
-        for (uint8_t i = 0; i < stroke->dashattr->size; ++i) {
-            auto value = stroke->dashattr->values[i](frameNo, tween, exps);
-            //FIXME: allow the zero value in the engine level.
-            dashes[i] = value < FLT_EPSILON ? 0.01f : value;
-        }
-        if (stroke->dashattr->size == 1) dashes[1] = dashes[0];
-        ctx->propagator->strokeDash(dashes, size, stroke->dashattr->offset(frameNo, tween, exps));
+        auto dashes = (float*)alloca(stroke->dashattr->size * sizeof(float));
+        for (uint8_t i = 0; i < stroke->dashattr->size; ++i) dashes[i] = stroke->dashattr->values[i](frameNo, tween, exps);
+        ctx->propagator->strokeDash(dashes, stroke->dashattr->size, stroke->dashattr->offset(frameNo, tween, exps));
     } else {
         ctx->propagator->strokeDash(nullptr, 0);
     }
@@ -488,6 +490,13 @@ void LottieBuilder::updatePath(LottieGroup* parent, LottieObject** child, float 
 }
 
 
+static void _close(Array<Point>& pts, const Point& p, bool round)
+{
+    if (round && tvg::zero(pts.last() - pts[pts.count - 2])) pts[pts.count - 2] = p;
+    pts.last() = p;
+}
+
+
 void LottieBuilder::updateStar(LottiePolyStar* star, float frameNo, Matrix* transform, Shape* merging, RenderContext* ctx, Tween& tween, LottieExpressions* exps)
 {
     static constexpr auto POLYSTAR_MAGIC_NUMBER = 0.47829f / 0.28f;
@@ -595,6 +604,8 @@ void LottieBuilder::updateStar(LottiePolyStar* star, float frameNo, Matrix* tran
         angle += dTheta * direction;
         longSegment = !longSegment;
     }
+    //ensure proper shape closure - important for modifiers that behave differently for degenerate (linear) vs curved cubics
+    _close(SHAPE(shape)->rs.path.pts, in, hasRoundness);
     shape->close();
 
     if (ctx->modifier) ctx->modifier->modifyPolystar(SHAPE(shape)->rs.path, SHAPE(merging)->rs.path, outerRoundness, hasRoundness);
@@ -663,6 +674,8 @@ void LottieBuilder::updatePolygon(LottieGroup* parent, LottiePolyStar* star, flo
         }
         angle += anglePerPoint * direction;
     }
+    //ensure proper shape closure - important for modifiers that behave differently for degenerate (linear) vs curved cubics
+    _close(SHAPE(shape)->rs.path.pts, in, hasRoundness);
     shape->close();
 
     if (ctx->modifier) ctx->modifier->modifyPolystar(SHAPE(shape)->rs.path, SHAPE(merging)->rs.path, 0.0f, false);
@@ -1190,7 +1203,7 @@ void LottieBuilder::updateMasks(LottieLayer* layer, float frameNo)
         //the first mask
         if (!pShape) {
             pShape = layer->pooling();
-            pShape->reset();
+            SHAPE(pShape)->reset();
             auto compMethod = (method == MaskMethod::Subtract || method == MaskMethod::InvAlpha) ? MaskMethod::InvAlpha : MaskMethod::Alpha;
             //Cheaper. Replace the masking with a clipper
             if (layer->masks.count == 1 && compMethod == MaskMethod::Alpha) {
@@ -1202,13 +1215,11 @@ void LottieBuilder::updateMasks(LottieLayer* layer, float frameNo)
         //Chain mask composition
         } else if (pMethod != method || pOpacity != opacity || (method != MaskMethod::Subtract && method != MaskMethod::Difference)) {
             auto shape = layer->pooling();
-            shape->reset();
+            SHAPE(shape)->reset();
             pShape->mask(shape, method);
             pShape = shape;
         }
 
-        pShape->trimpath(0.0f, 1.0f);
-        pShape->strokeWidth(0.0f);
         pShape->fill(255, 255, 255, opacity);
         pShape->transform(layer->cache.matrix);
 
@@ -1531,15 +1542,12 @@ bool LottieBuilder::update(LottieComposition* comp, float frameNo)
         if (equal(frameNo, tween.frameNo)) offTween();
     }
 
-    //update children layers
-    auto root = comp->root;
-    root->scene->remove();
-
     if (exps && comp->expressions) exps->update(comp->timeAtFrame(frameNo));
 
-    ARRAY_REVERSE_FOREACH(child, root->children) {
+    //update children layers
+    ARRAY_REVERSE_FOREACH(child, comp->root->children) {
         auto layer = static_cast<LottieLayer*>(*child);
-        if (!layer->matteSrc) updateLayer(comp, root->scene, layer, frameNo);
+        if (!layer->matteSrc) updateLayer(comp, comp->root->scene, layer, frameNo);
     }
 
     return true;
@@ -1560,4 +1568,7 @@ void LottieBuilder::build(LottieComposition* comp)
     auto clip = Shape::gen();
     clip->appendRect(0, 0, comp->w, comp->h);
     comp->root->scene->clip(clip);
+
+    //turn off partial rendering for children
+    SCENE(comp->root->scene)->size({comp->w, comp->h});
 }

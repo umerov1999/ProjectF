@@ -75,8 +75,8 @@ public class ZstdOutputStreamNoFinalizer extends FilterOutputStream {
         // create compression context
         stream = createCStream();
         this.bufferPool = bufferPool;
-        this.dstByteBuffer = Zstd.getArrayBackedBuffer(bufferPool, dstSize);
-        this.dst = dstByteBuffer.array();
+        dstByteBuffer = Zstd.getArrayBackedBuffer(bufferPool, dstSize);
+        dst = dstByteBuffer.array();
     }
 
     /**

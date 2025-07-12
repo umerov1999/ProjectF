@@ -349,6 +349,8 @@ bool LottieLoader::frame(float no)
 
     builder->offTween();
 
+    if (comp) comp->clear();     //clear synchronously
+
     TaskScheduler::request(this);
 
     return true;
@@ -453,6 +455,8 @@ bool LottieLoader::tween(float from, float to, float progress)
     frameNo = shorten(from);
 
     builder->onTween(shorten(to), progress);
+
+    if (comp) comp->clear();     //clear synchronously
 
     TaskScheduler::request(this);
 

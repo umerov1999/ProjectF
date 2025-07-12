@@ -42,7 +42,6 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout.Behavior;
 import androidx.core.view.ViewCompat;
 import com.google.android.material.animation.AnimationUtils;
 import com.google.android.material.motion.MotionUtils;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.LinkedHashSet;

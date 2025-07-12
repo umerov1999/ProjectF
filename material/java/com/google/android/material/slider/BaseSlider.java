@@ -80,11 +80,11 @@ import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.SeekBar;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
-import androidx.annotation.Dimension;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
@@ -103,6 +103,7 @@ import com.google.android.material.internal.DescendantOffsetUtils;
 import com.google.android.material.internal.ThemeEnforcement;
 import com.google.android.material.internal.ViewUtils;
 import com.google.android.material.motion.MotionUtils;
+import com.google.android.material.resources.MaterialAttributes;
 import com.google.android.material.resources.MaterialResources;
 import com.google.android.material.shape.MaterialShapeDrawable;
 import com.google.android.material.shape.ShapeAppearanceModel;
@@ -256,6 +257,8 @@ abstract class BaseSlider<
   private static final String EXCEPTION_ILLEGAL_MIN_SEPARATION_STEP_SIZE =
       "minSeparation(%s) must be greater or equal and a multiple of stepSize(%s) when using"
           + " stepSize(%s)";
+  private static final String EXCEPTION_ILLEGAL_CONTINUOUS_MODE_TICK_COUNT =
+      "The continuousModeTickCount(%s) must be greater than or equal to 0";
   private static final String WARNING_FLOATING_POINT_ERROR =
       "Floating point value used for %s(%s). Using floats can have rounding errors which may"
           + " result in incorrect values. Instead, consider using integers with a custom"
@@ -293,9 +296,6 @@ abstract class BaseSlider<
 
   private static final float RIGHT_LABEL_PIVOT_X = -0.2f;
   private static final float RIGHT_LABEL_PIVOT_Y = 0.5f;
-
-  @Dimension(unit = Dimension.DP)
-  private static final int MIN_TOUCH_TARGET_DP = 48;
 
   @NonNull private final Paint inactiveTrackPaint;
   @NonNull private final Paint activeTrackPaint;
@@ -373,6 +373,7 @@ abstract class BaseSlider<
   // The index of the currently focused thumb.
   private int focusedThumbIdx = -1;
   private float stepSize = 0.0f;
+  private int continuousModeTickCount = 0;
   private float[] ticksCoordinates;
   private int tickVisibilityMode;
   private int tickActiveRadius;
@@ -546,9 +547,9 @@ abstract class BaseSlider<
     setValues(valueFrom);
     setCentered(a.getBoolean(R.styleable.Slider_centered, false));
     stepSize = a.getFloat(R.styleable.Slider_android_stepSize, 0.0f);
+    continuousModeTickCount = a.getInt(R.styleable.Slider_continuousModeTickCount, 0);
 
-    float defaultMinTouchTargetSize =
-        (float) Math.ceil(ViewUtils.dpToPx(getContext(), MIN_TOUCH_TARGET_DP));
+    float defaultMinTouchTargetSize = MaterialAttributes.resolveMinimumAccessibleTouchTarget(context);
     minTouchTargetSize =
         (int)
             Math.ceil(
@@ -975,6 +976,40 @@ abstract class BaseSlider<
     }
     if (this.stepSize != stepSize) {
       this.stepSize = stepSize;
+      dirtyConfig = true;
+      postInvalidate();
+    }
+  }
+
+  /**
+   * Returns the tick count used in continuous mode.
+   *
+   * @see #setContinuousModeTickCount(int)
+   * @attr ref com.google.android.material.R.styleable#Slider_continuousModeTickCount
+   */
+  public int getContinuousModeTickCount() {
+    return continuousModeTickCount;
+  }
+
+  /**
+   * Sets the number of ticks to display in continuous mode. Default is 0.
+   *
+   * <p>This allows for showing purely visual ticks in continuous mode.
+   *
+   * <p>Setting this value to a negative value will result in an {@link IllegalArgumentException}.
+   *
+   * @param continuousModeTickCount The number of ticks that must be drawn in continuous mode count
+   * @throws IllegalArgumentException If the continuous mode tick count is less than 0
+   * @see #getContinuousModeTickCount()
+   * @attr ref com.google.android.material.R.styleable#Slider_continuousModeTickCount
+   */
+  public void setContinuousModeTickCount(int continuousModeTickCount) {
+    if (continuousModeTickCount < 0) {
+      throw new IllegalArgumentException(
+          String.format(EXCEPTION_ILLEGAL_CONTINUOUS_MODE_TICK_COUNT, continuousModeTickCount));
+    }
+    if (this.continuousModeTickCount != continuousModeTickCount) {
+      this.continuousModeTickCount = continuousModeTickCount;
       dirtyConfig = true;
       postInvalidate();
     }
@@ -2373,7 +2408,7 @@ abstract class BaseSlider<
     // When the visibility is set to VISIBLE, onDraw() is called again which adds or removes labels
     // according to the setting.
     if (visibility != VISIBLE) {
-      ViewOverlay contentViewOverlay = ViewUtils.getContentViewOverlay(this);
+      final ViewOverlay contentViewOverlay = getContentViewOverlay();
       if (contentViewOverlay == null) {
         return;
       }
@@ -2381,6 +2416,12 @@ abstract class BaseSlider<
         contentViewOverlay.remove(label);
       }
     }
+  }
+
+  @Nullable
+  private ViewOverlay getContentViewOverlay() {
+    final View contentView = ViewUtils.getContentView(this);
+    return contentView == null ? null : contentView.getOverlay();
   }
 
   @Override
@@ -2458,11 +2499,13 @@ abstract class BaseSlider<
   }
 
   private void detachLabelFromContentView(TooltipDrawable label) {
-    ViewOverlay contentViewOverlay = ViewUtils.getContentViewOverlay(this);
-    if (contentViewOverlay != null) {
-      contentViewOverlay.remove(label);
-      label.detachView(ViewUtils.getContentView(this));
+    final View contentView = ViewUtils.getContentView(this);
+    if (contentView == null) {
+      return;
     }
+
+    contentView.getOverlay().remove(label);
+    label.detachView(contentView);
   }
 
   @Override
@@ -2488,8 +2531,9 @@ abstract class BaseSlider<
   private void updateTicksCoordinates() {
     validateConfigurationIfDirty();
 
+    // Continuous mode.
     if (stepSize <= 0.0f) {
-      updateTicksCoordinates(/* tickCount= */ 0);
+      updateTicksCoordinates(continuousModeTickCount);
       return;
     }
 
@@ -3489,6 +3533,14 @@ abstract class BaseSlider<
   }
 
   @Override
+  public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+    super.onInitializeAccessibilityNodeInfo(info);
+    // Setting visible to user to false prevents duplicate announcements by making only our virtual
+    // view accessible, not the parent container.
+    info.setVisibleToUser(false);
+  }
+
+  @Override
   public void onVisibilityAggregated(boolean isVisible) {
     super.onVisibilityAggregated(isVisible);
     this.thisAndAncestorsVisible = isVisible;
@@ -3506,7 +3558,11 @@ abstract class BaseSlider<
             @Override
             public void onAnimationEnd(Animator animation) {
               super.onAnimationEnd(animation);
-              ViewOverlay contentViewOverlay = ViewUtils.getContentViewOverlay(BaseSlider.this);
+              final ViewOverlay contentViewOverlay = getContentViewOverlay();
+              if (contentViewOverlay == null) {
+                return;
+              }
+
               for (TooltipDrawable label : labels) {
                 contentViewOverlay.remove(label);
               }
@@ -3559,7 +3615,12 @@ abstract class BaseSlider<
   private void setValueForLabel(TooltipDrawable label, float value) {
     label.setText(formatValue(value));
     positionLabel(label, value);
-    ViewUtils.getContentViewOverlay(this).add(label);
+    final ViewOverlay contentViewOverlay = getContentViewOverlay();
+    if (contentViewOverlay == null) {
+      return;
+    }
+
+    contentViewOverlay.add(label);
   }
 
   private void positionLabel(TooltipDrawable label, float value) {

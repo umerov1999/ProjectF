@@ -58,7 +58,7 @@ android {
     }
 
     compileOptions {
-        coreLibraryDesugaringEnabled = true
+        //coreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
         encoding = "utf-8"
@@ -178,6 +178,6 @@ dependencies {
             replacedBy("com.google.guava:guava", "listenablefuture is part of guava")
         }
     }
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:$desugarLibraryVersion")
+    //coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:$desugarLibraryVersion")
 }
 apply plugin: "com.google.gms.google-services"

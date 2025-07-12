@@ -128,13 +128,16 @@ internal class JsonPath {
         }
     }
 
+
     @OptIn(ExperimentalSerializationApi::class)
     private fun prettyString(it: Any?) = (it as? SerialDescriptor)?.serialName ?: it.toString()
 
     private fun resize() {
         val newSize = currentDepth * 2
         currentObjectPath = currentObjectPath.copyOf(newSize)
-        indicies = indicies.copyOf(newSize)
+        val newIndices = IntArray(newSize) { -1 }
+        indicies.copyInto(newIndices)
+        indicies = newIndices
     }
 
     override fun toString(): String = getPath()

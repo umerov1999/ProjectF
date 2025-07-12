@@ -483,7 +483,6 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             }
             subScreen("audio_catalog_v2") {
                 titleRes = R.string.audio_catalog_v2
-                summaryRes = R.string.experimental
                 visible = Utils.isOfficialVKCurrent
 
                 switch("audio_catalog_v2_enable") {
