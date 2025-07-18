@@ -54,7 +54,6 @@ class VideosLocalServerFragment :
                 presenter?.toggleReverse()
             }
         })
-        searchView.setQuery("", true)
         mSwipeRefreshLayout = root.findViewById(R.id.refresh)
         mSwipeRefreshLayout?.setOnRefreshListener {
             presenter?.fireRefresh(

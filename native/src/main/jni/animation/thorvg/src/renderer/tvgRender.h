@@ -37,6 +37,7 @@ using pixel_t = uint32_t;
 
 #define DASH_PATTERN_THRESHOLD 0.001f
 
+//TODO: Separate Color & Opacity for more detailed conditional check
 enum RenderUpdateFlag : uint16_t {None = 0, Path = 1, Color = 2, Gradient = 4, Stroke = 8, Transform = 16, Image = 32, GradientStroke = 64, Blend = 128, Clip = 256, All = 0xffff};
 enum CompositionFlag : uint8_t {Invalid = 0, Opacity = 1, Blending = 2, Masking = 4, PostProcessing = 8};  //Composition Purpose
 
@@ -479,6 +480,7 @@ struct RenderEffectTritone : RenderEffect
     uint8_t shadow[3];       //rgb
     uint8_t midtone[3];      //rgb
     uint8_t highlight[3];    //rgb
+    uint8_t blender = 0;     //0 ~ 255
 
     static RenderEffectTritone* gen(va_list& args)
     {
@@ -492,6 +494,7 @@ struct RenderEffectTritone : RenderEffect
         inst->highlight[0] = va_arg(args, int);
         inst->highlight[1] = va_arg(args, int);
         inst->highlight[2] = va_arg(args, int);
+        inst->blender = va_arg(args, int);
         inst->type = SceneEffect::Tritone;
         return inst;
     }

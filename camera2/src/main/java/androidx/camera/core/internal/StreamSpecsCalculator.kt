@@ -19,6 +19,7 @@ package androidx.camera.core.internal
 import android.util.Pair
 import android.util.Range
 import android.util.Size
+import androidx.camera.core.Preview
 import androidx.camera.core.UseCase
 import androidx.camera.core.impl.AttachedSurfaceInfo
 import androidx.camera.core.impl.CameraConfig
@@ -26,9 +27,9 @@ import androidx.camera.core.impl.CameraConfigs
 import androidx.camera.core.impl.CameraDeviceSurfaceManager
 import androidx.camera.core.impl.CameraInfoInternal
 import androidx.camera.core.impl.CameraMode
-import androidx.camera.core.impl.PreviewConfig
+import androidx.camera.core.impl.SessionConfig.SESSION_TYPE_REGULAR
 import androidx.camera.core.impl.StreamSpec
-import androidx.camera.core.impl.SurfaceConfig
+import androidx.camera.core.impl.StreamSpec.FRAME_RATE_RANGE_UNSPECIFIED
 import androidx.camera.core.impl.UseCaseConfig
 import androidx.camera.core.impl.UseCaseConfigFactory
 import androidx.camera.core.impl.stabilization.StabilizationMode
@@ -51,6 +52,9 @@ public interface StreamSpecsCalculator {
      *
      * @throws kotlin.UninitializedPropertyAccessException if the camera device surface manager has
      *   not been set yet.
+     * @throws IllegalArgumentException if no supported combination of surfaces can be found for the
+     *   given image format, size, and use case within the context of the camera device's
+     *   capabilities.
      */
     public fun calculateSuggestedStreamSpecs(
         @CameraMode.Mode cameraMode: Int,
@@ -58,9 +62,11 @@ public interface StreamSpecsCalculator {
         newUseCases: List<UseCase>,
         attachedUseCases: List<UseCase> = emptyList(),
         cameraConfig: CameraConfig = CameraConfigs.defaultConfig(),
-        targetHighSpeedFrameRate: Range<Int> = StreamSpec.FRAME_RATE_RANGE_UNSPECIFIED,
-        allowFeatureCombinationResolutions: Boolean = false
-    ): Map<UseCase, StreamSpec>
+        sessionType: Int = SESSION_TYPE_REGULAR,
+        targetFrameRate: Range<Int> = FRAME_RATE_RANGE_UNSPECIFIED,
+        isFeatureComboInvocation: Boolean = false,
+        findMaxSupportedFrameRate: Boolean = false,
+    ): StreamSpecQueryResult
 
     public companion object {
         @JvmField
@@ -72,10 +78,12 @@ public interface StreamSpecsCalculator {
                     newUseCases: List<UseCase>,
                     attachedUseCases: List<UseCase>,
                     cameraConfig: CameraConfig,
-                    targetHighSpeedFrameRate: Range<Int>,
-                    allowFeatureCombinationResolutions: Boolean
-                ): Map<UseCase, StreamSpec> {
-                    return emptyMap()
+                    sessionType: Int,
+                    targetFrameRate: Range<Int>,
+                    isFeatureComboInvocation: Boolean,
+                    findMaxSupportedFrameRate: Boolean,
+                ): StreamSpecQueryResult {
+                    return StreamSpecQueryResult()
                 }
             }
 
@@ -95,18 +103,22 @@ public interface StreamSpecsCalculator {
             cameraInfoInternal: CameraInfoInternal,
             newUseCases: List<UseCase>,
             cameraConfig: CameraConfig = CameraConfigs.defaultConfig(),
-            allowFeatureCombinationResolutions: Boolean = false,
+            isFeatureComboInvocation: Boolean = false,
             attachedUseCases: List<UseCase> = emptyList(),
-            targetHighSpeedFrameRate: Range<Int> = StreamSpec.FRAME_RATE_RANGE_UNSPECIFIED,
-        ): Map<UseCase, StreamSpec> {
+            sessionType: Int = SESSION_TYPE_REGULAR,
+            targetFrameRate: Range<Int> = FRAME_RATE_RANGE_UNSPECIFIED,
+            findMaxSupportedFrameRate: Boolean = false,
+        ): StreamSpecQueryResult {
             return calculateSuggestedStreamSpecs(
                 cameraMode = cameraMode,
                 cameraInfoInternal = cameraInfoInternal,
                 newUseCases = newUseCases,
                 attachedUseCases = attachedUseCases,
                 cameraConfig = cameraConfig,
-                targetHighSpeedFrameRate = targetHighSpeedFrameRate,
-                allowFeatureCombinationResolutions = allowFeatureCombinationResolutions,
+                sessionType = sessionType,
+                targetFrameRate = targetFrameRate,
+                isFeatureComboInvocation = isFeatureComboInvocation,
+                findMaxSupportedFrameRate = findMaxSupportedFrameRate,
             )
         }
     }
@@ -128,19 +140,21 @@ public class StreamSpecsCalculatorImpl(
         newUseCases: List<UseCase>,
         attachedUseCases: List<UseCase>,
         cameraConfig: CameraConfig,
-        targetHighSpeedFrameRate: Range<Int>,
-        allowFeatureCombinationResolutions: Boolean
-    ): Map<UseCase, StreamSpec> {
+        sessionType: Int,
+        targetFrameRate: Range<Int>,
+        isFeatureComboInvocation: Boolean,
+        findMaxSupportedFrameRate: Boolean,
+    ): StreamSpecQueryResult {
         // Calculate stream specs for use cases already attached.
         val result =
             calculateSuggestedStreamSpecsForAttachedUseCases(
                 cameraMode,
                 cameraInfoInternal,
-                attachedUseCases
+                attachedUseCases,
             )
 
         // Calculate and add the stream specs for new use cases.
-        return result.first +
+        val surfaceStreamSpecQueryResult =
             calculateSuggestedStreamSpecsForNewUseCases(
                 cameraMode,
                 cameraInfoInternal,
@@ -150,9 +164,17 @@ public class StreamSpecsCalculatorImpl(
                     newUseCases,
                     cameraConfig.useCaseConfigFactory,
                     useCaseConfigFactory,
-                    targetHighSpeedFrameRate
-                )
+                    sessionType,
+                    targetFrameRate,
+                ),
+                isFeatureComboInvocation,
+                findMaxSupportedFrameRate,
             )
+
+        return StreamSpecQueryResult(
+            result.first + surfaceStreamSpecQueryResult.streamSpecs,
+            surfaceStreamSpecQueryResult.maxSupportedFrameRate,
+        )
     }
 
     private fun calculateSuggestedStreamSpecsForAttachedUseCases(
@@ -160,7 +182,7 @@ public class StreamSpecsCalculatorImpl(
         cameraInfoInternal: CameraInfoInternal,
         attachedUseCases: List<UseCase>,
     ): Pair<Map<UseCase, StreamSpec>, Map<AttachedSurfaceInfo, UseCase>> {
-        val existingSurfaces: MutableList<AttachedSurfaceInfo?> = ArrayList<AttachedSurfaceInfo?>()
+        val existingSurfaces = mutableListOf<AttachedSurfaceInfo>()
         val cameraId = cameraInfoInternal.getCameraId()
         val suggestedStreamSpecs = mutableMapOf<UseCase, StreamSpec>()
         val surfaceInfoUseCaseMap = mutableMapOf<AttachedSurfaceInfo, UseCase>()
@@ -172,7 +194,7 @@ public class StreamSpecsCalculatorImpl(
                     "Attached stream spec cannot be null for already attached use cases."
                 }
 
-            val surfaceConfig: SurfaceConfig? =
+            val surfaceConfig =
                 checkNotNull(cameraDeviceSurfaceManager)
                     .transformSurfaceConfig(
                         cameraMode,
@@ -180,23 +202,23 @@ public class StreamSpecsCalculatorImpl(
                         useCase.imageFormat,
                         requireNotNull(useCase.attachedSurfaceResolution) {
                             "Attached surface resolution cannot be null for already attached use cases."
-                        }
+                        },
+                        useCase.currentConfig.streamUseCase,
                     )
 
             val attachedSurfaceInfo =
                 AttachedSurfaceInfo.create(
-                    surfaceConfig!!,
+                    surfaceConfig,
                     useCase.imageFormat,
                     useCase.attachedSurfaceResolution!!,
                     attachedStreamSpec.dynamicRange,
                     StreamSharing.getCaptureTypes(useCase),
                     attachedStreamSpec.getImplementationOptions(),
-                    useCase.currentConfig.getTargetFrameRate(null),
+                    useCase.currentConfig.getSessionType(SESSION_TYPE_REGULAR),
                     requireNotNull(
-                        useCase.currentConfig.getTargetHighSpeedFrameRate(
-                            StreamSpec.FRAME_RATE_RANGE_UNSPECIFIED
-                        )
-                    )
+                        useCase.currentConfig.getTargetFrameRate(FRAME_RATE_RANGE_UNSPECIFIED)
+                    ),
+                    useCase.currentConfig.isStrictFrameRateRequired,
                 )
             existingSurfaces.add(attachedSurfaceInfo)
             surfaceInfoUseCaseMap.put(attachedSurfaceInfo, useCase)
@@ -211,16 +233,18 @@ public class StreamSpecsCalculatorImpl(
         cameraInfoInternal: CameraInfoInternal,
         newUseCases: List<UseCase>,
         attachedSurfaceInfoToUseCaseMap: Map<AttachedSurfaceInfo, UseCase>,
-        configPairMap: Map<UseCase, CameraUseCaseAdapter.ConfigPair>
-    ): Map<UseCase, StreamSpec> {
+        configPairMap: Map<UseCase, CameraUseCaseAdapter.ConfigPair>,
+        isFeatureComboInvocation: Boolean,
+        findMaxSupportedFrameRate: Boolean,
+    ): StreamSpecQueryResult {
         val cameraId = cameraInfoInternal.getCameraId()
         val suggestedStreamSpecs = mutableMapOf<UseCase, StreamSpec>()
+        var maxSupportedFrameRate = Int.MAX_VALUE
 
         // Calculate resolution for new use cases.
         if (!newUseCases.isEmpty()) {
             val configToUseCaseMap = mutableMapOf<UseCaseConfig<*>, UseCase>()
-            val configToSupportedSizesMap: MutableMap<UseCaseConfig<*>?, MutableList<Size?>?> =
-                HashMap<UseCaseConfig<*>?, MutableList<Size?>?>()
+            val configToSupportedSizesMap = mutableMapOf<UseCaseConfig<*>, MutableList<Size>>()
             val sensorRect =
                 try {
                     cameraInfoInternal.getSensorRect()
@@ -232,7 +256,7 @@ public class StreamSpecsCalculatorImpl(
             val supportedOutputSizesSorter =
                 SupportedOutputSizesSorter(
                     cameraInfoInternal,
-                    if (sensorRect != null) TransformUtils.rectToSize(sensorRect) else null
+                    if (sensorRect != null) TransformUtils.rectToSize(sensorRect) else null,
                 )
             var isPreviewStabilizationOn = false
             for (useCase in newUseCases) {
@@ -244,23 +268,24 @@ public class StreamSpecsCalculatorImpl(
                     useCase.mergeConfigs(
                         cameraInfoInternal,
                         configPair.mExtendedConfig,
-                        configPair.mCameraConfig
+                        configPair.mCameraConfig,
                     )
                 configToUseCaseMap.put(combinedUseCaseConfig, useCase)
                 configToSupportedSizesMap.put(
                     combinedUseCaseConfig,
-                    supportedOutputSizesSorter.getSortedSupportedOutputSizes(combinedUseCaseConfig)
+                    supportedOutputSizesSorter.getSortedSupportedOutputSizes(combinedUseCaseConfig),
                 )
 
-                if (useCase.currentConfig is PreviewConfig) {
+                if (useCase is Preview || useCase is StreamSharing) {
+                    // Let isPreviewStabilizationOn be true only if stabilization mode of Preview
+                    // or StreamSharing (wrapping Preview) is on.
                     isPreviewStabilizationOn =
-                        (useCase.currentConfig as PreviewConfig).previewStabilizationMode ==
-                            StabilizationMode.ON
+                        combinedUseCaseConfig.previewStabilizationMode == StabilizationMode.ON
                 }
             }
 
             // Get suggested stream specifications and update the use case session configuration
-            val streamSpecMaps =
+            val (streamSpecMapForNewUseCases, streamSpecMapForAttachedSurfaces, maxSupportedFps) =
                 checkNotNull(cameraDeviceSurfaceManager)
                     .getSuggestedStreamSpecs(
                         cameraMode,
@@ -268,24 +293,28 @@ public class StreamSpecsCalculatorImpl(
                         ArrayList<AttachedSurfaceInfo?>(attachedSurfaceInfoToUseCaseMap.keys),
                         configToSupportedSizesMap,
                         isPreviewStabilizationOn,
-                        CameraUseCaseAdapter.hasVideoCapture(newUseCases)
+                        CameraUseCaseAdapter.hasVideoCapture(newUseCases),
+                        isFeatureComboInvocation,
+                        findMaxSupportedFrameRate,
                     )
 
             for (entry in configToUseCaseMap.entries) {
                 suggestedStreamSpecs.put(
                     entry.value,
-                    requireNotNull(streamSpecMaps.first[entry.key])
+                    requireNotNull(streamSpecMapForNewUseCases[entry.key]),
                 )
             }
-            for (entry in streamSpecMaps.second!!.entries) {
+            for (entry in streamSpecMapForAttachedSurfaces.entries) {
                 if (attachedSurfaceInfoToUseCaseMap.containsKey(entry.key)) {
                     suggestedStreamSpecs.put(
                         requireNotNull(attachedSurfaceInfoToUseCaseMap[entry.key]),
-                        entry.value
+                        entry.value,
                     )
                 }
             }
+
+            maxSupportedFrameRate = maxSupportedFps
         }
-        return suggestedStreamSpecs
+        return StreamSpecQueryResult(suggestedStreamSpecs, maxSupportedFrameRate)
     }
 }

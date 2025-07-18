@@ -32,6 +32,8 @@ import android.graphics.Rect;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Rational;
 import android.util.Size;
@@ -42,7 +44,6 @@ import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -582,11 +583,12 @@ public final class PreviewView extends FrameLayout {
     @UiThread
     public @Nullable ViewPort getViewPort() {
         checkMainThread();
-        if (getDisplay() == null) {
+        Display defaultDisplay = getDefaultDisplay();
+        if (defaultDisplay == null) {
             // Returns null if the layout is not ready.
             return null;
         }
-        return getViewPort(getDisplay().getRotation());
+        return getViewPort(defaultDisplay.getRotation());
     }
 
     /**
@@ -716,7 +718,7 @@ public final class PreviewView extends FrameLayout {
     @SuppressWarnings("WeakerAccess")
     void updateDisplayRotationIfNeeded() {
         if (mUseDisplayRotation) {
-            Display display = getDisplay();
+            Display display = getDefaultDisplay();
             if (display != null && mCameraInfoInternal != null) {
                 mPreviewTransform.overrideWithDisplayRotation(
                         mCameraInfoInternal.getSensorRotationDegrees(
@@ -1074,11 +1076,20 @@ public final class PreviewView extends FrameLayout {
     }
 
     private void startListeningToDisplayChange() {
-        getViewTreeObserver().addOnGlobalLayoutListener(mDisplayRotationListener);
+        DisplayManager displayManager = getDisplayManager();
+        if (displayManager == null) {
+            return;
+        }
+        displayManager.registerDisplayListener(mDisplayRotationListener,
+                new Handler(Looper.getMainLooper()));
     }
 
     private void stopListeningToDisplayChange() {
-        getViewTreeObserver().removeOnGlobalLayoutListener(mDisplayRotationListener);
+        DisplayManager displayManager = getDisplayManager();
+        if (displayManager == null) {
+            return;
+        }
+        displayManager.unregisterDisplayListener(mDisplayRotationListener);
     }
 
     private @Nullable DisplayManager getDisplayManager() {
@@ -1086,8 +1097,10 @@ public final class PreviewView extends FrameLayout {
         if (context == null) {
             return null;
         }
-        return (DisplayManager) context.getApplicationContext()
-                .getSystemService(Context.DISPLAY_SERVICE);
+        // Use context instead of context.getApplication because the DisplayManager created
+        // from context.getApplication() will not contain the default display when external display
+        // is connected.
+        return (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
     }
 
     /**
@@ -1165,6 +1178,24 @@ public final class PreviewView extends FrameLayout {
     }
 
     /**
+     * Gets the default display that will normally have the camera attached.
+     * To avoid the orientation issue when apps run in connected external display,
+     * use the rotation of the default display if possible.
+     *
+     * It will return null when getDisplay() returns null to indicate the layout is not ready.
+     */
+    @Nullable
+    Display getDefaultDisplay() {
+        if (getDisplay() == null) {
+            // Let it return null to indicate layout is not ready.
+            return null;
+        }
+        DisplayManager displayManager = getDisplayManager();
+        Display display = displayManager.getDisplay(Display.DEFAULT_DISPLAY);
+        return display != null ? display : getDisplay();
+    }
+
+    /**
      * Listener for display rotation changes.
      *
      * <p> When the device is rotated 180° from side to side, the activity is not
@@ -1174,26 +1205,21 @@ public final class PreviewView extends FrameLayout {
      */
     // Synthetic access
     @SuppressWarnings("WeakerAccess")
-    class DisplayRotationListener implements ViewTreeObserver.OnGlobalLayoutListener {
-        private int mPreviousRotation = -1;
-
-        @SuppressLint("WrongConstant")
+    class DisplayRotationListener implements DisplayManager.DisplayListener {
         @Override
-        public void onGlobalLayout() {
-            Display display = getDisplay();
-            int currentRotation;
+        public void onDisplayAdded(int displayId) {
+        }
 
-            if (display != null) {
-                currentRotation = display.getRotation();
-            } else {
-                return;
-            }
+        @Override
+        public void onDisplayRemoved(int displayId) {
+        }
 
-            // For the first callback event, only caches the value.
-            if (mPreviousRotation != -1 && mPreviousRotation != currentRotation) {
+        @Override
+        public void onDisplayChanged(int displayId) {
+            Display display = getDefaultDisplay();
+            if (display != null && display.getDisplayId() == displayId) {
                 redrawPreview();
             }
-            mPreviousRotation = currentRotation;
         }
     }
 }

@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <functional>
 #include <list>
+#include <cstdarg>
 
 #ifdef TVG_API
     #undef TVG_API
@@ -176,8 +177,8 @@ enum class MaskMethod : uint8_t
     None = 0,       ///< No Masking is applied.
     Alpha,          ///< Alpha Masking using the masking target's pixels as an alpha value.
     InvAlpha,       ///< Alpha Masking using the complement to the masking target's pixels as an alpha value.
-    Luma,           ///< Alpha Masking using the grayscale (0.2125R + 0.7154G + 0.0721*B) of the masking target's pixels. @since 0.9
-    InvLuma,        ///< Alpha Masking using the grayscale (0.2125R + 0.7154G + 0.0721*B) of the complement to the masking target's pixels. @since 0.11
+    Luma,           ///< Alpha Masking using the grayscale (0.2126R + 0.7152G + 0.0722*B) of the masking target's pixels. @since 0.9
+    InvLuma,        ///< Alpha Masking using the grayscale (0.2126R + 0.7152G + 0.0722*B) of the complement to the masking target's pixels. @since 0.11
     Add,            ///< Combines the target and source objects pixels using target alpha. (T * TA) + (S * (255 - TA)) (Experimental API)
     Subtract,       ///< Subtracts the source color from the target color while considering their respective target alpha. (T * TA) - (S * (255 - TA)) (Experimental API)
     Intersect,      ///< Computes the result by taking the minimum value between the target alpha and the source alpha and multiplies it with the target color. (T * min(TA, SA)) (Experimental API)
@@ -201,15 +202,15 @@ enum class BlendMethod : uint8_t
     Normal = 0,        ///< Perform the alpha blending(default). S if (Sa == 255), otherwise (Sa * S) + (255 - Sa) * D
     Multiply,          ///< Takes the RGB channel values from 0 to 255 of each pixel in the top layer and multiples them with the values for the corresponding pixel from the bottom layer. (S * D)
     Screen,            ///< The values of the pixels in the two layers are inverted, multiplied, and then inverted again. (S + D) - (S * D)
-    Overlay,           ///< Combines Multiply and Screen blend modes. (2 * S * D) if (2 * D < Da), otherwise (Sa * Da) - 2 * (Da - S) * (Sa - D)
+    Overlay,           ///< Combines Multiply and Screen blend modes. (2 * S * D) if (D < 128), otherwise 255 - 2 * (255 - S) * (255 - D)
     Darken,            ///< Creates a pixel that retains the smallest components of the top and bottom layer pixels. min(S, D)
     Lighten,           ///< Only has the opposite action of Darken Only. max(S, D)
     ColorDodge,        ///< Divides the bottom layer by the inverted top layer. D / (255 - S)
     ColorBurn,         ///< Divides the inverted bottom layer by the top layer, and then inverts the result. 255 - (255 - D) / S
-    HardLight,         ///< The same as Overlay but with the color roles reversed. (2 * S * D) if (S < Sa), otherwise (Sa * Da) - 2 * (Da - S) * (Sa - D)
-    SoftLight,         ///< The same as Overlay but with applying pure black or white does not result in pure black or white. (1 - 2 * S) * (D ^ 2) + (2 * S * D)
+    HardLight,         ///< The same as Overlay but with the color roles reversed. (2 * S * D) if (S < 128), otherwise 255 - 2 * (255 - S) * (255 - D)
+    SoftLight,         ///< The same as Overlay but with applying pure black or white does not result in pure black or white. (255 - 2 * S) * (D * D) + (2 * S * D)
     Difference,        ///< Subtracts the bottom layer from the top layer or the other way around, to always get a non-negative value. (S - D) if (S > D), otherwise (D - S)
-    Exclusion,         ///< The result is twice the product of the top and bottom layers, subtracted from their sum. s + d - (2 * s * d)
+    Exclusion,         ///< The result is twice the product of the top and bottom layers, subtracted from their sum. S + D - (2 * S * D)
     Hue,               ///< Reserved. Not supported.
     Saturation,        ///< Reserved. Not supported.
     Color,             ///< Reserved. Not supported.
@@ -232,11 +233,11 @@ enum class BlendMethod : uint8_t
 enum class SceneEffect : uint8_t
 {
     ClearAll = 0,      ///< Reset all previously applied scene effects, restoring the scene to its original state.
-    GaussianBlur,      ///< Apply a blur effect with a Gaussian filter. Param(4) = {sigma(float)[> 0], direction(int)[both: 0 / horizontal: 1 / vertical: 2], border(int)[duplicate: 0 / wrap: 1], quality(int)[0 - 100]}
+    GaussianBlur,      ///< Apply a blur effect with a Gaussian filter. Param(4) = {sigma(double)[> 0], direction(int)[both: 0 / horizontal: 1 / vertical: 2], border(int)[duplicate: 0 / wrap: 1], quality(int)[0 - 100]}
     DropShadow,        ///< Apply a drop shadow effect with a Gaussian Blur filter. Param(8) = {color_R(int)[0 - 255], color_G(int)[0 - 255], color_B(int)[0 - 255], opacity(int)[0 - 255], angle(double)[0 - 360], distance(double), blur_sigma(double)[> 0], quality(int)[0 - 100]}
-    Fill,              ///< Override the scene content color with a given fill information (Experimental API). Param(4) = {color_R(int)[0 - 255], color_G(int)[0 - 255], color_B(int)[0 - 255], opacity(int)[0 - 255]}
-    Tint,              ///< Tinting the current scene color with a given black, white color paramters (Experimental API). Param(7) = {black_R(int)[0 - 255], black_G(int)[0 - 255], black_B(int)[0 - 255], white_R(int)[0 - 255], white_G(int)[0 - 255], white_B(int)[0 - 255], intensity(float)[0 - 100]}
-    Tritone            ///< Apply a tritone color effect to the scene using three color parameters for shadows, midtones, and highlights (Experimental API). Param(9) = {Shadow_R(int)[0 - 255], Shadow_G(int)[0 - 255], Shadow_B(int)[0 - 255], Midtone_R(int)[0 - 255], Midtone_G(int)[0 - 255], Midtone_B(int)[0 - 255], Highlight_R(int)[0 - 255], Highlight_G(int)[0 - 255], Highlight_B(int)[0 - 255]}
+    Fill,              ///< Override the scene content color with a given fill information. Param(4) = {color_R(int)[0 - 255], color_G(int)[0 - 255], color_B(int)[0 - 255], opacity(int)[0 - 255]}
+    Tint,              ///< Tinting the current scene color with a given black, white color parameters. Param(7) = {black_R(int)[0 - 255], black_G(int)[0 - 255], black_B(int)[0 - 255], white_R(int)[0 - 255], white_G(int)[0 - 255], white_B(int)[0 - 255], intensity(double)[0 - 100]}
+    Tritone            ///< Apply a tritone color effect to the scene using three color parameters for shadows, midtones, and highlights. A blending factor determines the mix between the original color and the tritone colors. Param(9) = {Shadow_R(int)[0 - 255], Shadow_G(int)[0 - 255], Shadow_B(int)[0 - 255], Midtone_R(int)[0 - 255], Midtone_G(int)[0 - 255], Midtone_B(int)[0 - 255], Highlight_R(int)[0 - 255], Highlight_G(int)[0 - 255], Highlight_B(int)[0 - 255], Blend(int)[0 - 255]}
 };
 
 
@@ -1182,11 +1183,14 @@ public:
     Result fill(Fill* f) noexcept;
 
     /**
-     * @brief Sets the fill rule for the Shape object.
+     * @brief Sets the fill rule for the shape.
      *
-     * @param[in] r The fill rule value. The default value is @c FillRule::NonZero.
+     * Specifies how the interior of the shape is determined when its path intersects itself.
+     * The default fill rule is @c FillRule::NonZero.
+     *
+     * @param[in] r The fill rule to apply to the shape.
      */
-    Result fill(FillRule r) noexcept;
+    Result fillRule(FillRule r) noexcept;
 
     /**
      * @brief Sets the rendering order of the stroke and the fill.
@@ -1233,9 +1237,13 @@ public:
     Result fill(uint8_t* r, uint8_t* g, uint8_t* b, uint8_t* a = nullptr) const noexcept;
 
     /**
-     * @brief Gets the fill rule value.
+     * @brief Retrieves the current fill rule used by the shape.
      *
-     * @return The fill rule value of the shape.
+     * This function returns the fill rule, which determines how the interior 
+     * regions of the shape are calculated when it overlaps itself.
+     *
+     * @see Shape::fillRule(FillRule r)
+     * @return The current FillRule value of the shape.
      */
     FillRule fillRule() const noexcept;
 
@@ -1522,12 +1530,13 @@ public:
     /**
      * @brief Apply a post-processing effect to the scene.
      *
-     * This function adds a specified scene effect, such as clearing all effects or applying a Gaussian blur,
-     * to the scene after it has been rendered. Multiple effects can be applied in sequence.
+     * This function adds a specified effect—such as clearing all effects, applying a Gaussian blur,
+     * or adding a drop shadow—to the scene after rendering. Multiple effects can be applied in sequence
+     * by calling this function multiple times.
      *
      * @param[in] effect The scene effect to apply. Options are defined in the SceneEffect enum.
      *                   For example, use SceneEffect::GaussianBlur to apply a blur with specific parameters.
-     * @param[in] ... Additional variadic parameters required for certain effects (e.g., sigma and direction for GaussianBlur).
+     * @param[in] ...    Additional variadic parameters required for certain effects (e.g., sigma and direction for GaussianBlur).
      *
      * @since 1.0
      */
@@ -1574,6 +1583,7 @@ public:
      * It sets the font name, size and optionally the style.
      *
      * @param[in] name The name of the font. This should correspond to a font available in the canvas.
+     *                 If set to @c nullptr, ThorVG will attempt to select a fallback font available on the system.
      * @param[in] size The size of the font in points. This determines how large the text will appear.
      * @param[in] style The style of the font. It can be used to set the font to 'italic'.
      *                  If not specified, the default style is used. Only 'italic' style is supported currently.
@@ -1582,6 +1592,13 @@ public:
      *
      * @note If the @p name is not specified, ThorVG will select any available font candidate.
      * @since 1.0
+     *
+     * @code
+     * // Tip for fallback support to use any available font.
+     * if (text->font("Arial", 24) != tvg::Result::Success) {
+     *     text->font(nullptr, 24);
+     * }
+     * @endcode
      */
     Result font(const char* name, float size, const char* style = nullptr) noexcept;
 

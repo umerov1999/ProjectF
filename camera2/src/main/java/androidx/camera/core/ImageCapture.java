@@ -32,6 +32,7 @@ import static androidx.camera.core.impl.ImageCaptureConfig.OPTION_IMAGE_READER_P
 import static androidx.camera.core.impl.ImageCaptureConfig.OPTION_IO_EXECUTOR;
 import static androidx.camera.core.impl.ImageCaptureConfig.OPTION_JPEG_COMPRESSION_QUALITY;
 import static androidx.camera.core.impl.ImageCaptureConfig.OPTION_MAX_RESOLUTION;
+import static androidx.camera.core.impl.ImageCaptureConfig.OPTION_METERING_REPEATING_ENABLED;
 import static androidx.camera.core.impl.ImageCaptureConfig.OPTION_OUTPUT_FORMAT;
 import static androidx.camera.core.impl.ImageCaptureConfig.OPTION_POSTVIEW_ENABLED;
 import static androidx.camera.core.impl.ImageCaptureConfig.OPTION_POSTVIEW_RESOLUTION_SELECTOR;
@@ -52,6 +53,7 @@ import static androidx.camera.core.impl.ImageOutputConfig.OPTION_CUSTOM_ORDERED_
 import static androidx.camera.core.impl.ImageOutputConfig.OPTION_RESOLUTION_SELECTOR;
 import static androidx.camera.core.impl.UseCaseConfig.OPTION_CAPTURE_TYPE;
 import static androidx.camera.core.impl.UseCaseConfig.OPTION_HIGH_RESOLUTION_DISABLED;
+import static androidx.camera.core.impl.UseCaseConfig.OPTION_STREAM_USE_CASE;
 import static androidx.camera.core.impl.UseCaseConfig.OPTION_ZSL_DISABLED;
 import static androidx.camera.core.impl.utils.Threads.checkMainThread;
 import static androidx.camera.core.impl.utils.TransformUtils.is90or270;
@@ -91,9 +93,8 @@ import androidx.annotation.RestrictTo;
 import androidx.annotation.RestrictTo.Scope;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
-import androidx.camera.core.featurecombination.ExperimentalFeatureCombination;
-import androidx.camera.core.featurecombination.Feature;
-import androidx.camera.core.featurecombination.impl.feature.ImageFormatFeature;
+import androidx.camera.core.featuregroup.GroupableFeature;
+import androidx.camera.core.featuregroup.impl.feature.ImageFormatFeature;
 import androidx.camera.core.imagecapture.ImageCaptureControl;
 import androidx.camera.core.imagecapture.ImagePipeline;
 import androidx.camera.core.imagecapture.PostviewSettings;
@@ -117,6 +118,7 @@ import androidx.camera.core.impl.OptionsBundle;
 import androidx.camera.core.impl.SessionConfig;
 import androidx.camera.core.impl.SessionProcessor;
 import androidx.camera.core.impl.StreamSpec;
+import androidx.camera.core.impl.StreamUseCase;
 import androidx.camera.core.impl.UseCaseConfig;
 import androidx.camera.core.impl.UseCaseConfigFactory;
 import androidx.camera.core.impl.utils.CameraOrientationUtil;
@@ -454,6 +456,10 @@ public final class ImageCapture extends UseCase {
     @Override
     protected @NonNull UseCaseConfig<?> onMergeConfig(@NonNull CameraInfoInternal cameraInfo,
             UseCaseConfig.@NonNull Builder<?, ?, ?> builder) {
+        // Apply config like JPEG_R output format first so that configs like input format, dynamic
+        // range etc. can be set correctly later
+        applyFeatureGroupToConfig(builder);
+
         if (cameraInfo.getCameraQuirks().contains(SoftwareJpegEncodingPreferredQuirk.class)) {
             // Request software JPEG encoder if quirk exists on this device, and the software JPEG
             // option has not already been explicitly set.
@@ -512,49 +518,41 @@ public final class ImageCapture extends UseCase {
             }
         }
 
-        applyFeatureCombinationToConfig(builder);
-
         return builder.getUseCaseConfig();
     }
 
     /**
-     * Applies {@link #mFeatureCombination} to the config for ImageCapture specific changes.
+     * Applies {@link #mFeatureGroup} to the config for ImageCapture specific changes.
      *
-     * <p> When the feature combination mode is enabled (i.e. not null), the default for all config
-     * options should use the same default as of Feature Combination API.
+     * <p> When the feature group mode is enabled (i.e. not null), the default for all config
+     * options should use the same default as of feature group API.
      *
-     * <p> Note that feature combination mode may be enabled with zero or single feature (e.g.
+     * <p> Note that feature group mode may be enabled with zero or single feature (e.g.
      * when the preferred features user set are not supported). In such case, it is still better to
-     * configure the camera with feature combination mode and its defaults since
+     * configure the camera with feature group mode and its defaults since
      * <ul>
-     *   <li>this is more consistent with other feature combination results</li>
+     *   <li>this is more consistent with other feature group results</li>
      *   <li>may give more accurate query result</li>
-     *   <li>may also support additional resolution combinations</li>
+     *   <li>may also support additional resolution group</li>
      * </ul>
      *
-     * @see #setFeatureCombination
+     * @see #setFeatureGroup
      */
-    @OptIn(markerClass = ExperimentalFeatureCombination.class)
-    private void applyFeatureCombinationToConfig(UseCaseConfig.@NonNull Builder<?, ?, ?> builder) {
-        Set<@NonNull Feature> featureCombination = getFeatureCombination();
+    @OptIn(markerClass = ExperimentalSessionConfig.class)
+    private void applyFeatureGroupToConfig(UseCaseConfig.@NonNull Builder<?, ?, ?> builder) {
+        Set<@NonNull GroupableFeature> featureGroup = getFeatureGroup();
 
-        if (featureCombination != null) {
+        if (featureGroup != null) {
             @OutputFormat int imageCaptureOutputFormat =
                     ImageFormatFeature.DEFAULT_IMAGE_CAPTURE_OUTPUT_FORMAT;
 
-            for (Feature feature : featureCombination) {
+            for (GroupableFeature feature : featureGroup) {
                 if (feature instanceof ImageFormatFeature) {
                     imageCaptureOutputFormat =
                             ((ImageFormatFeature) feature).getImageCaptureOutputFormat();
                 }
             }
 
-            int inputFormat = ImageFormat.JPEG;
-            if (imageCaptureOutputFormat == ImageCapture.OUTPUT_FORMAT_JPEG_ULTRA_HDR) {
-                inputFormat = ImageFormat.JPEG_R;
-            }
-
-            builder.getMutableConfig().insertOption(OPTION_INPUT_FORMAT, inputFormat);
             builder.getMutableConfig().insertOption(OPTION_OUTPUT_FORMAT, imageCaptureOutputFormat);
         }
     }
@@ -1116,6 +1114,12 @@ public final class ImageCapture extends UseCase {
         private boolean isRawSupported() {
             if (mCameraInfo instanceof CameraInfoInternal) {
                 CameraInfoInternal cameraInfoInternal = (CameraInfoInternal) mCameraInfo;
+
+                if (!cameraInfoInternal.getAvailableCapabilities().contains(
+                        CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_RAW)) {
+                    return false;
+                }
+
                 return cameraInfoInternal.getSupportedOutputFormats().contains(RAW_SENSOR);
             }
 
@@ -1351,6 +1355,8 @@ public final class ImageCapture extends UseCase {
     protected @NonNull StreamSpec onSuggestedStreamSpecUpdated(
             @NonNull StreamSpec primaryStreamSpec,
             @Nullable StreamSpec secondaryStreamSpec) {
+        Logger.d(TAG, "onSuggestedStreamSpecUpdated: primaryStreamSpec = " + primaryStreamSpec
+                + ", secondaryStreamSpec " + secondaryStreamSpec);
         mSessionConfigBuilder = createPipeline(getCameraId(),
                 (ImageCaptureConfig) getCurrentConfig(), primaryStreamSpec);
 
@@ -2092,6 +2098,7 @@ public final class ImageCapture extends UseCase {
     public static final class Defaults
             implements ConfigProvider<ImageCaptureConfig> {
         private static final int DEFAULT_SURFACE_OCCUPANCY_PRIORITY = 4;
+        private static final StreamUseCase DEFAULT_STREAM_USE_CASE = StreamUseCase.STILL_CAPTURE;
         private static final int DEFAULT_ASPECT_RATIO = AspectRatio.RATIO_4_3;
         private static final int DEFAULT_OUTPUT_FORMAT = OUTPUT_FORMAT_JPEG;
 
@@ -2108,6 +2115,7 @@ public final class ImageCapture extends UseCase {
         static {
             Builder builder = new Builder()
                     .setSurfaceOccupancyPriority(DEFAULT_SURFACE_OCCUPANCY_PRIORITY)
+                    .setStreamUseCase(DEFAULT_STREAM_USE_CASE)
                     .setTargetAspectRatio(DEFAULT_ASPECT_RATIO)
                     .setResolutionSelector(DEFAULT_RESOLUTION_SELECTOR)
                     .setOutputFormat(DEFAULT_OUTPUT_FORMAT)
@@ -2468,6 +2476,7 @@ public final class ImageCapture extends UseCase {
 
             setCaptureType(UseCaseConfigFactory.CaptureType.IMAGE_CAPTURE);
             setTargetClass(ImageCapture.class);
+            setMeteringRepeatingEnabled(true);
         }
 
         /**
@@ -2927,6 +2936,29 @@ public final class ImageCapture extends UseCase {
             return this;
         }
 
+        /**
+         * Sets whether the internal metering repeating session for the ImageCapture should be
+         * enabled.
+         *
+         * <p>By default, a repeating session will be added internally to handle focus and
+         * metering controls if there isn't a repeating session added explicitly, for example
+         * when a {@code ImageCapture} is the only bound use case.
+         *
+         * <p>Passing {@code false} to this method removes the metering repeating session.
+         * Disabling it can be useful if the extra session is not supported on the device.
+         * {@link CameraControl#startFocusAndMetering(FocusMeteringAction)} will throw an
+         * exception if called.
+         *
+         * @param enabled {@code true} to enabled the metering repeating session, otherwise
+         * {@code false}.
+         * @return The current {@code Builder}.
+         */
+        @RestrictTo(Scope.LIBRARY_GROUP)
+        public @NonNull Builder setMeteringRepeatingEnabled(boolean enabled) {
+            getMutableConfig().insertOption(OPTION_METERING_REPEATING_ENABLED, enabled);
+            return this;
+        }
+
         @RestrictTo(Scope.LIBRARY_GROUP)
         public @NonNull Builder setImageReaderProxyProvider(
                 @NonNull ImageReaderProxyProvider imageReaderProxyProvider) {
@@ -3094,6 +3126,13 @@ public final class ImageCapture extends UseCase {
         public @NonNull Builder setCaptureType(
                 UseCaseConfigFactory.@NonNull CaptureType captureType) {
             getMutableConfig().insertOption(OPTION_CAPTURE_TYPE, captureType);
+            return this;
+        }
+
+        @RestrictTo(Scope.LIBRARY_GROUP)
+        @Override
+        public @NonNull Builder setStreamUseCase(@NonNull StreamUseCase streamUseCase) {
+            getMutableConfig().insertOption(OPTION_STREAM_USE_CASE, streamUseCase);
             return this;
         }
 

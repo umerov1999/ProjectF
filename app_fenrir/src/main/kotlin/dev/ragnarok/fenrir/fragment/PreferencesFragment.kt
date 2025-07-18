@@ -209,7 +209,6 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
         searchView = root.findViewById(R.id.searchview)
         searchView?.setRightButtonVisibility(false)
         searchView?.setLeftIcon(R.drawable.magnify)
-        searchView?.setQuery("", true)
         layoutManager = LinearLayoutManager(requireActivity())
         val isNull = createPreferenceAdapter()
         preferencesView = (root.findViewById<RecyclerView>(R.id.recycler_view)).apply {

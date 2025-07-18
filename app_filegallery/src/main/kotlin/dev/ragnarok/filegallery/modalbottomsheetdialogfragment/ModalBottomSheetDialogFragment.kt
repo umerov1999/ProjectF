@@ -1,6 +1,7 @@
 package dev.ragnarok.filegallery.modalbottomsheetdialogfragment
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuInflater
@@ -15,6 +16,8 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.imageview.ShapeableImageView
 import com.squareup.picasso3.Callback
@@ -78,6 +81,14 @@ class ModalBottomSheetDialogFragment : BottomSheetDialogFragment() {
             }
             dismiss()
         }
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = BottomSheetDialog(requireActivity(), theme)
+        val behavior = dialog.behavior
+        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        behavior.skipCollapsed = true
+        return dialog
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger
 private const val LOG_TAG = "VideoUsageControl"
 
 /** Tracks the video usage count of whether a camera is being used for a video output or not. */
-internal class VideoUsageControl(@param:CameraExecutor private val executor: Executor) {
+internal class VideoUsageControl(@CameraExecutor private val executor: Executor) {
     /**
      * An AtomicInteger for tracking the video usage count.
      *
@@ -57,7 +57,7 @@ internal class VideoUsageControl(@param:CameraExecutor private val executor: Exe
             if (currentVal < 0) {
                 Logger.w(
                     LOG_TAG,
-                    "decrementUsage: mVideoUsage = $currentVal, which is less than 0!"
+                    "decrementUsage: mVideoUsage = $currentVal, which is less than 0!",
                 )
             } else {
                 Logger.d(LOG_TAG, "decrementUsage: mVideoUsage = $currentVal")

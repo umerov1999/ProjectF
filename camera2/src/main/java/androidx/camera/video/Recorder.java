@@ -2474,6 +2474,11 @@ public final class Recorder implements VideoOutput {
         switch (audioState) {
             case DISABLED:
                 // Fall-through
+            case IDLING:
+                // Audio state will be transitioning to IDLING after the recording is stopped. If
+                // the next recording is stopped immediately such as encounter insufficient storage,
+                // consider the audio is disabled.
+                // Fall-through
             case INITIALIZING:
                 // Audio will not be initialized until the first recording with audio enabled is
                 // started. So if the audio state is INITIALIZING, consider the audio is disabled.
@@ -2490,9 +2495,6 @@ public final class Recorder implements VideoOutput {
                 return AudioStats.AUDIO_STATE_ENCODER_ERROR;
             case ERROR_SOURCE:
                 return AudioStats.AUDIO_STATE_SOURCE_ERROR;
-            case IDLING:
-                // AudioStats should not be produced when audio is in IDLING state.
-                break;
         }
         // Should not reach.
         throw new AssertionError("Invalid internal audio state: " + audioState);
@@ -2587,8 +2589,8 @@ public final class Recorder implements VideoOutput {
 
         switch (mAudioState) {
             case IDLING:
-                throw new AssertionError(
-                        "Incorrectly finalize recording when audio state is IDLING");
+                // No-op, the audio is not started, Keep it in IDLING state.
+                break;
             case INITIALIZING:
                 // No-op, the audio hasn't been initialized. Keep it in INITIALIZING state.
                 break;
@@ -3109,11 +3111,16 @@ public final class Recorder implements VideoOutput {
      * Returns the high-speed {@link VideoCapabilities} of Recorder with respect to input camera
      * information.
      *
+     * <p>The returned {@link VideoCapabilities} provides methods to query supported dynamic
+     * ranges, qualities for high-speed video. For recording high-speed and slow-motion
+     * videos, refer to {@link HighSpeedVideoSessionConfig}.
+     *
      * @param cameraInfo info about the camera.
      * @return high-speed VideoCapabilities with respect to the input camera info, or null if
-     * high-speed recording is not supported.
+     * high-speed video is not supported.
+     * @see HighSpeedVideoSessionConfig
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY) // TODO(b/404096374): High-speed public API
+    @ExperimentalHighSpeedVideo
     public static @Nullable VideoCapabilities getHighSpeedVideoCapabilities(
             @NonNull CameraInfo cameraInfo) {
         return getHighSpeedVideoCapabilities(cameraInfo,
@@ -3124,12 +3131,22 @@ public final class Recorder implements VideoOutput {
      * Returns the high-speed {@link VideoCapabilities} of Recorder with respect to input camera
      * information and video capabilities source.
      *
+     * <p>The returned {@link VideoCapabilities} provides methods to query supported dynamic
+     * ranges, qualities for high-speed video. For recording high-speed and slow-motion
+     * videos, refer to {@link HighSpeedVideoSessionConfig}.
+     *
+     * <p>The possible video capabilities sources include
+     * {@link #VIDEO_CAPABILITIES_SOURCE_CAMCORDER_PROFILE} and
+     * {@link #VIDEO_CAPABILITIES_SOURCE_CODEC_CAPABILITIES}.
+     *
      * @param cameraInfo              info about the camera.
      * @param videoCapabilitiesSource the video capabilities source.
      * @return high-speed VideoCapabilities with respect to the input camera info and video
-     * capabilities source, or null if high-speed recording is not supported.
+     * capabilities source, or null if high-speed video is not supported.
+     * @see HighSpeedVideoSessionConfig
      */
-    @RestrictTo(RestrictTo.Scope.LIBRARY) // TODO(b/404096374): High-speed public API
+    @RestrictTo(RestrictTo.Scope.LIBRARY) // Don't expose this API for the initial version.
+    @ExperimentalHighSpeedVideo
     public static @Nullable VideoCapabilities getHighSpeedVideoCapabilities(
             @NonNull CameraInfo cameraInfo,
             @VideoCapabilitiesSource int videoCapabilitiesSource) {

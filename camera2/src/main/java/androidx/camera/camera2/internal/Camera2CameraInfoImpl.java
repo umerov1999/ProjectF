@@ -17,8 +17,8 @@
 package androidx.camera.camera2.internal;
 
 import static android.hardware.camera2.CameraCharacteristics.CONTROL_AVAILABLE_VIDEO_STABILIZATION_MODES;
+import static android.hardware.camera2.CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES;
 import static android.hardware.camera2.CameraMetadata.CONTROL_VIDEO_STABILIZATION_MODE_ON;
-import static android.hardware.camera2.CameraMetadata.CONTROL_VIDEO_STABILIZATION_MODE_PREVIEW_STABILIZATION;
 import static android.hardware.camera2.CameraMetadata.REQUEST_AVAILABLE_CAPABILITIES_CONSTRAINED_HIGH_SPEED_VIDEO;
 import static android.hardware.camera2.CameraMetadata.REQUEST_AVAILABLE_CAPABILITIES_LOGICAL_MULTI_CAMERA;
 import static android.hardware.camera2.CameraMetadata.REQUEST_AVAILABLE_CAPABILITIES_PRIVATE_REPROCESSING;
@@ -27,6 +27,7 @@ import static android.hardware.camera2.CameraMetadata.SENSOR_INFO_TIMESTAMP_SOUR
 
 import static androidx.camera.camera2.internal.ZslUtil.isCapabilitySupported;
 import static androidx.camera.core.internal.StreamSpecsCalculator.NO_OP_STREAM_SPECS_CALCULATOR;
+import static androidx.core.util.Preconditions.checkArgument;
 
 import android.annotation.SuppressLint;
 import android.graphics.Rect;
@@ -226,8 +227,7 @@ public final class Camera2CameraInfoImpl implements CameraInfoInternal {
     @Override
     public int getLensFacing() {
         Integer lensFacing = mCameraCharacteristicsCompat.get(CameraCharacteristics.LENS_FACING);
-        Preconditions.checkArgument(lensFacing != null, "Unable to get the lens facing of the "
-                + "camera.");
+        checkArgument(lensFacing != null, "Unable to get the lens facing of the camera.");
         return LensFacingUtil.getCameraSelectorLensFacing(lensFacing);
     }
 
@@ -655,17 +655,7 @@ public final class Camera2CameraInfoImpl implements CameraInfoInternal {
 
     @Override
     public boolean isPreviewStabilizationSupported() {
-        int[] availableVideoStabilizationModes =
-                mCameraCharacteristicsCompat.get(
-                        CONTROL_AVAILABLE_VIDEO_STABILIZATION_MODES);
-        if (availableVideoStabilizationModes != null) {
-            for (int mode : availableVideoStabilizationModes) {
-                if (mode == CONTROL_VIDEO_STABILIZATION_MODE_PREVIEW_STABILIZATION) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return VideoStabilizationUtil.isPreviewStabilizationSupported(mCameraCharacteristicsCompat);
     }
 
     /**
@@ -782,7 +772,7 @@ public final class Camera2CameraInfoImpl implements CameraInfoInternal {
 
     @Override
     public boolean isUseCaseCombinationSupported(@NonNull List<@NonNull UseCase> useCases,
-            int cameraMode, boolean allowFeatureCombinationResolutions,
+            int cameraMode, boolean isFeatureComboInvocation,
             @NonNull CameraConfig cameraConfig) {
         try {
             StreamSpecsCalculator.Companion.calculateSuggestedStreamSpecsCompat(
@@ -791,7 +781,7 @@ public final class Camera2CameraInfoImpl implements CameraInfoInternal {
                     this,
                     useCases,
                     cameraConfig,
-                    allowFeatureCombinationResolutions
+                    isFeatureComboInvocation
             );
         } catch (IllegalArgumentException e) {
             Logger.d(TAG, "isUseCaseCombinationSupported: calculateSuggestedStreamSpecs failed", e);
@@ -799,5 +789,19 @@ public final class Camera2CameraInfoImpl implements CameraInfoInternal {
         }
 
         return true;
+    }
+
+    @Override
+    public @NonNull Set<@NonNull Integer> getAvailableCapabilities() {
+        Set<Integer> capabilitySet = new HashSet<>();
+        int[] capabilities = mCameraCharacteristicsCompat.get(REQUEST_AVAILABLE_CAPABILITIES);
+
+        if (capabilities != null) {
+            for (int capability : capabilities) {
+                capabilitySet.add(capability);
+            }
+        }
+
+        return capabilitySet;
     }
 }

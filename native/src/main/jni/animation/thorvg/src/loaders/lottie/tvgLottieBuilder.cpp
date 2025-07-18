@@ -297,7 +297,7 @@ bool LottieBuilder::updateSolidFill(LottieGroup* parent, LottieObject** child, f
     ctx->merging = nullptr;
     auto color = fill->color(frameNo, tween, exps);
     ctx->propagator->fill(color.rgb[0], color.rgb[1], color.rgb[2], opacity);
-    ctx->propagator->fill(fill->rule);
+    ctx->propagator->fillRule(fill->rule);
 
     if (ctx->propagator->strokeWidth() > 0) ctx->propagator->order(true);
 
@@ -318,7 +318,7 @@ bool LottieBuilder::updateGradientFill(LottieGroup* parent, LottieObject** child
     ctx->merging = nullptr;
 
     if (auto val = fill->fill(frameNo, opacity, tween, exps)) ctx->propagator->fill(val);
-    ctx->propagator->fill(fill->rule);
+    ctx->propagator->fillRule(fill->rule);
 
     if (ctx->propagator->strokeWidth() > 0) ctx->propagator->order(true);
 
@@ -1312,7 +1312,7 @@ void LottieBuilder::updateStrokeEffect(LottieLayer* layer, LottieFxStroke* effec
 
 void LottieBuilder::updateEffect(LottieLayer* layer, float frameNo)
 {
-    constexpr int QUALITY = 25;
+    constexpr int QUALITY = 35;
     constexpr float BLUR_TO_SIGMA = 0.3f;
 
     if (layer->effects.count == 0) return;
@@ -1343,14 +1343,14 @@ void LottieBuilder::updateEffect(LottieLayer* layer, float frameNo)
                 auto dark = effect->dark(frameNo);
                 auto midtone = effect->midtone(frameNo);
                 auto bright = effect->bright(frameNo);
-                layer->scene->push(SceneEffect::Tritone, dark.rgb[0], dark.rgb[1], dark.rgb[2], midtone.rgb[0], midtone.rgb[1], midtone.rgb[2], bright.rgb[0], bright.rgb[1], bright.rgb[2]);
+                layer->scene->push(SceneEffect::Tritone, dark.rgb[0], dark.rgb[1], dark.rgb[2], midtone.rgb[0], midtone.rgb[1], midtone.rgb[2], bright.rgb[0], bright.rgb[1], bright.rgb[2], (int)effect->blend(frameNo));
                 break;
             }
             case LottieEffect::DropShadow: {
                 auto effect = static_cast<LottieFxDropShadow*>(*p);
                 auto color = effect->color(frameNo);
                 //seems the opacity range in dropshadow is 0 ~ 256
-                layer->scene->push(SceneEffect::DropShadow, color.rgb[0], color.rgb[1], color.rgb[2], std::min(255, (int)effect->opacity(frameNo)), (double)effect->angle(frameNo), (double)effect->distance(frameNo), (double)(effect->blurness(frameNo) * BLUR_TO_SIGMA), QUALITY);
+                layer->scene->push(SceneEffect::DropShadow, color.rgb[0], color.rgb[1], color.rgb[2], std::min(255, (int)effect->opacity(frameNo)), (double)effect->angle(frameNo), double(effect->distance(frameNo) * 0.5f), (double)(effect->blurness(frameNo) * BLUR_TO_SIGMA), QUALITY);
                 break;
             }
             case LottieEffect::GaussianBlur: {

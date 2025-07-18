@@ -266,26 +266,80 @@ static void _dropShadowFilter(uint32_t* dst, uint32_t* src, int stride, int w, i
     }
 }
 
+static void _shift(uint32_t** dst, uint32_t** src, int dstride, int sstride, int wmax, int hmax, const RenderRegion& bbox, const SwPoint& offset, SwSize& size)
+{
+    size.w = bbox.max.x - bbox.min.x;
+    size.h = bbox.max.y - bbox.min.y;
 
-static void _dropShadowShift(uint32_t* dst, uint32_t* src, int dstride, int sstride, RenderRegion& bbox, SwPoint& offset, uint8_t opacity, bool direct)
+    //shift
+    if (bbox.min.x + offset.x < 0) *src -= offset.x;
+    else *dst += offset.x;
+
+    if (bbox.min.y + offset.y < 0) *src -= (offset.y * sstride);
+    else *dst += (offset.y * dstride);
+
+    if (size.w + bbox.min.x + offset.x > wmax) size.w -= (size.w + bbox.min.x + offset.x - wmax);
+    if (size.h + bbox.min.y + offset.y > hmax) size.h -= (size.h + bbox.min.y + offset.y - hmax);
+}
+
+
+static void _dropShadowNoFilter(uint32_t* dst, uint32_t* src, int dstride, int sstride, int dw, int dh, const RenderRegion& bbox, const SwPoint& offset, uint32_t color, uint8_t opacity, bool direct)
 {
     src += (bbox.min.y * sstride + bbox.min.x);
     dst += (bbox.min.y * dstride + bbox.min.x);
 
-    auto w = bbox.max.x - bbox.min.x;
-    auto h = bbox.max.y - bbox.min.y;
-    auto translucent = (direct || opacity < 255);
+    SwSize size;
+    _shift(&dst, &src, dstride, sstride, dw, dh, bbox, offset, size);
 
-    //shift offset
-    if (bbox.min.x + offset.x < 0) src -= offset.x;
-    else dst += offset.x;
+    for (auto y = 0; y < size.h; ++y) {
+        auto s2 = src;
+        auto d2 = dst;
+        for (int x = 0; x < size.w; ++x, ++d2, ++s2) {
+            auto a = MULTIPLY(opacity, A(*s2));
+            if (!direct || a == 255) *d2 = ALPHA_BLEND(color, a);
+            else *d2 = INTERPOLATE(color, *d2, a);
+        }
+        src += sstride;
+        dst += dstride;
+    }
+}
 
-    if (bbox.min.y + offset.y < 0) src -= (offset.y * sstride);
-    else dst += (offset.y * dstride);
 
-    for (auto y = 0; y < h; ++y) {
-        if (translucent) rasterTranslucentPixel32(dst, src, w, opacity);
-        else rasterPixel32(dst, src, w, opacity);
+static void _dropShadowNoFilter(SwImage* dimg, SwImage* simg, const RenderRegion& bbox, const SwPoint& offset, uint32_t color)
+{
+    int dstride = dimg->stride;
+    int sstride = simg->stride;
+
+    //shadow image
+    _dropShadowNoFilter(dimg->buf32, simg->buf32, dstride, sstride, dimg->w, dimg->h, bbox, offset, color, 255, false);
+
+    //original image
+    auto src = simg->buf32 + (bbox.min.y * sstride + bbox.min.x);
+    auto dst = dimg->buf32 + (bbox.min.y * dstride + bbox.min.x);
+
+    for (auto y = 0; y < (bbox.max.y - bbox.min.y); ++y) {
+        auto s = src;
+        auto d = dst;
+        for (int x = 0; x < (bbox.max.x - bbox.min.x); ++x, ++d, ++s) {
+            *d = *s + ALPHA_BLEND(*d, IA(*s));
+        }
+        src += sstride;
+        dst += dstride;
+    }
+}
+
+
+static void _dropShadowShift(uint32_t* dst, uint32_t* src, int dstride, int sstride, int dw, int dh, const RenderRegion& bbox, const SwPoint& offset, uint8_t opacity, bool direct)
+{
+    src += (bbox.min.y * sstride + bbox.min.x);
+    dst += (bbox.min.y * dstride + bbox.min.x);
+
+    SwSize size;
+    _shift(&dst, &src, dstride, sstride, dw, dh, bbox, offset, size);
+
+    for (auto y = 0; y < size.h; ++y) {
+        if (direct) rasterTranslucentPixel32(dst, src, size.w, opacity);
+        else rasterPixel32(dst, src, size.w, opacity);
         src += sstride;
         dst += dstride;
     }
@@ -322,7 +376,7 @@ void effectDropShadowUpdate(RenderEffectDropShadow* params, const Matrix& transf
     rd->extends = _gaussianInit(rd, std::pow(params->sigma * scale, 2), params->quality);
 
     //invalid
-    if (rd->extends == 0 || params->color[3] == 0) {
+    if (params->color[3] == 0) {
         params->valid = false;
         return;
     }
@@ -330,7 +384,7 @@ void effectDropShadowUpdate(RenderEffectDropShadow* params, const Matrix& transf
     //offset
     if (params->distance > 0.0f) {
         auto radian = tvg::deg2rad(90.0f - params->angle);
-        rd->offset = {(int32_t)(params->distance * cosf(radian)), (int32_t)(-1.0f * params->distance * sinf(radian))};
+        rd->offset = {(int32_t)((params->distance * scale) * cosf(radian)), (int32_t)(-1.0f * (params->distance * scale) * sinf(radian))};
     } else {
         rd->offset = {0, 0};
     }
@@ -364,6 +418,17 @@ bool effectDropShadow(SwCompositor* cmp, SwSurface* surface[2], const RenderEffe
 
     TVGLOG("SW_ENGINE", "DropShadow region(%d, %d, %d, %d) params(%f %f %f), level(%d)", bbox.min.x, bbox.min.y, bbox.max.x, bbox.max.y, params->angle, params->distance, params->sigma, data->level);
 
+    //no filter required
+    if (params->sigma == 0.0f)  {
+        if (direct) {
+            _dropShadowNoFilter(cmp->recoverSfc->buf32, cmp->image.buf32, cmp->recoverSfc->stride, cmp->image.stride, cmp->recoverSfc->w, cmp->recoverSfc->h, bbox, data->offset, color, opacity, direct);
+        } else {
+            _dropShadowNoFilter(buffer[1], &cmp->image, bbox, data->offset, color);
+            std::swap(cmp->image.buf32, buffer[1]->buf32);
+        }
+        return true;
+    }
+
     //saving the original image in order to overlay it into the filtered image.
     _dropShadowFilter(back, front, stride, w, h, bbox, data->kernel[0], color, false);
     std::swap(front, buffer[0]->buf32);
@@ -389,15 +454,14 @@ bool effectDropShadow(SwCompositor* cmp, SwSurface* surface[2], const RenderEffe
 
     //draw to the main surface directly
     if (direct) {
-        _dropShadowShift(cmp->recoverSfc->buf32, cmp->image.buf32, cmp->recoverSfc->stride, stride, bbox, data->offset, opacity, direct);
+        _dropShadowShift(cmp->recoverSfc->buf32, cmp->image.buf32, cmp->recoverSfc->stride, cmp->image.stride, cmp->recoverSfc->w, cmp->recoverSfc->h, bbox, data->offset, opacity, direct);
         std::swap(cmp->image.buf32, buffer[0]->buf32);
         return true;
     }
 
     //draw to the intermediate surface
     rasterClear(surface[1], bbox.min.x, bbox.min.y, w, h);
-    _dropShadowShift(buffer[1]->buf32, cmp->image.buf32, stride, stride, bbox, data->offset, opacity, direct);
-    std::swap(cmp->image.buf32, buffer[1]->buf32);
+    _dropShadowShift(buffer[1]->buf32, cmp->image.buf32, buffer[1]->stride, cmp->image.stride, buffer[1]->w, buffer[1]->h, bbox, data->offset, opacity, direct);
 
     //compositing shadow and body
     auto s = buffer[0]->buf32 + (bbox.min.y * buffer[0]->stride + bbox.min.x);
@@ -469,7 +533,7 @@ bool effectFill(SwCompositor* cmp, const RenderEffectFill* params, bool direct)
 
 void effectTintUpdate(RenderEffectTint* params)
 {
-    params->valid = true;
+    params->valid = (params->intensity > 0);
 }
 
 
@@ -485,8 +549,6 @@ bool effectTint(SwCompositor* cmp, const RenderEffectTint* params, bool direct)
 
     TVGLOG("SW_ENGINE", "Tint region(%d, %d, %d, %d), param(%d %d %d, %d %d %d, %d)", bbox.min.x, bbox.min.y, bbox.max.x, bbox.max.y, params->black[0], params->black[1], params->black[2], params->white[0], params->white[1], params->white[2], params->intensity);
 
-    /* Tint Formula: (1 - L) * Black + L * White, where the L is Luminance. */
-
     if (direct) {
         auto dbuffer = cmp->recoverSfc->buf32 + (bbox.min.y * cmp->recoverSfc->stride + bbox.min.x);
         auto sbuffer = cmp->image.buf32 + (bbox.min.y * cmp->image.stride + bbox.min.x);
@@ -494,9 +556,9 @@ bool effectTint(SwCompositor* cmp, const RenderEffectTint* params, bool direct)
             auto dst = dbuffer;
             auto src = sbuffer;
             for (size_t x = 0; x < w; ++x, ++dst, ++src) {
-                auto tmp = rasterUnpremultiply(*src);
-                auto val = INTERPOLATE(INTERPOLATE(black, white, luma((uint8_t*)&tmp)), tmp, params->intensity);
-                *dst = INTERPOLATE(val, *dst, MULTIPLY(opacity, A(tmp)));
+                auto val = INTERPOLATE(white, black, luma((uint8_t*)src));
+                if (params->intensity < 255) val = INTERPOLATE(val, *src, params->intensity);
+                *dst = INTERPOLATE(val, *dst, MULTIPLY(opacity, A(*src)));
             }
             dbuffer += cmp->image.stride;
             sbuffer += cmp->recoverSfc->stride;
@@ -507,9 +569,9 @@ bool effectTint(SwCompositor* cmp, const RenderEffectTint* params, bool direct)
         for (size_t y = 0; y < h; ++y) {
             auto dst = dbuffer;
             for (size_t x = 0; x < w; ++x, ++dst) {
-                auto tmp = rasterUnpremultiply(*dst);
-                auto val = INTERPOLATE(INTERPOLATE(black, white, luma((uint8_t*)&tmp)), tmp, params->intensity);
-                *dst = ALPHA_BLEND(val, A(tmp));
+                auto val = INTERPOLATE(white, black, luma((uint8_t*)&dst));
+                if (params->intensity < 255) val = INTERPOLATE(val, *dst, params->intensity);
+                *dst = ALPHA_BLEND(val, MULTIPLY(opacity, A(*dst)));
             }
             dbuffer += cmp->image.stride;
         }
@@ -525,11 +587,6 @@ bool effectTint(SwCompositor* cmp, const RenderEffectTint* params, bool direct)
 
 static uint32_t _trintone(uint32_t s, uint32_t m, uint32_t h, int l)
 {
-    /* Tritone Formula:
-       if (L < 0.5) { (1 - 2L) * Shadow + 2L * Midtone }
-       else { (1 - 2(L - 0.5)) * Midtone + (2(L - 0.5)) * Highlight }
-       Where the L is Luminance. */
-
     if (l < 128) {
         auto a = std::min(l * 2, 255);
         return ALPHA_BLEND(s, 255 - a) + ALPHA_BLEND(m, a);
@@ -542,7 +599,7 @@ static uint32_t _trintone(uint32_t s, uint32_t m, uint32_t h, int l)
 
 void effectTritoneUpdate(RenderEffectTritone* params)
 {
-    params->valid = true;
+    params->valid = (params->blender < 255);
 }
 
 
@@ -557,7 +614,7 @@ bool effectTritone(SwCompositor* cmp, const RenderEffectTritone* params, bool di
     auto opacity = cmp->opacity;
     auto luma = cmp->recoverSfc->alphas[2];  //luma function
 
-    TVGLOG("SW_ENGINE", "Tritone region(%d, %d, %d, %d), param(%d %d %d, %d %d %d, %d %d %d)", bbox.min.x, bbox.min.y, bbox.max.x, bbox.max.y, params->shadow[0], params->shadow[1], params->shadow[2], params->midtone[0], params->midtone[1], params->midtone[2], params->highlight[0], params->highlight[1], params->highlight[2]);
+    TVGLOG("SW_ENGINE", "Tritone region(%d, %d, %d, %d), param(%d %d %d, %d %d %d, %d %d %d, %d)", bbox.min.x, bbox.min.y, bbox.max.x, bbox.max.y, params->shadow[0], params->shadow[1], params->shadow[2], params->midtone[0], params->midtone[1], params->midtone[2], params->highlight[0], params->highlight[1], params->highlight[2], params->blender);
 
     if (direct) {
         auto dbuffer = cmp->recoverSfc->buf32 + (bbox.min.y * cmp->recoverSfc->stride + bbox.min.x);
@@ -565,9 +622,14 @@ bool effectTritone(SwCompositor* cmp, const RenderEffectTritone* params, bool di
         for (size_t y = 0; y < h; ++y) {
             auto dst = dbuffer;
             auto src = sbuffer;
-            for (size_t x = 0; x < w; ++x, ++dst, ++src) {
-                auto tmp = rasterUnpremultiply(*src);
-                *dst = INTERPOLATE(_trintone(shadow, midtone, highlight, luma((uint8_t*)&tmp)), *dst, MULTIPLY(opacity, A(tmp)));
+            if (params->blender == 0) {
+                for (size_t x = 0; x < w; ++x, ++dst, ++src) {
+                    *dst = INTERPOLATE(_trintone(shadow, midtone, highlight, luma((uint8_t*)src)), *dst, MULTIPLY(opacity, A(*src)));
+                }
+            } else {
+                for (size_t x = 0; x < w; ++x, ++dst, ++src) {
+                    *dst = INTERPOLATE(INTERPOLATE(*src, _trintone(shadow, midtone, highlight, luma((uint8_t*)src)), params->blender), *dst, MULTIPLY(opacity, A(*src)));
+                }
             }
             dbuffer += cmp->image.stride;
             sbuffer += cmp->recoverSfc->stride;
@@ -577,9 +639,14 @@ bool effectTritone(SwCompositor* cmp, const RenderEffectTritone* params, bool di
         auto dbuffer = cmp->image.buf32 + (bbox.min.y * cmp->image.stride + bbox.min.x);
         for (size_t y = 0; y < h; ++y) {
             auto dst = dbuffer;
-            for (size_t x = 0; x < w; ++x, ++dst) {
-                auto tmp = rasterUnpremultiply(*dst);
-                *dst = ALPHA_BLEND(_trintone(shadow, midtone, highlight, luma((uint8_t*)&tmp)), A(tmp));
+            if (params->blender == 0) {
+                for (size_t x = 0; x < w; ++x, ++dst) {
+                    *dst = ALPHA_BLEND(_trintone(shadow, midtone, highlight, luma((uint8_t*)dst)), MULTIPLY(A(*dst), opacity));
+                }
+            } else {
+                for (size_t x = 0; x < w; ++x, ++dst) {
+                    *dst = ALPHA_BLEND(INTERPOLATE(*dst, _trintone(shadow, midtone, highlight, luma((uint8_t*)dst)), params->blender), MULTIPLY(A(*dst), opacity));
+                }
             }
             dbuffer += cmp->image.stride;
         }

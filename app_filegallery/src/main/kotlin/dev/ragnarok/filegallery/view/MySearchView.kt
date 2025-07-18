@@ -28,13 +28,13 @@ import dev.ragnarok.filegallery.util.coroutines.CancelableJob
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
 
 class MySearchView : FrameLayout {
-    private var mQuery: String? = null
-    private var mInput: MaterialAutoCompleteTextView? = null
+    private var mInput: MyAutoCompleteTextView? = null
     private var mSearchRoot: RoundCornerLinearView? = null
     private var mButtonBack: ImageView? = null
     private var mButtonClear: ImageView? = null
     private var mButtonAdditional: ImageView? = null
     private var mOnQueryChangeListener: OnQueryTextListener? = null
+    private var tmpOnQueryChangeListener: OnQueryTextListener? = null
     private var mQueryDisposable = CancelableJob()
     private var listQueries = ArrayList<String?>()
     private var isFetchedListQueries = false
@@ -131,10 +131,22 @@ class MySearchView : FrameLayout {
         mButtonAdditional = findViewById(R.id.additional)
         mInput?.addTextChangedListener(object : TextWatcherAdapter() {
             override fun afterTextChanged(s: Editable?) {
-                mQuery = s.toString()
                 mOnQueryChangeListener?.onQueryTextChange(s.toString())
                 resolveCloseButton()
             }
+        })
+        mInput?.setOnRestoreInstanceStateListener(object :
+            MyAutoCompleteTextView.OnRestoreInstanceStateListener {
+            override fun begin() {
+                tmpOnQueryChangeListener = mOnQueryChangeListener
+                mOnQueryChangeListener = null
+            }
+
+            override fun end() {
+                mOnQueryChangeListener = tmpOnQueryChangeListener
+                tmpOnQueryChangeListener = null
+            }
+
         })
         mButtonClear?.setOnClickListener {
             mInput?.clearFocus()
@@ -165,6 +177,7 @@ class MySearchView : FrameLayout {
 
     fun clear() {
         mInput?.text?.clear()
+        mInput?.fireValueModified()
     }
 
     private fun onSubmitQuery() {
@@ -205,14 +218,13 @@ class MySearchView : FrameLayout {
 
     internal fun resolveCloseButton() {
         mButtonClear?.visibility =
-            if (mQuery.isNullOrEmpty()) GONE else VISIBLE
+            if (mInput?.text.isNullOrEmpty()) GONE else VISIBLE
     }
 
     override fun onSaveInstanceState(): Parcelable {
         val superState = super.onSaveInstanceState()
         val state = Bundle()
         state.putParcelable("PARENT", superState)
-        state.putString("query", mQuery)
         state.putStringArrayList("listQueries", listQueries)
         state.putBoolean("isFetchedListQueries", isFetchedListQueries)
         return state
@@ -222,8 +234,6 @@ class MySearchView : FrameLayout {
         val savedState = state as Bundle
         val superState = savedState.getParcelableCompat<Parcelable>("PARENT")
         super.onRestoreInstanceState(superState)
-        mQuery = savedState.getString("query")
-        mInput?.setText(mQuery)
 
         listQueries.clear()
         savedState.getStringArrayList("listQueries")?.let { listQueries.addAll(it) }
@@ -246,19 +256,18 @@ class MySearchView : FrameLayout {
         mOnAdditionalButtonLongClickListener = onAdditionalButtonLongClickListener
     }
 
-    fun setQuery(query: String?, quetly: Boolean) {
+    fun setQuery(query: String?, quietly: Boolean = false, isInitial: Boolean = false) {
         val tmp = mOnQueryChangeListener
-        if (quetly) {
+        if (quietly) {
             mOnQueryChangeListener = null
         }
-        setQuery(query)
-        if (quetly) {
+        mInput?.setText(query)
+        if (!isInitial) {
+            mInput?.fireValueModified()
+        }
+        if (quietly) {
             mOnQueryChangeListener = tmp
         }
-    }
-
-    fun setQuery(query: String?) {
-        mInput?.setText(query)
     }
 
     fun setSelection(start: Int, end: Int) {
@@ -312,5 +321,54 @@ class MySearchView : FrameLayout {
 
     companion object {
         private val TAG = MySearchView::class.simpleName.orEmpty()
+    }
+}
+
+class MyAutoCompleteTextView : MaterialAutoCompleteTextView {
+    constructor(context: Context) : super(context)
+
+    constructor(context: Context, attrs: AttributeSet?) : super(
+        context, attrs
+    )
+
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context, attrs, defStyleAttr
+    )
+
+    interface OnRestoreInstanceStateListener {
+        fun begin()
+        fun end()
+    }
+
+    private var mOnRestoreInstanceStateListener: OnRestoreInstanceStateListener? = null
+
+    private var isValueModified = false
+
+    fun fireValueModified() {
+        isValueModified = true
+    }
+
+    fun setOnRestoreInstanceStateListener(onRestoreInstanceStateListener: OnRestoreInstanceStateListener?) {
+        mOnRestoreInstanceStateListener = onRestoreInstanceStateListener
+    }
+
+    override fun onSaveInstanceState(): Parcelable? {
+        val superState = super.onSaveInstanceState()
+        isValueModified = false
+        return superState
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable) {
+        var backup: CharSequence? = null
+        if (isValueModified) {
+            backup = text
+        }
+        mOnRestoreInstanceStateListener?.begin()
+        super.onRestoreInstanceState(state)
+        if (isValueModified) {
+            setText(backup)
+            isValueModified = false
+        }
+        mOnRestoreInstanceStateListener?.end()
     }
 }

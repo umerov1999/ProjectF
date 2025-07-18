@@ -93,7 +93,6 @@ private constructor(private val lifecycleCameraProvider: LifecycleCameraProvider
      * [unbindAll].
      */
     @ExperimentalSessionConfig
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public fun isBound(sessionConfig: SessionConfig): Boolean {
         return lifecycleCameraProvider.isBound(sessionConfig)
     }
@@ -133,7 +132,6 @@ private constructor(private val lifecycleCameraProvider: LifecycleCameraProvider
      * @throws UnsupportedOperationException If called in concurrent mode.
      */
     @ExperimentalSessionConfig
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public fun unbind(sessionConfig: SessionConfig) {
         return lifecycleCameraProvider.unbind(sessionConfig)
     }
@@ -179,9 +177,8 @@ private constructor(private val lifecycleCameraProvider: LifecycleCameraProvider
      * and the use case binding will not change. Attempting to bind the same use case to multiple
      * camera selectors is also an error and will not change the binding.
      *
-     * If different use cases are bound to different camera selectors that resolve to distinct
-     * cameras, but the same lifecycle, only one of the cameras will operate at a time. The
-     * non-operating camera will not become active until it is the only camera with use cases bound.
+     * Binding different use cases to the same lifecycle with different camera selectors that
+     * resolve to distinct cameras is an error, resulting in an exception.
      *
      * The [Camera] returned is determined by the given camera selector, plus other internal
      * requirements, possibly from use case configurations. The camera returned from bindToLifecycle
@@ -209,7 +206,7 @@ private constructor(private val lifecycleCameraProvider: LifecycleCameraProvider
     public fun bindToLifecycle(
         lifecycleOwner: LifecycleOwner,
         cameraSelector: CameraSelector,
-        vararg useCases: UseCase?
+        vararg useCases: UseCase?,
     ): Camera {
         return lifecycleCameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, *useCases)
     }
@@ -230,7 +227,7 @@ private constructor(private val lifecycleCameraProvider: LifecycleCameraProvider
     public fun bindToLifecycle(
         lifecycleOwner: LifecycleOwner,
         cameraSelector: CameraSelector,
-        useCaseGroup: UseCaseGroup
+        useCaseGroup: UseCaseGroup,
     ): Camera {
         return lifecycleCameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, useCaseGroup)
     }
@@ -254,8 +251,13 @@ private constructor(private val lifecycleCameraProvider: LifecycleCameraProvider
      * also initialize and start data capture. If the camera was already running this may cause a
      * new initialization to occur temporarily stopping data from the camera before restarting it.
      *
+     * Updates the [SessionConfig] for a given [LifecycleOwner] by invoking [bindToLifecycle] again
+     * with the new [SessionConfig]. There is no need to call [unbind] or [unbindAll]; the previous
+     * [SessionConfig] and its associated [UseCase]s will be implicitly unbound. This behavior also
+     * applies when rebinding to the same [LifecycleOwner] with a different [CameraSelector], such
+     * as when switching the camera's lens facing.
+     *
      * **Important Restrictions:**
-     * - Only one [SessionConfig] can be bound to a single [LifecycleOwner] at any given time.
      * - You cannot bind a [SessionConfig] to a [LifecycleOwner] that already has individual
      *   [UseCase]s or a [UseCaseGroup] bound to it.
      * - A [SessionConfig] bound to a [LifecycleOwner] cannot contain [UseCase]s that are already
@@ -263,36 +265,36 @@ private constructor(private val lifecycleCameraProvider: LifecycleCameraProvider
      *
      * Violating these restrictions will result in an [IllegalStateException].
      *
-     * To update the bound [SessionConfig], you must first unbind the existing configuration using
-     * [unbindAll] or [unbind] with the specific [SessionConfig] before binding the new one with
-     * [bindToLifecycle].
-     *
      * The [Camera] returned is determined by the given camera selector, plus other internal
      * requirements, possibly from use case configurations. The camera returned from bindToLifecycle
      * may differ from the camera determined solely by a camera selector. If the camera selector
      * can't resolve a valid camera under the requirements, an IllegalArgumentException will be
      * thrown.
      *
+     * The following code example shows various aspects of binding a session config.
+     *
+     * @sample androidx.camera.lifecycle.samples.bindSessionConfigToLifecycle
+     *
+     * The following code snippet demonstrates binding a session config with feature groups.
+     *
+     * @sample androidx.camera.lifecycle.samples.bindSessionConfigWithFeatureGroupsToLifecycle
      * @throws UnsupportedOperationException If the camera is configured in concurrent mode. For
      *   example, if a list of [SingleCameraConfig]s was bound to the lifecycle already.
      * @throws IllegalStateException if either of the following conditions is met:
      * - A [UseCase] or [SessionConfig] is already bound to the same [LifecycleOwner].
      * - A [UseCase] contained within the [SessionConfig] is already bound to a different
      *   [LifecycleOwner].
-     *
-     * @sample androidx.camera.lifecycle.samples.bindSessionConfigToLifecycle
      */
     @ExperimentalSessionConfig
-    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public fun bindToLifecycle(
         lifecycleOwner: LifecycleOwner,
         cameraSelector: CameraSelector,
-        sessionConfig: SessionConfig
+        sessionConfig: SessionConfig,
     ): Camera {
         return lifecycleCameraProvider.bindToLifecycle(
             lifecycleOwner,
             cameraSelector,
-            sessionConfig
+            sessionConfig,
         )
     }
 
@@ -451,7 +453,7 @@ private constructor(private val lifecycleCameraProvider: LifecycleCameraProvider
             return Futures.transform(
                 sAppInstance.initAsync(context),
                 { sAppInstance },
-                CameraXExecutors.directExecutor()
+                CameraXExecutors.directExecutor(),
             )
         }
 

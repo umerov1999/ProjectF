@@ -193,7 +193,7 @@ class CommunitiesFragment : BaseMvpFragment<CommunitiesPresenter, ICommunitiesVi
         if (query.isNullOrEmpty()) {
             return true
         }
-        mSearchView?.setQuery("")
+        mSearchView?.setQuery("", quietly = false)
         return false
     }
 

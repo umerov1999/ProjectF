@@ -14,6 +14,7 @@ import dev.ragnarok.fenrir.fragment.search.criteria.BaseSearchCriteria
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.listener.AppStyleable
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.view.MySearchView
 import dev.ragnarok.fenrir.view.MySearchView.OnAdditionalButtonClickListener
@@ -64,7 +65,11 @@ class SingleTabSearchFragment : Fragment(), MySearchView.OnQueryTextListener,
             }
         })
         searchView.setOnAdditionalButtonClickListener(this)
-        searchView.setQuery(initialCriteriaText, true)
+        if (savedInstanceState == null) {
+            initialCriteriaText.nonNullNoEmpty {
+                searchView.setQuery(it, quietly = false, isInitial = true)
+            }
+        }
         resolveLeftButton(searchView)
         if (!attachedChild) {
             attachChildFragment()

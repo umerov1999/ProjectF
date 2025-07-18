@@ -516,7 +516,8 @@ public final class CameraXConfig implements TargetConfig<CameraX> {
             return this;
         }
 
-        private @NonNull MutableConfig getMutableConfig() {
+        @RestrictTo(Scope.LIBRARY_GROUP)
+        public @NonNull MutableConfig getMutableConfig() {
             return mMutableConfig;
         }
 

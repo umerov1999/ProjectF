@@ -45,7 +45,6 @@ class AudiosLocalServerFragment :
         searchView?.setRightButtonVisibility(true)
         searchView?.setLeftIcon(R.drawable.magnify)
         searchView?.setRightIcon(R.drawable.dots_vertical)
-        searchView?.setQuery("", true)
         searchView?.setOnAdditionalButtonClickListener(object : OnAdditionalButtonClickListener {
             override fun onAdditionalButtonClick() {
                 presenter?.fireOptions()

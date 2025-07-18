@@ -62,7 +62,6 @@ class AudiosLocalFragment : BaseMvpFragment<AudiosLocalPresenter, IAudiosLocalVi
         searchView.setRightButtonVisibility(true)
         searchView.setRightIcon(R.drawable.ic_menu_24_white)
         searchView.setLeftIcon(R.drawable.magnify)
-        searchView.setQuery("", true)
         searchView.setOnAdditionalButtonClickListener(object : OnAdditionalButtonClickListener {
             override fun onAdditionalButtonClick() {
                 presenter?.fireLocalAudioAlbums()

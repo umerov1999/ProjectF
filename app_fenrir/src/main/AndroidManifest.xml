@@ -97,8 +97,7 @@
         <activity
             android:name="dev.ragnarok.fenrir.activity.ValidateActivity"
             android:configChanges="keyboardHidden|orientation"
-            android:label="@string/validate"
-            android:theme="@style/App.DayNight.Swipes" />
+            android:label="@string/validate" />
 
         <activity
             android:name="dev.ragnarok.fenrir.activity.ProxyManagerActivity"

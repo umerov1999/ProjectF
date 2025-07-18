@@ -39,8 +39,10 @@ import androidx.annotation.RestrictTo;
 import androidx.annotation.RestrictTo.Scope;
 import androidx.annotation.VisibleForTesting;
 import androidx.arch.core.util.Function;
+import androidx.camera.core.concurrent.CameraCoordinator;
 import androidx.camera.core.impl.CameraDeviceSurfaceManager;
 import androidx.camera.core.impl.CameraFactory;
+import androidx.camera.core.impl.CameraInternal;
 import androidx.camera.core.impl.CameraProviderExecutionState;
 import androidx.camera.core.impl.CameraRepository;
 import androidx.camera.core.impl.CameraThreadConfig;
@@ -91,6 +93,7 @@ public final class CameraX {
     private CameraDeviceSurfaceManager mSurfaceManager;
     private UseCaseConfigFactory mDefaultConfigFactory;
     private StreamSpecsCalculator mStreamSpecsCalculator;
+    private CameraUseCaseAdapterProvider mCameraUseCaseAdapterProvider;
     private final RetryPolicy mRetryPolicy;
     private final ListenableFuture<Void> mInitInternalFuture;
 
@@ -283,6 +286,20 @@ public final class CameraX {
     }
 
     /**
+     * Returns the {@link CameraUseCaseAdapterProvider} instance.
+     *
+     * @throws IllegalStateException if the {@link CameraUseCaseAdapterProvider} has not been
+     *                               set, due to being uninitialized.
+     */
+    public @NonNull CameraUseCaseAdapterProvider getCameraUseCaseAdapterProvider() {
+        if (mCameraUseCaseAdapterProvider == null) {
+            throw new IllegalStateException("CameraX not initialized yet.");
+        }
+
+        return mCameraUseCaseAdapterProvider;
+    }
+
+    /**
      * Returns the {@link CameraRepository} instance.
      *
      */
@@ -394,6 +411,7 @@ public final class CameraX {
                         cameraThreadConfig,
                         availableCamerasLimiter,
                         cameraOpenRetryMaxTimeoutInMillis,
+                        mCameraXConfig,
                         mStreamSpecsCalculator);
                 CameraDeviceSurfaceManager.Provider surfaceManagerProvider =
                         mCameraXConfig.getDeviceSurfaceManagerProvider(null);
@@ -412,7 +430,23 @@ public final class CameraX {
                     executor.init(mCameraFactory);
                 }
 
+                // Initialize the Repository with the Factory
                 mCameraRepository.init(mCameraFactory);
+
+                // Initialize the Coordinator with the Repository
+                CameraCoordinator cameraCoordinator = mCameraFactory.getCameraCoordinator();
+                cameraCoordinator.init(mCameraRepository);
+
+                // Prepare CameraUseCaseAdapterProvider
+                mCameraUseCaseAdapterProvider = new CameraUseCaseAdapterProviderImpl(
+                        mCameraRepository,
+                        cameraCoordinator,
+                        mDefaultConfigFactory,
+                        mStreamSpecsCalculator);
+                for (CameraInternal camera : mCameraRepository.getCameras()) {
+                    camera.getCameraInfoInternal().setCameraUseCaseAdapterProvider(
+                            mCameraUseCaseAdapterProvider);
+                }
 
                 // Please ensure only validate the camera at the last of the initialization.
                 validateCameras(appContext, mCameraRepository, availableCamerasLimiter);
@@ -498,6 +532,8 @@ public final class CameraX {
 
                                 // Deinit camera executor at last to avoid RejectExecutionException.
                                 future.addListener(() -> {
+                                    mCameraFactory.shutdown();
+
                                     if (mSchedulerThread != null) {
                                         // Ensure we shutdown the camera executor before
                                         // exiting the scheduler thread

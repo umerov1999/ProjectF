@@ -15,14 +15,10 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.UserAgentTool
-import dev.ragnarok.fenrir.activity.slidr.Slidr.attach
-import dev.ragnarok.fenrir.activity.slidr.model.SlidrConfig
-import dev.ragnarok.fenrir.activity.slidr.model.SlidrListener
 import dev.ragnarok.fenrir.api.Auth
 import dev.ragnarok.fenrir.api.IValidateProvider
 import dev.ragnarok.fenrir.api.util.VKStringUtils
 import dev.ragnarok.fenrir.nonNullNoEmpty
-import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.settings.theme.ThemesController.currentStyle
@@ -61,27 +57,6 @@ class ValidateActivity : AppCompatActivity() {
             )
         }
 
-        attach(
-            this,
-            SlidrConfig.Builder().listener(object : SlidrListener {
-                override fun onSlideStateChanged(state: Int) {
-
-                }
-
-                override fun onSlideChange(percent: Float) {
-
-                }
-
-                override fun onSlideOpened() {
-
-                }
-
-                override fun onSlideClosed(): Boolean {
-                    cancel()
-                    return true
-                }
-            }).scrimColor(CurrentTheme.getColorBackground(this)).build()
-        )
         val webview = findViewById<WebView>(R.id.item_web_auth)
         webview.settings.javaScriptEnabled = true
         webview.settings.domStorageEnabled = true
@@ -102,17 +77,18 @@ class ValidateActivity : AppCompatActivity() {
         webview.loadUrl(urlVal ?: "")
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                cancel()
             }
         })
     }
 
     internal fun cancel() {
         urlVal?.let { validateProvider?.cancel(it) }
-        finish()
+        supportFinishAfterTransition()
     }
 
     private fun onRequestCancelled() {
-        finish()
+        supportFinishAfterTransition()
     }
 
     private fun onWaitingRequestReceived() {

@@ -35,6 +35,7 @@ import static androidx.camera.core.impl.UseCaseConfig.OPTION_DEFAULT_CAPTURE_CON
 import static androidx.camera.core.impl.UseCaseConfig.OPTION_DEFAULT_SESSION_CONFIG;
 import static androidx.camera.core.impl.UseCaseConfig.OPTION_HIGH_RESOLUTION_DISABLED;
 import static androidx.camera.core.impl.UseCaseConfig.OPTION_SESSION_CONFIG_UNPACKER;
+import static androidx.camera.core.impl.UseCaseConfig.OPTION_STREAM_USE_CASE;
 import static androidx.camera.core.impl.UseCaseConfig.OPTION_SURFACE_OCCUPANCY_PRIORITY;
 import static androidx.camera.core.impl.UseCaseConfig.OPTION_TARGET_FRAME_RATE;
 import static androidx.camera.core.impl.UseCaseConfig.OPTION_VIDEO_STABILIZATION_MODE;
@@ -109,6 +110,7 @@ import androidx.camera.core.impl.Observable.Observer;
 import androidx.camera.core.impl.OptionsBundle;
 import androidx.camera.core.impl.SessionConfig;
 import androidx.camera.core.impl.StreamSpec;
+import androidx.camera.core.impl.StreamUseCase;
 import androidx.camera.core.impl.Timebase;
 import androidx.camera.core.impl.UseCaseConfig;
 import androidx.camera.core.impl.UseCaseConfigFactory;
@@ -419,7 +421,8 @@ public final class VideoCapture<T extends VideoOutput> extends UseCase {
     protected @NonNull StreamSpec onSuggestedStreamSpecUpdated(
             @NonNull StreamSpec primaryStreamSpec,
             @Nullable StreamSpec secondaryStreamSpec) {
-        Logger.d(TAG, "onSuggestedStreamSpecUpdated: " + primaryStreamSpec);
+        Logger.d(TAG, "onSuggestedStreamSpecUpdated: primaryStreamSpec = " + primaryStreamSpec
+                + ", secondaryStreamSpec " + secondaryStreamSpec);
         VideoCaptureConfig<T> config = (VideoCaptureConfig<T>) getCurrentConfig();
         List<Size> customOrderedResolutions = config.getCustomOrderedResolutions(null);
         if (customOrderedResolutions != null
@@ -874,6 +877,7 @@ public final class VideoCapture<T extends VideoOutput> extends UseCase {
     public static final class Defaults implements ConfigProvider<VideoCaptureConfig<?>> {
         /** Surface occupancy priority to this use case */
         private static final int DEFAULT_SURFACE_OCCUPANCY_PRIORITY = 5;
+        private static final StreamUseCase DEFAULT_STREAM_USE_CASE = StreamUseCase.VIDEO_RECORD;
         private static final VideoOutput DEFAULT_VIDEO_OUTPUT =
                 SurfaceRequest::willNotProvideSurface;
         private static final VideoCaptureConfig<?> DEFAULT_CONFIG;
@@ -882,6 +886,7 @@ public final class VideoCapture<T extends VideoOutput> extends UseCase {
                 DEFAULT_VIDEO_ENCODER_INFO_FINDER = VideoEncoderInfoImpl.FINDER;
 
         static final Range<Integer> DEFAULT_FPS_RANGE = new Range<>(30, 30);
+        static final Range<Integer> DEFAULT_HIGH_SPEED_FPS_RANGE = new Range<>(120, 120);
 
         /**
          * Explicitly setting the default dynamic range to SDR (rather than UNSPECIFIED) means
@@ -892,6 +897,7 @@ public final class VideoCapture<T extends VideoOutput> extends UseCase {
         static {
             Builder<?> builder = new Builder<>(DEFAULT_VIDEO_OUTPUT)
                     .setSurfaceOccupancyPriority(DEFAULT_SURFACE_OCCUPANCY_PRIORITY)
+                    .setStreamUseCase(DEFAULT_STREAM_USE_CASE)
                     .setVideoEncoderInfoFinder(DEFAULT_VIDEO_ENCODER_INFO_FINDER)
                     .setDynamicRange(DEFAULT_DYNAMIC_RANGE);
 
@@ -1358,7 +1364,8 @@ public final class VideoCapture<T extends VideoOutput> extends UseCase {
         // the camera.
         Range<Integer> frameRate = streamSpec.getExpectedFrameRateRange();
         if (Objects.equals(frameRate, FRAME_RATE_RANGE_UNSPECIFIED)) {
-            frameRate = Defaults.DEFAULT_FPS_RANGE;
+            frameRate = streamSpec.getSessionType() == SESSION_TYPE_HIGH_SPEED
+                    ? Defaults.DEFAULT_HIGH_SPEED_FPS_RANGE : Defaults.DEFAULT_FPS_RANGE;
         }
         return frameRate;
     }
@@ -1491,9 +1498,9 @@ public final class VideoCapture<T extends VideoOutput> extends UseCase {
             return;
         }
 
-        DynamicRange requestedDynamicRange = getDynamicRange();
+        DynamicRange requestedDynamicRange = config.getDynamicRange();
         int sessionType = getSessionType(config);
-        Range<Integer> targetFrameRate = getTargetFrameRateOrThrow(config);
+        Range<Integer> targetFrameRate = getTargetFrameRate(config);
         VideoCapabilities videoCapabilities = getVideoCapabilities(cameraInfo, sessionType);
         Logger.d(TAG, "Update custom order resolutions: "
                 + "requestedDynamicRange = " + requestedDynamicRange
@@ -1514,11 +1521,9 @@ public final class VideoCapture<T extends VideoOutput> extends UseCase {
             return;
         }
 
-        // Get selected qualities, include:
-        // * Filter by high-speed frame rate
+        // Get selected qualities
         List<Quality> selectedQualities = getSelectedQualityOrThrow(supportedQualities,
-                videoCapabilities, qualitySelector,
-                requestedDynamicRange, sessionType, targetFrameRate);
+                qualitySelector);
 
         // Map qualities to resolutions, include:
         // * Filter by encoder supported size
@@ -1553,22 +1558,10 @@ public final class VideoCapture<T extends VideoOutput> extends UseCase {
     @NonNull
     private List<Quality> getSelectedQualityOrThrow(
             @NonNull List<Quality> supportedQualities,
-            @NonNull VideoCapabilities videoCapabilities,
-            @NonNull QualitySelector qualitySelector,
-            @NonNull DynamicRange requestedDynamicRange,
-            int sessionType,
-            @NonNull Range<Integer> targetFrameRate) throws IllegalArgumentException {
+            @NonNull QualitySelector qualitySelector) throws IllegalArgumentException {
         List<Quality> selectedQualities = qualitySelector.getPrioritizedQualities(
                 supportedQualities);
         Logger.d(TAG, "Found selectedQualities " + selectedQualities + " by " + qualitySelector);
-
-        // Filter out Quality that do not support the target frame rate for high-speed sessions.
-        if (sessionType == SESSION_TYPE_HIGH_SPEED) {
-            selectedQualities = filterOutUnsupportedHighSpeedQualities(selectedQualities,
-                    videoCapabilities, requestedDynamicRange, targetFrameRate);
-            Logger.d(TAG, "selectedQualities " + selectedQualities
-                    + " after filtering by supported high-speed frame rates");
-        }
 
         if (selectedQualities.isEmpty()) {
             throw new IllegalArgumentException("Unable to find selected quality");
@@ -1591,9 +1584,8 @@ public final class VideoCapture<T extends VideoOutput> extends UseCase {
         int aspectRatio = mediaSpec.getVideoSpec().getAspectRatio();
         Map<Quality, Size> supportedQualityToSizeMap = getQualityToResolutionMap(videoCapabilities,
                 requestedDynamicRange);
-        List<Size> supportedResolutions = sessionType == SESSION_TYPE_HIGH_SPEED
-                ? cameraInfo.getSupportedHighSpeedResolutionsFor(targetFrameRate)
-                : cameraInfo.getSupportedResolutions(getImageFormat());
+        List<Size> supportedResolutions = getSupportedResolutions(cameraInfo, sessionType,
+                targetFrameRate);
         QualityRatioToResolutionsTable qualityRatioTable = new QualityRatioToResolutionsTable(
                 supportedResolutions, supportedQualityToSizeMap);
         // Use LinkedHashMap to maintain the order.
@@ -1625,54 +1617,26 @@ public final class VideoCapture<T extends VideoOutput> extends UseCase {
     }
 
     private int getSessionType(@NonNull VideoCaptureConfig<T> useCaseConfig) {
-        return FRAME_RATE_RANGE_UNSPECIFIED.equals(
-                useCaseConfig.getTargetHighSpeedFrameRate(FRAME_RATE_RANGE_UNSPECIFIED))
-                ? SESSION_TYPE_REGULAR : SESSION_TYPE_HIGH_SPEED;
+        return useCaseConfig.getSessionType(SESSION_TYPE_REGULAR);
     }
 
     @NonNull
-    private Range<Integer> getTargetFrameRateOrThrow(@NonNull VideoCaptureConfig<T> useCaseConfig)
-            throws IllegalArgumentException {
-        Range<Integer> targetFrameRate = requireNonNull(
-                useCaseConfig.getTargetFrameRate(FRAME_RATE_RANGE_UNSPECIFIED));
-        Range<Integer> targetHighSpeedFrameRate = requireNonNull(
-                useCaseConfig.getTargetHighSpeedFrameRate(FRAME_RATE_RANGE_UNSPECIFIED));
-        if (!FRAME_RATE_RANGE_UNSPECIFIED.equals(targetFrameRate)
-                && !FRAME_RATE_RANGE_UNSPECIFIED.equals(targetHighSpeedFrameRate)) {
-            throw new IllegalArgumentException(
-                    "Can't set both targetFrameRate and targetHighSpeedFrameRate");
-        }
-        return FRAME_RATE_RANGE_UNSPECIFIED.equals(targetHighSpeedFrameRate) ? targetFrameRate
-                : targetHighSpeedFrameRate;
+    private Range<Integer> getTargetFrameRate(@NonNull VideoCaptureConfig<T> useCaseConfig) {
+        return requireNonNull(useCaseConfig.getTargetFrameRate(FRAME_RATE_RANGE_UNSPECIFIED));
     }
 
-    @NonNull
-    private List<Quality> filterOutUnsupportedHighSpeedQualities(
-            @NonNull List<Quality> selectedQualities,
-            @NonNull VideoCapabilities videoCapabilities,
-            @NonNull DynamicRange targetDynamicRange,
+    private @NonNull List<Size> getSupportedResolutions(
+            @NonNull CameraInfoInternal cameraInfo, int sessionType,
             @NonNull Range<Integer> targetFrameRate) {
-        checkArgument(!targetFrameRate.equals(FRAME_RATE_RANGE_UNSPECIFIED),
-                "Frame rate is not specified for high-speed recording");
-        List<Quality> filteredQualities = new ArrayList<>();
-        for (Quality quality : selectedQualities) {
-            Set<Range<Integer>> supportedFrameRates =
-                    videoCapabilities.getSupportedFrameRateRanges(quality, targetDynamicRange);
-            boolean isSupported = false;
-            for (Range<Integer> supportedFrameRate : supportedFrameRates) {
-                if (supportedFrameRate.equals(targetFrameRate)) {
-                    isSupported = true;
-                    break;
-                }
-            }
-            if (isSupported) {
-                filteredQualities.add(quality);
-            } else {
-                Logger.d(TAG, "Quality " + quality + " with frame rate: " + targetFrameRate
-                        + " is not supported for high-speed session");
-            }
+        List<Size> supportedResolutions;
+        if (sessionType == SESSION_TYPE_HIGH_SPEED) {
+            supportedResolutions = FRAME_RATE_RANGE_UNSPECIFIED.equals(targetFrameRate)
+                    ? cameraInfo.getSupportedHighSpeedResolutions()
+                    : cameraInfo.getSupportedHighSpeedResolutionsFor(targetFrameRate);
+        } else {
+            supportedResolutions = cameraInfo.getSupportedResolutions(getImageFormat());
         }
-        return filteredQualities;
+        return supportedResolutions;
     }
 
     private static @NonNull LinkedHashMap<Quality, List<Size>>
@@ -1845,6 +1809,26 @@ public final class VideoCapture<T extends VideoOutput> extends UseCase {
         Set<Integer> targets = new HashSet<>();
         targets.add(VIDEO_CAPTURE);
         return targets;
+    }
+
+    /**
+     * Returns a set of supported dynamic ranges for this VideoCapture use case
+     * for the given camera.
+     *
+     * <p>This method queries the {@link Recorder} to determine which dynamic ranges
+     * are supported for video recording, taking into account both the camera's
+     * capabilities and the available video encoders.
+     *
+     * @param cameraInfo The {@link CameraInfoInternal} instance of a camera.
+     * @return A non-null set of supported {@link DynamicRange}s.
+     */
+    @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+    @Override
+    public @NonNull Set<@NonNull DynamicRange> getSupportedDynamicRanges(
+            @NonNull CameraInfoInternal cameraInfo) {
+        VideoCapabilities videoCapabilities = getVideoCapabilities(cameraInfo,
+                SESSION_TYPE_REGULAR);
+        return videoCapabilities.getSupportedDynamicRanges();
     }
 
     /**
@@ -2296,6 +2280,13 @@ public final class VideoCapture<T extends VideoOutput> extends UseCase {
         public @NonNull Builder<T> setCaptureType(
                 UseCaseConfigFactory.@NonNull CaptureType captureType) {
             getMutableConfig().insertOption(OPTION_CAPTURE_TYPE, captureType);
+            return this;
+        }
+
+        @RestrictTo(Scope.LIBRARY_GROUP)
+        @Override
+        public @NonNull Builder<T> setStreamUseCase(@NonNull StreamUseCase streamUseCase) {
+            getMutableConfig().insertOption(OPTION_STREAM_USE_CASE, streamUseCase);
             return this;
         }
 
