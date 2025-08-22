@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.0.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 4.1.0 FATAL_ERROR)
 project(fenrir_jni C CXX ASM)
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
@@ -81,6 +81,7 @@ add_library(thorvg STATIC
         animation/thorvg/src/loaders/svg/tvgSvgSceneBuilder.cpp
         animation/thorvg/src/loaders/svg/tvgSvgUtil.cpp
         animation/thorvg/src/loaders/svg/tvgXmlParser.cpp
+        animation/thorvg/src/common/tvgColor.cpp
         animation/thorvg/src/common/tvgCompressor.cpp
         animation/thorvg/src/common/tvgMath.cpp
         animation/thorvg/src/common/tvgStr.cpp)
@@ -448,7 +449,7 @@ target_include_directories(common
         compress/zstd/legacy)
 
 target_compile_options(common PRIVATE
-        ${OPTIMIZE_FAST} -DZSTD_MULTITHREAD=1 -DZSTD_LEGACY_SUPPORT=4 -DHAVE_ZLIB=1 -DTAGLIB_STATIC=1 -funroll-loops -fno-strict-aliasing -fno-math-errno -Wno-unused-parameter -Wno-deprecated-declarations -Wno-unused-variable ${SYM_VISIBILITY})
+        ${OPTIMIZE_FAST} -DZSTD_MULTITHREAD=1 -DZSTD_LEGACY_SUPPORT=4 -DHAVE_ZLIB=1 -DTAGLIB_STATIC=1 -funroll-loops -fno-strict-aliasing -fno-math-errno -Wno-unused-parameter -Wno-unused-variable ${SYM_VISIBILITY})
 
 add_library(fenrir_jni
         SHARED
@@ -498,7 +499,7 @@ target_include_directories(fenrir_jni
         ${ffmpeg_location})
 
 target_compile_options(fenrir_jni PRIVATE
-        ${OPTIMIZE_NORMAL} -funroll-loops -fno-strict-aliasing -fno-math-errno -Wno-unused-parameter -Wno-deprecated-declarations -Wno-unused-variable)
+        ${OPTIMIZE_NORMAL} -funroll-loops -fno-strict-aliasing -fno-math-errno -Wno-unused-parameter -Wno-unused-variable)
 
 target_link_libraries(fenrir_jni
         PRIVATE android

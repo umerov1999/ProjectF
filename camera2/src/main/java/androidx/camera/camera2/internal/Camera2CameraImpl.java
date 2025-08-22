@@ -16,8 +16,6 @@
 
 package androidx.camera.camera2.internal;
 
-import static android.hardware.camera2.params.DynamicRangeProfiles.STANDARD;
-
 import static androidx.camera.core.concurrent.CameraCoordinator.CAMERA_OPERATING_MODE_CONCURRENT;
 
 import android.annotation.SuppressLint;
@@ -26,9 +24,7 @@ import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.params.DynamicRangeProfiles;
 import android.media.CamcorderProfile;
-import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.text.TextUtils;
@@ -44,7 +40,6 @@ import androidx.camera.camera2.internal.compat.ApiCompat;
 import androidx.camera.camera2.internal.compat.CameraAccessExceptionCompat;
 import androidx.camera.camera2.internal.compat.CameraCharacteristicsCompat;
 import androidx.camera.camera2.internal.compat.CameraManagerCompat;
-import androidx.camera.camera2.internal.compat.params.DynamicRangeConversions;
 import androidx.camera.camera2.internal.compat.params.DynamicRangesCompat;
 import androidx.camera.camera2.internal.compat.quirk.DeviceQuirks;
 import androidx.camera.camera2.internal.compat.quirk.LegacyCameraOutputConfigNullPointerQuirk;
@@ -56,7 +51,6 @@ import androidx.camera.camera2.interop.ExperimentalCamera2Interop;
 import androidx.camera.core.CameraState;
 import androidx.camera.core.CameraUnavailableException;
 import androidx.camera.core.CameraXConfig;
-import androidx.camera.core.DynamicRange;
 import androidx.camera.core.Logger;
 import androidx.camera.core.Preview;
 import androidx.camera.core.UseCase;
@@ -72,7 +66,6 @@ import androidx.camera.core.impl.CameraMode;
 import androidx.camera.core.impl.CameraStateRegistry;
 import androidx.camera.core.impl.CaptureConfig;
 import androidx.camera.core.impl.DeferrableSurface;
-import androidx.camera.core.impl.ImageCaptureConfig;
 import androidx.camera.core.impl.ImmediateSurface;
 import androidx.camera.core.impl.LiveDataObservable;
 import androidx.camera.core.impl.Observable;
@@ -208,7 +201,7 @@ final class Camera2CameraImpl implements CameraInternal {
 
     private final @NonNull CaptureSessionRepository mCaptureSessionRepository;
     private final SynchronizedCaptureSession.@NonNull OpenerBuilder mCaptureSessionOpenerBuilder;
-    private final Set<String> mNotifyStateAttachedSet = new HashSet<>();
+    private final Set<String> mSessionStartNotifiedUseCases = new HashSet<>();
 
     private @NonNull CameraConfig mCameraConfig = CameraConfigs.defaultConfig();
     final Object mLock = new Object();
@@ -903,17 +896,7 @@ final class Camera2CameraImpl implements CameraInternal {
     }
 
     private boolean isMeteringRepeatingDisabled() {
-        boolean meteringRepeatingDisabled = false;
-        for (UseCaseAttachState.UseCaseAttachInfo useCaseInfo :
-                mUseCaseAttachState.getAttachedUseCaseInfo()) {
-            UseCaseConfig<?> useCaseConfig = useCaseInfo.getUseCaseConfig();
-            if (useCaseConfig instanceof ImageCaptureConfig) {
-                if (!((ImageCaptureConfig) useCaseConfig).isMeteringRepeatingEnabled()) {
-                    meteringRepeatingDisabled = true;
-                }
-            }
-        }
-        return meteringRepeatingDisabled;
+        return mCameraXConfig != null && !mCameraXConfig.isRepeatingStreamForced();
     }
 
     @VisibleForTesting
@@ -964,7 +947,7 @@ final class Camera2CameraImpl implements CameraInternal {
          * use count to recover the additional increment here.
          */
         mCameraControlInternal.incrementUseCount();
-        notifyStateAttachedAndCameraControlReady(new ArrayList<>(useCases));
+        notifySessionStartedAndCameraControlReady(new ArrayList<>(useCases));
         List<UseCaseInfo> useCaseInfos = new ArrayList<>(toUseCaseInfos(useCases));
         try {
             mExecutor.execute(() -> {
@@ -1065,32 +1048,69 @@ final class Camera2CameraImpl implements CameraInternal {
     }
 
     @Override
+    public void onRemoved() {
+        mExecutor.execute(() -> {
+            debugLog("Camera is removed. Updating state and cleaning up.");
+
+            // Avoid re-entering if the camera is already in a terminal state.
+            if (mState == InternalState.RELEASING || mState == InternalState.RELEASED) {
+                return;
+            }
+
+            // 1. Immediately update the public-facing state to CLOSED with the specific error.
+            // This provides a fast and clear signal to the application.
+            CameraState.StateError error = CameraState.StateError.create(
+                    CameraState.ERROR_CAMERA_REMOVED);
+            mCameraStateMachine.updateState(State.CLOSED, error);
+
+            // 2. Transition the internal state to RELEASING to begin shutdown and prevent
+            // new operations. We pass the error here as well for internal consistency.
+            setState(InternalState.RELEASING, error);
+
+            // 3. Cancel any pending reopen tasks to ensure the camera doesn't try to
+            // restart itself.
+            mStateCallback.cancelScheduledReopen();
+            mErrorTimeoutReopenScheduler.cancel();
+
+            // 4. Asynchronously clean up resources.
+            if (mCameraDevice != null) {
+                // If the camera device exists, trigger the graceful close sequence which will
+                // close the session and then the device.
+                closeCamera(false);
+            } else {
+                // If the camera was never opened, we can complete the release process immediately.
+                finishClose();
+            }
+        });
+    }
+
+    @Override
     public @NonNull CameraConfig getExtendedConfig() {
         return mCameraConfig;
     }
 
-    private void notifyStateAttachedAndCameraControlReady(List<UseCase> useCases) {
+    private void notifySessionStartedAndCameraControlReady(List<UseCase> useCases) {
         for (UseCase useCase : useCases) {
             String useCaseId = getUseCaseId(useCase);
-            if (mNotifyStateAttachedSet.contains(useCaseId)) {
+            if (mSessionStartNotifiedUseCases.contains(useCaseId)) {
                 continue;
             }
 
-            mNotifyStateAttachedSet.add(useCaseId);
-            useCase.onStateAttached();
+            mSessionStartNotifiedUseCases.add(useCaseId);
+            useCase.onSessionStart();
             useCase.onCameraControlReady();
         }
     }
 
-    private void notifyStateDetachedToUseCases(List<UseCase> useCases) {
+    private void notifySessionStoppedToUseCases(List<UseCase> useCases) {
         for (UseCase useCase : useCases) {
             String useCaseId = getUseCaseId(useCase);
-            if (!mNotifyStateAttachedSet.contains(useCaseId)) {
+            if (!mSessionStartNotifiedUseCases.contains(useCaseId)) {
                 continue;
             }
 
-            useCase.onStateDetached();
-            mNotifyStateAttachedSet.remove(useCaseId);
+            useCase.onSessionStop();
+            mSessionStartNotifiedUseCases.remove(useCaseId);
         }
     }
 
@@ -1108,7 +1128,7 @@ final class Camera2CameraImpl implements CameraInternal {
         }
 
         List<UseCaseInfo> useCaseInfos = new ArrayList<>(toUseCaseInfos(useCases));
-        notifyStateDetachedToUseCases(new ArrayList<>(useCases));
+        notifySessionStoppedToUseCases(new ArrayList<>(useCases));
         mExecutor.execute(() -> tryDetachUseCases(useCaseInfos));
     }
 
@@ -1205,27 +1225,6 @@ final class Camera2CameraImpl implements CameraInternal {
             return;
         }
 
-        // HDR 10-bit can be supported since API level 33
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            return;
-        }
-
-        for (SessionConfig.OutputConfig outputConfig : useCaseSessionConfig.getOutputConfigs()) {
-            DynamicRangeProfiles dynamicRangeProfiles =
-                    mDynamicRangesCompat.toDynamicRangeProfiles();
-            if (dynamicRangeProfiles != null) {
-                DynamicRange requestedDynamicRange = outputConfig.getDynamicRange();
-                Long dynamicRangeProfileOrNull =
-                        DynamicRangeConversions.dynamicRangeToFirstSupportedProfile(
-                                requestedDynamicRange, dynamicRangeProfiles);
-                // Low-light boost should be disabled when HDR 10-bit is enabled.
-                if (dynamicRangeProfileOrNull != null && dynamicRangeProfileOrNull != STANDARD) {
-                    mCameraControlInternal.setLowLightBoostDisabledByUseCaseSessionConfig(true);
-                    return;
-                }
-            }
-        }
-
         mCameraControlInternal.setLowLightBoostDisabledByUseCaseSessionConfig(false);
     }
 
@@ -1234,7 +1233,7 @@ final class Camera2CameraImpl implements CameraInternal {
         SessionConfig sessionConfig = mUseCaseAttachState.getAttachedBuilder().build();
         int repeatingSurfaceCount = sessionConfig.getRepeatingCaptureConfig().getSurfaces().size();
         int allSurfaceCount = sessionConfig.getSurfaces().size();
-        boolean isRepeatingRequestMissing = false;
+        boolean isRepeatingRequestAvailable = true;
 
         if (isMeteringRepeatingAttachedInternal()) {
             // Should remove the metering repeating if it's the only surface or there are other
@@ -1246,7 +1245,7 @@ final class Camera2CameraImpl implements CameraInternal {
                 removeMeteringRepeating();
                 if (!shouldRemoveMeteringRepeating) {
                     // The metering repeating is removed but shouldn't.
-                    isRepeatingRequestMissing = true;
+                    isRepeatingRequestAvailable = false;
                 }
             }
         } else {
@@ -1277,15 +1276,15 @@ final class Camera2CameraImpl implements CameraInternal {
                 }
                 if (isMeteringRepeatingRestricted(mMeteringRepeatingSession)) {
                     // The metering repeating is required but not added.
-                    isRepeatingRequestMissing = true;
+                    isRepeatingRequestAvailable = false;
                 } else {
                     addMeteringRepeating();
                 }
             }
         }
 
-        if (isRepeatingRequestMissing) {
-            mCameraControlInternal.setIsRepeatingRequestAvailable(false);
+        mCameraControlInternal.setIsRepeatingRequestAvailable(isRepeatingRequestAvailable);
+        if (!isRepeatingRequestAvailable) {
             Logger.e(TAG, "The repeating surface is missing, CameraControl and "
                     + "ImageCapture may encounter issues due to the absence of repeating "
                     + "surface. Please add a UseCase (Preview or ImageAnalysis) that can "

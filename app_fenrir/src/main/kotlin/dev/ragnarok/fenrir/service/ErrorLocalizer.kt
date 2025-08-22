@@ -2,7 +2,7 @@ package dev.ragnarok.fenrir.service
 
 import android.content.Context
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.api.ApiException
+import dev.ragnarok.fenrir.api.exceptions.ApiException
 import dev.ragnarok.fenrir.api.rest.HttpException
 import dev.ragnarok.fenrir.exception.NotFoundException
 import dev.ragnarok.fenrir.nonNullNoEmpty

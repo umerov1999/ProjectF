@@ -19,7 +19,6 @@ COMMON_OPTIONS="
     --disable-programs
     --disable-everything
     --disable-avdevice
-    --disable-postproc
     --disable-avfilter
     --disable-symver
     --disable-network

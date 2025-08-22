@@ -28,7 +28,7 @@ import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity
-import dev.ragnarok.fenrir.api.ApiException
+import dev.ragnarok.fenrir.api.exceptions.ApiException
 import dev.ragnarok.fenrir.domain.IAudioInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.audio.catalog_v2.sections.holders.IViewHolder

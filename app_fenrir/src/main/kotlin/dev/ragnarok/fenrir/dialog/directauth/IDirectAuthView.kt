@@ -10,9 +10,9 @@ interface IDirectAuthView : IMvpView, IErrorView {
     fun moveFocusToSmsCode()
     fun moveFocusToAppCode()
     fun displayLoading(loading: Boolean)
-    fun setCaptchaRootVisible(visible: Boolean)
-    fun displayCaptchaImage(img: String?)
-    fun moveFocusToCaptcha()
+    fun setCaptchaLegacyRootVisible(visible: Boolean)
+    fun displayCaptchaLegacyImage(img: String?)
+    fun moveFocusToCaptchaLegacy()
     fun hideKeyboard()
     fun returnSuccessToParent(
         userId: Long,
@@ -34,4 +34,6 @@ interface IDirectAuthView : IMvpView, IErrorView {
     fun returnLoginViaWebAction()
 
     fun startDefaultValidation(url: String?)
+
+    fun openVKIdCaptcha(redirect_uri: String?, domain: String?)
 }

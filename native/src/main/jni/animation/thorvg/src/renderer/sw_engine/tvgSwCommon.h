@@ -26,6 +26,7 @@
 #include <algorithm>
 #include "tvgCommon.h"
 #include "tvgMath.h"
+#include "tvgColor.h"
 #include "tvgRender.h"
 
 #define SW_CURVE_TYPE_POINT 0
@@ -241,8 +242,7 @@ struct SwShape
     SwFill* fill = nullptr;
     SwRle* rle = nullptr;
     SwRle* strokeRle = nullptr;
-    RenderRegion bbox;           //Keep it boundary without stroke region. Using for optimal filling.
-
+    RenderRegion bbox;        //Keep it boundary without stroke region. Using for optimal filling.
     bool fastTrack = false;   //Fast Track: axis-aligned rectangle without any clips?
 };
 
@@ -564,6 +564,67 @@ static inline uint32_t opBlendSoftLight(uint32_t s, uint32_t d)
     return BLEND_PRE(JOIN(255, f(C1(s), o.r), f(C2(s), o.g), f(C3(s), o.b)), s, o.a);
 }
 
+void rasterRGB2HSL(uint8_t r, uint8_t g, uint8_t b, float* h, float* s, float* l);
+
+static inline uint32_t opBlendHue(uint32_t s, uint32_t d)
+{
+    RenderColor o;
+    if (!BLEND_UPRE(d, o)) return s;
+
+    float sh, ds, dl;
+    rasterRGB2HSL(C1(s), C2(s), C3(s), &sh, 0, 0);
+    rasterRGB2HSL(o.r, o.g, o.b, 0, &ds, &dl);
+
+    uint8_t r, g, b;
+    hsl2rgb(sh, ds, dl, r, g, b);
+
+    return BLEND_PRE(JOIN(255, r, g, b), s, o.a);
+}
+
+static inline uint32_t opBlendSaturation(uint32_t s, uint32_t d)
+{
+    RenderColor o;
+    if (!BLEND_UPRE(d, o)) return s;
+
+    float dh, ss, dl;
+    rasterRGB2HSL(C1(s), C2(s), C3(s), 0, &ss, 0);
+    rasterRGB2HSL(o.r, o.g, o.b, &dh, 0, &dl);
+
+    uint8_t r, g, b;
+    hsl2rgb(dh, ss, dl, r, g, b);
+
+    return BLEND_PRE(JOIN(255, r, g, b), s, o.a);
+}
+
+static inline uint32_t opBlendColor(uint32_t s, uint32_t d)
+{
+    RenderColor o;
+    if (!BLEND_UPRE(d, o)) return s;
+
+    float sh, ss, dl;
+    rasterRGB2HSL(C1(s), C2(s), C3(s), &sh, &ss, 0);
+    rasterRGB2HSL(o.r, o.g, o.b, 0, 0, &dl);
+
+    uint8_t r, g, b;
+    hsl2rgb(sh, ss, dl, r, g, b);
+
+    return BLEND_PRE(JOIN(255, r, g, b), s, o.a);
+}
+
+static inline uint32_t opBlendLuminosity(uint32_t s, uint32_t d)
+{
+    RenderColor o;
+    if (!BLEND_UPRE(d, o)) return s;
+
+    float dh, ds, sl;
+    rasterRGB2HSL(C1(s), C2(s), C3(s), 0, 0, &sl);
+    rasterRGB2HSL(o.r, o.g, o.b, &dh, &ds, 0);
+
+    uint8_t r, g, b;
+    hsl2rgb(dh, ds, sl, r, g, b);
+
+    return BLEND_PRE(JOIN(255, r, g, b), s, o.a);
+}
 
 int64_t mathMultiply(int64_t a, int64_t b);
 int64_t mathDivide(int64_t a, int64_t b);
@@ -582,32 +643,31 @@ int64_t mathMean(int64_t angle1, int64_t angle2);
 SwPoint mathTransform(const Point* to, const Matrix& transform);
 bool mathUpdateOutlineBBox(const SwOutline* outline, const RenderRegion& clipBox, RenderRegion& renderBox, bool fastTrack);
 
-void shapeReset(SwShape* shape);
-bool shapePrepare(SwShape* shape, const RenderShape* rshape, const Matrix& transform, const RenderRegion& clipBox, RenderRegion& renderBox, SwMpool* mpool, unsigned tid, bool hasComposite);
-bool shapePrepared(const SwShape* shape);
-bool shapeGenRle(SwShape* shape, const RenderShape* rshape, bool antiAlias);
-void shapeDelOutline(SwShape* shape, SwMpool* mpool, uint32_t tid);
-void shapeResetStroke(SwShape* shape, const RenderShape* rshape, const Matrix& transform);
-bool shapeGenStrokeRle(SwShape* shape, const RenderShape* rshape, const Matrix& transform, const RenderRegion& clipBox, RenderRegion& renderBox, SwMpool* mpool, unsigned tid);
-void shapeFree(SwShape* shape);
-void shapeDelStroke(SwShape* shape);
-bool shapeGenFillColors(SwShape* shape, const Fill* fill, const Matrix& transform, SwSurface* surface, uint8_t opacity, bool ctable);
-bool shapeGenStrokeFillColors(SwShape* shape, const Fill* fill, const Matrix& transform, SwSurface* surface, uint8_t opacity, bool ctable);
-void shapeResetFill(SwShape* shape);
-void shapeResetStrokeFill(SwShape* shape);
-void shapeDelFill(SwShape* shape);
-void shapeDelStrokeFill(SwShape* shape);
+void shapeReset(SwShape& shape);
+bool shapePrepare(SwShape& shape, const RenderShape* rshape, const Matrix& transform, const RenderRegion& clipBox, RenderRegion& renderBox, SwMpool* mpool, unsigned tid, bool hasComposite);
+bool shapeGenRle(SwShape& shape, const RenderRegion& bbox, bool antiAlias);
+void shapeDelOutline(SwShape& shape, SwMpool* mpool, uint32_t tid);
+void shapeResetStroke(SwShape& shape, const RenderShape* rshape, const Matrix& transform);
+bool shapeGenStrokeRle(SwShape& shape, const RenderShape* rshape, const Matrix& transform, const RenderRegion& clipBox, RenderRegion& renderBox, SwMpool* mpool, unsigned tid);
+void shapeFree(SwShape& shape);
+void shapeDelStroke(SwShape& shape);
+bool shapeGenFillColors(SwShape& shape, const Fill* fill, const Matrix& transform, SwSurface* surface, uint8_t opacity, bool ctable);
+bool shapeGenStrokeFillColors(SwShape& shape, const Fill* fill, const Matrix& transform, SwSurface* surface, uint8_t opacity, bool ctable);
+void shapeResetFill(SwShape& shape);
+void shapeResetStrokeFill(SwShape& shape);
+bool shapeStrokeBBox(SwShape& shape, const RenderShape* rshape, Point* pt4, const Matrix& m, SwMpool* mpool);
+void shapeDelFill(SwShape& shape);
 
 void strokeReset(SwStroke* stroke, const RenderShape* shape, const Matrix& transform);
 bool strokeParseOutline(SwStroke* stroke, const SwOutline& outline);
 SwOutline* strokeExportOutline(SwStroke* stroke, SwMpool* mpool, unsigned tid);
 void strokeFree(SwStroke* stroke);
 
-bool imagePrepare(SwImage* image, const Matrix& transform, const RenderRegion& clipBox, RenderRegion& renderBox, SwMpool* mpool, unsigned tid);
-bool imageGenRle(SwImage* image, const RenderRegion& bbox, bool antiAlias);
-void imageDelOutline(SwImage* image, SwMpool* mpool, uint32_t tid);
-void imageReset(SwImage* image);
-void imageFree(SwImage* image);
+bool imagePrepare(SwImage& image, const Matrix& transform, const RenderRegion& clipBox, RenderRegion& renderBox, SwMpool* mpool, unsigned tid);
+bool imageGenRle(SwImage& image, const RenderRegion& bbox, bool antiAlias);
+void imageDelOutline(SwImage& image, SwMpool* mpool, uint32_t tid);
+void imageReset(SwImage& image);
+void imageFree(SwImage& image);
 
 bool fillGenColorTable(SwFill* fill, const Fill* fdata, const Matrix& transform, SwSurface* surface, uint8_t opacity, bool ctable);
 const Fill::ColorStop* fillFetchSolid(const SwFill* fill, const Fill* fdata);
@@ -634,6 +694,7 @@ void rleReset(SwRle* rle);
 void rleMerge(SwRle* rle, SwRle* clip1, SwRle* clip2);
 bool rleClip(SwRle* rle, const SwRle* clip);
 bool rleClip(SwRle* rle, const RenderRegion* clip);
+bool rleIntersect(const SwRle* rle, const RenderRegion& region);
 
 SwMpool* mpoolInit(uint32_t threads);
 bool mpoolTerm(SwMpool* mpool);

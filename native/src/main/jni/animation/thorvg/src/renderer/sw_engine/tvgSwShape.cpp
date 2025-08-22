@@ -359,7 +359,7 @@ static bool _axisAlignedRect(const SwOutline* outline)
 }
 
 
-static SwOutline* _genOutline(SwShape* shape, const RenderShape* rshape, const Matrix& transform, SwMpool* mpool, unsigned tid, bool hasComposite, bool trimmed = false)
+static SwOutline* _genOutline(SwShape& shape, const RenderShape* rshape, const Matrix& transform, SwMpool* mpool, unsigned tid, bool hasComposite, bool trimmed = false)
 {
     PathCommand *cmds, *trimmedCmds = nullptr;
     Point *pts, *trimmedPts = nullptr;
@@ -424,7 +424,7 @@ static SwOutline* _genOutline(SwShape* shape, const RenderShape* rshape, const M
     tvg::free(trimmedCmds);
     tvg::free(trimmedPts);
 
-    shape->fastTrack = (!hasComposite && _axisAlignedRect(outline));
+    shape.fastTrack = (!hasComposite && _axisAlignedRect(outline));
     return outline;
 }
 
@@ -433,88 +433,83 @@ static SwOutline* _genOutline(SwShape* shape, const RenderShape* rshape, const M
 /* External Class Implementation                                        */
 /************************************************************************/
 
-bool shapePrepare(SwShape* shape, const RenderShape* rshape, const Matrix& transform, const RenderRegion& clipBox, RenderRegion& renderBox, SwMpool* mpool, unsigned tid, bool hasComposite)
+bool shapePrepare(SwShape& shape, const RenderShape* rshape, const Matrix& transform, const RenderRegion& clipBox, RenderRegion& renderBox, SwMpool* mpool, unsigned tid, bool hasComposite)
 {
-    if (auto out = _genOutline(shape, rshape, transform, mpool, tid, hasComposite, rshape->trimpath())) shape->outline = out;
-    else return false;
-    if (!mathUpdateOutlineBBox(shape->outline, clipBox, renderBox, shape->fastTrack)) return false;
-
-    shape->bbox = renderBox;
-    return true;
+    if ((shape.outline = _genOutline(shape, rshape, transform, mpool, tid, hasComposite, rshape->trimpath()))) {
+        if (mathUpdateOutlineBBox(shape.outline, clipBox, renderBox, shape.fastTrack)) {
+            shape.bbox = renderBox;
+            return true;
+        }
+    }
+    return false;
 }
 
 
-bool shapePrepared(const SwShape* shape)
-{
-    return shape->rle ? true : false;
-}
-
-
-bool shapeGenRle(SwShape* shape, TVG_UNUSED const RenderShape* rshape, bool antiAlias)
+bool shapeGenRle(SwShape& shape, const RenderRegion& bbox, bool antiAlias)
 {
     //Case A: Fast Track Rectangle Drawing
-    if (shape->fastTrack) return true;
+    if (shape.fastTrack) return true;
 
     //Case B: Normal Shape RLE Drawing
-    if ((shape->rle = rleRender(shape->rle, shape->outline, shape->bbox, antiAlias))) return true;
+    if ((shape.rle = rleRender(shape.rle, shape.outline, bbox, antiAlias))) return true;
 
     return false;
 }
 
 
-void shapeDelOutline(SwShape* shape, SwMpool* mpool, uint32_t tid)
+void shapeDelOutline(SwShape& shape, SwMpool* mpool, uint32_t tid)
 {
     mpoolRetOutline(mpool, tid);
-    shape->outline = nullptr;
+    shape.outline = nullptr;
 }
 
 
-void shapeReset(SwShape* shape)
+void shapeReset(SwShape& shape)
 {
-    rleReset(shape->rle);
-    shape->fastTrack = false;
-    shape->bbox.reset();
+    rleReset(shape.rle);
+    shape.bbox.reset();
+    shape.fastTrack = false;
 }
 
 
-void shapeFree(SwShape* shape)
+void shapeFree(SwShape& shape)
 {
-    rleFree(shape->rle);
-    shape->rle = nullptr;
+    rleFree(shape.rle);
+    shape.rle = nullptr;
 
     shapeDelFill(shape);
 
-    if (shape->stroke) {
-        rleFree(shape->strokeRle);
-        shape->strokeRle = nullptr;
-        strokeFree(shape->stroke);
-        shape->stroke = nullptr;
+    if (shape.stroke) {
+        rleFree(shape.strokeRle);
+        shape.strokeRle = nullptr;
+        strokeFree(shape.stroke);
+        shape.stroke = nullptr;
     }
 }
 
 
-void shapeDelStroke(SwShape* shape)
+void shapeDelStroke(SwShape& shape)
 {
-    if (!shape->stroke) return;
-    rleFree(shape->strokeRle);
-    shape->strokeRle = nullptr;
-    strokeFree(shape->stroke);
-    shape->stroke = nullptr;
+    if (!shape.stroke) return;
+    rleFree(shape.strokeRle);
+    shape.strokeRle = nullptr;
+    strokeFree(shape.stroke);
+    shape.stroke = nullptr;
 }
 
 
-void shapeResetStroke(SwShape* shape, const RenderShape* rshape, const Matrix& transform)
+void shapeResetStroke(SwShape& shape, const RenderShape* rshape, const Matrix& transform)
 {
-    if (!shape->stroke) shape->stroke = tvg::calloc<SwStroke*>(1, sizeof(SwStroke));
-    auto stroke = shape->stroke;
+    if (!shape.stroke) shape.stroke = tvg::calloc<SwStroke*>(1, sizeof(SwStroke));
+    auto stroke = shape.stroke;
     if (!stroke) return;
 
     strokeReset(stroke, rshape, transform);
-    rleReset(shape->strokeRle);
+    rleReset(shape.strokeRle);
 }
 
 
-bool shapeGenStrokeRle(SwShape* shape, const RenderShape* rshape, const Matrix& transform, const RenderRegion& clipBox, RenderRegion& renderBox, SwMpool* mpool, unsigned tid)
+bool shapeGenStrokeRle(SwShape& shape, const RenderShape* rshape, const Matrix& transform, const RenderRegion& clipBox, RenderRegion& renderBox, SwMpool* mpool, unsigned tid)
 {
     SwOutline* shapeOutline = nullptr;
     SwOutline* strokeOutline = nullptr;
@@ -528,26 +523,26 @@ bool shapeGenStrokeRle(SwShape* shape, const RenderShape* rshape, const Matrix& 
         dashStroking = true;
     //Trimming & Normal style
     } else {
-        if (!shape->outline) {
-            if (auto out = _genOutline(shape, rshape, transform, mpool, tid, false, rshape->trimpath())) shape->outline = out;
+        if (!shape.outline) {
+            if (auto out = _genOutline(shape, rshape, transform, mpool, tid, false, rshape->trimpath())) shape.outline = out;
             else return false;
         }
-        shapeOutline = shape->outline;
+        shapeOutline = shape.outline;
     }
 
-    if (!strokeParseOutline(shape->stroke, *shapeOutline)) {
+    if (!strokeParseOutline(shape.stroke, *shapeOutline)) {
         ret = false;
         goto clear;
     }
 
-    strokeOutline = strokeExportOutline(shape->stroke, mpool, tid);
+    strokeOutline = strokeExportOutline(shape.stroke, mpool, tid);
 
     if (!mathUpdateOutlineBBox(strokeOutline, clipBox, renderBox, false)) {
         ret = false;
         goto clear;
     }
 
-    shape->strokeRle = rleRender(shape->strokeRle, strokeOutline, renderBox, true);
+    shape.strokeRle = rleRender(shape.strokeRle, strokeOutline, renderBox, true);
 
 clear:
     if (dashStroking) mpoolRetDashOutline(mpool, tid);
@@ -557,49 +552,79 @@ clear:
 }
 
 
-bool shapeGenFillColors(SwShape* shape, const Fill* fill, const Matrix& transform, SwSurface* surface, uint8_t opacity, bool ctable)
+bool shapeGenFillColors(SwShape& shape, const Fill* fill, const Matrix& transform, SwSurface* surface, uint8_t opacity, bool ctable)
 {
-    return fillGenColorTable(shape->fill, fill, transform, surface, opacity, ctable);
+    return fillGenColorTable(shape.fill, fill, transform, surface, opacity, ctable);
 }
 
 
-bool shapeGenStrokeFillColors(SwShape* shape, const Fill* fill, const Matrix& transform, SwSurface* surface, uint8_t opacity, bool ctable)
+bool shapeGenStrokeFillColors(SwShape& shape, const Fill* fill, const Matrix& transform, SwSurface* surface, uint8_t opacity, bool ctable)
 {
-    return fillGenColorTable(shape->stroke->fill, fill, transform, surface, opacity, ctable);
+    return fillGenColorTable(shape.stroke->fill, fill, transform, surface, opacity, ctable);
 }
 
 
-void shapeResetFill(SwShape* shape)
+void shapeResetFill(SwShape& shape)
 {
-    if (!shape->fill) {
-        shape->fill = tvg::calloc<SwFill*>(1, sizeof(SwFill));
-        if (!shape->fill) return;
+    if (!shape.fill) {
+        shape.fill = tvg::calloc<SwFill*>(1, sizeof(SwFill));
+        if (!shape.fill) return;
     }
-    fillReset(shape->fill);
+    fillReset(shape.fill);
 }
 
 
-void shapeResetStrokeFill(SwShape* shape)
+void shapeResetStrokeFill(SwShape& shape)
 {
-    if (!shape->stroke->fill) {
-        shape->stroke->fill = tvg::calloc<SwFill*>(1, sizeof(SwFill));
-        if (!shape->stroke->fill) return;
+    if (!shape.stroke->fill) {
+        shape.stroke->fill = tvg::calloc<SwFill*>(1, sizeof(SwFill));
+        if (!shape.stroke->fill) return;
     }
-    fillReset(shape->stroke->fill);
+    fillReset(shape.stroke->fill);
 }
 
 
-void shapeDelFill(SwShape* shape)
+void shapeDelFill(SwShape& shape)
 {
-    if (!shape->fill) return;
-    fillFree(shape->fill);
-    shape->fill = nullptr;
+    if (!shape.fill) return;
+    fillFree(shape.fill);
+    shape.fill = nullptr;
 }
 
 
-void shapeDelStrokeFill(SwShape* shape)
+bool shapeStrokeBBox(SwShape& shape, const RenderShape* rshape, Point* pt4, const Matrix& m, SwMpool* mpool)
 {
-    if (!shape->stroke->fill) return;
-    fillFree(shape->stroke->fill);
-    shape->stroke->fill = nullptr;
+    auto outline = _genOutline(shape, rshape, m, mpool, 0, false, rshape->trimpath());
+    if (!outline) return false;
+
+    strokeReset(shape.stroke, rshape, m);
+    strokeParseOutline(shape.stroke, *outline);
+
+    auto func = [](SwStrokeBorder& border, SwPoint& min, SwPoint& max) {
+        if (border.ptsCnt == 0) return;
+        auto pts = border.pts;
+        auto cnt = border.ptsCnt;
+        while (cnt-- > 0) {
+            if (pts->x < min.x) min.x = pts->x;
+            if (pts->x > max.x) max.x = pts->x;
+            if (pts->y < min.y) min.y = pts->y;
+            if (pts->y > max.y) max.y = pts->y;
+            ++pts;
+        }
+    };
+
+    SwPoint min = {INT32_MAX, INT32_MAX};
+    SwPoint max = {-INT32_MAX, -INT32_MAX};
+    func(shape.stroke->borders[0], min, max);
+    func(shape.stroke->borders[1], min, max);
+
+    pt4[0] = min.toPoint();
+    pt4[1] = SwPoint{max.x, min.y}.toPoint();
+    pt4[2] = max.toPoint();
+    pt4[3] = SwPoint{min.x, max.y}.toPoint();
+
+    mpoolRetStrokeOutline(mpool, 0);
+    shapeDelOutline(shape, mpool, 0);
+
+    return true;
 }

@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>dev.ragnarok.intellij.getter_setter_plugin</id>
     <name>Getter Setter Kotlin Fixer</name>
-    <vendor email="fenrir.logs@list.ru" url="https://github.com/umerov1999">Umerov Artem</vendor>
+    <vendor url="https://github.com/umerov1999">Umerov Artem</vendor>
 
     <description>Fix Kotlin Getter And Setter Plugin: Use - Ctrl+T - fix, Ctrl+K - case
     </description>
@@ -16,7 +16,7 @@
             <add-to-group anchor="last" group-id="EditorPopupMenu" />
             <keyboard-shortcut first-keystroke="ctrl t" keymap="$default" />
         </action>
-        <action class="dev.ragnarok.intellij.getter_setter_plugin.CaseActionAction"
+        <action class="dev.ragnarok.intellij.getter_setter_plugin.CaseAction"
             description="Fix getter and setter" id="CaseAction.Search.Editor" text="Convert Case">
             <add-to-group anchor="last" group-id="EditorPopupMenu" />
             <keyboard-shortcut first-keystroke="ctrl k" keymap="$default" />

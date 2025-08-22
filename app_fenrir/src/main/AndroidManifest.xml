@@ -122,12 +122,12 @@
         <activity
             android:name="dev.ragnarok.fenrir.activity.KeyExchangeCommitActivity"
             android:excludeFromRecents="true"
-            android:theme="@style/QuickReply" />
+            android:theme="@style/MyTransparentDialog" />
 
         <activity
-            android:name="dev.ragnarok.fenrir.activity.CaptchaActivity"
+            android:name="dev.ragnarok.fenrir.activity.CaptchaLegacyActivity"
             android:excludeFromRecents="true"
-            android:theme="@style/QuickReply"
+            android:theme="@style/MyTransparentDialog"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
@@ -135,7 +135,7 @@
             android:excludeFromRecents="true"
             android:exported="true"
             android:label="@string/share_to_wall_label"
-            android:theme="@style/QuickReply">
+            android:theme="@style/MyTransparentDialog">
 
             <intent-filter>
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
@@ -170,16 +170,6 @@
             </intent-filter>
 
         </activity>
-
-        <provider
-            android:name="dev.ragnarok.fenrir.db.FenrirContentProvider"
-            android:authorities="${applicationId}.providers.FenrirMessages"
-            android:exported="false"
-            android:multiprocess="true" />
-
-        <service
-            android:name="dev.ragnarok.fenrir.service.QuickReplyService"
-            android:exported="false" />
 
         <activity
             android:name="dev.ragnarok.fenrir.activity.PhotosActivity"
@@ -581,25 +571,6 @@
             android:supportsPictureInPicture="true"
             android:theme="@style/App.DayNight.Swipes" />
 
-        <service
-            android:name="dev.ragnarok.fenrir.media.music.MusicPlaybackService"
-            android:exported="false"
-            android:foregroundServiceType="mediaPlayback">
-            <intent-filter>
-                <action android:name="android.intent.action.MEDIA_BUTTON" />
-            </intent-filter>
-        </service>
-
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.file_provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
-
         <activity android:name="dev.ragnarok.fenrir.activity.EnterPinActivity" />
 
         <activity
@@ -611,11 +582,6 @@
             android:name="dev.ragnarok.fenrir.activity.CreatePinActivity"
             android:screenOrientation="portrait"
             tools:ignore="DiscouragedApi,LockedOrientationActivity" />
-
-        <service
-            android:name="dev.ragnarok.fenrir.crypt.KeyExchangeService"
-            android:exported="false"
-            android:foregroundServiceType="dataSync" />
 
         <activity
             android:name="dev.ragnarok.fenrir.activity.qr.CameraScanActivity"
@@ -633,8 +599,22 @@
             android:process=":fenrir_error_activity"
             android:theme="@style/App.DayNight.Swipes" />
 
+        <activity
+            android:name="dev.ragnarok.fenrir.activity.captcha.web.VKCaptchaWebViewActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/App.DayNight.Swipes" />
+
+        <service
+            android:name="dev.ragnarok.fenrir.service.QuickReplyService"
+            android:exported="false" />
+
         <service
             android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
+        <service
+            android:name="dev.ragnarok.fenrir.crypt.KeyExchangeService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
@@ -654,6 +634,31 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <service
+            android:name="dev.ragnarok.fenrir.media.music.MusicPlaybackService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </service>
+
+        <provider
+            android:name="dev.ragnarok.fenrir.db.FenrirContentProvider"
+            android:authorities="${applicationId}.providers.FenrirMessages"
+            android:exported="false"
+            android:multiprocess="true" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.file_provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
     </application>
 

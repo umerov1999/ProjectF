@@ -23,6 +23,7 @@ interface IAuthApi {
         code: String?,
         captchaSid: String?,
         captchaKey: String?,
+        captchaSuccessToken: String?,
         forceSms: Boolean,
         libverify_support: Boolean
     ): Flow<LoginResponse>

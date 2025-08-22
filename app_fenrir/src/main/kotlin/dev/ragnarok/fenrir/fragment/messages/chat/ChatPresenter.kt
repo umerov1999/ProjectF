@@ -1508,9 +1508,9 @@ class ChatPresenter(
         val selectionCount = countOfSelection(data)
         if (selectionCount <= 0)
             return false
-        data.find { it.isSelected }?.isImportant?.let {
-            return !it
-        } ?: return true
+        return data.find { it.isSelected }?.isImportant?.let {
+            !it
+        } ?: true
     }
 
     private fun canStar(): Boolean {

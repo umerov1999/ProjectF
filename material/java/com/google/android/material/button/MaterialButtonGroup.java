@@ -56,6 +56,7 @@ import com.google.android.material.internal.ViewUtils;
 import com.google.android.material.resources.MaterialAttributes;
 import com.google.android.material.shape.AbsoluteCornerSize;
 import com.google.android.material.shape.CornerSize;
+import com.google.android.material.shape.ShapeAppearance;
 import com.google.android.material.shape.ShapeAppearanceModel;
 import com.google.android.material.shape.StateListCornerSize;
 import com.google.android.material.shape.StateListShapeAppearanceModel;
@@ -146,9 +147,7 @@ public class MaterialButtonGroup extends LinearLayout {
 
   private int overflowMode = OVERFLOW_MODE_NONE;
 
-  private final List<ShapeAppearanceModel> originalChildShapeAppearanceModels = new ArrayList<>();
-  private final List<StateListShapeAppearanceModel> originalChildStateListShapeAppearanceModels =
-      new ArrayList<>();
+  private final List<ShapeAppearance> originalChildShapeAppearanceModels = new ArrayList<>();
 
   private final PressedStateTracker pressedStateTracker = new PressedStateTracker();
   private final Comparator<MaterialButton> childOrderComparator =
@@ -319,8 +318,7 @@ public class MaterialButtonGroup extends LinearLayout {
     buttonChild.setOnPressedChangeListenerInternal(pressedStateTracker);
 
     // Saves original child shape appearance.
-    originalChildShapeAppearanceModels.add(buttonChild.getShapeAppearanceModel());
-    originalChildStateListShapeAppearanceModels.add(buttonChild.getStateListShapeAppearanceModel());
+    originalChildShapeAppearanceModels.add(buttonChild.getShapeAppearance());
 
     // Enable children based on the MaterialButtonToggleGroup own isEnabled
     buttonChild.setEnabled(isEnabled());
@@ -337,7 +335,6 @@ public class MaterialButtonGroup extends LinearLayout {
     int indexOfChild = indexOfChild(child);
     if (indexOfChild >= 0) {
       originalChildShapeAppearanceModels.remove(indexOfChild);
-      originalChildStateListShapeAppearanceModels.remove(indexOfChild);
     }
 
     childShapesDirty = true;
@@ -346,6 +343,15 @@ public class MaterialButtonGroup extends LinearLayout {
     // Recover the original layout params of all children before updating the child layout.
     recoverAllChildrenLayoutParams();
     adjustChildMarginsAndUpdateLayout();
+  }
+
+  /**
+   * Returns the original {@link ShapeAppearanceModel} for the {@link MaterialButton} child at the
+   * given index.
+   */
+  @NonNull
+  public ShapeAppearanceModel getChildOriginalShapeAppearanceModel(int index) {
+    return originalChildShapeAppearanceModels.get(index).getDefaultShape();
   }
 
   private void recoverAllChildrenLayoutParams() {
@@ -542,14 +548,12 @@ public class MaterialButtonGroup extends LinearLayout {
         // When horizontal (ltr), keeps the left two original corners for the first button.
         if (isFirstVisible) {
           cornerPositionBitsToKeep |=
-              StateListShapeAppearanceModel.CORNER_TOP_LEFT
-                  | StateListShapeAppearanceModel.CORNER_BOTTOM_LEFT;
+              ShapeAppearanceModel.CORNER_TOP_LEFT | ShapeAppearanceModel.CORNER_BOTTOM_LEFT;
         }
         // When horizontal (ltr), keeps the right two original corners for the last button.
         if (isLastVisible) {
           cornerPositionBitsToKeep |=
-              StateListShapeAppearanceModel.CORNER_TOP_RIGHT
-                  | StateListShapeAppearanceModel.CORNER_BOTTOM_RIGHT;
+              ShapeAppearanceModel.CORNER_TOP_RIGHT | ShapeAppearanceModel.CORNER_BOTTOM_RIGHT;
         }
         // If rtl, swap the position bits of left corners and right corners.
         if (isRtl) {
@@ -560,14 +564,12 @@ public class MaterialButtonGroup extends LinearLayout {
         // When vertical, keeps the top two original corners for the first button.
         if (isFirstVisible) {
           cornerPositionBitsToKeep |=
-              StateListShapeAppearanceModel.CORNER_TOP_LEFT
-                  | StateListShapeAppearanceModel.CORNER_TOP_RIGHT;
+              ShapeAppearanceModel.CORNER_TOP_LEFT | ShapeAppearanceModel.CORNER_TOP_RIGHT;
         }
         // When vertical, keeps the bottom two original corners for the last button.
         if (isLastVisible) {
           cornerPositionBitsToKeep |=
-              StateListShapeAppearanceModel.CORNER_BOTTOM_LEFT
-                  | StateListShapeAppearanceModel.CORNER_BOTTOM_RIGHT;
+              ShapeAppearanceModel.CORNER_BOTTOM_LEFT | ShapeAppearanceModel.CORNER_BOTTOM_RIGHT;
         }
       }
       // Overrides the corners that don't need to keep with unary operator.
@@ -576,12 +578,9 @@ public class MaterialButtonGroup extends LinearLayout {
           originalStateListShapeBuilder
               .setCornerSizeOverride(innerCornerSize, cornerPositionBitsToOverride)
               .build();
-      if (newStateListShape.isStateful()) {
-        button.setStateListShapeAppearanceModel(newStateListShape);
-      } else {
-        button.setShapeAppearanceModel(
-            newStateListShape.getDefaultShape(/* withCornerSizeOverrides= */ true));
-      }
+      button.setShapeAppearance(newStateListShape.isStateful()
+          ? newStateListShape
+          : newStateListShape.getDefaultShape(/* withCornerSizeOverrides= */ true));
     }
   }
 
@@ -600,14 +599,15 @@ public class MaterialButtonGroup extends LinearLayout {
   @NonNull
   private StateListShapeAppearanceModel.Builder getOriginalStateListShapeBuilder(
       boolean isFirstVisible, boolean isLastVisible, int index) {
-    StateListShapeAppearanceModel originalStateList =
+    ShapeAppearance originalStateList =
         groupStateListShapeAppearance != null && (isFirstVisible || isLastVisible)
             ? groupStateListShapeAppearance
-            : originalChildStateListShapeAppearanceModels.get(index);
+            : originalChildShapeAppearanceModels.get(index);
     // If the state list shape is not specified, creates one from the shape appearance model.
-    return originalStateList == null
-        ? new StateListShapeAppearanceModel.Builder(originalChildShapeAppearanceModels.get(index))
-        : originalStateList.toBuilder();
+    return !(originalStateList instanceof StateListShapeAppearanceModel)
+        ? new StateListShapeAppearanceModel.Builder(
+            (ShapeAppearanceModel) originalChildShapeAppearanceModels.get(index))
+        : ((StateListShapeAppearanceModel) originalStateList).toBuilder();
   }
 
   /**

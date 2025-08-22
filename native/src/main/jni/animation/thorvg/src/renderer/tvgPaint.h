@@ -84,10 +84,12 @@ namespace tvg
         uint16_t refCnt = 0;       //reference count
         uint8_t ctxFlag;           //See enum ContextFlag
         uint8_t opacity;
+        bool hidden : 1;
 
         Impl(Paint* pnt) : paint(pnt)
         {
             pnt->pImpl = this;
+            hidden = false;
             reset();
         }
 
@@ -136,7 +138,7 @@ namespace tvg
 
         void damage()
         {
-            if (renderer) renderer->damage(rd, bounds(renderer));
+            if (renderer) renderer->damage(rd, bounds());
         }
 
         void mark(CompositionFlag flag)
@@ -295,10 +297,19 @@ namespace tvg
             }
         }
 
-        RenderRegion bounds(RenderMethod* renderer) const;
+        Result visible(bool hidden)
+        {
+            if (this->hidden != hidden) {
+                this->hidden = hidden;
+                damage();
+            }
+            return Result::Success;
+        }
+
+        bool intersects(const RenderRegion& region);
+        RenderRegion bounds();
+        bool bounds(Point* pt4, const Matrix* pm, bool obb);
         Iterator* iterator();
-        Result bounds(float* x, float* y, float* w, float* h, Matrix* pm, bool stroking);
-        Result bounds(Point* pt4, Matrix* pm, bool obb, bool stroking);
         RenderData update(RenderMethod* renderer, const Matrix& pm, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag pFlag, bool clipper = false);
         bool render(RenderMethod* renderer);
         Paint* duplicate(Paint* ret = nullptr);

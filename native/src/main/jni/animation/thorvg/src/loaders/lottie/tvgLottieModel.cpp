@@ -229,7 +229,7 @@ void LottieSlot::assign(LottieObject* target, bool byDefault, ColorReplace* colo
             }
             case LottieProperty::Type::Color: {
                 auto color = static_cast<LottieSolid*>(pair->obj)->color;
-                colorReplacement->getCustomColorLottie32(color.value.rgb[0], color.value.rgb[1], color.value.rgb[2]);
+                colorReplacement->getCustomColorLottie32(color.value.r, color.value.g, color.value.b);
                 if (copy) pair->prop = new LottieColor(color);
                 pair->obj->override(&color, shallow, !copy);
                 break;
@@ -665,7 +665,7 @@ LottieProperty* LottieLayer::property(uint16_t ix)
 }
 
 
-void LottieLayer::prepare(RGB24* color)
+void LottieLayer::prepare(RGB32* color)
 {
     /* if layer is hidden, only useful data is its transform matrix.
        so force it to be a Null Layer and release all resource. */
@@ -686,7 +686,7 @@ void LottieLayer::prepare(RGB24* color)
     } else if (color && type == LottieLayer::Solid) {
         auto solidFill = Shape::gen();
         solidFill->appendRect(0, 0, static_cast<float>(w), static_cast<float>(h));
-        solidFill->fill(color->rgb[0], color->rgb[1], color->rgb[2]);
+        solidFill->fill(color->r, color->g, color->b);
         solidFill->ref();
         statical.pooler.push(solidFill);
     }
@@ -698,11 +698,9 @@ void LottieLayer::prepare(RGB24* color)
 float LottieLayer::remap(LottieComposition* comp, float frameNo, LottieExpressions* exp)
 {
     if (timeRemap.frames || timeRemap.value >= 0.0f) {
-        frameNo = comp->frameAtTime(timeRemap(frameNo, exp));
-    } else {
-        frameNo -= startFrame;
+        return comp->frameAtTime(timeRemap(frameNo, exp));
     }
-    return (frameNo / timeStretch);
+    return (frameNo - startFrame) / timeStretch;
 }
 
 

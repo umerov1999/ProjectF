@@ -53,10 +53,6 @@
     <attr name="toolbarElevation" format="reference" />
     <attr name="statusBarNonColoredColor" format="color" />
 
-    <!-- QuickReply-->
-    <attr name="quick_reply_icon_color" format="color" />
-
-
     <declare-styleable name="MozaikLayout">
         <attr name="maxSingleImageHeight" format="dimension" />
         <attr name="prefImageSize" format="dimension" />

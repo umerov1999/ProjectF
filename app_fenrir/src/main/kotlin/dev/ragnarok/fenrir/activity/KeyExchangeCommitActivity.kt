@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.activity
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -27,13 +28,19 @@ class KeyExchangeCommitActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         @StyleRes val theme: Int = when (Settings.get().main().themeOverlay) {
-            ThemeOverlay.AMOLED -> R.style.QuickReply_Amoled
-            ThemeOverlay.MD1 -> R.style.QuickReply_MD1
-            ThemeOverlay.OFF -> R.style.QuickReply
-            else -> R.style.QuickReply
+            ThemeOverlay.AMOLED -> R.style.MyTransparentDialog_Amoled
+            ThemeOverlay.MD1 -> R.style.MyTransparentDialog_MD1
+            ThemeOverlay.OFF -> R.style.MyTransparentDialog
+            else -> R.style.MyTransparentDialog
         }
         setTheme(theme)
         super.onCreate(savedInstanceState)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            setTranslucent(true)
+        }
+        window.setBackgroundDrawableResource(R.color.transparent)
+
         setContentView(R.layout.activity_key_exchange_commit)
         val accountId = (intent.extras ?: return).getLong(Extra.ACCOUNT_ID)
         val peerId = (intent.extras ?: return).getLong(Extra.PEER_ID)

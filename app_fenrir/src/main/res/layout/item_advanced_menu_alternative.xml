@@ -57,7 +57,7 @@
             android:layout_height="24dp"
             android:layout_marginEnd="16dp"
             android:src="@drawable/video"
-            app:filter_color="?attr/quick_reply_icon_color" />
+            app:filter_color="?colorOnSurface" />
 
         <LinearLayout
             android:layout_width="wrap_content"

@@ -167,6 +167,8 @@
   <inspection_tool class="AndroidLintInlinedApi" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintInnerclassSeparator" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintInsecureBaseConfiguration" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintInstantAppCall" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintInstantAppDeprecation" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintInstantApps" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintInstantiatable" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintIntentFilterExportedReceiver" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -364,6 +366,7 @@
   <inspection_tool class="AndroidLintTestAppLink" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintTextFields" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintTextViewEdits" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintThreadConstraint" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintTilePreviewImageFormat" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintTileProviderPermissions" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintTooDeepLayout" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -429,6 +432,7 @@
   <inspection_tool class="AndroidLintWatchFaceEditor" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintWatchFaceForAndroidX" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintWatchFaceFormatDeclaresHasNoCode" enabled="false" level="ERROR" enabled_by_default="false" />
+  <inspection_tool class="AndroidLintWatchFaceFormatInvalidVersion" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintWatchFaceFormatMissingVersion" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="AndroidLintWearBackNavigation" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="AndroidLintWearMaterialTheme" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -1577,6 +1581,7 @@
   <inspection_tool class="UndesirableClassUsage" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="UnknownIdInMetaInformation" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="UnknownLanguage" enabled="false" level="ERROR" enabled_by_default="false" />
+  <inspection_tool class="UnknownWFFVersion" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="UnlabeledReturnInsideLambda" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="UnnecessarilyQualifiedInnerClassAccess" enabled="false" level="INFORMATION" enabled_by_default="false">
     <option name="ignoreReferencesNeedingImport" value="false" />

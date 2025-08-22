@@ -11,7 +11,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import dev.ragnarok.fenrir.Includes.provideApplicationContext
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityUtils
-import dev.ragnarok.fenrir.api.ApiException
+import dev.ragnarok.fenrir.api.exceptions.ApiException
 import dev.ragnarok.fenrir.fragment.base.compat.AbsMvpBottomSheetDialogFragment
 import dev.ragnarok.fenrir.fragment.base.core.AbsPresenter
 import dev.ragnarok.fenrir.fragment.base.core.IErrorView

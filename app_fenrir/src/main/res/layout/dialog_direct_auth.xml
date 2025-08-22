@@ -101,13 +101,13 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
-                android:id="@+id/captcha_root"
+                android:id="@+id/captcha_legacy_root"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/captcha_img"
+                    android:id="@+id/captcha_legacy_img"
                     android:layout_width="130dp"
                     android:layout_height="50dp"
                     android:layout_gravity="center_horizontal"
@@ -119,7 +119,7 @@
                     android:layout_height="wrap_content">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/field_captcha"
+                        android:id="@+id/field_captcha_legacy"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/login_captcha_hint"

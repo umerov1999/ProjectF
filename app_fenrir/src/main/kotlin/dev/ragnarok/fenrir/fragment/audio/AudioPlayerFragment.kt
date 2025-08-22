@@ -32,7 +32,7 @@ import com.squareup.picasso3.BitmapTarget
 import com.squareup.picasso3.Picasso
 import dev.ragnarok.fenrir.*
 import dev.ragnarok.fenrir.activity.SendAttachmentsActivity
-import dev.ragnarok.fenrir.api.ApiException
+import dev.ragnarok.fenrir.api.exceptions.ApiException
 import dev.ragnarok.fenrir.domain.IAudioInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.search.SearchContentType

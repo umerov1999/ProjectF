@@ -4,14 +4,14 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Includes.networkInterfaces
-import dev.ragnarok.fenrir.api.ApiException
 import dev.ragnarok.fenrir.api.Auth.scope
-import dev.ragnarok.fenrir.api.CaptchaNeedException
-import dev.ragnarok.fenrir.api.NeedValidationException
+import dev.ragnarok.fenrir.api.exceptions.ApiException
+import dev.ragnarok.fenrir.api.exceptions.CaptchaLegacyNeedException
+import dev.ragnarok.fenrir.api.exceptions.NeedValidationException
+import dev.ragnarok.fenrir.api.exceptions.VKIdCaptchaNeedException
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.response.LoginResponse
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
-import dev.ragnarok.fenrir.model.Captcha
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.service.ApiErrorCodes
 import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
@@ -22,7 +22,8 @@ import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 class DirectAuthPresenter(savedInstanceState: Bundle?) :
     RxSupportPresenter<IDirectAuthView>(savedInstanceState) {
     private val networker: INetworker = networkInterfaces
-    private var requiredCaptcha: Captcha? = null
+    private var requiredCaptchaLegacy: CaptchaLegacy? = null
+    private var requiredVKIdCaptcha: VKIdCaptcha? = null
     private var requireSmsCode = false
     private var requireAppCode = false
     private var savePassword = false
@@ -37,13 +38,18 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
         doLogin(false)
     }
 
+    fun fireVKIdCaptchaSuccess(token: String?) {
+        requiredVKIdCaptcha?.success_token = token
+    }
+
     private fun doLogin(forceSms: Boolean) {
         view?.hideKeyboard()
         val trimmedUsername = if (username.nonNullNoEmpty()) username?.trim() else ""
         val trimmedPass = if (pass.nonNullNoEmpty()) pass?.trim() else ""
-        val captchaSid = if (requiredCaptcha != null) requiredCaptcha?.sid else null
-        val captchaCode = if (captcha.nonNullNoEmpty()) captcha?.trim() else null
-        val code: String? = if (requireSmsCode) {
+        val captchaLegacySid =
+            if (requiredCaptchaLegacy != null) requiredCaptchaLegacy?.captchaSid else null
+        val captchaLegacyCode = if (captcha.nonNullNoEmpty()) captcha?.trim() else null
+        val smsCode: String? = if (requireSmsCode) {
             if (smsCode.nonNullNoEmpty()) smsCode?.trim() else null
         } else if (requireAppCode) {
             if (appCode.nonNullNoEmpty()) appCode?.trim() else null
@@ -62,9 +68,10 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
                     Constants.AUTH_API_VERSION,
                     Constants.DEFAULT_ACCOUNT_TYPE == AccountType.VK_ANDROID,
                     scope,
-                    code,
-                    captchaSid,
-                    captchaCode,
+                    smsCode,
+                    captchaLegacySid,
+                    captchaLegacyCode,
+                    requiredVKIdCaptcha?.success_token,
                     forceSms,
                     Constants.DEFAULT_ACCOUNT_TYPE == AccountType.VK_ANDROID
                 )
@@ -77,13 +84,16 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
 
     private fun onLoginError(t: Throwable) {
         setLoginNow(false)
-        requiredCaptcha = null
+        requiredCaptchaLegacy = null
+        requiredVKIdCaptcha = null
         requireAppCode = false
         requireSmsCode = false
-        if (t is CaptchaNeedException) {
-            val sid = t.sid ?: return showError(t)
-            val img = t.img ?: return showError(t)
-            requiredCaptcha = Captcha(sid, img)
+        if (t is CaptchaLegacyNeedException) {
+            val sid = t.captchaSid ?: return showError(t)
+            val img = t.captchaImg ?: return showError(t)
+            requiredCaptchaLegacy = CaptchaLegacy(sid, img)
+        } else if (t is VKIdCaptchaNeedException) {
+            requiredVKIdCaptcha = VKIdCaptcha(t.redirect_uri, t.domain, null)
         } else if (t is NeedValidationException) {
             if (Constants.DEFAULT_ACCOUNT_TYPE == AccountType.KATE) {
                 RedirectUrl = t.validationURL
@@ -141,9 +151,17 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
         resolveSmsRootVisibility()
         resolveAppCodeRootVisibility()
         resolveButtonLoginState()
+
         when {
-            requiredCaptcha != null -> {
-                view?.moveFocusToCaptcha()
+            requiredVKIdCaptcha != null -> {
+                view?.openVKIdCaptcha(
+                    requiredVKIdCaptcha?.redirect_uri,
+                    requiredVKIdCaptcha?.domain
+                )
+            }
+
+            requiredCaptchaLegacy != null -> {
+                view?.moveFocusToCaptchaLegacy()
             }
 
             requireSmsCode -> {
@@ -167,10 +185,10 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
     }
 
     private fun resolveCaptchaViews() {
-        view?.setCaptchaRootVisible(requiredCaptcha != null)
-        if (requiredCaptcha != null) {
-            view?.displayCaptchaImage(
-                requiredCaptcha?.img
+        view?.setCaptchaLegacyRootVisible(requiredCaptchaLegacy != null)
+        if (requiredCaptchaLegacy != null) {
+            view?.displayCaptchaLegacyImage(
+                requiredCaptchaLegacy?.captchaImg
             )
         }
     }
@@ -239,7 +257,7 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
         resumedView?.setLoginButtonEnabled(
             username.trimmedNonNullNoEmpty()
                     && pass.nonNullNoEmpty()
-                    && (requiredCaptcha == null || captcha.trimmedNonNullNoEmpty())
+                    && (requiredCaptchaLegacy == null || captcha.trimmedNonNullNoEmpty())
                     && (!requireSmsCode || smsCode.trimmedNonNullNoEmpty())
                     && (!requireAppCode || appCode.trimmedNonNullNoEmpty())
         )
@@ -278,4 +296,11 @@ class DirectAuthPresenter(savedInstanceState: Bundle?) :
         resolveButtonLoginState()
     }
 
+    private class CaptchaLegacy(val captchaSid: String, val captchaImg: String)
+
+    private class VKIdCaptcha(
+        val redirect_uri: String,
+        val domain: String,
+        var success_token: String?
+    )
 }

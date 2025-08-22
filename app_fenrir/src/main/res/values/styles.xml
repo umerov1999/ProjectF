@@ -651,7 +651,8 @@
         <item name="badgeTextColor">?colorOnPrimary</item>
     </style>
 
-    <style name="QuickReply" parent="Theme.Material3.DayNight.Dialog">
+    <style name="MyTransparentDialog" parent="Theme.Material3.DayNight.Dialog">
+        <item name="android:windowIsTranslucent">true</item>
         <item name="colorPrimary">#448AFF</item>
         <item name="colorControlNormal">#448AFF</item>
         <item name="colorSecondary">#82B1FF</item>
@@ -667,7 +668,6 @@
         <item name="windowNoTitle">true</item>
         <item name="message_bubble_color">@color/white</item>
         <item name="sticker_hint_color">#99FFFFFF</item>
-        <item name="quick_reply_icon_color">#151515</item>
         <item name="dividerColor">#E1E3E7</item>
         <item name="white_color_contrast_fix">#FFFFFF</item>
         <item name="black_color_contrast_fix">#000000</item>
@@ -703,9 +703,9 @@
         <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
     </style>
 
-    <style name="QuickReply.Amoled" parent="QuickReply" />
+    <style name="MyTransparentDialog.Amoled" parent="MyTransparentDialog" />
 
-    <style name="QuickReply.MD1" parent="QuickReply">
+    <style name="MyTransparentDialog.MD1" parent="MyTransparentDialog">
         <item name="materialCardStyle">@style/CardViewMD</item>
         <item name="materialCardBackgroundStyle">@drawable/background_rectangle_filled</item>
     </style>

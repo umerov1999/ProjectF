@@ -99,7 +99,7 @@ bool encode_to_mp4a_to_mp4_audio(const char *src, const char *dst) {
     /* put sample parameters */
     audioCodecContext->bit_rate = 96000;
     audioCodecContext->sample_rate = 44100;
-    audioCodecContext->sample_fmt = encoder->sample_fmts[0];
+    audioCodecContext->sample_fmt = AV_SAMPLE_FMT_FLTP;
     audioCodecContext->ch_layout = AV_CHANNEL_LAYOUT_MONO;
 
     // some formats want stream headers to be separate

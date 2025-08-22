@@ -211,12 +211,12 @@ enum class BlendMethod : uint8_t
     SoftLight,         ///< The same as Overlay but with applying pure black or white does not result in pure black or white. (255 - 2 * S) * (D * D) + (2 * S * D)
     Difference,        ///< Subtracts the bottom layer from the top layer or the other way around, to always get a non-negative value. (S - D) if (S > D), otherwise (D - S)
     Exclusion,         ///< The result is twice the product of the top and bottom layers, subtracted from their sum. S + D - (2 * S * D)
-    Hue,               ///< Reserved. Not supported.
-    Saturation,        ///< Reserved. Not supported.
-    Color,             ///< Reserved. Not supported.
-    Luminosity,        ///< Reserved. Not supported.
+    Hue,               ///< Combine with HSL(Sh + Ds + Dl) then convert it to RGB. @since 1.0
+    Saturation,        ///< Combine with HSL(Dh + Ss + Dl) then convert it to RGB. @since 1.0
+    Color,             ///< Combine with HSL(Sh + Ss + Dl) then convert it to RGB. @since 1.0
+    Luminosity,        ///< Combine with HSL(Dh + Ds + Sl) then convert it to RGB. @since 1.0
     Add,               ///< Simply adds pixel values of one layer with the other. (S + D)
-    HardMix            ///< Reserved. Not supported.
+    Composition = 255  ///< Used for intermediate composition. Only valid when applied to a Scene. @since 1.0
 };
 
 
@@ -265,10 +265,14 @@ enum class Type : uint8_t
 
 /**
  * @brief A data structure representing a point in two-dimensional space.
+ *
+ * This structure defines a single point using Cartesian coordinates.
+ * It is typically used for specifying positions or coordinates in 2D graphics.
  */
 struct Point
 {
-    float x, y;
+    float x;  ///< The x-coordinate of the point.
+    float y;  ///< The y-coordinate of the point.
 };
 
 
@@ -315,6 +319,27 @@ public:
      * @since 1.0
     */
     const Paint* parent() const noexcept;
+
+    /**
+     * @brief Sets the visibility of the Paint object.
+     *
+     * This is useful for selectively excluding paint objects during rendering.
+     *
+     * @param[in] on A boolean flag indicating visibility. The default is @c true.
+     *               @c true, the object will be rendered by the engine.
+     *               @c false, the object will be excluded from the drawing process.
+     *
+     * @note An invisible object is not considered inactive—it may still participate
+     *       in internal update processing if its properties are updated, but it will not
+     *       be taken into account for the final drawing output. To completely deactivate
+     *       a paint object, remove it from the canvas.
+     *
+     * @see Paint::visible() const
+     * @see Result Canvas::remove(Paint* paint)
+     *
+     * @since 1.0
+     */
+    Result visible(bool on) noexcept;
 
     /**
      * @brief Sets the angle by which the object is rotated.
@@ -423,37 +448,72 @@ public:
 
     /**
      * @brief Retrieves the object-oriented bounding box (OBB) of the paint object in canvas space.
-     * 
+     *
      * This function returns the bounding box of the paint, as an oriented bounding box (OBB) after transformations are applied.
+     * The returned values @p pt4 may have invalid if the operation fails. Thus, please check the retval.
+     *
+     * This bounding box can be used to obtain the transformed bounding region in canvas space
+     * by taking the geometry's axis-aligned bounding box (AABB) in the object's local coordinate space
+     * and applying the object's transformations.
      *
      * @param[out] pt4 An array of four points representing the bounding box. The array size must be 4.
      *
-     * @retval Result::InvalidArguments @p pt4 is @c nullptr.
-     * @retval Result::InsufficientCondition If it failed to compute the bounding box (mostly due to invalid path information).
+     * @retval Result::InsufficientCondition If the paint has not been updated by the canvas.
      * 
-     * @see Paint::bounds(float* x, float* y, folat* w, float* h)
+     * @see Paint::bounds(float* x, float* y, float* w, float* h)
      * @see Canvas::update()
      *
      * @since 1.0
      */
-    Result bounds(Point* pt4) const noexcept;
+    Result bounds(Point* pt4) noexcept;
 
     /**
      * @brief Retrieves the axis-aligned bounding box (AABB) of the paint object in canvas space.
      *
-     * This function returns the bounding box of the paint, as an axis-aligned bounding box (AABB) after transformations are applied.
+     * Returns the bounding box of the paint as an axis-aligned bounding box (AABB), with all relevant transformations applied.
+     * The returned values @p x, @p y, @p w, @p h, may have invalid if the operation fails. Thus, please check the retval.
+     *
+     * This bounding box can be used to determine the actual rendered area of the object on the canvas,
+     * for purposes such as hit-testing, culling, or layout calculations.
      *
      * @param[out] x The x-coordinate of the upper-left corner of the bounding box.
      * @param[out] y The y-coordinate of the upper-left corner of the bounding box.
      * @param[out] w The width of the bounding box.
      * @param[out] h The height of the bounding box.
      *
-     * @retval Result::InsufficientCondition If it failed to compute the bounding box (mostly due to invalid path information).
+     * @retval Result::InsufficientCondition If the paint has not been updated by the canvas.
      *
      * @see Paint::bounds(Point* pt4)
      * @see Canvas::update()
      */
-    Result bounds(float* x, float* y, float* w, float* h) const noexcept;
+    Result bounds(float* x, float* y, float* w, float* h) noexcept;
+
+    /**
+     * @brief Checks whether a given region intersects the filled area of the paint.
+     *
+     * This function determines whether the specified rectangular region—defined by (`x`, `y`, `w`, `h`)—
+     * intersects the geometric fill region of the paint object.
+     *
+     * This is useful for hit-testing purposes, such as detecting whether a user interaction (e.g., touch or click)
+     * occurs within a painted region.
+     *
+     * The paint must be updated in a Canvas beforehand—typically after the Canvas has been
+     * drawn and synchronized.
+     *
+     * @param[in] x The x-coordinate of the top-left corner of the test region.
+     * @param[in] y The y-coordinate of the top-left corner of the test region.
+     * @param[in] w The width of the region to test. Must be greater than 0; defaults to 1.
+     * @param[in] h The height of the region to test. Must be greater than 0; defaults to 1.
+     *
+     * @return @c true if any part of the region intersects the filled area; otherwise, @c false.
+     *
+     * @note To test a single point, set the region size to w = 1, h = 1.
+     * @note For efficiency, an AABB (axis-aligned bounding box) test is performed internally before precise hit detection.
+     * @note This test does not take into account the results of blending or masking.
+     * @note This test does take into account the the hidden paints as well. @see Paint::visible()
+     * @note Experimental API
+     */
+    bool intersects(int32_t x, int32_t y, int32_t w = 1, int32_t h = 1) noexcept;
 
     /**
      * @brief Duplicates the object.
@@ -494,6 +554,18 @@ public:
      * @since 1.0
      */
     Shape* clip() const noexcept;
+
+    /**
+     * @brief Gets the current visibility status of the Paint object.
+     *
+     * @return true if the object is visible and will be rendered.
+     *         false if the object is hidden and will not be rendered.
+     *
+     * @see Paint::visible(bool on)
+     *
+     * @since 1.0
+     */
+    bool visible() const noexcept;
 
     /**
      * @brief Increment the reference count for the Paint instance.
@@ -549,7 +621,7 @@ public:
      *
      * @return The class type ID of the Paint instance.
      *
-     * @since Experimental API
+     * @note Experimental API
      */
     virtual Type type() const noexcept = 0;
 
@@ -558,7 +630,7 @@ public:
      *
      * This is reserved to specify an paint instance in a scene.
      *
-     * @since Experimental API
+     * @note Experimental API
      */
     uint32_t id = 0;
 
@@ -659,7 +731,7 @@ public:
      *
      * @return The class type ID of the Fill instance.
      *
-     * @since Experimental API
+     * @note Experimental API
      */
     virtual Type type() const noexcept = 0;
 
@@ -853,7 +925,7 @@ public:
      *
      * @return The class type ID of the LinearGradient instance.
      *
-     * @since Experimental API
+     * @note Experimental API
      */
     Type type() const noexcept override;
 
@@ -926,7 +998,7 @@ public:
      *
      * @return The class type ID of the LinearGradient instance.
      *
-     * @since Experimental API
+     * @note Experimental API
      */
     Type type() const noexcept override;
 
@@ -1321,7 +1393,7 @@ public:
      *
      * @return The class type ID of the Shape instance.
      *
-     * @since Experimental API
+     * @note Experimental API
      */
     Type type() const noexcept override;
 
@@ -1451,7 +1523,7 @@ public:
      *
      * @return The class type ID of the Picture instance.
      *
-     * @since Experimental API
+     * @note Experimental API
      */
     Type type() const noexcept override;
 
@@ -1556,7 +1628,7 @@ public:
      *
      * @return The class type ID of the Scene instance.
      *
-     * @since Experimental API
+     * @note Experimental API
      */
     Type type() const noexcept override;
 
@@ -1718,7 +1790,7 @@ public:
      *
      * @return The class type ID of the Text instance.
      *
-     * @since Experimental API
+     * @note Experimental API
      */
     Type type() const noexcept override;
 
@@ -1872,20 +1944,24 @@ class TVG_API Initializer final
 {
 public:
     /**
-     * @brief Initializes the ThorVG engine.
+     * @brief Initializes the ThorVG engine runtime.
      *
-     * ThorVG requires an active runtime environment to operate.
-     * Internally, it utilizes a task scheduler to efficiently parallelize rendering operations.
-     * You can specify the number of worker threads using the @p threads parameter.
-     * During initialization, ThorVG will spawn the specified number of threads.
+     * ThorVG requires an active runtime environment for rendering operations.
+     * This function sets up an internal task scheduler and creates a specified number
+     * of worker threads to enable parallel rendering.
      *
-     * @param[in] threads The number of worker threads to create. A value of zero indicates that only the main thread will be used.
+     * @param[in] threads The number of worker threads to launch.
+     *                    A value of 0 indicates that only the main thread will be used.
      *
-     * @note The initializer uses internal reference counting to track multiple calls.
-     *       The number of threads is fixed on the first call to init() and cannot be changed in subsequent calls.
+     * @return Result indicating success or failure of initialization.
+     *
+     * @note This function uses internal reference counting to allow multiple init() calls.
+     *       However, the number of threads is fixed during the first successful initialization
+     *       and cannot be changed in subsequent calls.
+     *
      * @see Initializer::term()
      */
-    static Result init(uint32_t threads) noexcept;
+    static Result init(uint32_t threads = 0) noexcept;
 
     /**
      * @brief Terminates the ThorVG engine.

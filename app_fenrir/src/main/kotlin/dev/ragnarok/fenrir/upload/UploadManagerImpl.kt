@@ -7,8 +7,8 @@ import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.api.ApiException
 import dev.ragnarok.fenrir.api.PercentagePublisher
+import dev.ragnarok.fenrir.api.exceptions.ApiException
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.server.UploadServer
 import dev.ragnarok.fenrir.db.interfaces.IStorages

@@ -64,8 +64,8 @@ internal open class ContentStreamRequestHandler(val context: Context) : RequestH
             return 0
         }
         val contentResolver = context.contentResolver
-        contentResolver.openInputStream(uri)?.use { input ->
-            return ExifInterface(input).getAttributeInt(TAG_ORIENTATION, ORIENTATION_NORMAL)
+        return contentResolver.openInputStream(uri)?.use { input ->
+            ExifInterface(input).getAttributeInt(TAG_ORIENTATION, ORIENTATION_NORMAL)
         } ?: throw FileNotFoundException("can't open input stream, uri: $uri")
     }
 }

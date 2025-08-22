@@ -17,22 +17,26 @@ import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ValidateActivity
+import dev.ragnarok.fenrir.activity.captcha.VKCaptcha
+import dev.ragnarok.fenrir.activity.captcha.VKCaptchaResult
+import dev.ragnarok.fenrir.activity.captcha.VKCaptchaResultListener
 import dev.ragnarok.fenrir.fragment.base.BaseMvpDialogFragment
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
+import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 
 class DirectAuthDialog : BaseMvpDialogFragment<DirectAuthPresenter, IDirectAuthView>(),
     IDirectAuthView {
     private var mLogin: TextInputEditText? = null
     private var mPassword: TextInputEditText? = null
-    private var mCaptcha: TextInputEditText? = null
+    private var mCaptchaLegacy: TextInputEditText? = null
     private var mSmsCode: TextInputEditText? = null
     private var mSavePassword: MaterialSwitch? = null
     private var mSmsCodeRoot: View? = null
     private var mContentRoot: View? = null
     private var mLoadingRoot: View? = null
-    private var mCaptchaRoot: View? = null
-    private var mCaptchaImage: ImageView? = null
+    private var mCaptchaLegacyRoot: View? = null
+    private var mCaptchaLegacyImage: ImageView? = null
     private var mEnterAppCodeRoot: View? = null
     private var mAppCode: TextInputEditText? = null
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -69,14 +73,14 @@ class DirectAuthDialog : BaseMvpDialogFragment<DirectAuthPresenter, IDirectAuthV
         })
         mContentRoot = view.findViewById(R.id.content_root)
         mLoadingRoot = view.findViewById(R.id.loading_root)
-        mCaptchaRoot = view.findViewById(R.id.captcha_root)
-        mCaptcha = view.findViewById(R.id.field_captcha)
-        mCaptcha?.addTextChangedListener(object : TextWatcherAdapter() {
+        mCaptchaLegacyRoot = view.findViewById(R.id.captcha_legacy_root)
+        mCaptchaLegacy = view.findViewById(R.id.field_captcha_legacy)
+        mCaptchaLegacy?.addTextChangedListener(object : TextWatcherAdapter() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 presenter?.fireCaptchaEdit(s)
             }
         })
-        mCaptchaImage = view.findViewById(R.id.captcha_img)
+        mCaptchaLegacyImage = view.findViewById(R.id.captcha_legacy_img)
         mSavePassword = view.findViewById(R.id.save_password)
         mSavePassword?.setOnCheckedChangeListener { _, isChecked ->
             presenter?.fireSaveEdit(
@@ -136,21 +140,21 @@ class DirectAuthDialog : BaseMvpDialogFragment<DirectAuthPresenter, IDirectAuthV
         mContentRoot?.visibility = if (loading) View.INVISIBLE else View.VISIBLE
     }
 
-    override fun setCaptchaRootVisible(visible: Boolean) {
-        mCaptchaRoot?.visibility = if (visible) View.VISIBLE else View.GONE
+    override fun setCaptchaLegacyRootVisible(visible: Boolean) {
+        mCaptchaLegacyRoot?.visibility = if (visible) View.VISIBLE else View.GONE
     }
 
-    override fun displayCaptchaImage(img: String?) {
-        if (mCaptchaImage != null) {
+    override fun displayCaptchaLegacyImage(img: String?) {
+        if (mCaptchaLegacyImage != null) {
             with()
                 .load(img)
                 .placeholder(R.drawable.background_gray)
-                .into(mCaptchaImage ?: return)
+                .into(mCaptchaLegacyImage ?: return)
         }
     }
 
-    override fun moveFocusToCaptcha() {
-        mCaptcha?.requestFocus()
+    override fun moveFocusToCaptchaLegacy() {
+        mCaptchaLegacy?.requestFocus()
     }
 
     override fun hideKeyboard() {
@@ -159,7 +163,7 @@ class DirectAuthDialog : BaseMvpDialogFragment<DirectAuthPresenter, IDirectAuthV
                 requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
             im?.hideSoftInputFromWindow(mLogin?.windowToken, 0)
             im?.hideSoftInputFromWindow(mPassword?.windowToken, 0)
-            im?.hideSoftInputFromWindow(mCaptcha?.windowToken, 0)
+            im?.hideSoftInputFromWindow(mCaptchaLegacy?.windowToken, 0)
             im?.hideSoftInputFromWindow(mSmsCode?.windowToken, 0)
         } catch (_: Exception) {
         }
@@ -212,6 +216,26 @@ class DirectAuthDialog : BaseMvpDialogFragment<DirectAuthPresenter, IDirectAuthV
         val intent = ValidateActivity.createIntent(requireActivity(), url, -1)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         requireActivity().startActivity(intent)
+    }
+
+    override fun openVKIdCaptcha(redirect_uri: String?, domain: String?) {
+        redirect_uri ?: return
+        domain ?: return
+        VKCaptcha.openCaptcha(
+            domain,
+            redirect_uri, object : VKCaptchaResultListener {
+                override fun onResult(result: VKCaptchaResult) {
+                    result.token.nonNullNoEmpty {
+                        lazyPresenter {
+                            fireVKIdCaptchaSuccess(it)
+                        }
+                    }
+                }
+
+                override fun onUserCancel() {
+                }
+            }
+        )
     }
 
     companion object {

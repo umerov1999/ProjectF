@@ -89,9 +89,9 @@ struct TextImpl : Text
         return Result::Success;
     }
 
-    RenderRegion bounds(RenderMethod* renderer) const
+    RenderRegion bounds()
     {
-        return SHAPE(shape)->bounds(renderer);
+        return SHAPE(shape)->bounds();
     }
 
     bool render(RenderMethod* renderer)
@@ -143,10 +143,16 @@ struct TextImpl : Text
         return true;
     }
 
-    Result bounds(Point* pt4, Matrix& m, bool obb, TVG_UNUSED bool stroking)
+    bool intersects(const RenderRegion& region)
     {
-        if (load() == 0.0f) return Result::InsufficientCondition;
-        return PAINT(shape)->bounds(pt4, &m, obb, true);
+        if (load() == 0.0f) return false;
+        return SHAPE(shape)->intersects(region);
+    }
+
+    bool bounds(Point* pt4, const Matrix& m, bool obb)
+    {
+        if (load() == 0.0f) return false;
+        return PAINT(shape)->bounds(pt4, &m, obb);
     }
 
     Paint* duplicate(Paint* ret)

@@ -24,6 +24,7 @@
 #define _TVG_PICTURE_H_
 
 #include "tvgPaint.h"
+#include "tvgScene.h"
 #include "tvgLoader.h"
 
 #define PICTURE(A) static_cast<PictureImpl*>(A)
@@ -119,13 +120,22 @@ struct PictureImpl : Picture
         return Result::Success;
     }
 
-    Result bounds(Point* pt4, Matrix& m, TVG_UNUSED bool obb, TVG_UNUSED bool stroking) const
+    bool intersects(const RenderRegion& region)
+    {
+        if (!impl.renderer) return false;
+        load();
+        if (impl.rd) return impl.renderer->intersectsImage(impl.rd, region);
+        else if (vector) return SCENE(vector)->intersects(region);
+        return false;
+    }
+
+    bool bounds(Point* pt4, const Matrix& m, TVG_UNUSED bool obb)
     {
         pt4[0] = Point{0.0f, 0.0f} * m;
         pt4[1] = Point{w, 0.0f} * m;
         pt4[2] = Point{w, h} * m;
         pt4[3] = Point{0.0f, h} * m;
-        return Result::Success;
+        return true;
     }
 
     Result load(const char* filename, ColorReplace *colorReplacement)
@@ -256,7 +266,7 @@ struct PictureImpl : Picture
         } else if (vector) {
             RenderCompositor* cmp = nullptr;
             if (impl.cmpFlag) {
-                cmp = renderer->target(bounds(renderer), renderer->colorSpace(), impl.cmpFlag);
+                cmp = renderer->target(bounds(), renderer->colorSpace(), impl.cmpFlag);
                 renderer->beginComposite(cmp, MaskMethod::None, 255);
             }
             ret = vector->pImpl->render(renderer);
@@ -265,10 +275,10 @@ struct PictureImpl : Picture
         return ret;
     }
 
-    RenderRegion bounds(RenderMethod* renderer)
+    RenderRegion bounds()
     {
-        if (vector) return vector->pImpl->bounds(renderer);
-        return renderer->region(impl.rd);
+        if (vector) return vector->pImpl->bounds();
+        return impl.renderer->region(impl.rd);
     }
 
     Result load(ImageLoader* loader)

@@ -16,8 +16,8 @@ import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.UserAgentTool
 import dev.ragnarok.fenrir.api.Auth
-import dev.ragnarok.fenrir.api.IValidateProvider
 import dev.ragnarok.fenrir.api.util.VKStringUtils
+import dev.ragnarok.fenrir.api.validation.IValidateProvider
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.settings.Settings

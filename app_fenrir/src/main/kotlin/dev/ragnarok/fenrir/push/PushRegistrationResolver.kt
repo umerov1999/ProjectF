@@ -5,7 +5,7 @@ import android.os.Build
 import dev.ragnarok.fenrir.AccountType
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.FCMToken
-import dev.ragnarok.fenrir.api.ApiException
+import dev.ragnarok.fenrir.api.exceptions.ApiException
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.service.ApiErrorCodes
 import dev.ragnarok.fenrir.settings.ISettings

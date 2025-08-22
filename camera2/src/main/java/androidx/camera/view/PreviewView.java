@@ -344,7 +344,12 @@ public final class PreviewView extends FrameLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        startListeningToDisplayChange();
+        // registerDisplayListener call might throw an IncompatibleClassChangeError and cause that
+        // the PreviewView can't be rendered in Android Studio's layout preview window. Therefore,
+        // do not invoke the startListeningToDisplayChange when in edit mode. (b/429098676)
+        if (!isInEditMode()) {
+            startListeningToDisplayChange();
+        }
         addOnLayoutChangeListener(mOnLayoutChangeListener);
         if (mImplementation != null) {
             mImplementation.onAttachedToWindow();
@@ -362,7 +367,9 @@ public final class PreviewView extends FrameLayout {
         if (mCameraController != null) {
             mCameraController.clearPreviewSurface();
         }
-        stopListeningToDisplayChange();
+        if (!isInEditMode()) {
+            stopListeningToDisplayChange();
+        }
     }
 
     @Override
@@ -1075,7 +1082,8 @@ public final class PreviewView extends FrameLayout {
                 ScreenFlashUiInfo.ProviderType.PREVIEW_VIEW, control));
     }
 
-    private void startListeningToDisplayChange() {
+    @VisibleForTesting
+    void startListeningToDisplayChange() {
         DisplayManager displayManager = getDisplayManager();
         if (displayManager == null) {
             return;
@@ -1084,7 +1092,8 @@ public final class PreviewView extends FrameLayout {
                 new Handler(Looper.getMainLooper()));
     }
 
-    private void stopListeningToDisplayChange() {
+    @VisibleForTesting
+    void stopListeningToDisplayChange() {
         DisplayManager displayManager = getDisplayManager();
         if (displayManager == null) {
             return;

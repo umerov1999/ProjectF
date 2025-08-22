@@ -172,6 +172,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlin_serializer")
     implementation("com.google.errorprone:error_prone_annotations:$errorProneVersion")
     implementation("com.google.android.gms:play-services-base:$playServicesBase")
+    //implementation "com.vk.id.captcha:vkid-captcha:0.0.5"
 
     modules {
         module("com.google.guava:listenablefuture") {

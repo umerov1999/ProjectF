@@ -25,6 +25,10 @@
 
 #include "tvgCommon.h"
 #include "tvgArray.h"
+#include "tvgInlist.h"
+#include "tvgColor.h"
+
+using SvgColor = tvg::RGB;
 
 struct Box
 {
@@ -427,11 +431,6 @@ struct SvgComposite
     bool applying;              //flag for checking circular dependency.
 };
 
-struct SvgColor
-{
-    uint8_t r, g, b;
-};
-
 struct SvgPaint
 {
     SvgStyleGradient* gradient;
@@ -564,6 +563,8 @@ struct SvgParser
 
 struct SvgNodeIdPair
 {
+    INLIST_ITEM(SvgNodeIdPair);
+    SvgNodeIdPair(SvgNode* n, char* i) : node{n}, id{i} {}
     SvgNode* node;
     char *id;
 };
@@ -592,7 +593,7 @@ struct SvgLoaderData
     Array<SvgStyleGradient*> gradients;
     Array<SvgStyleGradient*> gradientStack; //For stops
     SvgParser* svgParse = nullptr;
-    Array<SvgNodeIdPair> cloneNodes;
+    Inlist<SvgNodeIdPair> cloneNodes;
     Array<SvgNodeIdPair> nodesToStyle;
     Array<char*> images;        //embedded images
     Array<FontFace> fonts;

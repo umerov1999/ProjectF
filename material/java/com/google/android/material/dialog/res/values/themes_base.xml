@@ -279,6 +279,8 @@
     <item name="floatingToolbarStyle">@style/Widget.Material3.FloatingToolbar</item>
     <item name="floatingToolbarVibrantStyle">@style/Widget.Material3.FloatingToolbar.Vibrant</item>
     <item name="linearProgressIndicatorStyle">@style/Widget.Material3.LinearProgressIndicator</item>
+    <item name="listItemLayoutStyle">@style/Widget.Material3.ListItemLayout</item>
+    <item name="listItemLayoutSegmentedStyle">@style/Widget.Material3.ListItemLayout.Segmented</item>
     <item name="loadingIndicatorStyle">@style/Widget.Material3.LoadingIndicator</item>
     <item name="materialIconButtonStyle">@style/Widget.Material3.Button.IconButton</item>
     <item name="materialIconButtonFilledStyle">@style/Widget.Material3.Button.IconButton.Filled</item>
@@ -395,11 +397,27 @@
 
     <!-- Shape attributes. -->
     <item name="shapeCornerFamily">@integer/m3_sys_shape_corner_full_corner_family</item>
+    <item name="shapeCornerSizeExtraSmall">@dimen/m3_sys_shape_corner_value_extra_small</item>
+    <item name="shapeCornerSizeSmall">@dimen/m3_sys_shape_corner_value_small</item>
+    <item name="shapeCornerSizeMedium">@dimen/m3_sys_shape_corner_value_medium</item>
+    <item name="shapeCornerSizeLarge">@dimen/m3_sys_shape_corner_value_large</item>
+    <item name="shapeCornerSizeLargeIncreased">@dimen/m3_sys_shape_corner_value_large_increased</item>
+    <item name="shapeCornerSizeExtraLarge">@dimen/m3_sys_shape_corner_value_extra_large</item>
+    <item name="shapeCornerSizeExtraLargeIncreased">@dimen/m3_sys_shape_corner_value_extra_large_increased</item>
+    <item name="shapeCornerSizeExtraExtraLarge">@dimen/m3_sys_shape_corner_value_extra_extra_large</item>
     <item name="shapeAppearanceCornerExtraSmall">@style/ShapeAppearance.Material3.Corner.ExtraSmall</item>
     <item name="shapeAppearanceCornerSmall">@style/ShapeAppearance.Material3.Corner.Small</item>
     <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.Material3.Corner.Medium</item>
     <item name="shapeAppearanceCornerLarge">@style/ShapeAppearance.Material3.Corner.Large</item>
+    <item name="shapeAppearanceCornerLargeIncreased">@style/ShapeAppearance.Material3.Corner.LargeIncreased</item>
     <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.Material3.Corner.ExtraLarge</item>
+    <item name="shapeAppearanceCornerExtraLargeIncreased">@style/ShapeAppearance.Material3.Corner.ExtraLargeIncreased</item>
+    <item name="shapeAppearanceCornerExtraExtraLarge">@style/ShapeAppearance.Material3.Corner.ExtraExtraLarge</item>
+    <item name="listItemShapeAppearanceSingle">@style/ShapeAppearance.Material3.ListItem.Single</item>
+    <item name="listItemShapeAppearanceFirst">@style/ShapeAppearance.Material3.ListItem.First</item>
+    <item name="listItemShapeAppearanceMiddle">@style/ShapeAppearance.Material3.ListItem.Middle</item>
+    <item name="listItemShapeAppearanceLast">@style/ShapeAppearance.Material3.ListItem.Last</item>
+    <item name="listItemShapeAppearanceChecked">@style/ShapeAppearance.Material3.ListItem.Checked</item>
 
     <!-- Deprecated shape styles. -->
     <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Material3.SmallComponent</item>
@@ -581,6 +599,8 @@
     <item name="floatingToolbarStyle">@style/Widget.Material3.FloatingToolbar</item>
     <item name="floatingToolbarVibrantStyle">@style/Widget.Material3.FloatingToolbar.Vibrant</item>
     <item name="linearProgressIndicatorStyle">@style/Widget.Material3.LinearProgressIndicator</item>
+    <item name="listItemLayoutStyle">@style/Widget.Material3.ListItemLayout</item>
+    <item name="listItemLayoutSegmentedStyle">@style/Widget.Material3.ListItemLayout.Segmented</item>
     <item name="loadingIndicatorStyle">@style/Widget.Material3.LoadingIndicator</item>
     <item name="materialIconButtonStyle">@style/Widget.Material3.Button.IconButton</item>
     <item name="materialIconButtonFilledStyle">@style/Widget.Material3.Button.IconButton.Filled</item>
@@ -697,11 +717,27 @@
 
     <!-- Shape attributes. -->
     <item name="shapeCornerFamily">@integer/m3_sys_shape_corner_full_corner_family</item>
+    <item name="shapeCornerSizeExtraSmall">@dimen/m3_sys_shape_corner_value_extra_small</item>
+    <item name="shapeCornerSizeSmall">@dimen/m3_sys_shape_corner_value_small</item>
+    <item name="shapeCornerSizeMedium">@dimen/m3_sys_shape_corner_value_medium</item>
+    <item name="shapeCornerSizeLarge">@dimen/m3_sys_shape_corner_value_large</item>
+    <item name="shapeCornerSizeLargeIncreased">@dimen/m3_sys_shape_corner_value_large_increased</item>
+    <item name="shapeCornerSizeExtraLarge">@dimen/m3_sys_shape_corner_value_extra_large</item>
+    <item name="shapeCornerSizeExtraLargeIncreased">@dimen/m3_sys_shape_corner_value_extra_large_increased</item>
+    <item name="shapeCornerSizeExtraExtraLarge">@dimen/m3_sys_shape_corner_value_extra_extra_large</item>
     <item name="shapeAppearanceCornerExtraSmall">@style/ShapeAppearance.Material3.Corner.ExtraSmall</item>
     <item name="shapeAppearanceCornerSmall">@style/ShapeAppearance.Material3.Corner.Small</item>
     <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.Material3.Corner.Medium</item>
     <item name="shapeAppearanceCornerLarge">@style/ShapeAppearance.Material3.Corner.Large</item>
+    <item name="shapeAppearanceCornerLargeIncreased">@style/ShapeAppearance.Material3.Corner.LargeIncreased</item>
     <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.Material3.Corner.ExtraLarge</item>
+    <item name="shapeAppearanceCornerExtraLargeIncreased">@style/ShapeAppearance.Material3.Corner.ExtraLargeIncreased</item>
+    <item name="shapeAppearanceCornerExtraExtraLarge">@style/ShapeAppearance.Material3.Corner.ExtraExtraLarge</item>
+    <item name="listItemShapeAppearanceSingle">@style/ShapeAppearance.Material3.ListItem.Single</item>
+    <item name="listItemShapeAppearanceFirst">@style/ShapeAppearance.Material3.ListItem.First</item>
+    <item name="listItemShapeAppearanceMiddle">@style/ShapeAppearance.Material3.ListItem.Middle</item>
+    <item name="listItemShapeAppearanceLast">@style/ShapeAppearance.Material3.ListItem.Last</item>
+    <item name="listItemShapeAppearanceChecked">@style/ShapeAppearance.Material3.ListItem.Checked</item>
 
     <!-- Deprecated shape styles. -->
     <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Material3.SmallComponent</item>

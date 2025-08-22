@@ -166,16 +166,16 @@ internal class LocalServerApi(private val service: ILocalServerServiceProvider) 
 
     companion object {
         inline fun <reified T : Any> extractResponseWithErrorHandling(): (BaseResponse<T>) -> T =
-            { err ->
-                err.error?.let {
+            { r ->
+                r.error?.let {
                     throw Exception(
                         firstNonEmptyString(
-                            err.error?.errorMsg,
+                            r.error?.errorMsg,
                             "Error"
                         )
                     )
-                } ?: (err.response
-                    ?: throw NullPointerException("Local Server return null response"))
+                }
+                r.response ?: throw NullPointerException("Local Server return null response")
             }
     }
 }

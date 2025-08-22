@@ -1,6 +1,7 @@
 package dev.ragnarok.fenrir.activity
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -46,6 +47,12 @@ class PostPublishPrepareActivity : AppCompatActivity(), RecyclerMenuAdapter.Acti
         Utils.prepareDensity(this)
         Utils.registerColorsThorVG(this)
         super.onCreate(savedInstanceState)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            setTranslucent(true)
+        }
+        window.setBackgroundDrawableResource(R.color.transparent)
+
         setContentView(R.layout.activity_post_publish_prepare)
         adapter = RecyclerMenuAdapter(R.layout.item_advanced_menu_alternative, emptyList())
         adapter?.setActionListener(this)

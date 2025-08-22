@@ -2,11 +2,10 @@ package dev.ragnarok.fenrir.api.impl
 
 import android.os.SystemClock
 import dev.ragnarok.fenrir.Includes
-import dev.ragnarok.fenrir.api.ApiException
 import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.OutOfDateException
 import dev.ragnarok.fenrir.api.TokenType
-import dev.ragnarok.fenrir.api.model.Captcha
+import dev.ragnarok.fenrir.api.exceptions.ApiException
 import dev.ragnarok.fenrir.api.model.Error
 import dev.ragnarok.fenrir.api.model.Params
 import dev.ragnarok.fenrir.api.model.interfaces.IAttachmentToken
@@ -168,12 +167,16 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
             }
 
             ApiErrorCodes.VALIDATE_NEED -> {
+                val redirectUri = error.redirectUri
+                if (redirectUri.isNullOrEmpty()) {
+                    return false
+                }
                 val provider = Includes.validationProvider
-                provider.requestValidate(error.redirectUri, accountId)
+                provider.requestValidate(redirectUri, accountId)
                 var code = false
                 while (true) {
                     try {
-                        code = provider.lookupState(error.redirectUri ?: break)
+                        code = provider.lookupState(redirectUri)
                         if (code) {
                             break
                         } else {
@@ -191,27 +194,57 @@ internal open class AbsApi(val accountId: Long, private val restProvider: IServi
             }
 
             ApiErrorCodes.CAPTCHA_NEED -> {
-                val captcha = Captcha(error.captchaSid, error.captchaImg)
-                val provider = Includes.captchaProvider
-                provider.requestCaptcha(captcha.sid, captcha)
-                var code: String? = null
-                while (true) {
-                    try {
-                        code = provider.lookupCode(captcha.sid ?: break)
-                        if (code != null) {
-                            break
-                        } else {
-                            SystemClock.sleep(1000)
-                        }
-                    } catch (_: OutOfDateException) {
-                        break
+                val redirectUri = error.redirectUri
+                if (redirectUri.isNullOrEmpty()) {
+                    val captchaSid = error.captchaSid
+                    if (captchaSid.isNullOrEmpty()) {
+                        return false
                     }
-                }
-                if (code.nonNullNoEmpty() && captcha.sid.nonNullNoEmpty()) {
-                    params["captcha_sid"] = captcha.sid
-                    params["captcha_key"] = code
+                    val provider = Includes.captchaLegacyProvider
+                    provider.requestCaptcha(captchaSid, error.captchaImg)
+                    var code: String? = null
+                    while (true) {
+                        try {
+                            code = provider.lookupCode(captchaSid)
+                            if (code != null) {
+                                break
+                            } else {
+                                SystemClock.sleep(1000)
+                            }
+                        } catch (_: OutOfDateException) {
+                            break
+                        }
+                    }
+                    if (code.nonNullNoEmpty()) {
+                        params["captcha_sid"] = captchaSid
+                        params["captcha_key"] = code
+                    } else {
+                        handle = false
+                    }
                 } else {
-                    handle = false
+                    val provider = Includes.vkIdCaptchaProvider
+                    provider.requestCaptcha(
+                        redirectUri,
+                        "https://" + Settings.get().main().apiDomain
+                    )
+                    var successToken: String? = null
+                    while (true) {
+                        try {
+                            successToken = provider.lookupSuccessToken(redirectUri)
+                            if (successToken != null) {
+                                break
+                            } else {
+                                SystemClock.sleep(1000)
+                            }
+                        } catch (_: OutOfDateException) {
+                            break
+                        }
+                    }
+                    if (successToken.nonNullNoEmpty()) {
+                        params["success_token"] = successToken
+                    } else {
+                        handle = false
+                    }
                 }
             }
 

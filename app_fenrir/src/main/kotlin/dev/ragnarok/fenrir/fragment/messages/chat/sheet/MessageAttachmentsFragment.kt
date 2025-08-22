@@ -23,7 +23,7 @@ import dev.ragnarok.fenrir.activity.AttachmentsActivity
 import dev.ragnarok.fenrir.activity.AudioSelectActivity.Companion.createIntent
 import dev.ragnarok.fenrir.activity.DualTabPhotoActivity.Companion.createIntent
 import dev.ragnarok.fenrir.activity.VideoSelectActivity
-import dev.ragnarok.fenrir.api.ApiException
+import dev.ragnarok.fenrir.api.exceptions.ApiException
 import dev.ragnarok.fenrir.db.model.AttachmentsTypes
 import dev.ragnarok.fenrir.fragment.poll.createpoll.CreatePollDialogFragment
 import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat

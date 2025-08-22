@@ -87,9 +87,16 @@ bool identity(const Matrix* m);
 Matrix operator*(const Matrix& lhs, const Matrix& rhs);
 bool operator==(const Matrix& lhs, const Matrix& rhs);
 
+
+static inline float radian(const Matrix& m)
+{
+    return fabsf(tvg::atan2(m.e21, m.e11));
+}
+
+
 static inline bool rightAngle(const Matrix& m)
 {
-   auto radian = fabsf(tvg::atan2(m.e21, m.e11));
+   auto radian = tvg::radian(m);
    if (tvg::zero(radian) || tvg::zero(radian - MATH_PI2) || tvg::zero(radian - MATH_PI)) return true;
    return false;
 }
@@ -174,6 +181,13 @@ static inline void operator*=(Matrix& lhs, const Matrix& rhs)
 }
 
 
+static inline Matrix operator*(const Matrix* lhs, const Matrix& rhs)
+{
+    if (lhs) return *lhs * rhs;
+    return rhs;
+}
+
+
 static inline void log(const Matrix& m)
 {
     TVGLOG("COMMON", "Matrix: [%f %f %f] [%f %f %f] [%f %f %f]", m.e11, m.e12, m.e13, m.e21, m.e22, m.e23, m.e31, m.e32, m.e33);
@@ -189,7 +203,6 @@ Point operator*(const Point& pt, const Matrix& m);
 Point normal(const Point& p1, const Point& p2);
 void normalize(Point& pt);
 
-
 static inline constexpr const Point operator*=(Point& pt, const Matrix* m)
 {
     if (m) pt *= *m;
@@ -199,8 +212,8 @@ static inline constexpr const Point operator*=(Point& pt, const Matrix* m)
 
 static inline Point operator*(const Point& pt, const Matrix* m)
 {
-    if (!m) return pt;
-    return pt * *m;
+    if (m) return pt * *m;
+    return pt;
 }
 
 
@@ -313,6 +326,13 @@ static inline Point operator*(const Point& lhs, const float rhs)
 }
 
 
+static inline void operator*=(Point& lhs, const float rhs)
+{
+    lhs.x *= rhs;
+    lhs.y *= rhs;
+}
+
+
 static inline Point operator*(const float& lhs, const Point& rhs)
 {
     return {lhs * rhs.x, lhs * rhs.y};
@@ -373,6 +393,22 @@ struct Line
 
 
 /************************************************************************/
+/* Geometry functions                                                   */
+/************************************************************************/
+
+struct BBox
+{
+    Point min, max;
+
+    void init()
+    {
+        min = {FLT_MAX, FLT_MAX};
+        max = {-FLT_MAX, -FLT_MAX};
+    }
+};
+
+
+/************************************************************************/
 /* Bezier functions                                                     */
 /************************************************************************/
 
@@ -399,22 +435,13 @@ struct Bezier
     float atApprox(float at, float length) const;
     Point at(float t) const;
     float angle(float t) const;
-    void bounds(Point& min, Point& max) const;
     bool flatten() const;
     uint32_t segments() const;
 
     Bezier operator*(const Matrix& m);
+
+    static void bounds(BBox& box, const Point& start, const Point& ctrl1, const Point& ctrl2, const Point& end);
 };
-
-/************************************************************************/
-/* Geometry functions                                                   */
-/************************************************************************/
-
-struct BBox
-{
-    Point min, max;
-};
-
 
 
 /************************************************************************/

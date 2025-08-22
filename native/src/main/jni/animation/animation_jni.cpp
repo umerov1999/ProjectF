@@ -38,7 +38,7 @@ class VideoInfo {
 public:
     ~VideoInfo() {
         if (video_dec_ctx) {
-            avcodec_close(video_dec_ctx);
+            avcodec_free_context(&video_dec_ctx);
             video_dec_ctx = nullptr;
         }
         if (fmt_ctx) {
@@ -65,10 +65,33 @@ public:
             sws_ctx = nullptr;
         }
 
-        av_packet_unref(&orig_pkt);
+        if (pkt != nullptr) {
+            av_packet_free(&pkt);
+            pkt = nullptr;
+        }
+
+        orig_pkt_data = nullptr;
+        orig_pkt_size = 0;
 
         video_stream_idx = -1;
         video_stream = nullptr;
+    }
+
+    void backup_pkt_buffer() {
+        if (pkt != nullptr) {
+            orig_pkt_data = pkt->data;
+            orig_pkt_size = pkt->size;
+        }
+    }
+
+    void restore_pkt_buffer() {
+        if (pkt != nullptr) {
+            pkt->data = orig_pkt_data;
+            pkt->size = orig_pkt_size;
+
+            orig_pkt_data = nullptr;
+            orig_pkt_size = 0;
+        }
     }
 
     AVFormatContext *fmt_ctx = nullptr;
@@ -78,12 +101,15 @@ public:
     AVCodecContext *video_dec_ctx = nullptr;
     AVFrame *frame = nullptr;
     bool has_decoded_frames = false;
-    AVPacket pkt;
-    AVPacket orig_pkt;
+
+    AVPacket *pkt = av_packet_alloc();
+    uint8_t *orig_pkt_data = nullptr;
+    int orig_pkt_size = 0;
+
     bool stopped = false;
     bool seeking = false;
 
-    int32_t dst_linesize[1];
+    int32_t dst_linesize[1] = {};
 
     struct SwsContext *sws_ctx = nullptr;
 
@@ -137,12 +163,12 @@ open_codec_context_animation(int *stream_idx, AVCodecContext **dec_ctx, AVFormat
 
 int decode_packet_animation(VideoInfo *info, bool &got_frame) {
     int ret;
-    int decoded = info->pkt.size;
+    int decoded = info->pkt->size;
     got_frame = false;
 
-    if (info->pkt.stream_index == info->video_stream_idx) {
+    if (info->pkt->stream_index == info->video_stream_idx) {
         while (decoded > 0) {
-            ret = avcodec_send_packet(info->video_dec_ctx, &info->pkt);
+            ret = avcodec_send_packet(info->video_dec_ctx, info->pkt);
             if (ret < 0 && ret != AVERROR(EAGAIN)) {
                 return ret;
             }
@@ -154,9 +180,9 @@ int decode_packet_animation(VideoInfo *info, bool &got_frame) {
                     return ret;
                 }
                 got_frame = true;
-                return info->pkt.size;
+                return info->pkt->size;
             }
-            decoded = info->pkt.size;
+            decoded = info->pkt->size;
         }
     }
 
@@ -206,10 +232,6 @@ jlong createDecoder_animation(JNIEnv *env, jstring src,
         return 0;
     }
 
-    av_init_packet(&info->pkt);
-    info->pkt.data = nullptr;
-    info->pkt.size = 0;
-
     jint *dataArr = env->GetIntArrayElements(data, nullptr);
     if (dataArr != nullptr) {
         dataArr[0] = info->video_dec_ctx->width;
@@ -224,10 +246,12 @@ jlong createDecoder_animation(JNIEnv *env, jstring src,
                 dataArr[2] = 0;
             }
         } else {
-            uint8_t *displayMatrix = av_stream_get_side_data(info->video_stream,
-                                                             AV_PKT_DATA_DISPLAYMATRIX, nullptr);
-            if (displayMatrix) {
-                dataArr[2] = (int) -av_display_rotation_get((int32_t *) displayMatrix);
+            const AVPacketSideData *psd = av_packet_side_data_get(
+                    info->video_stream->codecpar->coded_side_data,
+                    info->video_stream->codecpar->nb_coded_side_data,
+                    AV_PKT_DATA_DISPLAYMATRIX);
+            if (psd && psd->data) {
+                dataArr[2] = (int) -av_display_rotation_get((int32_t *) psd->data);
             } else {
                 dataArr[2] = 0;
             }
@@ -338,30 +362,31 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_seekToMs(JNIEnv *
         bool got_frame = false;
         int32_t tries = 100;
         while (tries > 0) {
-            if (info->pkt.size == 0) {
-                ret = av_read_frame(info->fmt_ctx, &info->pkt);
+            if (info->pkt->size == 0) {
+                ret = av_read_frame(info->fmt_ctx, info->pkt);
                 if (ret >= 0) {
-                    info->orig_pkt = info->pkt;
+                    info->backup_pkt_buffer();
                 }
             }
 
-            if (info->pkt.size > 0) {
+            if (info->pkt->size > 0) {
                 ret = decode_packet_animation(info, got_frame);
                 if (ret < 0) {
                     if (info->has_decoded_frames) {
                         ret = 0;
                     }
-                    info->pkt.size = 0;
+                    info->pkt->size = 0;
                 } else {
-                    info->pkt.data += ret;
-                    info->pkt.size -= ret;
+                    info->pkt->data += ret;
+                    info->pkt->size -= ret;
                 }
-                if (info->pkt.size == 0) {
-                    av_packet_unref(&info->orig_pkt);
+                if (info->pkt->size == 0) {
+                    info->restore_pkt_buffer();
+                    av_packet_unref(info->pkt);
                 }
             } else {
-                info->pkt.data = nullptr;
-                info->pkt.size = 0;
+                info->pkt->data = nullptr;
+                info->pkt->size = 0;
                 ret = decode_packet_animation(info, got_frame);
                 if (ret < 0) {
                     return;
@@ -507,30 +532,31 @@ jint getFrameAtTime_animation(JNIEnv *env, jlong ptr, jlong ms,
         int32_t tries = 1000;
         bool readNextPacket = true;
         while (tries > 0) {
-            if (info->pkt.size == 0 && readNextPacket) {
-                ret = av_read_frame(info->fmt_ctx, &info->pkt);
+            if (info->pkt->size == 0 && readNextPacket) {
+                ret = av_read_frame(info->fmt_ctx, info->pkt);
                 if (ret >= 0) {
-                    info->orig_pkt = info->pkt;
+                    info->backup_pkt_buffer();
                 }
             }
 
-            if (info->pkt.size > 0) {
+            if (info->pkt->size > 0) {
                 ret = decode_packet_animation(info, got_frame);
                 if (ret < 0) {
                     if (info->has_decoded_frames) {
                         ret = 0;
                     }
-                    info->pkt.size = 0;
+                    info->pkt->size = 0;
                 } else {
-                    info->pkt.data += ret;
-                    info->pkt.size -= ret;
+                    info->pkt->data += ret;
+                    info->pkt->size -= ret;
                 }
-                if (info->pkt.size == 0) {
-                    av_packet_unref(&info->orig_pkt);
+                if (info->pkt->size == 0) {
+                    info->restore_pkt_buffer();
+                    av_packet_unref(info->pkt);
                 }
             } else {
-                info->pkt.data = nullptr;
-                info->pkt.size = 0;
+                info->pkt->data = nullptr;
+                info->pkt->size = 0;
                 ret = decode_packet_animation(info, got_frame);
                 if (ret < 0) {
                     return 0;
@@ -552,9 +578,9 @@ jint getFrameAtTime_animation(JNIEnv *env, jlong ptr, jlong ms,
                     info->frame->format == AV_PIX_FMT_YUVJ420P) {
                     int64_t pkt_pts = info->frame->best_effort_timestamp;
                     bool isLastPacket = false;
-                    if (info->pkt.size == 0) {
+                    if (info->pkt->size == 0) {
                         readNextPacket = false;
-                        isLastPacket = av_read_frame(info->fmt_ctx, &info->pkt) < 0;
+                        isLastPacket = av_read_frame(info->fmt_ctx, info->pkt) < 0;
                     }
                     if (pkt_pts >= pts || isLastPacket) {
                         writeFrameToBitmap_animation(env, info, data, bitmap, stride);
@@ -611,40 +637,41 @@ Java_dev_ragnarok_fenrir_module_animation_AnimatedFileDrawable_getVideoFrame(JNI
     int32_t triesCount = preview ? 50 : 6;
     //info->has_decoded_frames = false;
     while (!info->stopped && triesCount != 0) {
-        if (info->pkt.size == 0) {
-            ret = av_read_frame(info->fmt_ctx, &info->pkt);
+        if (info->pkt->size == 0) {
+            ret = av_read_frame(info->fmt_ctx, info->pkt);
             if (ret >= 0) {
-                double pts = (double) info->pkt.pts * av_q2d(info->video_stream->time_base);
-                if (end_time > 0 && info->pkt.stream_index == info->video_stream_idx &&
+                double pts = (double) info->pkt->pts * av_q2d(info->video_stream->time_base);
+                if (end_time > 0 && info->pkt->stream_index == info->video_stream_idx &&
                     pts > end_time) {
-                    av_packet_unref(&info->pkt);
-                    info->pkt.data = nullptr;
-                    info->pkt.size = 0;
+                    av_packet_unref(info->pkt);
+                    info->pkt->data = nullptr;
+                    info->pkt->size = 0;
                 } else {
-                    info->orig_pkt = info->pkt;
+                    info->backup_pkt_buffer();
                 }
             }
         }
 
-        if (info->pkt.size > 0) {
+        if (info->pkt->size > 0) {
             ret = decode_packet_animation(info, got_frame);
             if (ret < 0) {
                 if (info->has_decoded_frames) {
                     ret = 0;
                 }
-                info->pkt.size = 0;
+                info->pkt->size = 0;
             } else {
                 //LOGD("read size %d from packet", ret);
-                info->pkt.data += ret;
-                info->pkt.size -= ret;
+                info->pkt->data += ret;
+                info->pkt->size -= ret;
             }
 
-            if (info->pkt.size == 0) {
-                av_packet_unref(&info->orig_pkt);
+            if (info->pkt->size == 0) {
+                info->restore_pkt_buffer();
+                av_packet_unref(info->pkt);
             }
         } else {
-            info->pkt.data = nullptr;
-            info->pkt.size = 0;
+            info->pkt->data = nullptr;
+            info->pkt->size = 0;
             ret = decode_packet_animation(info, got_frame);
             if (ret < 0) {
                 LOGE("can't decode packet flushed %d %s %s", ret, av_err2str(ret),

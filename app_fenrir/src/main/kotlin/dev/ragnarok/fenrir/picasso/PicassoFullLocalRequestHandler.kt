@@ -25,8 +25,8 @@ class PicassoFullLocalRequestHandler(val context: Context) : RequestHandler() {
             return 0
         }
         val contentResolver = context.contentResolver
-        contentResolver.openInputStream(uri)?.use { input ->
-            return ExifInterface(input).getAttributeInt(
+        return contentResolver.openInputStream(uri)?.use { input ->
+            ExifInterface(input).getAttributeInt(
                 ExifInterface.TAG_ORIENTATION,
                 ExifInterface.ORIENTATION_NORMAL
             )

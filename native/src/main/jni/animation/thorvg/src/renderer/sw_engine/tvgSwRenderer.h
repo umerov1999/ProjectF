@@ -47,11 +47,14 @@ public:
     bool postRender() override;
     void dispose(RenderData data) override;
     RenderRegion region(RenderData data) override;
+    bool bounds(RenderData data, Point* pt4, const Matrix& m) override;
     bool blend(BlendMethod method) override;
     ColorSpace colorSpace() override;
     const RenderSurface* mainSurface() override;
     bool clear() override;
     bool sync() override;
+    bool intersectsShape(RenderData data, const RenderRegion& region) override;
+    bool intersectsImage(RenderData data, const RenderRegion& region) override;
     bool target(pixel_t* data, uint32_t stride, uint32_t w, uint32_t h, ColorSpace cs);
 
     //composition

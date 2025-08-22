@@ -77,7 +77,7 @@ struct SceneImpl : Scene
     ~SceneImpl()
     {
         clearPaints();
-        resetEffects();
+        resetEffects(false);
     }
 
     void size(const Point& size)
@@ -168,7 +168,7 @@ struct SceneImpl : Scene
         renderer->blend(impl.blendMethod);
 
         if (impl.cmpFlag) {
-            cmp = renderer->target(bounds(renderer), renderer->colorSpace(), impl.cmpFlag);
+            cmp = renderer->target(bounds(), renderer->colorSpace(), impl.cmpFlag);
             renderer->beginComposite(cmp, MaskMethod::None, opacity);
         }
 
@@ -191,7 +191,7 @@ struct SceneImpl : Scene
         return ret;
     }
 
-    RenderRegion bounds(RenderMethod* renderer)
+    RenderRegion bounds()
     {
         if (paints.empty()) return {};
         if (!vdirty) return vport;
@@ -200,7 +200,7 @@ struct SceneImpl : Scene
         //Merge regions
         RenderRegion pRegion = {{INT32_MAX, INT32_MAX}, {0, 0}};
         for (auto paint : paints) {
-            auto region = paint->pImpl->bounds(renderer);
+            auto region = paint->pImpl->bounds();
             if (region.min.x < pRegion.min.x) pRegion.min.x = region.min.x;
             if (pRegion.max.x < region.max.x) pRegion.max.x = region.max.x;
             if (region.min.y < pRegion.min.y) pRegion.min.y = region.min.y;
@@ -212,7 +212,7 @@ struct SceneImpl : Scene
         if (effects) {
             ARRAY_FOREACH(p, *effects) {
                 auto effect = *p;
-                if (effect->valid && renderer->region(effect)) eRegion.add(effect->extend);
+                if (effect->valid && impl.renderer->region(effect)) eRegion.add(effect->extend);
             }
         }
 
@@ -225,16 +225,17 @@ struct SceneImpl : Scene
         return vport;
     }
 
-    Result bounds(Point* pt4, Matrix& m, bool obb, bool stroking)
+    bool bounds(Point* pt4, const Matrix& m, bool obb)
     {
-        if (paints.empty()) return Result::InsufficientCondition;
+        if (paints.empty()) return false;
 
         Point min = {FLT_MAX, FLT_MAX};
         Point max = {-FLT_MAX, -FLT_MAX};
+        auto ret = false;
 
         for (auto paint : paints) {
             Point tmp[4];
-            if (PAINT(paint)->bounds(tmp, obb ? nullptr : &m, false, stroking) != Result::Success) continue;
+            if (!PAINT(paint)->bounds(tmp, obb ? nullptr : &m, false)) continue;
             //Merge regions
             for (int i = 0; i < 4; ++i) {
                 if (tmp[i].x < min.x) min.x = tmp[i].x;
@@ -242,6 +243,7 @@ struct SceneImpl : Scene
                 if (tmp[i].y < min.y) min.y = tmp[i].y;
                 if (tmp[i].y > max.y) max.y = tmp[i].y;
             }
+            ret = true;
         }
         pt4[0] = min;
         pt4[1] = Point{max.x, min.y};
@@ -255,7 +257,21 @@ struct SceneImpl : Scene
             pt4[3] *= m;
         }
 
-        return Result::Success;
+        return ret;
+    }
+
+
+    bool intersects(const RenderRegion& region)
+    {
+        if (!impl.renderer) return false;
+
+        if (this->bounds().intersected(region)) {
+            for (auto paint : paints) {
+                if (PAINT(paint)->intersects(region)) return true;
+            }
+        }
+
+        return false;
     }
 
     Paint* duplicate(Paint* ret)
@@ -272,7 +288,40 @@ struct SceneImpl : Scene
             dup->paints.push_back(cdup);
         }
 
-        if (effects) TVGERR("RENDERER", "TODO: Duplicate Effects?");
+        if (effects) {
+            dup->effects = new Array<RenderEffect*>;
+            ARRAY_FOREACH(p, *effects) {
+                RenderEffect* ret = nullptr;
+                switch ((*p)->type) {
+                    case SceneEffect::GaussianBlur: {
+                        ret = new RenderEffectGaussianBlur(*(RenderEffectGaussianBlur*)(*p));
+                        break;
+                    }
+                    case SceneEffect::DropShadow: {
+                        ret = new RenderEffectDropShadow(*(RenderEffectDropShadow*)(*p));
+                        break;
+                    }
+                    case SceneEffect::Fill: {
+                        ret = new RenderEffectFill(*(RenderEffectFill*)(*p));
+                        break;
+                    }
+                    case SceneEffect::Tint: {
+                        ret = new RenderEffectTint(*(RenderEffectTint*)(*p));
+                        break;
+                    }
+                    case SceneEffect::Tritone: {
+                        ret = new RenderEffectTritone(*(RenderEffectTritone*)(*p));
+                        break;
+                    }
+                    default: break;
+                }
+                if (ret) {
+                    ret->rd = nullptr;
+                    ret->valid = false;
+                    dup->effects->push(ret);
+                }
+            }
+        }
 
         return scene;
     }
@@ -339,15 +388,16 @@ struct SceneImpl : Scene
         return new SceneIterator(&paints);
     }
 
-    Result resetEffects()
+    Result resetEffects(bool damage = true)
     {
         if (effects) {
             ARRAY_FOREACH(p, *effects) {
-                impl.renderer->dispose(*p);
+                if (impl.renderer) impl.renderer->dispose(*p);
                 delete(*p);
             }
             delete(effects);
             effects = nullptr;
+            if (damage) impl.damage(vport);
         }
         return Result::Success;
     }

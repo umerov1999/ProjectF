@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.api.model.response
 import android.os.Parcel
 import android.os.Parcelable
 import kotlinx.serialization.Serializable
-import org.json.JSONObject
 
 @Serializable
 class ResolveDomailResponse : Parcelable {
@@ -15,12 +14,6 @@ class ResolveDomailResponse : Parcelable {
     internal constructor(parcel: Parcel) {
         type = parcel.readString()
         object_id = parcel.readString()
-    }
-
-    fun parse(jsonObject: JSONObject): ResolveDomailResponse {
-        type = jsonObject.optString("type")
-        object_id = jsonObject.optString("object_id")
-        return this
     }
 
     override fun describeContents(): Int {

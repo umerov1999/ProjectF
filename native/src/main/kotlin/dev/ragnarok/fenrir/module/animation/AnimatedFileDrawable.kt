@@ -258,7 +258,7 @@ class AnimatedFileDrawable(
                 (metaData[1] * scaleFactor).toInt(), Bitmap.Config.ARGB_8888
             )
         }
-        backgroundBitmap?.let {
+        return backgroundBitmap?.let {
             val result: Int = if (precise) {
                 getFrameAtTime(
                     nativePtr,
@@ -278,8 +278,8 @@ class AnimatedFileDrawable(
                     0f
                 )
             }
-            return if (result != 0) backgroundBitmap else null
-        } ?: return null
+            if (result != 0) backgroundBitmap else null
+        }
     }
 
     fun setAllowDecodeSingleFrame(value: Boolean) {

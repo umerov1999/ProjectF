@@ -10,13 +10,13 @@ import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.Includes.provideApplicationContext
 import dev.ragnarok.fenrir.R
-import dev.ragnarok.fenrir.api.ApiException
 import dev.ragnarok.fenrir.api.Auth
 import dev.ragnarok.fenrir.api.adapters.AbsDtoAdapter.Companion.asJsonObjectSafe
 import dev.ragnarok.fenrir.api.adapters.AbsDtoAdapter.Companion.asPrimitiveSafe
 import dev.ragnarok.fenrir.api.adapters.AbsDtoAdapter.Companion.hasArray
 import dev.ragnarok.fenrir.api.adapters.AbsDtoAdapter.Companion.hasObject
 import dev.ragnarok.fenrir.api.adapters.AbsDtoAdapter.Companion.hasPrimitive
+import dev.ragnarok.fenrir.api.exceptions.ApiException
 import dev.ragnarok.fenrir.api.interfaces.INetworker
 import dev.ragnarok.fenrir.api.model.VKApiUser
 import dev.ragnarok.fenrir.api.model.response.BaseResponse

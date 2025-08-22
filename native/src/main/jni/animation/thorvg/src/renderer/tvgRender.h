@@ -28,11 +28,14 @@
 #include "tvgCommon.h"
 #include "tvgArray.h"
 #include "tvgLock.h"
+#include "tvgColor.h"
+#include "tvgMath.h"
 
 namespace tvg
 {
 
 using RenderData = void*;
+using RenderColor = tvg::RGBA;
 using pixel_t = uint32_t;
 
 #define DASH_PATTERN_THRESHOLD 0.001f
@@ -81,11 +84,6 @@ struct RenderSurface
     }
 };
 
-struct RenderColor
-{
-    uint8_t r, g, b, a;
-};
-
 struct RenderCompositor
 {
     MaskMethod method;
@@ -126,7 +124,7 @@ struct RenderRegion
         if (rhs.max.y > max.y) max.y = rhs.max.y;
     }
 
-    bool contained(const RenderRegion& rhs)
+    bool contained(const RenderRegion& rhs) const
     {
         return (min.x <= rhs.min.x && max.x >= rhs.max.x && min.y <= rhs.min.y && max.y >= rhs.max.y);
     }
@@ -227,13 +225,45 @@ struct RenderPath
     Array<PathCommand> cmds;
     Array<Point> pts;
 
+    bool empty()
+    {
+        return pts.empty();
+    }
+
     void clear()
     {
         pts.clear();
         cmds.clear();
     }
 
-    bool bounds(Matrix* m, float* x, float* y, float* w, float* h);
+    void close()
+    {
+        //Don't close multiple times.
+        if (cmds.count > 0 && cmds.last() == PathCommand::Close) return;
+        cmds.push(PathCommand::Close);
+    }
+
+    void moveTo(const Point& pt)
+    {
+        pts.push(pt);
+        cmds.push(PathCommand::MoveTo);
+    }
+
+    void lineTo(const Point& pt)
+    {
+        pts.push(pt);
+        cmds.push(PathCommand::LineTo);
+    }
+
+    void cubicTo(const Point& cnt1, const Point& cnt2, const Point& end)
+    {
+        pts.push(cnt1);
+        pts.push(cnt2);
+        pts.push(end);
+        cmds.push(PathCommand::CubicTo);
+    }
+
+    bool bounds(const Matrix* m, BBox& box);
 };
 
 struct RenderTrimPath
@@ -256,7 +286,7 @@ struct RenderStroke
     float width = 0.0f;
     RenderColor color{};
     Fill *fill = nullptr;
-    struct {
+    struct Dash {
         float* pattern = nullptr;
         uint32_t count = 0;
         float offset = 0.0f;
@@ -383,6 +413,8 @@ struct RenderShape
         if (!stroke) return 4.0f;
         return stroke->miterlimit;;
     }
+
+    bool strokeDash(RenderPath& out) const;
 };
 
 struct RenderEffect
@@ -528,11 +560,14 @@ public:
     virtual bool postRender() = 0;
     virtual void dispose(RenderData data) = 0;
     virtual RenderRegion region(RenderData data) = 0;
+    virtual bool bounds(RenderData data, Point* pt4, const Matrix& m) = 0;
     virtual bool blend(BlendMethod method) = 0;
     virtual ColorSpace colorSpace() = 0;
     virtual const RenderSurface* mainSurface() = 0;
     virtual bool clear() = 0;
     virtual bool sync() = 0;
+    virtual bool intersectsShape(RenderData data, const RenderRegion& region) = 0;
+    virtual bool intersectsImage(RenderData data, const RenderRegion& region) = 0;
 
     //composition
     virtual RenderCompositor* target(const RenderRegion& region, ColorSpace cs, CompositionFlag flags) = 0;

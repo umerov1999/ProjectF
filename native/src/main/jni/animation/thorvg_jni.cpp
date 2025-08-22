@@ -41,7 +41,7 @@ extern std::string doDecompressResource(size_t length, char *bytes, bool &orig);
 
 extern bool fenrirNativeThorVGInited;
 
-void getCustomColorSVG(const std::string &name, uint8_t *r, uint8_t *g, uint8_t *b) {
+void getCustomColorSVG(const std::string &name, uint8_t &r, uint8_t &g, uint8_t &b) {
     if (!lockMutex) {
         lockMutex = new pthread_mutex_t();
         pthread_mutex_init(lockMutex, nullptr);
@@ -49,9 +49,9 @@ void getCustomColorSVG(const std::string &name, uint8_t *r, uint8_t *g, uint8_t 
     pthread_mutex_lock(lockMutex);
     uint32_t clr = customColorsTable[name];
     pthread_mutex_unlock(lockMutex);
-    *r = (((uint8_t *) (&(clr)))[2]);
-    *g = (((uint8_t *) (&(clr)))[1]);
-    *b = (((uint8_t *) (&(clr)))[0]);
+    r = (((uint8_t *) (&(clr)))[2]);
+    g = (((uint8_t *) (&(clr)))[1]);
+    b = (((uint8_t *) (&(clr)))[0]);
 }
 
 extern "C" JNIEXPORT void

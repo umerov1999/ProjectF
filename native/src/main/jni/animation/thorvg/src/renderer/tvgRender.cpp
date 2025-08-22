@@ -58,22 +58,18 @@ bool RenderMethod::viewport(const RenderRegion& vp)
 /* RenderPath Class Implementation                                      */
 /************************************************************************/
 
-bool RenderPath::bounds(Matrix* m, float* x, float* y, float* w, float* h)
+bool RenderPath::bounds(const Matrix* m, BBox& box)
 {
-    //unexpected
     if (cmds.empty() || cmds.first() == PathCommand::CubicTo) return false;
-
-    auto min = Point{FLT_MAX, FLT_MAX};
-    auto max = Point{-FLT_MAX, -FLT_MAX};
 
     auto pt = pts.begin();
     auto cmd = cmds.begin();
 
-    auto assign = [&](const Point& pt, Point& min, Point& max) -> void {
-        if (pt.x < min.x) min.x = pt.x;
-        if (pt.y < min.y) min.y = pt.y;
-        if (pt.x > max.x) max.x = pt.x;
-        if (pt.y > max.y) max.y = pt.y;
+    auto assign = [&](const Point& pt, BBox& box) -> void {
+        if (pt.x < box.min.x) box.min.x = pt.x;
+        if (pt.y < box.min.y) box.min.y = pt.y;
+        if (pt.x > box.max.x) box.max.x = pt.x;
+        if (pt.y > box.max.y) box.max.y = pt.y;
     };
 
     while (cmd < cmds.end()) {
@@ -83,20 +79,19 @@ bool RenderPath::bounds(Matrix* m, float* x, float* y, float* w, float* h)
                 if (cmd + 1 < cmds.end()) {
                     auto next = *(cmd + 1);
                     if (next == PathCommand::LineTo || next == PathCommand::CubicTo) {
-                        assign(*pt * m, min, max);
+                        assign(*pt * m, box);
                     }
                 }
                 ++pt;
                 break;
             }
             case PathCommand::LineTo: {
-                assign(*pt * m, min, max);
+                assign(*pt * m, box);
                 ++pt;
                 break;
             }
             case PathCommand::CubicTo: {
-                Bezier bz = {pt[-1] * m, pt[0] * m, pt[1] * m, pt[2] * m};
-                bz.bounds(min, max);
+                Bezier::bounds(box, pt[-1] * m, pt[0] * m, pt[1] * m, pt[2] * m);
                 pt += 3;
                 break;
             }
@@ -104,12 +99,6 @@ bool RenderPath::bounds(Matrix* m, float* x, float* y, float* w, float* h)
         }
         ++cmd;
     }
-
-    if (x) *x = min.x;
-    if (y) *y = min.y;
-    if (w) *w = max.x - min.x;
-    if (h) *h = max.y - min.y;
-
     return true;
 }
 
@@ -202,54 +191,41 @@ void RenderDirtyRegion::clear()
 
 void RenderDirtyRegion::subdivide(Array<RenderRegion>& targets, uint32_t idx, RenderRegion& lhs, RenderRegion& rhs)
 {
-    RenderRegion temp[5];
-    int cnt = 0;
-    temp[cnt++] = RenderRegion::intersect(lhs, rhs);
-    auto max = std::min(lhs.max.x, rhs.max.x);
+    RenderRegion temp[3];
+    uint32_t cnt = 0;
 
-    auto subtract = [&](RenderRegion& lhs, RenderRegion& rhs) {
-        //top
-        if (rhs.min.y < lhs.min.y) {
-            temp[cnt++] = {{rhs.min.x, rhs.min.y}, {rhs.max.x, lhs.min.y}};
-            rhs.min.y = lhs.min.y;
-        }
-        //bottom
-        if (rhs.max.y > lhs.max.y) {
-            temp[cnt++] = {{rhs.min.x, lhs.max.y}, {rhs.max.x, rhs.max.y}};
-            rhs.max.y = lhs.max.y;
-        }
-        //left
-        if (rhs.min.x < lhs.min.x) {
-            temp[cnt++] = {{rhs.min.x, rhs.min.y}, {lhs.min.x, rhs.max.y}};
-            rhs.min.x = lhs.min.x;
-        }
-        //right
-        if (rhs.max.x > lhs.max.x) {
-            temp[cnt++] = {{lhs.max.x, rhs.min.y}, {rhs.max.x, rhs.max.y}};
-            //rhs.max.x = lhs.max.x;
-        }
-    };
-
-    subtract(temp[0], lhs);
-    subtract(temp[0], rhs);
+    //subtract top
+    if (rhs.min.y < lhs.min.y) {
+        temp[cnt++] = {{rhs.min.x, rhs.min.y}, {rhs.max.x, lhs.min.y}};
+        rhs.min.y = lhs.min.y;
+    }
+    //subtract bottom
+    if (rhs.max.y > lhs.max.y) {
+        temp[cnt++] = {{rhs.min.x, lhs.max.y}, {rhs.max.x, rhs.max.y}};
+        rhs.max.y = lhs.max.y;
+    }
+    //subtract right
+    if (rhs.max.x > lhs.max.x) {
+        temp[cnt++] = {{lhs.max.x, rhs.min.y}, {rhs.max.x, rhs.max.y}};
+    }
 
     //Please reserve memory enough with targets.reserve()
-    if (targets.count + cnt - 1 > targets.reserved) {
+    if (targets.count + cnt - 1 >= targets.reserved) {
         TVGERR("RENDERER", "reserved(%d), required(%d)", targets.reserved, targets.count + cnt - 1);
         return;
     }
 
-    /* Considered using a list to avoid memory shifting,
+    /* Shift data. Considered using a list to avoid memory shifting,
        but ultimately, the array outperformed the list due to better cache locality. */
-
-    //shift data
-    auto dst = &targets[idx + cnt];
-    memmove(dst, &targets[idx + 1], sizeof(RenderRegion) * (targets.count - idx - 1));
+    auto src = &targets[idx + 1];
+    auto dst = &targets[idx + cnt];   // <-- shift right by (cnt - 1)
+    auto nmove = targets.count - idx - 1;  // number of tail elements
+    memmove(dst, src, sizeof(RenderRegion) * nmove);
     memcpy(&targets[idx], temp, sizeof(RenderRegion) * cnt);
     targets.count += (cnt - 1);
 
     //sorting by x coord again, only for the updated region
-    while (dst < targets.end() && dst->min.x < max) ++dst;
+    while (dst < targets.end() && dst->min.x < rhs.max.x) ++dst;
     stable_sort(&targets[idx], dst, [](const RenderRegion& a, const RenderRegion& b) -> bool {
         return a.min.x < b.min.x;
     });
@@ -268,7 +244,7 @@ void RenderDirtyRegion::commit()
         current = !current; //swapping buffers
         auto& output = partitions[idx].list[current];
 
-        targets.reserve(targets.count * 10);  //one intersection can be divided up to 5
+        targets.reserve(targets.count * 10);  //one intersection can be divided up to 3
         output.reserve(targets.count);
 
         partitions[idx].current = current;
@@ -301,16 +277,16 @@ void RenderDirtyRegion::commit()
                 }
                 //just merge & expand on x axis
                 if (lhs.min.y == rhs.min.y && lhs.max.y == rhs.max.y) {
-                    if (lhs.min.x <= rhs.max.x && rhs.min.x <= lhs.max.x) {
-                        rhs.min.x = std::min(lhs.min.x, rhs.min.x);
-                        rhs.max.x = std::max(lhs.max.x, rhs.max.x);
-                        merged = true;
-                        break;
+                    if (lhs.max.x >= rhs.min.x) {
+                        lhs.max.x = rhs.max.x;
+                        rhs = {};
+                        j = i;   //lhs dirty region has been damaged, try again.
+                        continue;
                     }
                 }
                 //just merge & expand on y axis
                 if (lhs.min.x == rhs.min.x && lhs.max.x == rhs.max.x) {
-                    if (lhs.min.y <= rhs.max.y && rhs.min.y < lhs.max.y) {
+                    if (lhs.min.y <= rhs.max.y && rhs.min.y <= lhs.max.y) {
                         rhs.min.y = std::min(lhs.min.y, rhs.min.y);
                         rhs.max.y = std::max(lhs.max.y, rhs.max.y);
                         merged = true;
@@ -320,8 +296,7 @@ void RenderDirtyRegion::commit()
                 //subdivide regions
                 if (lhs.intersected(rhs)) {
                     subdivide(targets, j, lhs, rhs);
-                    merged = true;
-                    break;
+                    --j; //rhs dirty region has been damaged, try again.
                 }
             }
             if (!merged) output.push(lhs);  //this region is complete isolated
@@ -588,3 +563,210 @@ bool RenderTrimPath::trim(const RenderPath& in, RenderPath& out) const
 
     return out.pts.count >= 2;
 }
+
+/************************************************************************/
+/* StrokeDashPath Class Implementation                                  */
+/************************************************************************/
+
+//TODO: use this common function from sw engine
+#if defined(THORVG_GL_RASTER_SUPPORT) || defined(THORVG_WG_RASTER_SUPPORT)
+
+struct StrokeDashPath
+{
+public:
+    StrokeDashPath(RenderStroke::Dash dash) : dash(dash) {}
+    bool gen(const RenderPath& in, RenderPath& out, bool drawPoint);
+
+private:
+    void lineTo(RenderPath& out, const Point& pt, bool drawPoint);
+    void cubicTo(RenderPath& out, const Point& pt1, const Point& pt2, const Point& pt3, bool drawPoint);
+    void point(RenderPath& out, const Point& p);
+
+    template<typename Segment, typename LengthFn, typename SplitFn, typename DrawFn, typename PointFn>
+    void segment(Segment seg, float len, RenderPath& out, bool allowDot, LengthFn lengthFn, SplitFn splitFn, DrawFn drawFn, PointFn getStartPt, const Point& endPos);
+
+    RenderStroke::Dash dash;
+    float curLen = 0.0f;
+    int32_t curIdx = 0;
+    Point curPos{};
+    bool opGap = false;
+    bool move = true;
+};
+
+
+template<typename Segment, typename LengthFn, typename SplitFn, typename DrawFn, typename PointFn>
+void StrokeDashPath::segment(Segment seg, float len, RenderPath& out, bool allowDot, LengthFn lengthFn, SplitFn splitFn, DrawFn drawFn, PointFn getStartPt, const Point& end)
+{
+    #define MIN_CURR_LEN_THRESHOLD 0.1f
+
+    if (tvg::zero(len)) {
+        out.moveTo(curPos);
+    } else if (len <= curLen) {
+        curLen -= len;
+        if (!opGap) {
+            if (move) {
+                out.moveTo(curPos);
+                move = false;
+            }
+            drawFn(seg);
+        }
+    } else {
+        Segment left, right;
+        while (len - curLen > DASH_PATTERN_THRESHOLD) {
+            if (curLen > 0.0f) {
+                splitFn(seg, curLen, left, right);
+                len -= curLen;
+                if (!opGap) {
+                    if (move || dash.pattern[curIdx] - curLen < FLOAT_EPSILON) {
+                        out.moveTo(getStartPt(left));
+                        move = false;
+                    }
+                    drawFn(left);
+                }
+            } else {
+                if (allowDot && !opGap) point(out, getStartPt(seg));
+                right = seg;
+            }
+
+            curIdx = (curIdx + 1) % dash.count;
+            curLen = dash.pattern[curIdx];
+            opGap = !opGap;
+            seg = right;
+            curPos = getStartPt(seg);
+            move = true;
+        }
+        curLen -= len;
+        if (!opGap) {
+            if (move) {
+                out.moveTo(getStartPt(seg));
+                move = false;
+            }
+            drawFn(seg);
+        }
+        if (curLen < MIN_CURR_LEN_THRESHOLD) {
+            curIdx = (curIdx + 1) % dash.count;
+            curLen = dash.pattern[curIdx];
+            opGap = !opGap;
+        }
+    }
+    curPos = end;
+}
+
+
+//allowDot: zero length segment with non-butt cap still should be rendered as a point - only the caps are visible
+bool StrokeDashPath::gen(const RenderPath& in, RenderPath& out, bool allowDot)
+{
+    int32_t idx = 0;
+    auto offset = dash.offset;
+    auto gap = false;
+    if (!tvg::zero(dash.offset)) {
+        auto length = (dash.count % 2) ? dash.length * 2 : dash.length;
+        offset = fmodf(offset, length);
+        if (offset < 0) offset += length;
+
+        for (uint32_t i = 0; i < dash.count * (dash.count % 2 + 1); ++i, ++idx) {
+            auto curPattern = dash.pattern[i % dash.count];
+            if (offset < curPattern) break;
+            offset -= curPattern;
+            gap = !gap;
+        }
+        idx = idx % dash.count;
+    }
+
+    auto pts = in.pts.data;
+    Point start{};
+
+    ARRAY_FOREACH(cmd, in.cmds) {
+        switch (*cmd) {
+            case PathCommand::Close: {
+                lineTo(out, start, allowDot);
+                break;
+            }
+            case PathCommand::MoveTo: {
+                // reset the dash state
+                curIdx = idx;
+                curLen = dash.pattern[idx] - offset;
+                opGap = gap;
+                move = true;
+                start = curPos = *pts;
+                pts++;
+                break;
+            }
+            case PathCommand::LineTo: {
+                lineTo(out, *pts, allowDot);
+                pts++;
+                break;
+            }
+            case PathCommand::CubicTo: {
+                cubicTo(out, pts[0], pts[1], pts[2], allowDot);
+                pts += 3;
+                break;
+            }
+            default: break;
+        }
+    }
+    return true;
+}
+
+
+void StrokeDashPath::point(RenderPath& out, const Point& p)
+{
+    if (move || dash.pattern[curIdx] < FLOAT_EPSILON) {
+        out.moveTo(p);
+        move = false;
+    }
+    out.lineTo(p);
+}
+
+
+void StrokeDashPath::lineTo(RenderPath& out, const Point& to, bool allowDot)
+{
+    Line line = {curPos, to};
+    auto len = length(to - curPos);
+    segment<Line>(line, len, out, allowDot,
+        [](const Line& l) { return length(l.pt2 - l.pt1); },
+        [](const Line& l, float len, Line& left, Line& right) { l.split(len, left, right); },
+        [&](const Line& l) { out.lineTo(l.pt2); },
+        [](const Line& l) { return l.pt1; },
+        to
+    );
+}
+
+
+void StrokeDashPath::cubicTo(RenderPath& out, const Point& cnt1, const Point& cnt2, const Point& end, bool allowDot)
+{
+    Bezier curve = {curPos, cnt1, cnt2, end};
+    auto len = curve.length();
+    segment<Bezier>(curve, len, out, allowDot,
+        [](const Bezier& b) { return b.length(); },
+        [](const Bezier& b, float len, Bezier& left, Bezier& right) { b.split(len, left, right); },
+        [&](const Bezier& b) { out.cubicTo(b.ctrl1, b.ctrl2, b.end); },
+        [](const Bezier& b) { return b.start; },
+        end
+    );
+}
+
+
+bool RenderShape::strokeDash(RenderPath& out) const
+{
+    if (!stroke || stroke->dash.count == 0 || stroke->dash.length < DASH_PATTERN_THRESHOLD) return false;
+
+    out.cmds.reserve(20 * path.cmds.count);
+    out.pts.reserve(20 * path.pts.count);
+
+    StrokeDashPath dash(stroke->dash);
+    auto allowDot = stroke->cap != StrokeCap::Butt;
+
+    if (trimpath()) {
+        RenderPath tpath;
+        if (stroke->trim.trim(path, tpath)) return dash.gen(tpath, out, allowDot);
+        else return false;
+    }
+    return dash.gen(path, out, allowDot);
+}
+#else
+bool RenderShape::strokeDash(RenderPath& out) const
+{
+    return false;
+}
+#endif

@@ -55,9 +55,7 @@ class App : Application() {
 
         val instance: App
             get() {
-                sInstanse?.let {
-                    return it
-                } ?: throw IllegalStateException("App instance is null!!!")
+                return sInstanse ?: throw IllegalStateException("App instance is null!!!")
             }
     }
 }

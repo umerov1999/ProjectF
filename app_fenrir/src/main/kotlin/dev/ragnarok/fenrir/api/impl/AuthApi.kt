@@ -3,11 +3,12 @@ package dev.ragnarok.fenrir.api.impl
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Constants.DEVICE_COUNTRY_CODE
 import dev.ragnarok.fenrir.Includes.provideApplicationContext
-import dev.ragnarok.fenrir.api.ApiException
-import dev.ragnarok.fenrir.api.AuthException
-import dev.ragnarok.fenrir.api.CaptchaNeedException
 import dev.ragnarok.fenrir.api.IDirectLoginServiceProvider
-import dev.ragnarok.fenrir.api.NeedValidationException
+import dev.ragnarok.fenrir.api.exceptions.ApiException
+import dev.ragnarok.fenrir.api.exceptions.AuthException
+import dev.ragnarok.fenrir.api.exceptions.CaptchaLegacyNeedException
+import dev.ragnarok.fenrir.api.exceptions.NeedValidationException
+import dev.ragnarok.fenrir.api.exceptions.VKIdCaptchaNeedException
 import dev.ragnarok.fenrir.api.interfaces.IAuthApi
 import dev.ragnarok.fenrir.api.model.VKApiValidationResponse
 import dev.ragnarok.fenrir.api.model.response.AnonymTokenResponse
@@ -17,6 +18,7 @@ import dev.ragnarok.fenrir.api.model.response.LoginResponse
 import dev.ragnarok.fenrir.api.model.response.SetAuthCodeStatusResponse
 import dev.ragnarok.fenrir.api.model.response.VKUrlResponse
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils.getDeviceId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapConcat
@@ -35,6 +37,7 @@ class AuthApi(private val service: IDirectLoginServiceProvider) : IAuthApi {
         code: String?,
         captchaSid: String?,
         captchaKey: String?,
+        captchaSuccessToken: String?,
         forceSms: Boolean,
         libverify_support: Boolean
     ): Flow<LoginResponse> {
@@ -52,6 +55,7 @@ class AuthApi(private val service: IDirectLoginServiceProvider) : IAuthApi {
                     code,
                     captchaSid,
                     captchaKey,
+                    captchaSuccessToken,
                     if (forceSms) 1 else null,
                     getDeviceId(
                         Constants.DEFAULT_ACCOUNT_TYPE,
@@ -63,7 +67,13 @@ class AuthApi(private val service: IDirectLoginServiceProvider) : IAuthApi {
                     .map { response ->
                         when {
                             "need_captcha".equals(response.error, ignoreCase = true) -> {
-                                throw CaptchaNeedException(
+                                response.redirect_uri.nonNullNoEmpty { redirect_uri ->
+                                    throw VKIdCaptchaNeedException(
+                                        redirect_uri,
+                                        "https://" + Settings.get().main().authDomain
+                                    )
+                                }
+                                throw CaptchaLegacyNeedException(
                                     response.captchaSid,
                                     response.captchaImg
                                 )
@@ -231,10 +241,11 @@ class AuthApi(private val service: IDirectLoginServiceProvider) : IAuthApi {
     }
 
     companion object {
-        fun <T : Any> extractResponseWithErrorHandling(): (BaseResponse<T>) -> T = { err ->
-            err.error?.let { throw ApiException(it) }
-                ?: (err.response
-                    ?: throw NullPointerException("VK return null response"))
+        fun <T : Any> extractResponseWithErrorHandling(): (BaseResponse<T>) -> T = { r ->
+            r.error?.let {
+                throw ApiException(it)
+            }
+            r.response ?: throw NullPointerException("VK return null response")
         }
     }
 }
