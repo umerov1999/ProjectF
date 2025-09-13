@@ -348,7 +348,7 @@ class Post : AbsModel, Cloneable {
     }
 
     fun generateVkPostLink(): String {
-        return String.format("vk.com/wall%s_%s", ownerId, vkid)
+        return String.format("vk.ru/wall%s_%s", ownerId, vkid)
     }
 
     fun hasPhotos(): Boolean {

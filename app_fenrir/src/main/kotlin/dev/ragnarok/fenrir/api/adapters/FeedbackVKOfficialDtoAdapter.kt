@@ -122,30 +122,33 @@ class FeedbackVKOfficialDtoAdapter :
                     .replace("'''(((?!''').)*)'''".toRegex(), "<b>$1</b>")
                     .replace("\\[vk(ontakte)?://[A-Za-z\\d/?=]+\\|([^]]+)]".toRegex(), "$2")
 
-                val matcher = LinkParserFeedback.MENTIONS_AVATAR_PATTERN.matcher(it)
-                if (matcher.find()) {
-                    val Type = matcher.group(1)
-                    matcher.group(2)?.toLong()?.let { lit ->
-                        dto.header_owner_id =
-                            if (Type == "event" || Type == "club" || Type == "public") -lit else lit
-                        if (dto.header_owner_id.orZero() >= 0) {
-                            for (n in profiles) {
-                                if (n.id == dto.header_owner_id) {
-                                    dto.header_owner_avatar_url =
-                                        Utils.firstNonEmptyString(n.photo_200, n.photo_100)
-                                    break
+                try {
+                    val matcher = LinkParserFeedback.MENTIONS_AVATAR_PATTERN.find(it)
+                    matcher?.let { sm ->
+                        val Type = sm.groupValues.getOrNull(1)
+                        sm.groupValues.getOrNull(2)?.toLong()?.let { lit ->
+                            dto.header_owner_id =
+                                if (Type == "event" || Type == "club" || Type == "public") -lit else lit
+                            if (dto.header_owner_id.orZero() >= 0) {
+                                for (n in profiles) {
+                                    if (n.id == dto.header_owner_id) {
+                                        dto.header_owner_avatar_url =
+                                            Utils.firstNonEmptyString(n.photo_200, n.photo_100)
+                                        break
+                                    }
                                 }
-                            }
-                        } else {
-                            for (n in groups) {
-                                if (-n.id == dto.header_owner_id) {
-                                    dto.header_owner_avatar_url =
-                                        Utils.firstNonEmptyString(n.photo_200, n.photo_100)
-                                    break
+                            } else {
+                                for (n in groups) {
+                                    if (-n.id == dto.header_owner_id) {
+                                        dto.header_owner_avatar_url =
+                                            Utils.firstNonEmptyString(n.photo_200, n.photo_100)
+                                        break
+                                    }
                                 }
                             }
                         }
                     }
+                } catch (_: Exception) {
                 }
             }
 

@@ -49,7 +49,9 @@
         tools:ignore="SystemPermissionTypo" />
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE"
+        tools:ignore="ForegroundServicesPolicy" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
@@ -68,7 +70,7 @@
         android:maxSdkVersion="29" />
     <uses-permission
         android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
-        tools:ignore="ScopedStorage" />
+        tools:ignore="AllFilesAccessPolicy,ScopedStorage" />
 
     <application
         android:name="dev.ragnarok.fenrir.App"
@@ -362,9 +364,11 @@
                 <data android:scheme="http" />
                 <data android:scheme="https" />
                 <data android:host="vk.com" />
+                <data android:host="vk.ru" />
                 <data android:host="vk.cc" />
                 <data android:host="vk.me" />
                 <data android:host="m.vk.com" />
+                <data android:host="m.vk.ru" />
             </intent-filter>
         </activity>
 

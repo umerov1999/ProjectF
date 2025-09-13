@@ -50,6 +50,7 @@ import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
 import dev.ragnarok.fenrir.insertAfter
 import dev.ragnarok.fenrir.media.exo.ExoUtil
 import dev.ragnarok.fenrir.model.Audio
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms
@@ -595,7 +596,7 @@ class MusicPlaybackService : Service() {
      */
     val bufferPercent: Int
         get() {
-            synchronized(this) { return mPlayer?.bufferPercent ?: 0 }
+            synchronized(this) { return mPlayer?.bufferPercent.orZero() }
         }
 
     fun doNotDestroyWhenActivityRecreated() {
@@ -606,7 +607,7 @@ class MusicPlaybackService : Service() {
 
     val bufferPos: Long
         get() {
-            synchronized(this) { return mPlayer?.bufferPos ?: 0 }
+            synchronized(this) { return mPlayer?.bufferPos.orZero() }
         }
 
     var shuffleMode: Int
@@ -999,7 +1000,7 @@ class MusicPlaybackService : Service() {
         fun setDataSource(remoteUrl: String?) {
             isPreparing = true
             var res: String? = remoteUrl
-            if ("https://vk.com/mp3/audio_api_unavailable.mp3" == res) {
+            if (res?.contains("audio_api_unavailable") == true) {
                 res = null
             }
             val url = Utils.firstNonEmptyString(
@@ -1055,7 +1056,7 @@ class MusicPlaybackService : Service() {
                         .hiddenIO()
                 )
             }
-            if (audio.url.isNullOrEmpty() || "https://vk.com/mp3/audio_api_unavailable.mp3" == audio.url) {
+            if (audio.url.isNullOrEmpty() || audio.url?.contains("audio_api_unavailable") == true) {
                 compositeJob.add(
                     audioInteractor.getById(
                         accountId,
@@ -1307,11 +1308,11 @@ class MusicPlaybackService : Service() {
         }
 
         override fun getBufferPercent(): Int {
-            return mService.get()?.bufferPercent ?: 0
+            return mService.get()?.bufferPercent.orZero()
         }
 
         override fun getBufferPosition(): Long {
-            return mService.get()?.bufferPos ?: 0
+            return mService.get()?.bufferPos.orZero()
         }
 
         override fun doNotDestroyWhenActivityRecreated() {

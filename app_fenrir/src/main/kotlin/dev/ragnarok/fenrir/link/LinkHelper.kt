@@ -33,6 +33,7 @@ import dev.ragnarok.fenrir.link.types.DocLink
 import dev.ragnarok.fenrir.link.types.DomainLink
 import dev.ragnarok.fenrir.link.types.FaveLink
 import dev.ragnarok.fenrir.link.types.FeedSearchLink
+import dev.ragnarok.fenrir.link.types.MarketLink
 import dev.ragnarok.fenrir.link.types.OwnerLink
 import dev.ragnarok.fenrir.link.types.PageLink
 import dev.ragnarok.fenrir.link.types.PhotoAlbumLink
@@ -67,6 +68,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getCommentsThreadPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getDialogsPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getDocPreviewPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getExternalLinkPlace
+import dev.ragnarok.fenrir.place.PlaceFactory.getMarketAlbumPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getPollPlace
@@ -405,6 +407,14 @@ object LinkHelper {
                         PlaceFactory.getHistoryVideoPreviewPlace(accountId, ArrayList(it), 0)
                             .tryOpenWith(context)
                     }) { e -> createCustomToast(context).showToastThrowable(e) }
+            }
+
+            AbsLink.MARKETS -> {
+                val marketLink = link as MarketLink
+                getMarketAlbumPlace(
+                    accountId,
+                    marketLink.ownerId
+                ).tryOpenWith(context)
             }
 
             else -> return false

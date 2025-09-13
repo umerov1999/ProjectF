@@ -100,16 +100,16 @@ class VKApiPhotoAlbum
         /**
          * URL for empty album cover with max width at 75px
          */
-        const val COVER_S = "http://vk.com/images/s_noalbum.png"
+        const val COVER_S = "http://vk.ru/images/s_noalbum.png"
 
         /**
          * URL of empty album cover with max width at 130px
          */
-        const val COVER_M = "http://vk.com/images/m_noalbum.png"
+        const val COVER_M = "http://vk.ru/images/m_noalbum.png"
 
         /**
          * URL of empty album cover with max width at 604px
          */
-        const val COVER_X = "http://vk.com/images/x_noalbum.png"
+        const val COVER_X = "http://vk.ru/images/x_noalbum.png"
     }
 }

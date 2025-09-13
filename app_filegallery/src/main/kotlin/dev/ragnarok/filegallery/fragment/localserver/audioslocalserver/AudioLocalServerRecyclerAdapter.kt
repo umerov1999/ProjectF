@@ -49,7 +49,6 @@ import dev.ragnarok.filegallery.view.WeakViewAnimatorAdapter
 import dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieView
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import java.util.regex.Pattern
 
 class AudioLocalServerRecyclerAdapter(
     private val mContext: Context,
@@ -554,17 +553,14 @@ class AudioLocalServerRecyclerAdapter(
     }
 
     companion object {
-        private val PATTERN_FENRIR_SERVER_TRACK_HASH = Pattern.compile("hash=([^&]*)")
+        private val PATTERN_FENRIR_SERVER_TRACK_HASH: Regex = Regex("hash=([^&]*)")
         fun parseLocalServerURL(string: String?): String? {
             string ?: return null
-            val matcher = PATTERN_FENRIR_SERVER_TRACK_HASH.matcher(string)
-            try {
-                if (matcher.find()) {
-                    return matcher.group(1)
-                }
+            return try {
+                PATTERN_FENRIR_SERVER_TRACK_HASH.find(string)?.groupValues?.getOrNull(1)
             } catch (_: NumberFormatException) {
+                null
             }
-            return null
         }
     }
 

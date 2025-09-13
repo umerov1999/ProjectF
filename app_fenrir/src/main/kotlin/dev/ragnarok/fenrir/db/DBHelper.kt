@@ -18,7 +18,6 @@ import dev.ragnarok.fenrir.db.column.FavePhotosColumns
 import dev.ragnarok.fenrir.db.column.FavePostsColumns
 import dev.ragnarok.fenrir.db.column.FaveProductsColumns
 import dev.ragnarok.fenrir.db.column.FaveVideosColumns
-import dev.ragnarok.fenrir.db.column.FeedListsColumns
 import dev.ragnarok.fenrir.db.column.FriendListsColumns
 import dev.ragnarok.fenrir.db.column.GroupsColumns
 import dev.ragnarok.fenrir.db.column.GroupsDetailsColumns
@@ -116,7 +115,6 @@ class DBHelper private constructor(context: Context, aid: Long) :
         createFaveLinksTable(db)
         createFavePostsTable(db)
         createCountriesTable(db)
-        createFeedListsTable(db)
         createFriendListsTable(db)
         createKeysTableIfNotExist(db)
 
@@ -164,7 +162,6 @@ class DBHelper private constructor(context: Context, aid: Long) :
             execSQL("DROP TABLE IF EXISTS " + FaveLinksColumns.TABLENAME)
             execSQL("DROP TABLE IF EXISTS " + FavePostsColumns.TABLENAME)
             execSQL("DROP TABLE IF EXISTS " + CountriesColumns.TABLENAME)
-            execSQL("DROP TABLE IF EXISTS " + FeedListsColumns.TABLENAME)
             execSQL("DROP TABLE IF EXISTS " + FriendListsColumns.TABLENAME)
         }
     }
@@ -848,16 +845,6 @@ class DBHelper private constructor(context: Context, aid: Long) :
                 " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 " [" + NotificationsColumns.DATE + "] INTEGER, " +
                 " [" + NotificationsColumns.CONTENT_PACK + "] BLOB);"
-        db.execSQL(sql)
-    }
-
-    private fun createFeedListsTable(db: SQLiteDatabase) {
-        val sql = "CREATE TABLE [" + FeedListsColumns.TABLENAME + "] (\n" +
-                " [" + BaseColumns._ID + "] INTEGER NOT NULL UNIQUE, " +
-                " [" + FeedListsColumns.TITLE + "] TEXT, " +
-                " [" + FeedListsColumns.NO_REPOSTS + "] BOOLEAN, " +
-                " [" + FeedListsColumns.SOURCE_IDS + "] TEXT, " +
-                " CONSTRAINT [] PRIMARY KEY([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 

@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.feed
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -11,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,18 +19,14 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager_SavedState
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
-import dev.ragnarok.fenrir.activity.selectprofiles.SelectProfilesActivity.Companion.startFaveSelection
 import dev.ragnarok.fenrir.domain.ILikesInteractor
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
 import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalOptionsAdapter
-import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalOptionsAdapter.CustomListener
-import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
@@ -42,8 +36,8 @@ import dev.ragnarok.fenrir.model.CommentedType
 import dev.ragnarok.fenrir.model.FeedSource
 import dev.ragnarok.fenrir.model.LoadMoreState
 import dev.ragnarok.fenrir.model.News
-import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.place.PlaceFactory.getCommentsPlace
@@ -59,18 +53,7 @@ import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
 
 class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedView,
     SwipeRefreshLayout.OnRefreshListener, FeedAdapter.ClickListener,
-    HorizontalOptionsAdapter.Listener<FeedSource>, CustomListener<FeedSource>, MenuProvider {
-    private val requestProfileSelect = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val owners: ArrayList<Owner>? =
-                result.data?.getParcelableArrayListExtraCompat(Extra.OWNERS)
-            lazyPresenter {
-                presenter?.fireAddToFaveList(requireActivity(), owners)
-            }
-        }
-    }
+    HorizontalOptionsAdapter.Listener<FeedSource>, MenuProvider {
     private var mAdapter: FeedAdapter? = null
     private var mEmptyText: TextView? = null
     private var mRecycleView: RecyclerView? = null
@@ -114,11 +97,6 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
         return when (menuItem.itemId) {
             R.id.refresh -> {
                 presenter?.fireRefresh()
-                true
-            }
-
-            R.id.action_create_list -> {
-                requestProfileSelect.launch(startFaveSelection(requireActivity()))
                 true
             }
 
@@ -192,7 +170,6 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
         mRecycleView?.adapter = mAdapter
         mFeedSourceAdapter = HorizontalOptionsAdapter(mutableListOf())
         mFeedSourceAdapter?.setListener(this)
-        mFeedSourceAdapter?.setDeleteListener(this)
         headerRecyclerView.adapter = mFeedSourceAdapter
         return root
     }
@@ -460,19 +437,6 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
         )
     }
 
-    override fun onDeleteOptionClick(entry: FeedSource, position: Int) {
-        CustomSnackbars.createCustomSnackbars(view)
-            ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)?.themedSnack(R.string.do_delete)
-            ?.setAction(
-                R.string.button_yes
-            ) {
-                mFeedSourceAdapter?.removeChild(position)
-                presenter?.fireFeedSourceDelete(
-                    entry.value?.replace("list", "")?.toInt()
-                )
-            }?.show()
-    }
-
     override fun showSuccessToast() {
         CustomToast.createCustomToast(requireActivity()).setDuration(Toast.LENGTH_SHORT)
             .showToastSuccessBottom(R.string.success)
@@ -504,12 +468,12 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
     }
 
     override fun notifyDataAdded(position: Int, count: Int) {
-        mAdapter?.notifyItemRangeInserted(position + (mAdapter?.headersCount ?: 0), count)
+        mAdapter?.notifyItemRangeInserted(position + mAdapter?.headersCount.orZero(), count)
         resolveEmptyTextVisibility()
     }
 
     override fun notifyItemChanged(position: Int) {
-        mAdapter?.notifyItemChanged(position + (mAdapter?.headersCount ?: 0))
+        mAdapter?.notifyItemChanged(position + mAdapter?.headersCount.orZero())
     }
 
     override fun setupLoadMoreFooter(@LoadMoreState state: Int) {

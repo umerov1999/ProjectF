@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.model.tags.TagOwner
 import dev.ragnarok.filegallery.nonNullNoEmpty
+import dev.ragnarok.filegallery.orZero
 import dev.ragnarok.filegallery.toColor
 
 class TagOwnerAdapter(private var data: List<TagOwner>, private val context: Context) :
@@ -188,7 +189,7 @@ class TagOwnerAdapter(private var data: List<TagOwner>, private val context: Con
         val tvBackgroundImage: ImageView = root.findViewById(R.id.tag_background)
 
         override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo?) {
-            val position = recyclerView?.getChildAdapterPosition(v) ?: 0
+            val position = recyclerView?.getChildAdapterPosition(v).orZero()
             val owner = data[position]
             menu.setHeaderTitle(owner.name)
             menu.add(0, v.id, 0, R.string.rename).setOnMenuItemClickListener {

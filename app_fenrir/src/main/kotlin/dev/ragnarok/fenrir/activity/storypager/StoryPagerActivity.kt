@@ -97,6 +97,10 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
     private var hasExternalUrl = false
     private var mPlaySpeed: ImageView? = null
     private var helpDisposable = CancelableJob()
+    private var mAdapter: Adapter? = null
+    private var mLoadingProgressBarDispose = CancelableJob()
+    private var mLoadingProgressBarLoaded = false
+    private var mLoadingProgressBar: ThorVGLottieView? = null
     private var playDispose = CancelableJob()
 
     @get:LayoutRes
@@ -112,6 +116,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         setSupportActionBar(mToolbar)
         mAvatar = findViewById(R.id.toolbar_avatar)
         mViewPager = findViewById(R.id.view_pager)
+        mLoadingProgressBar = findViewById(R.id.loading_progress_bar)
         mViewPager?.setPageTransformer(
             Utils.createPageTransform(
                 Settings.get().main().viewpager_page_transform
@@ -243,6 +248,45 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         DownloadWorkUtils.doDownloadVideo(this, video, url, Res)
     }
 
+    override fun updateCount(count: Int) {
+        mAdapter?.updateCount(count)
+    }
+
+    override fun notifyDataSetChanged() {
+        mAdapter?.notifyDataSetChanged()
+    }
+
+    override fun displayListLoading(loading: Boolean) {
+        mLoadingProgressBarDispose.cancel()
+        if (loading) {
+            mLoadingProgressBarDispose += delayTaskFlow(300).toMain {
+                mLoadingProgressBarLoaded = true
+                mLoadingProgressBar?.visibility = View.VISIBLE
+                mLoadingProgressBar?.fromRes(
+                    dev.ragnarok.fenrir_common.R.raw.loading,
+                    intArrayOf(
+                        0x000000,
+                        Color.WHITE,
+                        0x777777,
+                        Color.WHITE
+                    )
+                )
+                mLoadingProgressBar?.startAnimation()
+            }
+        } else if (mLoadingProgressBarLoaded) {
+            mLoadingProgressBarLoaded = false
+            mLoadingProgressBar?.visibility = View.GONE
+            mLoadingProgressBar?.clearAnimationDrawable(
+                callSuper = true, clearState = true,
+                cancelTask = true
+            )
+        }
+    }
+
+    override fun endAction() {
+        finish()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean("mFullscreen", mFullscreen)
@@ -313,8 +357,8 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
 
     override fun displayData(pageCount: Int, selectedIndex: Int) {
         mViewPager?.unregisterOnPageChangeCallback(pageChangeListener)
-        val adapter = Adapter(pageCount)
-        mViewPager?.adapter = adapter
+        mAdapter = Adapter(pageCount)
+        mViewPager?.adapter = mAdapter
         mViewPager?.setCurrentItem(selectedIndex, false)
         mViewPager?.registerOnPageChangeCallback(pageChangeListener)
     }
@@ -422,6 +466,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
     override fun onDestroy() {
         super.onDestroy()
         helpDisposable.cancel()
+        mLoadingProgressBarDispose.cancel()
         playDispose.cancel()
     }
 
@@ -633,7 +678,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
         }
     }
 
-    private inner class Adapter(val mPageCount: Int) : RecyclerView.Adapter<MultiHolder>() {
+    private inner class Adapter(var mPageCount: Int) : RecyclerView.Adapter<MultiHolder>() {
         @SuppressLint("ClickableViewAccessibility")
         override fun onCreateViewHolder(container: ViewGroup, viewType: Int): MultiHolder {
             if (viewType == 0) return Holder(
@@ -649,28 +694,39 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                     when (event.action) {
                         MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
                             container.requestDisallowInterceptTouchEvent(true)
-                            return@setOnTouchListener false
+                            true
                         }
 
                         MotionEvent.ACTION_UP -> {
                             container.requestDisallowInterceptTouchEvent(false)
-                            return@setOnTouchListener true
+                            true
                         }
+
+                        else -> false
                     }
+                } else {
+                    false
                 }
-                true
             }
             return ret
         }
 
         override fun onBindViewHolder(holder: MultiHolder, position: Int) {
             presenter?.let {
-                if (!it.isStoryIsVideo(position)) holder.bindTo(it.getStory(position))
+                if (!it.isStoryIsVideo(position)) {
+                    it.getStory(position)?.let { s ->
+                        holder.bindTo(s)
+                    }
+                }
             }
         }
 
         override fun getItemViewType(position: Int): Int {
             return if (presenter?.isStoryIsVideo(position) == true) 0 else 1
+        }
+
+        fun updateCount(count: Int) {
+            mPageCount = count
         }
 
         override fun getItemCount(): Int {

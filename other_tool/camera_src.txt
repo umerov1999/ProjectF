@@ -1,6 +1,6 @@
-curl --location https://maven.google.com/androidx/camera/camera-camera2/1.5.0-rc01/camera-camera2-1.5.0-rc01-sources.jar --output camera-camera2-1.5.0-rc01-sources.jar
-curl --location https://maven.google.com/androidx/camera/camera-core/1.5.0-rc01/camera-core-1.5.0-rc01-sources.jar --output camera-core-1.5.0-rc01-sources.jar
-curl --location https://maven.google.com/androidx/camera/camera-lifecycle/1.5.0-rc01/camera-lifecycle-1.5.0-rc01-sources.jar --output camera-lifecycle-1.5.0-rc01-sources.jar
-curl --location https://maven.google.com/androidx/camera/camera-video/1.5.0-rc01/camera-video-1.5.0-rc01-sources.jar --output camera-video-1.5.0-rc01-sources.jar
-curl --location https://maven.google.com/androidx/camera/camera-view/1.5.0-rc01/camera-view-1.5.0-rc01-sources.jar --output camera-view-1.5.0-rc01-sources.jar
-curl --location https://maven.google.com/androidx/camera/featurecombinationquery/featurecombinationquery/1.5.0-rc01/featurecombinationquery-1.5.0-rc01-sources.jar --output featurecombinationquery-1.5.0-rc01-sources.jar
+curl --location https://maven.google.com/androidx/camera/camera-camera2/1.5.0/camera-camera2-1.5.0-sources.jar --output camera-camera2-1.5.0-sources.jar
+curl --location https://maven.google.com/androidx/camera/camera-core/1.5.0/camera-core-1.5.0-sources.jar --output camera-core-1.5.0-sources.jar
+curl --location https://maven.google.com/androidx/camera/camera-lifecycle/1.5.0/camera-lifecycle-1.5.0-sources.jar --output camera-lifecycle-1.5.0-sources.jar
+curl --location https://maven.google.com/androidx/camera/camera-video/1.5.0/camera-video-1.5.0-sources.jar --output camera-video-1.5.0-sources.jar
+curl --location https://maven.google.com/androidx/camera/camera-view/1.5.0/camera-view-1.5.0-sources.jar --output camera-view-1.5.0-sources.jar
+curl --location https://maven.google.com/androidx/camera/featurecombinationquery/featurecombinationquery/1.5.0/featurecombinationquery-1.5.0-sources.jar --output featurecombinationquery-1.5.0-sources.jar

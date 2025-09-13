@@ -63,6 +63,7 @@ static bool _genOutline(SwImage& image, const Matrix& transform, SwMpool* mpool,
     outline->closed.push(true);
 
     image.outline = outline;
+    image.outline->fillRule = FillRule::NonZero;
 
     return true;
 }
@@ -95,9 +96,9 @@ bool imagePrepare(SwImage& image, const Matrix& transform, const RenderRegion& c
 }
 
 
-bool imageGenRle(SwImage& image, const RenderRegion& renderBox, bool antiAlias)
+bool imageGenRle(SwImage& image, const RenderRegion& renderBox, SwMpool* mpool, unsigned tid, bool antiAlias)
 {
-    if ((image.rle = rleRender(image.rle, image.outline, renderBox, antiAlias))) return true;
+    if ((image.rle = rleRender(image.rle, image.outline, renderBox, mpool, tid, antiAlias))) return true;
 
     return false;
 }

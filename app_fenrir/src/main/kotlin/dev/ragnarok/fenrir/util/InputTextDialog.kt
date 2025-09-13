@@ -7,6 +7,7 @@ import android.widget.TextView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.orZero
 
 class InputTextDialog internal constructor(val context: Context) {
     private var inputType = 0
@@ -24,7 +25,7 @@ class InputTextDialog internal constructor(val context: Context) {
         val view = View.inflate(context, R.layout.dialog_enter_text, null)
         val input: TextInputEditText = view.findViewById(R.id.editText)
         input.setText(value)
-        input.setSelection(input.text?.length ?: 0)
+        input.setSelection(input.text?.length.orZero())
         hint?.let {
             input.setHint(it)
         }

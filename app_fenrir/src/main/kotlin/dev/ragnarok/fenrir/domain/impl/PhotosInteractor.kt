@@ -33,6 +33,7 @@ import dev.ragnarok.fenrir.model.PhotoAlbum
 import dev.ragnarok.fenrir.model.PhotoTags
 import dev.ragnarok.fenrir.model.criteria.PhotoAlbumsCriteria
 import dev.ragnarok.fenrir.model.criteria.PhotoCriteria
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import dev.ragnarok.fenrir.util.VKOwnIds
@@ -141,8 +142,8 @@ class PhotosInteractor(private val networker: INetworker, private val cache: ISt
             .photos()
             .search(
                 criteria.query,
-                if ((gpsOption?.lat_gps ?: 0.0) < 0.1) null else gpsOption?.lat_gps,
-                if ((gpsOption?.long_gps ?: 0.0) < 0.1) null else gpsOption?.long_gps,
+                if ((gpsOption?.lat_gps.orZero()) < 0.1) null else gpsOption?.lat_gps,
+                if ((gpsOption?.long_gps.orZero()) < 0.1) null else gpsOption?.long_gps,
                 sort,
                 radius,
                 if (startDateOption?.timeUnix == 0L) null else startDateOption?.timeUnix,

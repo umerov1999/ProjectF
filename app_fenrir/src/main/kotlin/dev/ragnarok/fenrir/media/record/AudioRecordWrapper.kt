@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.media.record
 
 import android.content.Context
 import android.os.Environment
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import java.io.File
@@ -42,9 +43,9 @@ class AudioRecordWrapper internal constructor(builder: Builder) {
     }
 
     val currentRecordDuration: Long
-        get() = if (mRecorder == null) 0 else mRecorder?.currentRecordDuration ?: 0
+        get() = if (mRecorder == null) 0 else mRecorder?.currentRecordDuration.orZero()
     val currentMaxAmplitude: Int
-        get() = if (mRecorder == null) 0 else mRecorder?.maxAmplitude ?: 0
+        get() = if (mRecorder == null) 0 else mRecorder?.maxAmplitude.orZero()
 
     fun pause() {
         if (mRecorder == null) {

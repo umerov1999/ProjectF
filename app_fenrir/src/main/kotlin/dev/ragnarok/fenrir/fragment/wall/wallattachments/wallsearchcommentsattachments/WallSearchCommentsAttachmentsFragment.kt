@@ -21,6 +21,7 @@ import dev.ragnarok.fenrir.fragment.comments.CommentsAdapter.OnCommentActionList
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.Comment
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.PlaceFactory.getPostPreviewPlace
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
@@ -139,7 +140,7 @@ class WallSearchCommentsAttachmentsFragment :
     }
 
     override fun notifyItemChanged(index: Int) {
-        mAdapter?.notifyItemChanged(index + (mAdapter?.headersCount ?: 0))
+        mAdapter?.notifyItemChanged(index + mAdapter?.headersCount.orZero())
     }
 
     override fun goToPost(accountId: Long, ownerId: Long, postId: Int) {
@@ -147,7 +148,7 @@ class WallSearchCommentsAttachmentsFragment :
     }
 
     override fun moveFocusTo(index: Int) {
-        val adapterPosition = index + (mAdapter?.headersCount ?: 0)
+        val adapterPosition = index + mAdapter?.headersCount.orZero()
         recyclerView?.smoothScrollToPosition(adapterPosition)
     }
 

@@ -25,7 +25,6 @@ import dev.ragnarok.fenrir.settings.AppPrefs
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.ClickableForegroundColorSpan
 import dev.ragnarok.fenrir.view.WrapWidthTextView
-import java.util.regex.Pattern
 
 class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
     WrapWidthTextView(
@@ -136,131 +135,147 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
     }
 
     private fun linkifyVKUrl(spannable: Spannable) {
-        val m = URL_VK_PATTERN.matcher(spannable)
-        while (m.find()) {
-            val url = spannable.toString().substring(m.start(), m.end())
-            val urlSpan: ClickableSpan = object : ClickableSpan() {
-                override fun onClick(widget: View) {
-                    LinkHelper.openUrl(
-                        context as Activity,
-                        Settings.get().accounts().current,
-                        url,
-                        false
-                    )
+        try {
+            val res = URL_VK_PATTERN.findAll(spannable)
+            for (i in res) {
+                val url = spannable.toString().substring(i.range.start, i.range.last + 1)
+                val urlSpan: ClickableSpan = object : ClickableSpan() {
+                    override fun onClick(widget: View) {
+                        LinkHelper.openUrl(
+                            context as Activity,
+                            Settings.get().accounts().current,
+                            url,
+                            false
+                        )
+                    }
                 }
+                spannable.setSpan(
+                    urlSpan,
+                    i.range.start,
+                    i.range.last + 1,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
             }
-            spannable.setSpan(urlSpan, m.start(), m.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        } catch (_: Exception) {
         }
     }
 
     private fun linkifyNonVKUrl(spannable: Spannable) {
-        val m = URL_NON_VK_PATTERN.matcher(spannable)
-        while (m.find()) {
-            val url = spannable.toString().substring(m.start(), m.end())
-            val urlSpan: ClickableSpan = object : ClickableSpan() {
-                override fun onClick(widget: View) {
-                    if (URL_YOUTUBE_PATTERN.matcher(url).find()) {
-                        val menus = ModalBottomSheetDialogFragment.Builder()
-                        val hasReVanced = AppPrefs.isReVancedYoutubeInstalled(context)
-                        if (hasReVanced) {
-                            menus.add(
-                                OptionRequest(
-                                    1,
-                                    context.getString(R.string.title_play_in_youtube_vanced),
-                                    R.drawable.ic_play_youtube,
-                                    true
-                                )
-                            )
-                        }
-                        menus.add(
-                            OptionRequest(
-                                2,
-                                context.getString(R.string.title_play_in_newpipe),
-                                R.drawable.ic_new_pipe,
-                                true
-                            )
-                        )
-                        if (!hasReVanced && AppPrefs.isYoutubeInstalled(context)) {
-                            menus.add(
-                                OptionRequest(
-                                    3,
-                                    context.getString(R.string.title_play_in_youtube),
-                                    R.drawable.ic_play_youtube,
-                                    true
-                                )
-                            )
-                        }
-                        menus.add(
-                            OptionRequest(
-                                4,
-                                context.getString(R.string.title_play_in_another_software),
-                                R.drawable.ic_external,
-                                true
-                            )
-                        )
-                        menus.header(
-                            url,
-                            R.drawable.ic_play_youtube,
-                            null
-                        )
-                        menus.columns(1)
-                        menus.show(
-                            (context as FragmentActivity).supportFragmentManager,
-                            "url_options"
-                        ) { _, option ->
-                            when (option.id) {
-                                1 -> {
-                                    val intent = Intent()
-                                    intent.data = url.toUri()
-                                    intent.action = Intent.ACTION_VIEW
-                                    intent.component = ComponentName(
-                                        AppPrefs.revanced?.first.orEmpty(),
-                                        AppPrefs.revanced?.second.orEmpty()
+        try {
+            val res = URL_NON_VK_PATTERN.findAll(spannable)
+            for (i in res) {
+                val url = spannable.toString().substring(i.range.start, i.range.last + 1)
+                val urlSpan: ClickableSpan = object : ClickableSpan() {
+                    override fun onClick(widget: View) {
+                        if (URL_YOUTUBE_PATTERN.containsMatchIn(url)) {
+                            val menus = ModalBottomSheetDialogFragment.Builder()
+                            val hasReVanced = AppPrefs.isReVancedYoutubeInstalled(context)
+                            if (hasReVanced) {
+                                menus.add(
+                                    OptionRequest(
+                                        1,
+                                        context.getString(R.string.title_play_in_youtube_vanced),
+                                        R.drawable.ic_play_youtube,
+                                        true
                                     )
-                                    context.startActivity(intent)
-                                }
-
-                                2 -> {
-                                    if (AppPrefs.isNewPipeInstalled(context)) {
+                                )
+                            }
+                            menus.add(
+                                OptionRequest(
+                                    2,
+                                    context.getString(R.string.title_play_in_newpipe),
+                                    R.drawable.ic_new_pipe,
+                                    true
+                                )
+                            )
+                            if (!hasReVanced && AppPrefs.isYoutubeInstalled(context)) {
+                                menus.add(
+                                    OptionRequest(
+                                        3,
+                                        context.getString(R.string.title_play_in_youtube),
+                                        R.drawable.ic_play_youtube,
+                                        true
+                                    )
+                                )
+                            }
+                            menus.add(
+                                OptionRequest(
+                                    4,
+                                    context.getString(R.string.title_play_in_another_software),
+                                    R.drawable.ic_external,
+                                    true
+                                )
+                            )
+                            menus.header(
+                                url,
+                                R.drawable.ic_play_youtube,
+                                null
+                            )
+                            menus.columns(1)
+                            menus.show(
+                                (context as FragmentActivity).supportFragmentManager,
+                                "url_options"
+                            ) { _, option ->
+                                when (option.id) {
+                                    1 -> {
                                         val intent = Intent()
                                         intent.data = url.toUri()
                                         intent.action = Intent.ACTION_VIEW
                                         intent.component = ComponentName(
-                                            "org.schabi.newpipe",
-                                            "org.schabi.newpipe.RouterActivity"
+                                            AppPrefs.revanced?.first.orEmpty(),
+                                            AppPrefs.revanced?.second.orEmpty()
                                         )
                                         context.startActivity(intent)
-                                    } else {
-                                        LinkHelper.openLinkInBrowser(
-                                            context,
-                                            "https://github.com/TeamNewPipe/NewPipe/releases"
+                                    }
+
+                                    2 -> {
+                                        if (AppPrefs.isNewPipeInstalled(context)) {
+                                            val intent = Intent()
+                                            intent.data = url.toUri()
+                                            intent.action = Intent.ACTION_VIEW
+                                            intent.component = ComponentName(
+                                                "org.schabi.newpipe",
+                                                "org.schabi.newpipe.RouterActivity"
+                                            )
+                                            context.startActivity(intent)
+                                        } else {
+                                            LinkHelper.openLinkInBrowser(
+                                                context,
+                                                "https://github.com/TeamNewPipe/NewPipe/releases"
+                                            )
+                                        }
+                                    }
+
+                                    3 -> {
+                                        val intent = Intent()
+                                        intent.data = url.toUri()
+                                        intent.action = Intent.ACTION_VIEW
+                                        intent.component = ComponentName(
+                                            "com.google.android.youtube",
+                                            "com.google.android.apps.youtube.app.application.Shell\$UrlActivity"
                                         )
+                                        context.startActivity(intent)
+                                    }
+
+                                    4 -> {
+                                        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+                                        context.startActivity(intent)
                                     }
                                 }
-
-                                3 -> {
-                                    val intent = Intent()
-                                    intent.data = url.toUri()
-                                    intent.action = Intent.ACTION_VIEW
-                                    intent.component = ComponentName(
-                                        "com.google.android.youtube",
-                                        "com.google.android.apps.youtube.app.application.Shell\$UrlActivity"
-                                    )
-                                    context.startActivity(intent)
-                                }
-
-                                4 -> {
-                                    val intent = Intent(Intent.ACTION_VIEW, url.toUri())
-                                    context.startActivity(intent)
-                                }
                             }
+                        } else {
+                            LinkHelper.openLinkInBrowser(context, url)
                         }
-                    } else {
-                        LinkHelper.openLinkInBrowser(context, url)
                     }
                 }
+                spannable.setSpan(
+                    urlSpan,
+                    i.range.start,
+                    i.range.last + 1,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
             }
-            spannable.setSpan(urlSpan, m.start(), m.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        } catch (_: Exception) {
         }
     }
 
@@ -320,12 +335,12 @@ class EmojiconTextView @JvmOverloads constructor(context: Context, attrs: Attrib
     }
 
     companion object {
-        private val URL_VK_PATTERN =
-            Pattern.compile("(((http|https|rstp)://)?(\\w+.)?vk\\.(com|me|cc)/\\S*)")
-        private val URL_YOUTUBE_PATTERN =
-            Pattern.compile("(((http|https|rstp)://)?(\\w+.)?(youtube\\.com|youtu\\.be)/\\S*)")
-        private val URL_NON_VK_PATTERN =
-            Pattern.compile("((http|https|rstp)://(?!(\\w+.)?vk\\.(com|me|cc)/)\\S*)")
+        private val URL_VK_PATTERN: Regex =
+            Regex("(((http|https|rstp)://)?(\\w+.)?vk\\.(ru|com|me|cc)/\\S*)")
+        private val URL_YOUTUBE_PATTERN: Regex =
+            Regex("(((http|https|rstp)://)?(\\w+.)?(youtube\\.com|youtu\\.be)/\\S*)")
+        private val URL_NON_VK_PATTERN: Regex =
+            Regex("((http|https|rstp)://(?!(\\w+.)?vk\\.(ru|com|me|cc)/)\\S*)")
     }
 
     init {

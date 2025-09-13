@@ -19,7 +19,11 @@ interface IStoryPagerView : IMvpView, IErrorView, IToastView {
     fun configHolder(adapterPosition: Int, progress: Boolean, aspectRatioW: Int, aspectRatioH: Int)
     fun onNext()
     fun requestWriteExternalStoragePermission()
-
     fun downloadPhoto(url: String, dir: String, file: String)
     fun downloadVideo(video: Video, url: String, Res: String)
+
+    fun updateCount(count: Int)
+    fun notifyDataSetChanged()
+    fun displayListLoading(loading: Boolean)
+    fun endAction()
 }

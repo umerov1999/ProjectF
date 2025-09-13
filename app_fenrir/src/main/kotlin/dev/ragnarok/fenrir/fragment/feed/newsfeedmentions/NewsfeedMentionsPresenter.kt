@@ -1,10 +1,9 @@
 package dev.ragnarok.fenrir.fragment.feed.newsfeedmentions
 
 import android.os.Bundle
-import dev.ragnarok.fenrir.domain.INewsfeedInteractor
+import dev.ragnarok.fenrir.domain.IFeedInteractor
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
-import dev.ragnarok.fenrir.fragment.feed.newsfeedcomments.INewsfeedCommentsView
 import dev.ragnarok.fenrir.model.NewsfeedComment
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
@@ -14,9 +13,9 @@ class NewsfeedMentionsPresenter(
     private val ownerId: Long,
     savedInstanceState: Bundle?
 ) :
-    PlaceSupportPresenter<INewsfeedCommentsView>(accountId, savedInstanceState) {
+    PlaceSupportPresenter<INewsfeedMentionsView>(accountId, savedInstanceState) {
     private val data: MutableList<NewsfeedComment> = ArrayList()
-    private val interactor: INewsfeedInteractor = InteractorFactory.createNewsfeedInteractor()
+    private val interactor: IFeedInteractor = InteractorFactory.createFeedInteractor()
     private var isEndOfContent = false
     private var loadingNow = false
     private var offset: Int
@@ -75,7 +74,7 @@ class NewsfeedMentionsPresenter(
         }
     }
 
-    override fun onGuiCreated(viewHost: INewsfeedCommentsView) {
+    override fun onGuiCreated(viewHost: INewsfeedMentionsView) {
         super.onGuiCreated(viewHost)
         viewHost.displayData(data)
     }

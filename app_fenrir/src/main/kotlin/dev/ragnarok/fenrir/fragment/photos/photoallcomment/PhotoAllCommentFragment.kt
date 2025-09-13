@@ -27,6 +27,7 @@ import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.ModalBottomSheetDialog
 import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.Comment
 import dev.ragnarok.fenrir.model.menu.options.CommentsPhotoOption
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.util.spots.SpotsDialog
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
@@ -128,7 +129,7 @@ class PhotoAllCommentFragment :
         if (mAdapter == null) {
             return
         }
-        val adapterPosition = index + (mAdapter?.headersCount ?: 0)
+        val adapterPosition = index + mAdapter?.headersCount.orZero()
         if (smooth) {
             recyclerView?.smoothScrollToPosition(adapterPosition)
         } else {
@@ -138,13 +139,13 @@ class PhotoAllCommentFragment :
 
     override fun notifyDataAddedToTop(count: Int) {
         if (mAdapter != null) {
-            val startSize = (mAdapter?.realItemCount ?: 0)
-            mAdapter?.notifyItemRangeInserted(startSize + (mAdapter?.headersCount ?: 0), count)
+            val startSize = mAdapter?.realItemCount.orZero()
+            mAdapter?.notifyItemRangeInserted(startSize + mAdapter?.headersCount.orZero(), count)
         }
     }
 
     override fun notifyItemChanged(index: Int) {
-        mAdapter?.notifyItemChanged(index + (mAdapter?.headersCount ?: 0))
+        mAdapter?.notifyItemChanged(index + mAdapter?.headersCount.orZero())
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?) = PhotoAllCommentPresenter(

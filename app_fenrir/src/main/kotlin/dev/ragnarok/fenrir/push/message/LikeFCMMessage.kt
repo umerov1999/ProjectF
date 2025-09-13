@@ -16,6 +16,7 @@ import dev.ragnarok.fenrir.longpoll.NotificationHelper
 import dev.ragnarok.fenrir.model.Commented
 import dev.ragnarok.fenrir.model.CommentedType
 import dev.ragnarok.fenrir.model.Photo
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory.getCommentsPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getPostPreviewPlace
@@ -29,7 +30,7 @@ import kotlinx.serialization.Serializable
 
 class LikeFCMMessage {
     // key: id, value: like_216143660_photo280186075_456239045, class: class java.lang.String
-    // key: url, value: https://vk.com/photo280186075_456239045?access_key=d7d37c46854499dd3f, class: class java.lang.String
+    // key: url, value: https://vk.ru/photo280186075_456239045?access_key=d7d37c46854499dd3f, class: class java.lang.String
     // key: body, value: Umerov Artem liked your photo, class: class java.lang.String
     // key: icon, value: like_24, class: class java.lang.String
     // key: time, value: 1529682146, class: class java.lang.String
@@ -192,7 +193,7 @@ class LikeFCMMessage {
             message.id = data["id"]
             message.title = data["title"]
             message.from_id = data["from_id"]?.toLong() ?: return null
-            message.badge = data["badge"]?.toInt() ?: 0
+            message.badge = data["badge"]?.toInt().orZero()
             val context: LikeContext =
                 kJson.decodeFromString(LikeContext.serializer(), data["context"] ?: return null)
             message.item_id = context.item_id

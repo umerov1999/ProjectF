@@ -22,6 +22,7 @@ import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.media.exo.OkHttpDataSource
 import dev.ragnarok.filegallery.model.Lang
+import dev.ragnarok.filegallery.orZero
 import dev.ragnarok.filegallery.settings.Settings.get
 import dev.ragnarok.filegallery.util.AppTextUtils.updateDateLang
 import dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieView
@@ -144,7 +145,7 @@ object Utils {
     }
 
     fun safeCountOf(collection: Collection<*>?): Int {
-        return collection?.size ?: 0
+        return collection?.size.orZero()
     }
 
     /**

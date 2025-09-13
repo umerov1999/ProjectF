@@ -487,7 +487,7 @@ class SideNavigationView : AbsNavigationView, MenuListAdapter.ActionListener {
                 SwitchableCategory.DIALOGS -> SECTION_ITEM_DIALOGS
                 SwitchableCategory.FEED -> SECTION_ITEM_FEED
                 SwitchableCategory.FEEDBACK -> SECTION_ITEM_FEEDBACK
-                SwitchableCategory.NEWSFEED_COMMENTS -> SECTION_ITEM_NEWSFEED_COMMENTS
+                SwitchableCategory.STORIES -> SECTION_ITEM_STORIES
                 SwitchableCategory.GROUPS -> SECTION_ITEM_GROUPS
                 SwitchableCategory.PHOTOS -> SECTION_ITEM_PHOTOS
                 SwitchableCategory.VIDEOS -> SECTION_ITEM_VIDEOS

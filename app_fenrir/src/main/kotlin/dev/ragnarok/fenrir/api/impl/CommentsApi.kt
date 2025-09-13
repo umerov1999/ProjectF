@@ -6,6 +6,7 @@ import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.ICommentsApi
 import dev.ragnarok.fenrir.api.model.response.CustomCommentsResponse
 import dev.ragnarok.fenrir.api.services.ICommentsService
+import dev.ragnarok.fenrir.orZero
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
@@ -24,7 +25,7 @@ internal class CommentsApi(accountId: Long, provider: IServiceProvider) :
         accessKey: String?,
         fields: String?
     ): Flow<CustomCommentsResponse> {
-        val thread_id = threadComment ?: 0
+        val thread_id = threadComment.orZero()
         return provideService(ICommentsService(), TokenType.USER, TokenType.SERVICE)
             .flatMapConcat {
                 it["var comment_id = Args.comment_id;\n" +

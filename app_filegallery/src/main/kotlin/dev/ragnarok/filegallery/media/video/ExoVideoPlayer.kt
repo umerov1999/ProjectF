@@ -15,6 +15,7 @@ import dev.ragnarok.filegallery.Constants
 import dev.ragnarok.filegallery.media.exo.ExoUtil.pausePlayer
 import dev.ragnarok.filegallery.media.exo.ExoUtil.startPlayer
 import dev.ragnarok.filegallery.media.video.IVideoPlayer.IUpdatePlayListener
+import dev.ragnarok.filegallery.orZero
 import dev.ragnarok.filegallery.util.Utils
 import java.lang.ref.WeakReference
 
@@ -102,7 +103,7 @@ class ExoVideoPlayer(
         get() = player?.duration ?: 1
 
     override val currentPosition: Long
-        get() = player?.currentPosition ?: 0
+        get() = player?.currentPosition.orZero()
 
     override fun seekTo(position: Long) {
         player?.seekTo(position)
@@ -112,10 +113,10 @@ class ExoVideoPlayer(
         get() = supposedToBePlaying
 
     override val bufferPercentage: Int
-        get() = player?.bufferedPercentage ?: 0
+        get() = player?.bufferedPercentage.orZero()
 
     override val bufferPosition: Long
-        get() = player?.bufferedPosition ?: 0
+        get() = player?.bufferedPosition.orZero()
 
     override fun setSurfaceHolder(holder: SurfaceHolder?) {
         player?.setVideoSurfaceHolder(holder)

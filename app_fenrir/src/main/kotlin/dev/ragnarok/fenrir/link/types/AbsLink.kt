@@ -36,5 +36,6 @@ abstract class AbsLink(val type: Int) {
         const val ARTICLE_LINK = 28
         const val STORY = 29
         const val CATALOG_V2_SECTION_LINK = 30
+        const val MARKETS = 31
     }
 }

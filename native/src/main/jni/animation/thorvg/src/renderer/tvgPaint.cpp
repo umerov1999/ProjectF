@@ -149,14 +149,14 @@ Paint* Paint::Impl::duplicate(Paint* ret)
 
     PAINT_METHOD(ret, duplicate(ret));
 
-    //duplicate Transform
-    ret->pImpl->tr = tr;
-    ret->pImpl->mark(RenderUpdateFlag::Transform);
-
-    ret->pImpl->opacity = opacity;
-
     if (maskData) ret->mask(maskData->target->duplicate(), maskData->method);
     if (clipper) ret->clip(static_cast<Shape*>(clipper->duplicate()));
+
+    ret->pImpl->tr = tr;
+    ret->pImpl->blendMethod = blendMethod;
+    ret->pImpl->opacity = opacity;
+    ret->pImpl->hidden = hidden;
+    ret->pImpl->mark(RenderUpdateFlag::All);
 
     return ret;
 }
@@ -421,8 +421,7 @@ uint8_t Paint::opacity() const noexcept
 
 Result Paint::blend(BlendMethod method) noexcept
 {
-    //Composition is only allowed to Scene.
-    if (method <= BlendMethod::Add || (method == BlendMethod::Composition && type() == Type::Scene)) {
+    if (method <= tvg::BlendMethod::Composition) {
         pImpl->blend(method);
         return Result::Success;
     }

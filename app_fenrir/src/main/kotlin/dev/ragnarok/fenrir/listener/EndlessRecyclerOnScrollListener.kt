@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import dev.ragnarok.fenrir.orZero
 
 abstract class EndlessRecyclerOnScrollListener : RecyclerView.OnScrollListener {
     private val MIN_DELAY: Int
@@ -25,8 +26,7 @@ abstract class EndlessRecyclerOnScrollListener : RecyclerView.OnScrollListener {
     }
 
     private fun isAllowScrollIntercept(minDelay: Long): Boolean {
-        return mLastInterceptTime == null || System.currentTimeMillis() - (mLastInterceptTime
-            ?: 0) > minDelay
+        return mLastInterceptTime == null || System.currentTimeMillis() - mLastInterceptTime.orZero() > minDelay
     }
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {

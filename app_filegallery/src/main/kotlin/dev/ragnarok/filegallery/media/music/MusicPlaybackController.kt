@@ -10,6 +10,7 @@ import android.os.IBinder
 import android.os.RemoteException
 import dev.ragnarok.filegallery.R
 import dev.ragnarok.filegallery.model.Audio
+import dev.ragnarok.filegallery.orZero
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.myEmit
 import dev.ragnarok.filegallery.util.existfile.AbsFileExist
@@ -426,7 +427,7 @@ object MusicPlaybackController {
 
     fun bufferPercent(): Int {
         try {
-            return mService?.bufferPercent ?: 0
+            return mService?.bufferPercent.orZero()
         } catch (_: RemoteException) {
         }
         return 0
@@ -434,7 +435,7 @@ object MusicPlaybackController {
 
     fun bufferPosition(): Long {
         try {
-            return mService?.bufferPosition ?: 0
+            return mService?.bufferPosition.orZero()
         } catch (_: RemoteException) {
         }
         return 0

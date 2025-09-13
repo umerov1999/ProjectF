@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.core.content.edit
 import de.maxr1998.modernpreferences.PreferenceScreen.Companion.getPreferences
 import dev.ragnarok.fenrir.kJson
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.ISettings.IPushSettings
 
 internal class PushSettings(context: Context) : IPushSettings {
@@ -24,7 +25,7 @@ internal class PushSettings(context: Context) : IPushSettings {
             val set = getPreferences(app)
                 .getStringSet(KEY_REGISTERED, null)
             val result: MutableList<VKPushRegistration> = ArrayList(
-                set?.size ?: 0
+                set?.size.orZero()
             )
             if (set != null) {
                 for (s in set) {

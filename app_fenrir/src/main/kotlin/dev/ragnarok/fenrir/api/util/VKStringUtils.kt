@@ -1,13 +1,10 @@
 package dev.ragnarok.fenrir.api.util
 
-import java.util.regex.Pattern
-
 /**
  * Helper class for join collections to strings
  */
 object VKStringUtils {
-    private const val pattern_string_profile_id = "^(id)?(\\d{1,10})$"
-    private val pattern_profile_id = Pattern.compile(pattern_string_profile_id)
+    private val pattern_profile_id: Regex = Regex("^(id)?(\\d{1,10})$")
 
     fun join(delimiter: CharSequence?, tokens: Array<Any?>): String {
         val sb = StringBuilder()
@@ -56,11 +53,9 @@ object VKStringUtils {
     fun extractPattern(string: String?, pattern: String?): String? {
         string ?: return null
         pattern ?: return null
-        val p = Pattern.compile(pattern)
-        val m = p.matcher(string)
-        return if (!m.find()) {
-            null
-        } else m.toMatchResult().group(1)
+        val p = Regex(pattern)
+        val m = p.find(string)
+        return m?.groupValues?.getOrNull(1)
     }
 
     fun unescape(text: String?): String? {
@@ -75,9 +70,7 @@ object VKStringUtils {
 
     fun parseProfileId(text: String?): String? {
         text ?: return null
-        val m = pattern_profile_id.matcher(text)
-        return if (!m.find()) {
-            null
-        } else m.group(2)
+        val m = pattern_profile_id.find(text)
+        return m?.groupValues?.getOrNull(2)
     }
 }

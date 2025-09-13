@@ -31,6 +31,7 @@ import dev.ragnarok.fenrir.model.Message
 import dev.ragnarok.fenrir.model.Peer
 import dev.ragnarok.fenrir.model.VoiceMessage
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.place.PlaceFactory
@@ -217,11 +218,12 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
     override fun configNowVoiceMessagePlaying(
         id: Int,
         progress: Float,
+        duration: Long,
         paused: Boolean,
         amin: Boolean,
         speed: Boolean
     ) {
-        mMessagesAdapter?.configNowVoiceMessagePlaying(id, progress, paused, amin, speed)
+        mMessagesAdapter?.configNowVoiceMessagePlaying(id, progress, duration, paused, amin, speed)
     }
 
     override fun bindVoiceHolderById(
@@ -229,10 +231,19 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
         play: Boolean,
         paused: Boolean,
         progress: Float,
+        duration: Long,
         amin: Boolean,
         speed: Boolean
     ) {
-        mMessagesAdapter?.bindVoiceHolderById(holderId, play, paused, progress, amin, speed)
+        mMessagesAdapter?.bindVoiceHolderById(
+            holderId,
+            play,
+            paused,
+            progress,
+            duration,
+            amin,
+            speed
+        )
     }
 
     override fun disableVoicePlaying() {
@@ -399,7 +410,7 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
             if (!peer.getTitle().isNullOrEmpty()) {
                 var name = peer.getTitle()
                 EmptyAvatar?.visibility = View.VISIBLE
-                if ((name?.length ?: 0) > 2) name = name?.substring(0, 2)
+                if (name?.length.orZero() > 2) name = name?.substring(0, 2)
                 name = name?.trim()
                 EmptyAvatar?.text = name
             } else {
@@ -525,20 +536,22 @@ class MessagesLookFragment : PlaceSupportMvpFragment<MessagesLookPresenter, IMes
         voiceHolderId: Int,
         voiceMessageId: Int,
         messageId: Int,
-        peerId: Long,
         voiceMessage: VoiceMessage
     ) {
         presenter?.fireVoicePlayButtonClick(
             voiceHolderId,
             voiceMessageId,
             messageId,
-            peerId,
             voiceMessage
         )
     }
 
     override fun onVoiceTogglePlaybackSpeed() {
         presenter?.fireVoicePlaybackSpeed()
+    }
+
+    override fun onPlayPositionChanged(position: Long) {
+        presenter?.firePlayPositionChanged(position)
     }
 
     override fun onTranscript(voiceMessageId: String, messageId: Int) {

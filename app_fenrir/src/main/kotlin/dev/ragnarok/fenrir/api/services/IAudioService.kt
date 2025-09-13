@@ -29,7 +29,7 @@ class IAudioService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/audio.search
+    //https://vk.ru/dev/audio.search
     fun search(
         query: String?,
         autoComplete: Int?,
@@ -55,7 +55,7 @@ class IAudioService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/audio.searchArtists
+    //https://vk.ru/dev/audio.searchArtists
     fun searchArtists(
         query: String?,
         offset: Int?,
@@ -68,7 +68,7 @@ class IAudioService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/audio.searchPlaylists
+    //https://vk.ru/dev/audio.searchPlaylists
     fun searchPlaylists(
         query: String?,
         offset: Int?,
@@ -81,7 +81,7 @@ class IAudioService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/audio.restore
+    //https://vk.ru/dev/audio.restore
     fun restore(
         audioId: Int,
         ownerId: Long?
@@ -93,7 +93,7 @@ class IAudioService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/audio.delete
+    //https://vk.ru/dev/audio.delete
     fun delete(
         audioId: Int,
         ownerId: Long
@@ -105,7 +105,7 @@ class IAudioService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/audio.add
+    //https://vk.ru/dev/audio.add
     fun add(
         audioId: Int,
         ownerId: Long,
@@ -134,7 +134,7 @@ class IAudioService : IServiceRest() {
      * @param count   Number of audio files to return.
      * @return Returns the total results number in count field and an array of objects describing audio in items field.
      */
-    //https://vk.com/dev/audio.get
+    //https://vk.ru/dev/audio.get
     operator fun get(
         playlist_id: Int?,
         ownerId: Long?,
@@ -154,7 +154,7 @@ class IAudioService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/audio.getAudiosByArtist
+    //https://vk.ru/dev/audio.getAudiosByArtist
     fun getAudiosByArtist(
         artist_id: String?,
         offset: Int?,

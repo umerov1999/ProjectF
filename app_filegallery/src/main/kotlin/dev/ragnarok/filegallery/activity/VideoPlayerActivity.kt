@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Process
 import android.util.Rational
+import android.view.ScaleGestureDetector
 import android.view.SurfaceHolder
 import android.view.View
 import android.view.ViewGroup
@@ -37,6 +38,7 @@ import dev.ragnarok.filegallery.media.video.ExoVideoPlayer
 import dev.ragnarok.filegallery.media.video.IVideoPlayer
 import dev.ragnarok.filegallery.media.video.IVideoPlayer.IVideoSizeChangeListener
 import dev.ragnarok.filegallery.model.Video
+import dev.ragnarok.filegallery.orZero
 import dev.ragnarok.filegallery.settings.CurrentTheme.getColorPrimary
 import dev.ragnarok.filegallery.settings.CurrentTheme.getNavigationBarColor
 import dev.ragnarok.filegallery.settings.CurrentTheme.getStatusBarColor
@@ -165,6 +167,22 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
             )
         }
         surfaceContainer.setOnClickListener { resolveControlsVisibility() }
+        val scaleGestureDetector = ScaleGestureDetector(
+            this,
+            object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+                override fun onScale(detector: ScaleGestureDetector): Boolean {
+                    mSurfaceView?.doScale(detector.getScaleFactor())
+                    return true
+                }
+            })
+        @SuppressLint("ClickableViewAccessibility")
+        surfaceContainer.setOnTouchListener { v, event ->
+            if (event.pointerCount >= 2) {
+                scaleGestureDetector.onTouchEvent(event)
+            } else {
+                false
+            }
+        }
         val videoHolder = mSurfaceView?.holder
         videoHolder?.addCallback(this)
         resolveControlsVisibility()
@@ -326,13 +344,13 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
     }
 
     override val bufferPercentage: Int
-        get() = mPlayer?.bufferPercentage ?: 0
+        get() = mPlayer?.bufferPercentage.orZero()
     override val currentPosition: Long
-        get() = mPlayer?.currentPosition ?: 0
+        get() = mPlayer?.currentPosition.orZero()
     override val bufferPosition: Long
-        get() = mPlayer?.bufferPosition ?: 0
+        get() = mPlayer?.bufferPosition.orZero()
     override val duration: Long
-        get() = mPlayer?.duration ?: 0
+        get() = mPlayer?.duration.orZero()
     override val isPlaying: Boolean
         get() = mPlayer?.isPlaying == true
 

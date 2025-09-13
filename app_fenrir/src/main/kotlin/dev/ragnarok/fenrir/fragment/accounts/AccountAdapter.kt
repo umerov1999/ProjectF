@@ -15,6 +15,7 @@ import dev.ragnarok.fenrir.model.Account
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.toColor
@@ -84,7 +85,7 @@ class AccountAdapter(
                 owner.platform,
                 owner.onlineApp
             )
-            holder.vOnline.setIcon(iconRes ?: 0)
+            holder.vOnline.setIcon(iconRes.orZero())
             holder.vOnline.visibility = if (online) View.VISIBLE else View.GONE
         } else {
             holder.domain.text = "club" + abs(account.getOwnerObjectId())

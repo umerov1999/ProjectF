@@ -90,7 +90,7 @@ class EditPhotoAlbumPresenter : AccountDependencyPresenter<IEditPhotoAlbumView> 
     }
 
     fun fireStepPositiveButtonClick(clickAtStep: Int) {
-        val last = clickAtStep == (stepsHost?.stepsCount ?: 0) - 1
+        val last = clickAtStep == stepsHost?.stepsCount.orZero() - 1
         if (!last) {
             val targetStep = clickAtStep + 1
             stepsHost?.currentStep = targetStep

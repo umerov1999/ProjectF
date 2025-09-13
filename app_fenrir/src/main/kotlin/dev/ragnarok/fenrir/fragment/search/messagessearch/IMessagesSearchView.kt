@@ -9,6 +9,7 @@ interface IMessagesSearchView : IBaseSearchView<Message> {
     fun configNowVoiceMessagePlaying(
         id: Int,
         progress: Float,
+        duration: Long,
         paused: Boolean,
         amin: Boolean,
         speed: Boolean
@@ -19,6 +20,7 @@ interface IMessagesSearchView : IBaseSearchView<Message> {
         play: Boolean,
         paused: Boolean,
         progress: Float,
+        duration: Long,
         amin: Boolean,
         speed: Boolean
     )

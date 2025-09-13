@@ -595,6 +595,7 @@
   <inspection_tool class="ConstantParameter" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="ConstantValue" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="Constructor" enabled="false" level="ERROR" enabled_by_default="false" />
+  <inspection_tool class="ConsumerRulesInspection" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="ContextParametersMigration" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="ContinueOrBreakFromFinallyBlock" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="Contract" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -723,6 +724,7 @@
   <inspection_tool class="EscapedSpace" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="ExcessiveLambdaUsage" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="ExcessiveRangeCheck" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="ExpensiveKeepRuleInspection" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="ExplicitArgumentCanBeLambda" enabled="false" level="INFORMATION" enabled_by_default="false" />
   <inspection_tool class="ExplicitArrayFilling" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="ExplicitThis" enabled="false" level="INFORMATION" enabled_by_default="false" />
@@ -935,7 +937,10 @@
   <inspection_tool class="InterfaceHasNoImplementation" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="InterfaceMethodClashesWithObject" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="IntroduceWhenSubject" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+  <inspection_tool class="InvalidColorIndexWFFExpression" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="InvalidColorIndexXml" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="InvalidComparatorMethodReference" enabled="false" level="WARNING" enabled_by_default="false" />
+  <inspection_tool class="InvalidComplicationDataSourceLocation" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="InvalidParameterAnnotations" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="IterableUsedAsVararg" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="IteratorHasNextCallsIteratorNext" enabled="false" level="WARNING" enabled_by_default="false" />

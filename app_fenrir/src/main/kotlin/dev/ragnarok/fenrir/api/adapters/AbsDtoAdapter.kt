@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.api.adapters
 
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.kJson
+import dev.ragnarok.fenrir.orZero
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
@@ -473,7 +474,7 @@ abstract class AbsDtoAdapter<T>(name: String) : KSerializer<T> {
             array ?: return LongArray(0)
             val list = LongArray(array.size)
             for (i in 0 until array.size) {
-                list[i] = array[i].asPrimitiveSafe?.longOrNull ?: 0
+                list[i] = array[i].asPrimitiveSafe?.longOrNull.orZero()
             }
             return list
         }
@@ -485,7 +486,7 @@ abstract class AbsDtoAdapter<T>(name: String) : KSerializer<T> {
             array ?: return IntArray(0)
             val list = IntArray(array.size)
             for (i in 0 until array.size) {
-                list[i] = array[i].asPrimitiveSafe?.intOrNull ?: 0
+                list[i] = array[i].asPrimitiveSafe?.intOrNull.orZero()
             }
             return list
         }

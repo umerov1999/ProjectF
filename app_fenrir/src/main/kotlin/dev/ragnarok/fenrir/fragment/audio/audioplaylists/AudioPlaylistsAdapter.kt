@@ -15,6 +15,7 @@ import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.model.AudioPlaylist
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.Utils
@@ -114,7 +115,7 @@ class AudioPlaylistsAdapter(
         val update: TextView
         val playlist_container: View
         override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo?) {
-            val position = recyclerView?.getChildAdapterPosition(v) ?: 0
+            val position = recyclerView?.getChildAdapterPosition(v).orZero()
             val playlist = data[position]
             if (!Utils.isValueAssigned(playlist.id, Settings.get().main().servicePlaylist)) {
                 if (Settings.get().accounts().current == playlist.owner_id) {

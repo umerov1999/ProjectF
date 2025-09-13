@@ -1,11 +1,11 @@
-package dev.ragnarok.fenrir.fragment.feed.newsfeedcomments
+package dev.ragnarok.fenrir.fragment.feed.newsfeedmentions
 
 import dev.ragnarok.fenrir.fragment.base.IAttachmentsPlacesView
 import dev.ragnarok.fenrir.fragment.base.core.IErrorView
 import dev.ragnarok.fenrir.fragment.base.core.IMvpView
 import dev.ragnarok.fenrir.model.NewsfeedComment
 
-interface INewsfeedCommentsView : IAttachmentsPlacesView, IMvpView,
+interface INewsfeedMentionsView : IAttachmentsPlacesView, IMvpView,
     IErrorView {
     fun displayData(data: List<NewsfeedComment>)
     fun notifyDataAdded(position: Int, count: Int)

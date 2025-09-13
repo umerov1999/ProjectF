@@ -56,7 +56,7 @@ Result Picture::load(const char* data, uint32_t size, const char* mimeType, cons
 }
 
 
-Result Picture::load(uint32_t* data, uint32_t w, uint32_t h, ColorSpace cs, bool copy) noexcept
+Result Picture::load(const uint32_t* data, uint32_t w, uint32_t h, ColorSpace cs, bool copy) noexcept
 {
     return PICTURE(this)->load(data, w, h, cs, copy);
 }
@@ -72,6 +72,22 @@ Result Picture::size(float w, float h) noexcept
 Result Picture::size(float* w, float* h) const noexcept
 {
     return CONST_PICTURE(this)->size(w, h);
+}
+
+
+Result Picture::origin(float x, float y) noexcept
+{
+    PICTURE(this)->origin = {x, y};
+    PAINT(this)->mark(RenderUpdateFlag::Transform);
+    return Result::Success;
+}
+
+
+Result Picture::origin(float* x, float* y) const noexcept
+{
+    if (x) *x = CONST_PICTURE(this)->origin.x;
+    if (y) *y = CONST_PICTURE(this)->origin.y;
+    return Result::Success;
 }
 
 

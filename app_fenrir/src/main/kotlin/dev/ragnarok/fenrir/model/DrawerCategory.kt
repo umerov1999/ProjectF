@@ -31,7 +31,7 @@ class DrawerCategory : Parcelable {
     fun getTitleResCategory(): Int {
         return when (id) {
             SwitchableCategory.FRIENDS -> R.string.friends
-            SwitchableCategory.NEWSFEED_COMMENTS -> R.string.drawer_newsfeed_comments
+            SwitchableCategory.STORIES -> R.string.stories
             SwitchableCategory.GROUPS -> R.string.groups
             SwitchableCategory.PHOTOS -> R.string.photos
             SwitchableCategory.VIDEOS -> R.string.videos

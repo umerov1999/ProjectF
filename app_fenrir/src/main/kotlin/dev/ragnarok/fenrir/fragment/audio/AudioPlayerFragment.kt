@@ -223,7 +223,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
     private fun fireAudioQR() {
         val audio = MusicPlaybackController.currentAudio ?: return
         val qr = Utils.generateQR(
-            "https://vk.com/audio/" + audio.ownerId + "_" + audio.id,
+            "https://vk.ru/audio/" + audio.ownerId + "_" + audio.id,
             requireActivity()
         )
         val dlgAlert = MaterialAlertDialogBuilder(requireActivity())
@@ -760,7 +760,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
                     ivSave?.setImageResource(R.drawable.audio_died)
                 }
 
-                ("https://vk.com/mp3/audio_api_unavailable.mp3" == current.url) -> {
+                (current.url?.contains("audio_api_unavailable") == true) -> {
                     ivSave?.setImageResource(R.drawable.report)
                 }
 
@@ -1003,7 +1003,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
 
             // approximate how often we would need to refresh the slider to
             // move it smoothly
-            var width = mProgress?.width ?: 0
+            var width = mProgress?.width.orZero()
             if (width == 0) {
                 width = 320
             }

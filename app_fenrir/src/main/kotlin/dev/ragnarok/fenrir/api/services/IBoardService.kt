@@ -7,7 +7,7 @@ import dev.ragnarok.fenrir.api.rest.IServiceRest
 import kotlinx.coroutines.flow.Flow
 
 class IBoardService : IServiceRest() {
-    //https://vk.com/dev/board.getComments
+    //https://vk.ru/dev/board.getComments
     fun getComments(
         groupId: Long,
         topicId: Int,
@@ -35,7 +35,7 @@ class IBoardService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/board.restoreComment
+    //https://vk.ru/dev/board.restoreComment
     fun restoreComment(
         groupId: Long,
         topicId: Int,
@@ -48,7 +48,7 @@ class IBoardService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/board.deleteComment
+    //https://vk.ru/dev/board.deleteComment
     fun deleteComment(
         groupId: Long,
         topicId: Int,

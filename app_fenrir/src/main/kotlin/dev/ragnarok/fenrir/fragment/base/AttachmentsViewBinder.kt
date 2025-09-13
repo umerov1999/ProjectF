@@ -186,12 +186,13 @@ class AttachmentsViewBinder(
         play: Boolean,
         paused: Boolean,
         progress: Float,
+        duration: Long,
         amin: Boolean,
         speed: Boolean
     ) {
         val holder = mVoiceSharedHolders.findHolderByHolderId(holderId)
         if (holder != null) {
-            bindVoiceHolderPlayState(holder, play, paused, progress, amin, speed)
+            bindVoiceHolderPlayState(holder, play, paused, progress, duration, amin, speed)
         }
     }
 
@@ -200,11 +201,13 @@ class AttachmentsViewBinder(
         play: Boolean,
         paused: Boolean,
         progress: Float,
+        duration: Long,
         anim: Boolean,
         speed: Boolean
     ) {
         @DrawableRes val icon = if (play && !paused) R.drawable.pause else R.drawable.play
         holder.mButtonPlay.setImageResource(icon)
+        holder.mWaveFormView.setDuration(duration)
         holder.mWaveFormView.setCurrentActiveProgress(if (play) progress else 1.0f, anim)
         Utils.setTint(
             holder.mSpeed,
@@ -218,6 +221,7 @@ class AttachmentsViewBinder(
     fun configNowVoiceMessagePlaying(
         voiceMessageId: Int,
         progress: Float,
+        duration: Long,
         paused: Boolean,
         amin: Boolean,
         speed: Boolean
@@ -230,7 +234,7 @@ class AttachmentsViewBinder(
             for (reference in set) {
                 val holder = reference.get()
                 if (holder != null) {
-                    bindVoiceHolderPlayState(holder, play, paused, progress, amin, speed)
+                    bindVoiceHolderPlayState(holder, play, paused, progress, duration, amin, speed)
                 }
             }
         }
@@ -253,6 +257,7 @@ class AttachmentsViewBinder(
                         play = false,
                         paused = false,
                         progress = 0f,
+                        duration = 1L,
                         anim = false,
                         speed = false
                     )
@@ -322,12 +327,16 @@ class AttachmentsViewBinder(
             doDownloadVoice(mContext, voice)
             true
         }
+        holder.mWaveFormView.setListener(object : WaveFormView.WaveFormViewListener {
+            override fun onSeek(position: Long) {
+                mVoiceActionListener?.onPlayPositionChanged(position)
+            }
+        })
         holder.mButtonPlay.setOnClickListener {
             mVoiceActionListener?.onVoicePlayButtonClick(
                 holder.holderId,
                 voiceMessageId,
                 messageId.orZero(),
-                peerId.orZero(),
                 voice
             )
         }
@@ -1163,12 +1172,13 @@ class AttachmentsViewBinder(
             voiceHolderId: Int,
             voiceMessageId: Int,
             messageId: Int,
-            peerId: Long,
             voiceMessage: VoiceMessage
         )
 
         fun onVoiceTogglePlaybackSpeed()
         fun onTranscript(voiceMessageId: String, messageId: Int)
+
+        fun onPlayPositionChanged(position: Long)
     }
 
     interface OnAttachmentsActionCallback {

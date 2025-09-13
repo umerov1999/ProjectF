@@ -93,7 +93,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:text="https://vk.com/"
+            android:text="https://vk.ru/"
             android:textSize="14sp" />
 
         <com.google.android.material.textfield.TextInputEditText

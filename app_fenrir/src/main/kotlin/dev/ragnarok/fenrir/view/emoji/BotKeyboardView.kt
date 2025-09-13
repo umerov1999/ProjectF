@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.model.Keyboard
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.Utils
@@ -106,8 +107,7 @@ class BotKeyboardView : NestedScrollView {
         scrollTo(0, 0)
         if (!buttons.isNullOrEmpty()) {
             buttonHeight = if (!isFullSize) 42 else 42f.coerceAtLeast(
-                (panelHeight - Utils.dp(30f) - ((botButtons?.size
-                    ?: 0) - 1) * Utils.dp(10f)).toFloat() / (botButtons?.size
+                (panelHeight - Utils.dp(30f) - (botButtons?.size.orZero() - 1) * Utils.dp(10f)).toFloat() / (botButtons?.size
                     ?: 1) / Utils.density
             )
                 .toInt()
@@ -176,7 +176,7 @@ class BotKeyboardView : NestedScrollView {
         panelHeight = height
         if (isFullSize && botButtons != null && botButtons?.isNotEmpty() == true) {
             buttonHeight = 42f.coerceAtLeast(
-                (panelHeight - Utils.dp(30f) - ((botButtons?.size ?: 0) - 1) * Utils.dp(
+                (panelHeight - Utils.dp(30f) - (botButtons?.size.orZero() - 1) * Utils.dp(
                     10f
                 )).toFloat() / (botButtons?.size ?: 1) / Utils.density
             ).toInt()
@@ -200,10 +200,11 @@ class BotKeyboardView : NestedScrollView {
             if (botButtons == null) {
                 return 0
             }
-            return if (isFullSize) panelHeight else (botButtons?.size
-                ?: 0) * Utils.dp(buttonHeight.toFloat()) + Utils.dp(
+            return if (isFullSize) panelHeight else botButtons?.size.orZero() * Utils.dp(
+                buttonHeight.toFloat()
+            ) + Utils.dp(
                 30f
-            ) + ((botButtons?.size ?: 0) - 1) * Utils.dp(10f)
+            ) + (botButtons?.size.orZero() - 1) * Utils.dp(10f)
         }
 
     private fun listenKeyboardSize() {

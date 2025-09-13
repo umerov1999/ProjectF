@@ -32,6 +32,7 @@ import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.currentAudio
 import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.model.AudioPlaylist
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getSingleURLPhotoPlace
@@ -70,8 +71,9 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
             viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder
         ): Boolean {
             return presenter?.fireItemMoved(
-                mAudioRecyclerAdapter?.getItemRawPosition(viewHolder.bindingAdapterPosition) ?: 0,
-                mAudioRecyclerAdapter?.getItemRawPosition(target.bindingAdapterPosition) ?: 0
+                mAudioRecyclerAdapter?.getItemRawPosition(viewHolder.bindingAdapterPosition)
+                    .orZero(),
+                mAudioRecyclerAdapter?.getItemRawPosition(target.bindingAdapterPosition).orZero()
             ) == true
         }
 
@@ -80,7 +82,8 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
             mAudioRecyclerAdapter?.notifyItemChanged(viewHolder.bindingAdapterPosition)
             presenter?.playAudio(
                 requireActivity(),
-                mAudioRecyclerAdapter?.getItemRawPosition(viewHolder.bindingAdapterPosition) ?: 0
+                mAudioRecyclerAdapter?.getItemRawPosition(viewHolder.bindingAdapterPosition)
+                    .orZero()
             )
         }
 
@@ -231,7 +234,7 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
                             presenter?.getAudioPos(curr) ?: -1
                         if (index >= 0) {
                             recyclerView.scrollToPosition(
-                                index + (mAudioRecyclerAdapter?.headersCount ?: 0)
+                                index + mAudioRecyclerAdapter?.headersCount.orZero()
                             )
                         } else createCustomToast(requireActivity()).showToast(R.string.audio_not_found)
                     } else createCustomToast(requireActivity()).showToastError(R.string.null_audio)

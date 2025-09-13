@@ -4,6 +4,7 @@ import android.os.Bundle
 import dev.ragnarok.fenrir.App.Companion.instance
 import dev.ragnarok.fenrir.Includes.storyPlayerFactory
 import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.media.story.IStoryPlayer
 import dev.ragnarok.fenrir.media.story.IStoryPlayer.IStatusChangeListener
@@ -17,6 +18,7 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.hasReadWriteStoragePermission
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.makeLegalFilename
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import java.io.File
 import java.util.Calendar
 import kotlin.math.abs
@@ -28,11 +30,17 @@ class StoryPagerPresenter(
     savedInstanceState: Bundle?
 ) : AccountDependencyPresenter<IStoryPagerView>(accountId, savedInstanceState),
     IStatusChangeListener, IStoryPlayer.IVideoSizeChangeListener {
+    private val storiesInteractor = InteractorFactory.createStoriesInteractor()
     private var mStoryPlayer: IStoryPlayer? = null
     private var isPlayBackSpeed = false
+    private var loadingNow = false
 
     fun isStoryIsVideo(pos: Int): Boolean {
-        return mStories[pos].isStoryIsVideo()
+        return if (mStories.isEmpty()) {
+            false
+        } else {
+            mStories[pos].isStoryIsVideo()
+        }
     }
 
     fun togglePlaybackSpeed(): Boolean {
@@ -41,13 +49,14 @@ class StoryPagerPresenter(
         return isPlayBackSpeed
     }
 
-    fun getStory(pos: Int): Story {
-        return mStories[pos]
+    fun getStory(pos: Int): Story? {
+        return mStories.getOrNull(pos)
     }
 
     override fun onGuiCreated(viewHost: IStoryPagerView) {
         super.onGuiCreated(viewHost)
         viewHost.displayData(mStories.size, mCurrentIndex)
+        viewHost.displayListLoading(loadingNow)
         resolveToolbarTitle()
         resolvePlayerDisplay()
         resolveAspectRatio()
@@ -124,7 +133,7 @@ class StoryPagerPresenter(
     }
 
     private val isMy: Boolean
-        get() = mStories[mCurrentIndex].ownerId == accountId
+        get() = mStories.isEmpty() || mStories[mCurrentIndex].ownerId == accountId
 
     private fun resolveAspectRatio() {
         if (mStoryPlayer == null) {
@@ -156,6 +165,9 @@ class StoryPagerPresenter(
     }
 
     private fun resolveToolbarSubtitle() {
+        if (mStories.isEmpty()) {
+            return
+        }
         view?.setToolbarSubtitle(
             mStories[mCurrentIndex],
             accountId, isPlayBackSpeed
@@ -195,11 +207,17 @@ class StoryPagerPresenter(
     }
 
     fun fireShareButtonClick() {
+        if (mStories.isEmpty()) {
+            return
+        }
         val story = mStories[mCurrentIndex]
         view?.onShare(story, accountId)
     }
 
     fun fireDownloadButtonClick() {
+        if (mStories.isEmpty()) {
+            return
+        }
         if (!hasReadWriteStoragePermission(instance)) {
             view?.requestWriteExternalStoragePermission()
             return
@@ -325,11 +343,47 @@ class StoryPagerPresenter(
         }
     }
 
+    fun receiveAvailableStories() {
+        loadingNow = true
+        view?.displayListLoading(loadingNow)
+        appendJob(
+            storiesInteractor.getStories(accountId, null).fromIOToMain(
+                {
+                    if (it.isEmpty()) {
+                        view?.customToast?.showToastError(R.string.list_is_empty)
+                        view?.endAction()
+                    } else {
+                        loadingNow = false
+                        view?.displayListLoading(loadingNow)
+                        mCurrentIndex = 0
+                        mStories.clear()
+                        mStories.addAll(it)
+                        view?.updateCount(mStories.size)
+                        view?.notifyDataSetChanged()
+                        initStoryPlayer()
+                        resolveToolbarTitle()
+                        resolveToolbarSubtitle()
+                    }
+                },
+                {
+                    loadingNow = false
+                    view?.displayListLoading(loadingNow)
+                    view?.showThrowable(it)
+                    view?.endAction()
+                })
+        )
+    }
+
     companion object {
         private val DEF_SIZE = VideoSize(1, 1)
     }
 
     init {
-        initStoryPlayer()
+        if (mStories.isNotEmpty()) {
+            initStoryPlayer()
+        } else {
+            mCurrentIndex = -1
+            receiveAvailableStories()
+        }
     }
 }

@@ -10,6 +10,7 @@ import dev.ragnarok.fenrir.fragment.search.options.SimpleGPSOption
 import dev.ragnarok.fenrir.fragment.search.options.SimpleNumberOption
 import dev.ragnarok.fenrir.fragment.search.options.SimpleTextOption
 import dev.ragnarok.fenrir.fragment.search.options.SpinnerOption
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 
@@ -51,7 +52,7 @@ open class BaseSearchCriteria : Parcelable, Cloneable {
     }
 
     override fun hashCode(): Int {
-        var result = query?.hashCode() ?: 0
+        var result = query?.hashCode().orZero()
         result = 31 * result + options.hashCode()
         return result
     }

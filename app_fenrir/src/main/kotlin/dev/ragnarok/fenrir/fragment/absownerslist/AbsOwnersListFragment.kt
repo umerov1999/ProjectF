@@ -16,6 +16,7 @@ import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 
@@ -95,21 +96,21 @@ abstract class AbsOwnersListFragment<P : SimpleOwnersPresenter<V>, V : ISimpleOw
     override fun notifyDataSetChanged() {
         if (mOwnersAdapter != null) {
             mOwnersAdapter?.notifyDataSetChanged()
-            mCount?.text = getString(R.string.people_count, mOwnersAdapter?.itemCount ?: 0)
+            mCount?.text = getString(R.string.people_count, mOwnersAdapter?.itemCount.orZero())
         }
     }
 
     override fun notifyDataAdded(position: Int, count: Int) {
         if (mOwnersAdapter != null) {
             mOwnersAdapter?.notifyItemRangeInserted(position, count)
-            mCount?.text = getString(R.string.people_count, mOwnersAdapter?.itemCount ?: 0)
+            mCount?.text = getString(R.string.people_count, mOwnersAdapter?.itemCount.orZero())
         }
     }
 
     override fun notifyDataRemoved(position: Int, count: Int) {
         if (mOwnersAdapter != null) {
             mOwnersAdapter?.notifyItemRangeRemoved(position, count)
-            mCount?.text = getString(R.string.people_count, mOwnersAdapter?.itemCount ?: 0)
+            mCount?.text = getString(R.string.people_count, mOwnersAdapter?.itemCount.orZero())
         }
     }
 

@@ -74,9 +74,9 @@ object ViewHelper {
                 || mView is HorizontalScrollView
                 || mView is AbsListView
                 || mView is ScrollingView
-                || mView is TouchImageView
                 || mView is ViewPager2
-                || mView is WebView)
+                || mView is WebView
+                || mView is TouchImageView)
     }
 
     private fun isViewUnder(view: View?, x: Int, y: Int): Boolean {

@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable(with = LoginResponseDtoAdapter::class)
 class LoginResponse {
-    // {"error":"need_captcha","captcha_sid":"665120559674","captcha_img":"https:\/\/api.vk.com\/captcha.php?sid=665120559674"}
+    // {"error":"need_captcha","captcha_sid":"665120559674","captcha_img":"https:\/\/api.vk.ru\/captcha.php?sid=665120559674"}
     var access_token: String? = null
     var user_id = 0L
     var error: String? = null

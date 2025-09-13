@@ -29,7 +29,7 @@ import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
 class ReplyFCMMessage {
     //04-14 13:02:31.114 1784-2485/dev.ragnarok.fenrir D/MyFcmListenerService: onMessage,
     // from: 652332232777, collapseKey: null, data: {image_type=user, from_id=280186075,
-    // id=reply_280186075_60, url=https://vk.com/wall280186075_56?reply=60, body=Yevgeni Polkin: Emin, test,
+    // id=reply_280186075_60, url=https://vk.ru/wall280186075_56?reply=60, body=Yevgeni Polkin: Emin, test,
     // icon=reply_24, time=1523700152, type=comment, badge=1,
     // image=[{"width":200,"url":"https:\/\/pp.userapi.com\/c837424\/v837424529\/5c2cb\/OkkyraBZJCY.jpg","height":200},
     // {"width":100,"url":"https:\/\/pp.userapi.com\/c837424\/v837424529\/5c2cc\/dRPyhRW_dvU.jpg","height":100},
@@ -59,7 +59,7 @@ class ReplyFCMMessage {
     }
 
     private fun notifyImpl(context: Context, owner: Owner, bitmap: Bitmap?) {
-        val url = "vk.com/$place"
+        val url = "vk.ru/$place"
         val commented = findCommentedFrom(url)
         if (commented == null) {
             e(TAG, "Unknown place: $place")

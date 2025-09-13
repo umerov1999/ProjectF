@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils
@@ -36,7 +37,7 @@ class CircleCounterButton @JvmOverloads constructor(context: Context, attrs: Att
         counter = findViewById(R.id.counter)
         val attrArray = context.obtainStyledAttributes(attrs, R.styleable.CircleCounterButton)
         try {
-            initAttributes(attrArray, counter?.currentTextColor ?: 0)
+            initAttributes(attrArray, counter?.currentTextColor.orZero())
         } finally {
             attrArray.recycle()
         }

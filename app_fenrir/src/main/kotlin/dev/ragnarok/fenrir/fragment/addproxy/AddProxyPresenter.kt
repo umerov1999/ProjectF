@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.fragment.addproxy
 import android.os.Bundle
 import dev.ragnarok.fenrir.Includes.proxySettings
 import dev.ragnarok.fenrir.fragment.base.RxSupportPresenter
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.IProxySettings
 import dev.ragnarok.fenrir.trimmedIsNullOrEmpty
 import dev.ragnarok.fenrir.util.ValidationUtil.isValidIpAddress
@@ -49,7 +50,7 @@ class AddProxyPresenter(savedInstanceState: Bundle?) :
     private fun validateData(): Boolean {
         try {
             try {
-                val portInt = port?.toInt() ?: 0
+                val portInt = port?.toInt().orZero()
                 if (portInt <= 0) {
                     throw Exception("Invalid port")
                 }
@@ -77,7 +78,7 @@ class AddProxyPresenter(savedInstanceState: Bundle?) :
             return
         }
         val finalAddress = address?.trim()
-        val finalPort = port?.trim()?.toInt() ?: 0
+        val finalPort = port?.trim()?.toInt().orZero()
         if (authEnabled) {
             if (finalAddress != null) {
                 userName?.let {

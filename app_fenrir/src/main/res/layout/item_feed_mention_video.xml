@@ -28,7 +28,7 @@
             android:paddingBottom="8dp">
 
             <LinearLayout
-                android:id="@+id/comments_counter_root"
+                android:id="@+id/video_views_counter_root"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -38,10 +38,10 @@
                 android:orientation="horizontal">
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/comments_counter"
+                    android:id="@+id/video_views_counter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/font_size_additional"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                     tools:text="1533" />
 
                 <androidx.appcompat.widget.AppCompatImageView
@@ -49,24 +49,15 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:contentDescription="@null"
-                    android:src="@drawable/ic_newsfeed_comment_topic_comment_counter"
+                    android:src="@drawable/ic_eye_white_vector"
                     app:tint="?android:textColorSecondary" />
 
             </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/owner_avatar"
+                android:id="@+id/video_owner_avatar"
                 android:layout_width="@dimen/avatar_size_small"
                 android:layout_height="@dimen/avatar_size_small"
-                android:background="@drawable/circle_back_white"
-                android:contentDescription="@null" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/creator_avatar"
-                android:layout_width="@dimen/avatar_size_min"
-                android:layout_height="@dimen/avatar_size_min"
-                android:layout_alignEnd="@id/owner_avatar"
-                android:layout_alignBottom="@id/owner_avatar"
                 android:background="@drawable/circle_back_white"
                 android:contentDescription="@null" />
 
@@ -75,36 +66,86 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="16dp"
-                android:layout_toStartOf="@id/comments_counter_root"
-                android:layout_toEndOf="@id/owner_avatar"
+                android:layout_toStartOf="@id/video_views_counter_root"
+                android:layout_toEndOf="@id/video_owner_avatar"
                 android:orientation="vertical">
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/owner_name"
+                    android:id="@+id/video_owner_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:textSize="@dimen/font_size_subtitle"
-                    android:textStyle="bold"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     tools:text="Owner name" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/title"
+                    android:id="@+id/video_datetime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/font_size_additional"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                     tools:text="Today 19:26" />
 
             </LinearLayout>
 
         </RelativeLayout>
 
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <dev.ragnarok.fenrir.view.AspectRatioImageView
+                android:id="@+id/video_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="centerCrop"
+                app:aspectRatioEnabled="true"
+                app:aspectRatioH="9"
+                app:aspectRatioW="16"
+                app:dominantMeasurement="width" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/video_lenght"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@id/video_image"
+                android:layout_alignBottom="@id/video_image"
+                android:background="#90000000"
+                android:gravity="center"
+                android:padding="4dp"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                android:textColor="#ffffff"
+                tools:text="3:28" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/video_service"
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:layout_margin="16dp"
+                android:contentDescription="@null"
+                android:scaleType="fitStart"
+                android:src="@drawable/ic_youtube" />
+
+        </RelativeLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/video_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            tools:text="Video title" />
+
         <include layout="@layout/line_divider" />
 
         <include
             android:id="@+id/comment_root"
-            layout="@layout/content_newsfeed_comment" />
+            layout="@layout/content_feed_mention" />
 
     </LinearLayout>
 

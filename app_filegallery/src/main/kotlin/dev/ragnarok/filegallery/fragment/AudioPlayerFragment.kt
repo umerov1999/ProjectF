@@ -37,6 +37,7 @@ import dev.ragnarok.filegallery.media.music.MusicPlaybackController
 import dev.ragnarok.filegallery.media.music.PlayerStatus
 import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.nonNullNoEmpty
+import dev.ragnarok.filegallery.orZero
 import dev.ragnarok.filegallery.picasso.PicassoInstance
 import dev.ragnarok.filegallery.picasso.transforms.BlurTransformation
 import dev.ragnarok.filegallery.settings.CurrentTheme
@@ -661,7 +662,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
 
             // approximate how often we would need to refresh the slider to
             // move it smoothly
-            var width = mProgress?.width ?: 0
+            var width = mProgress?.width.orZero()
             if (width == 0) {
                 width = 320
             }

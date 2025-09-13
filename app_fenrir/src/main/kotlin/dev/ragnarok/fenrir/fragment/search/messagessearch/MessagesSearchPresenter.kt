@@ -121,7 +121,6 @@ class MessagesSearchPresenter(
         voiceHolderId: Int,
         voiceMessageId: Int,
         messageId: Int,
-        peerId: Long,
         voiceMessage: VoiceMessage
     ) {
         val player = mVoicePlayer ?: return
@@ -143,12 +142,14 @@ class MessagesSearchPresenter(
             } else {
                 val paused = !player.isSupposedToPlay
                 val progress = player.progress
+                val duration = player.duration
                 val isSpeed = player.isPlaybackSpeed
                 view?.bindVoiceHolderById(
                     voiceHolderId,
                     true,
                     paused,
                     progress,
+                    duration,
                     false,
                     isSpeed
                 )
@@ -162,6 +163,10 @@ class MessagesSearchPresenter(
         mVoicePlayer?.togglePlaybackSpeed()
     }
 
+    fun firePlayPositionChanged(position: Long) {
+        mVoicePlayer?.setPlayPositionChanged(position)
+    }
+
     fun fireVoiceHolderCreated(voiceMessageId: Int, voiceHolderId: Int) {
         val player = mVoicePlayer ?: return
         val currentVoiceId = player.playingVoiceId
@@ -173,6 +178,7 @@ class MessagesSearchPresenter(
             play,
             paused,
             player.progress,
+            player.duration,
             false,
             isSpeed
         )
@@ -192,12 +198,14 @@ class MessagesSearchPresenter(
             view?.disableVoicePlaying()
         } else {
             val progress = player.progress
+            val duration = player.duration
             val paused = !player.isSupposedToPlay
             val isSpeed = player.isPlaybackSpeed
 
             view?.configNowVoiceMessagePlaying(
                 optionalVoiceMessageId.get() ?: return,
                 progress,
+                duration,
                 paused,
                 anim,
                 isSpeed

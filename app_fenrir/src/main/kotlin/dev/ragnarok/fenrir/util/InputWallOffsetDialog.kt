@@ -10,6 +10,7 @@ import com.google.android.material.textfield.TextInputEditText
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.domain.Repository
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayedFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
@@ -32,7 +33,7 @@ class InputWallOffsetDialog internal constructor(
         val input: TextInputEditText = view.findViewById(R.id.editText)
         val dt: TextView = view.findViewById(R.id.datePost)
         input.setText(String.format(Utils.appLocale, "%d", value))
-        input.setSelection(input.text?.length ?: 0)
+        input.setSelection(input.text?.length.orZero())
         builder.setView(view)
         builder.setPositiveButton(R.string.button_ok) { dialog, _ ->
             input.error = null

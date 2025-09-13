@@ -6,15 +6,11 @@ import android.content.ContentValues
 import android.database.Cursor
 import android.provider.BaseColumns
 import dev.ragnarok.fenrir.db.FenrirContentProvider
-import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getFeedListsContentUriFor
 import dev.ragnarok.fenrir.db.FenrirContentProvider.Companion.getNewsContentUriFor
-import dev.ragnarok.fenrir.db.column.FeedListsColumns
-import dev.ragnarok.fenrir.db.column.FeedListsColumns.getCV
 import dev.ragnarok.fenrir.db.column.NewsColumns
 import dev.ragnarok.fenrir.db.column.PostsColumns
 import dev.ragnarok.fenrir.db.interfaces.IFeedStorage
 import dev.ragnarok.fenrir.db.model.entity.DboEntity
-import dev.ragnarok.fenrir.db.model.entity.FeedListEntity
 import dev.ragnarok.fenrir.db.model.entity.NewsDboEntity
 import dev.ragnarok.fenrir.db.model.entity.OwnerEntities
 import dev.ragnarok.fenrir.db.model.entity.PostDboEntity
@@ -24,11 +20,9 @@ import dev.ragnarok.fenrir.getInt
 import dev.ragnarok.fenrir.getLong
 import dev.ragnarok.fenrir.getString
 import dev.ragnarok.fenrir.ifNonNull
-import dev.ragnarok.fenrir.model.FeedSourceCriteria
 import dev.ragnarok.fenrir.model.criteria.FeedCriteria
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.util.Utils.join
-import dev.ragnarok.fenrir.util.Utils.safeCountOf
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -110,44 +104,6 @@ internal class FeedStorage(base: AppStorages) : AbsStorage(base), IFeedStorage {
                 ids[i] = extractId(result)
             }
             emit(ids)
-        }
-    }
-
-    override fun storeLists(accountId: Long, entities: List<FeedListEntity>): Flow<Boolean> {
-        return flow {
-            val uri = getFeedListsContentUriFor(accountId)
-            val operations = ArrayList<ContentProviderOperation>()
-            operations.add(
-                ContentProviderOperation.newDelete(uri)
-                    .build()
-            )
-            for (entity in entities) {
-                operations.add(
-                    ContentProviderOperation.newInsert(uri)
-                        .withValues(getCV(entity))
-                        .build()
-                )
-            }
-            contentResolver.applyBatch(FenrirContentProvider.AUTHORITY, operations)
-            emit(true)
-        }
-    }
-
-    override fun getAllLists(criteria: FeedSourceCriteria): Flow<List<FeedListEntity>> {
-        return flow {
-            val uri = getFeedListsContentUriFor(criteria.accountId)
-            val cursor = contentResolver.query(uri, null, null, null, null)
-            val data: MutableList<FeedListEntity> = ArrayList(safeCountOf(cursor))
-            if (cursor != null) {
-                while (cursor.moveToNext()) {
-                    if (!isActive()) {
-                        break
-                    }
-                    data.add(mapList(cursor))
-                }
-                cursor.close()
-            }
-            emit(data)
         }
     }
 
@@ -296,24 +252,6 @@ internal class FeedStorage(base: AppStorages) : AbsStorage(base), IFeedStorage {
                 }
             }
             return cv
-        }
-
-        internal fun mapList(cursor: Cursor): FeedListEntity {
-            val id = cursor.getInt(BaseColumns._ID)
-            val title = cursor.getString(FeedListsColumns.TITLE)
-            val entity = FeedListEntity(id).setTitle(title)
-            val sources =
-                cursor.getString(FeedListsColumns.SOURCE_IDS)
-            var sourceIds: LongArray? = null
-            if (sources.nonNullNoEmpty()) {
-                val ids = sources.split(Regex(",")).toTypedArray()
-                sourceIds = LongArray(ids.size)
-                for (i in ids.indices) {
-                    sourceIds[i] = ids[i].toLong()
-                }
-            }
-            return entity.setSourceIds(sourceIds)
-                .setNoReposts(cursor.getBoolean(FeedListsColumns.NO_REPOSTS))
         }
     }
 }

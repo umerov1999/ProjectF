@@ -42,7 +42,7 @@ class TopicsAdapter(
                         context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
                     val clip = ClipData.newPlainText(
                         context.getString(R.string.link),
-                        "vk.com/topic" + item.ownerId + "_" + item.id
+                        "vk.ru/topic" + item.ownerId + "_" + item.id
                     )
                     clipboard?.setPrimaryClip(clip)
                     createCustomToast(context).showToast(R.string.copied)

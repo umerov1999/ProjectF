@@ -19,7 +19,7 @@ internal class DrawerSettings(context: Context) : IDrawerSettings {
     private fun makeDefaults(): List<DrawerCategory> {
         return listOf(
             DrawerCategory(SwitchableCategory.FRIENDS),
-            DrawerCategory(SwitchableCategory.NEWSFEED_COMMENTS),
+            DrawerCategory(SwitchableCategory.STORIES),
             DrawerCategory(SwitchableCategory.GROUPS),
             DrawerCategory(SwitchableCategory.PHOTOS),
             DrawerCategory(SwitchableCategory.VIDEOS),

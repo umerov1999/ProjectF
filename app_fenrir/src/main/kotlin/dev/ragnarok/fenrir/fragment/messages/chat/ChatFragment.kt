@@ -778,11 +778,12 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     override fun configNowVoiceMessagePlaying(
         id: Int,
         progress: Float,
+        duration: Long,
         paused: Boolean,
         amin: Boolean,
         speed: Boolean
     ) {
-        adapter?.configNowVoiceMessagePlaying(id, progress, paused, amin, speed)
+        adapter?.configNowVoiceMessagePlaying(id, progress, duration, paused, amin, speed)
     }
 
     override fun bindVoiceHolderById(
@@ -790,10 +791,11 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         play: Boolean,
         paused: Boolean,
         progress: Float,
+        duration: Long,
         amin: Boolean,
         speed: Boolean
     ) {
-        adapter?.bindVoiceHolderById(holderId, play, paused, progress, amin, speed)
+        adapter?.bindVoiceHolderById(holderId, play, paused, progress, duration, amin, speed)
     }
 
     override fun disableVoicePlaying() {
@@ -1035,14 +1037,12 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
         voiceHolderId: Int,
         voiceMessageId: Int,
         messageId: Int,
-        peerId: Long,
         voiceMessage: VoiceMessage
     ) {
         presenter?.fireVoicePlayButtonClick(
             voiceHolderId,
             voiceMessageId,
             messageId,
-            peerId,
             voiceMessage
         )
     }
@@ -1053,6 +1053,10 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
 
     override fun onTranscript(voiceMessageId: String, messageId: Int) {
         presenter?.fireTranscript(voiceMessageId, messageId)
+    }
+
+    override fun onPlayPositionChanged(position: Long) {
+        presenter?.firePlayPositionChanged(position)
     }
 
     override fun onStickerClick(sticker: Sticker) {

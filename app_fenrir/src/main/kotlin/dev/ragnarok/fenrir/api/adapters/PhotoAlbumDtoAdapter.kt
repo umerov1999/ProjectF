@@ -70,19 +70,19 @@ class PhotoAlbumDtoAdapter : AbsDtoAdapter<VKApiPhotoAlbum>("VKApiPhotoAlbum") {
                 album.photo?.add(
                     PhotoSizeDto.create(
                         PhotoSizeDto.Type.S,
-                        "http://vk.com/images/s_noalbum.png"
+                        "http://vk.ru/images/s_noalbum.png"
                     )
                 )
                 album.photo?.add(
                     PhotoSizeDto.create(
                         PhotoSizeDto.Type.M,
-                        "http://vk.com/images/m_noalbum.png"
+                        "http://vk.ru/images/m_noalbum.png"
                     )
                 )
                 album.photo?.add(
                     PhotoSizeDto.create(
                         PhotoSizeDto.Type.X,
-                        "http://vk.com/images/x_noalbum.png"
+                        "http://vk.ru/images/x_noalbum.png"
                     )
                 )
             }
@@ -91,19 +91,19 @@ class PhotoAlbumDtoAdapter : AbsDtoAdapter<VKApiPhotoAlbum>("VKApiPhotoAlbum") {
             album.photo?.add(
                 PhotoSizeDto.create(
                     PhotoSizeDto.Type.S,
-                    "http://vk.com/images/s_noalbum.png"
+                    "http://vk.ru/images/s_noalbum.png"
                 )
             )
             album.photo?.add(
                 PhotoSizeDto.create(
                     PhotoSizeDto.Type.M,
-                    "http://vk.com/images/m_noalbum.png"
+                    "http://vk.ru/images/m_noalbum.png"
                 )
             )
             album.photo?.add(
                 PhotoSizeDto.create(
                     PhotoSizeDto.Type.X,
-                    "http://vk.com/images/x_noalbum.png"
+                    "http://vk.ru/images/x_noalbum.png"
                 )
             )
         }

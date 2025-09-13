@@ -516,7 +516,7 @@ class VKApiUser
     companion object {
         const val SEX_MAN = 2
         const val SEX_WOMAN = 1
-        const val CAMERA_50 = "http://vk.com/images/camera_c.gif"
+        const val CAMERA_50 = "http://vk.ru/images/camera_c.gif"
         const val FRIEND_STATUS_IS_NOT_FRIEDND = 0
         const val FRIEND_STATUS_REQUEST_SENT = 1
         const val FRIEND_STATUS_HAS_INPUT_REQUEST = 2

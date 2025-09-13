@@ -13,6 +13,7 @@ import dev.ragnarok.fenrir.model.LocalPhoto
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.Poll
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.upload.IUploadManager
 import dev.ragnarok.fenrir.upload.IUploadManager.IProgressUpdate
@@ -396,7 +397,7 @@ abstract class AbsAttachmentsEditPresenter<V : IBaseAttachmentsEditView> interna
         private const val SAVE_BODY = "save_body"
         private const val SAVE_CURRENT_PHOTO_CAMERA_URI = "save_current_photo_camera_uri"
         fun createFrom(objects: List<Upload>?): List<AttachmentEntry> {
-            val data: MutableList<AttachmentEntry> = ArrayList(objects?.size ?: 0)
+            val data: MutableList<AttachmentEntry> = ArrayList(objects?.size.orZero())
             for (obj in objects.orEmpty()) {
                 data.add(AttachmentEntry(true, obj))
             }

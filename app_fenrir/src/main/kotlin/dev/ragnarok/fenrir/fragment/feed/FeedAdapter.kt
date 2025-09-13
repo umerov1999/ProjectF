@@ -25,6 +25,7 @@ import dev.ragnarok.fenrir.link.LinkHelper
 import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
 import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.model.News
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppTextUtils
@@ -251,7 +252,7 @@ class FeedAdapter(
             get() = cardView.tag as Int
 
         override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo?) {
-            val position = getItemRawPosition(recyclerView?.getChildAdapterPosition(v) ?: 0)
+            val position = getItemRawPosition(recyclerView?.getChildAdapterPosition(v).orZero())
             val feed = getItems()[position]
             if ("post" == feed.type) {
                 menu.add(0, v.id, 0, R.string.add_to_bookmarks)

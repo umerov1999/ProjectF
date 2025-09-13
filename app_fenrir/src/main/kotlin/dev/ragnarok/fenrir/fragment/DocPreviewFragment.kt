@@ -305,7 +305,7 @@ class DocPreviewFragment : BaseFragment(), MenuProvider {
     }
 
     private fun genLink(): String {
-        return String.format("vk.com/doc%s_%s", ownerId, documentId)
+        return String.format("vk.ru/doc%s_%s", ownerId, documentId)
     }
 
     private fun download() {

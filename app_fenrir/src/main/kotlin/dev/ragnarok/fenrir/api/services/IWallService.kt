@@ -13,7 +13,7 @@ import dev.ragnarok.fenrir.api.rest.IServiceRest
 import kotlinx.coroutines.flow.Flow
 
 class IWallService : IServiceRest() {
-    //https://vk.com/dev/wall.search
+    //https://vk.ru/dev/wall.search
     fun search(
         ownerId: Long?,
         domain: String?,
@@ -38,7 +38,7 @@ class IWallService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/wall.edit
+    //https://vk.ru/dev/wall.edit
     fun edit(
         ownerId: Long?,
         postId: Int?,
@@ -71,7 +71,7 @@ class IWallService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/wall.pin
+    //https://vk.ru/dev/wall.pin
     fun pin(
         ownerId: Long?,
         postId: Int
@@ -84,7 +84,7 @@ class IWallService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/wall.unpin
+    //https://vk.ru/dev/wall.unpin
     fun unpin(
         ownerId: Long?,
         postId: Int
@@ -97,7 +97,7 @@ class IWallService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/wall.repost
+    //https://vk.ru/dev/wall.repost
     fun repost(
         pobject: String?,
         message: String?,
@@ -114,7 +114,7 @@ class IWallService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/wall.post
+    //https://vk.ru/dev/wall.post
     fun post(
         ownerId: Long?,
         friendsOnly: Int?,
@@ -295,7 +295,7 @@ class IWallService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/wall.getComments
+    //https://vk.ru/dev/wall.getComments
     fun getComments(
         ownerId: Long?,
         postId: Int,

@@ -14,6 +14,7 @@ import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.Utils
@@ -90,7 +91,7 @@ class FaveVideosAdapter(private val context: Context, private var data: List<Vid
         val title: TextView
         val viewsCount: TextView
         override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo?) {
-            val position = recyclerView?.getChildAdapterPosition(v) ?: 0
+            val position = recyclerView?.getChildAdapterPosition(v).orZero()
             val video = data[position]
             menu.setHeaderTitle(video.title)
             menu.add(0, v.id, 0, R.string.delete).setOnMenuItemClickListener {

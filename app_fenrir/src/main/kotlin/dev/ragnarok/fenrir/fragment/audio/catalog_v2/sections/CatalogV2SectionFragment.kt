@@ -26,6 +26,7 @@ import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.model.AudioPlaylist
 import dev.ragnarok.fenrir.model.LoadMoreState
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.settings.Settings
@@ -129,7 +130,7 @@ class CatalogV2SectionFragment :
                     presenter?.getAudioPos(null, curr) ?: -1
                 if (index >= 0) {
                     recyclerView?.scrollToPosition(
-                        index + (mAdapter?.headersCount ?: 0)
+                        index + mAdapter?.headersCount.orZero()
                     )
                 } else createCustomToast(requireActivity()).showToast(R.string.audio_not_found)
             } else createCustomToast(requireActivity()).showToastError(R.string.null_audio)

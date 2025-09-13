@@ -68,7 +68,7 @@ abstract class AbsNavigationView : FrameLayout {
         const val PAGE_BOOKMARKS = 10
         const val PAGE_NOTIFICATION = 11
         const val PAGE_SEARCH = 12
-        const val PAGE_NEWSFEED_COMMENTS = 13
+        const val PAGE_STORIES = 13
 
         val SECTION_ITEM_FRIENDS: SectionMenuItem =
             IconMenuItem(PAGE_FRIENDS, R.drawable.friends, R.string.friends)
@@ -82,10 +82,10 @@ abstract class AbsNavigationView : FrameLayout {
         val SECTION_ITEM_FEEDBACK: SectionMenuItem =
             IconMenuItem(PAGE_NOTIFICATION, R.drawable.feed, R.string.drawer_feedback)
 
-        val SECTION_ITEM_NEWSFEED_COMMENTS: SectionMenuItem = IconMenuItem(
-            PAGE_NEWSFEED_COMMENTS,
-            R.drawable.comment,
-            R.string.drawer_newsfeed_comments
+        val SECTION_ITEM_STORIES: SectionMenuItem = IconMenuItem(
+            PAGE_STORIES,
+            R.drawable.story_outline,
+            R.string.stories
         )
 
         val SECTION_ITEM_GROUPS: SectionMenuItem =

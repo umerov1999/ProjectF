@@ -18,6 +18,7 @@ import dev.ragnarok.fenrir.media.exo.ExoUtil.startPlayer
 import dev.ragnarok.fenrir.media.video.IVideoPlayer.IUpdatePlayListener
 import dev.ragnarok.fenrir.model.InternalVideoSize
 import dev.ragnarok.fenrir.model.ProxyConfig
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.Utils.getExoPlayerFactory
 import dev.ragnarok.fenrir.util.Utils.makeMediaItem
 import java.lang.ref.WeakReference
@@ -112,7 +113,7 @@ class ExoVideoPlayer(
         get() = player?.duration ?: 1
 
     override val currentPosition: Long
-        get() = player?.currentPosition ?: 0
+        get() = player?.currentPosition.orZero()
 
     override fun seekTo(position: Long) {
         player?.seekTo(position)
@@ -122,10 +123,10 @@ class ExoVideoPlayer(
         get() = supposedToBePlaying
 
     override val bufferPercentage: Int
-        get() = player?.bufferedPercentage ?: 0
+        get() = player?.bufferedPercentage.orZero()
 
     override val bufferPosition: Long
-        get() = player?.bufferedPosition ?: 0
+        get() = player?.bufferedPosition.orZero()
 
     override fun setSurfaceHolder(holder: SurfaceHolder?) {
         player?.setVideoSurfaceHolder(holder)

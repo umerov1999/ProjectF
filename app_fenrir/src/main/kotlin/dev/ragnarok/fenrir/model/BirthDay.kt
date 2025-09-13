@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.model
 
-import java.util.regex.Pattern
+import dev.ragnarok.fenrir.orZero
 
 class BirthDay(val user: User) {
     val day: Int
@@ -8,16 +8,16 @@ class BirthDay(val user: User) {
     val sortVt: Int
 
     init {
-        var matcher = PATTERN_DAY_MONTH_YEAR.matcher(user.bdate.orEmpty())
-        if (matcher.find()) {
-            day = matcher.group(1)?.toInt() ?: 0
-            month = matcher.group(2)?.toInt() ?: 0
+        var matcher = PATTERN_DAY_MONTH_YEAR.find(user.bdate.orEmpty())
+        if (matcher != null) {
+            day = matcher.groupValues.getOrNull(1)?.toInt().orZero()
+            month = matcher.groupValues.getOrNull(2)?.toInt().orZero()
             sortVt = day + (month * 30)
         } else {
-            matcher = PATTERN_DAY_MONTH.matcher(user.bdate.orEmpty())
-            if (matcher.find()) {
-                day = matcher.group(1)?.toInt() ?: 0
-                month = matcher.group(2)?.toInt() ?: 0
+            matcher = PATTERN_DAY_MONTH.find(user.bdate.orEmpty())
+            if (matcher != null) {
+                day = matcher.groupValues.getOrNull(1)?.toInt().orZero()
+                month = matcher.groupValues.getOrNull(2)?.toInt().orZero()
                 sortVt = day + (month * 30)
             } else {
                 day = 0
@@ -28,7 +28,7 @@ class BirthDay(val user: User) {
     }
 
     companion object {
-        val PATTERN_DAY_MONTH: Pattern = Pattern.compile("(\\d*)\\.(\\d*)")
-        val PATTERN_DAY_MONTH_YEAR: Pattern = Pattern.compile("(\\d*)\\.(\\d*)\\.(\\d*)")
+        val PATTERN_DAY_MONTH: Regex = Regex("(\\d*)\\.(\\d*)")
+        val PATTERN_DAY_MONTH_YEAR: Regex = Regex("(\\d*)\\.(\\d*)\\.(\\d*)")
     }
 }

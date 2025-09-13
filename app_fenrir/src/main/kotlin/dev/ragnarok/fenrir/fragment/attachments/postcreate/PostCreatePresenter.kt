@@ -27,6 +27,7 @@ import dev.ragnarok.fenrir.model.Poll
 import dev.ragnarok.fenrir.model.Post
 import dev.ragnarok.fenrir.model.WallEditorAttrs
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.upload.MessageMethod
 import dev.ragnarok.fenrir.upload.Method
@@ -100,7 +101,7 @@ class PostCreatePresenter(
                     uris
                 )
             } else {
-                uploadStreamsImpl(uris, size ?: 0, isVideo)
+                uploadStreamsImpl(uris, size.orZero(), isVideo)
             }
         }
     }

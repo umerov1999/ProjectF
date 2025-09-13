@@ -5,7 +5,11 @@ import android.util.AttributeSet
 import android.view.SurfaceView
 import androidx.annotation.IntDef
 
-class ExpandableSurfaceView(context: Context?, attrs: AttributeSet?) : SurfaceView(context, attrs) {
+class ExpandableSurfaceView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) : SurfaceView(context, attrs, defStyle) {
     @MustBeDocumented
     @Retention(AnnotationRetention.SOURCE)
     @Target(AnnotationTarget.TYPE)
@@ -19,6 +23,10 @@ class ExpandableSurfaceView(context: Context?, attrs: AttributeSet?) : SurfaceVi
     private var videoAspectRatio = 0.0f
     private var scaleXF = 1.0f
     private var scaleYF = 1.0f
+
+    private var targetScale = 1.0f
+    private var minScale = 1.0f
+    private var maxScale = 5.0f
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         if (videoAspectRatio == 0.0f) {
@@ -60,8 +68,8 @@ class ExpandableSurfaceView(context: Context?, attrs: AttributeSet?) : SurfaceVi
         changed: Boolean,
         left: Int, top: Int, right: Int, bottom: Int
     ) {
-        scaleX = scaleXF
-        scaleY = scaleYF
+        scaleX = scaleXF * targetScale
+        scaleY = scaleYF * targetScale
     }
 
     fun setResizeMode(newResizeMode: @ResizeMode Int) {
@@ -74,6 +82,18 @@ class ExpandableSurfaceView(context: Context?, attrs: AttributeSet?) : SurfaceVi
 
     fun getResizeMode(): @ResizeMode Int {
         return resizeMode
+    }
+
+    fun doScale(factor: Float) {
+        targetScale *= factor
+        targetScale = if (targetScale < minScale) {
+            minScale
+        } else if (targetScale > maxScale) {
+            maxScale
+        } else {
+            targetScale
+        }
+        animate().scaleX(scaleXF * targetScale).scaleY(scaleYF * targetScale).setDuration(0).start()
     }
 
     fun setAspectRatio(width: Int, height: Int) {

@@ -356,7 +356,7 @@ class CatalogV2SectionAdapter(
             v: View,
             menuInfo: ContextMenu.ContextMenuInfo?
         ) {
-            val position = recyclerView?.getChildAdapterPosition(v) ?: 0
+            val position = recyclerView?.getChildAdapterPosition(v).orZero()
             val playlist = getItem(position) as AudioPlaylist
             if (Settings.get().accounts().current == playlist.owner_id) {
                 menu.add(0, v.id, 0, R.string.delete)
@@ -453,7 +453,7 @@ class CatalogV2SectionAdapter(
             v: View,
             menuInfo: ContextMenu.ContextMenuInfo?
         ) {
-            val position = recyclerView?.getChildAdapterPosition(itemView) ?: 0
+            val position = recyclerView?.getChildAdapterPosition(itemView).orZero()
             val recPlaylist = getItem(position) as CatalogV2RecommendationPlaylist
             if (Settings.get().accounts().current == recPlaylist.owner_id) {
                 menu.add(0, itemView.id, 0, R.string.delete)

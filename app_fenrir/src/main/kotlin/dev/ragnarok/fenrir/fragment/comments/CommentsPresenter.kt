@@ -498,8 +498,8 @@ class CommentsPresenter(
 
     private fun saveSingle(): Flow<Int> {
         val accountId = authorId
-        val replyToComment = replyTo?.getObjectId() ?: 0
-        val replyToUser = replyTo?.fromId ?: 0
+        val replyToComment = replyTo?.getObjectId().orZero()
+        val replyToUser = replyTo?.fromId.orZero()
         return interactor.safeDraftComment(
             accountId,
             commented,
@@ -570,7 +570,7 @@ class CommentsPresenter(
             interactor.getAllCommentsRange(
                 accountId,
                 commented,
-                older?.getObjectId() ?: 0,
+                older?.getObjectId().orZero(),
                 commentId
             )
                 .fromIOToMain({ comments ->

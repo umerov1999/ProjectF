@@ -1,7 +1,5 @@
 package dev.ragnarok.fenrir.api.services
 
-import dev.ragnarok.fenrir.api.model.Items
-import dev.ragnarok.fenrir.api.model.VKApiFeedList
 import dev.ragnarok.fenrir.api.model.response.BaseResponse
 import dev.ragnarok.fenrir.api.model.response.IgnoreItemResponse
 import dev.ragnarok.fenrir.api.model.response.NewsfeedBanResponse
@@ -12,37 +10,7 @@ import dev.ragnarok.fenrir.api.rest.IServiceRest
 import kotlinx.coroutines.flow.Flow
 
 class INewsfeedService : IServiceRest() {
-    /**
-     * filters post, photo, video, topic, market, note
-     */
-    //https://vk.com/dev/newsfeed.getComments
-    fun getComments(
-        count: Int?,
-        filters: String?,
-        reposts: String?,
-        startTime: Long?,
-        endTime: Long?,
-        lastCommentsCount: Int?,
-        startFrom: String?,
-        fields: String?,
-        photoSizes: Int?
-    ): Flow<BaseResponse<NewsfeedCommentsResponse>> {
-        return rest.request(
-            "newsfeed.getComments", form(
-                "count" to count,
-                "filters" to filters,
-                "reposts" to reposts,
-                "start_time" to startTime,
-                "end_time" to endTime,
-                "last_comments_count" to lastCommentsCount,
-                "start_from" to startFrom,
-                "fields" to fields,
-                "photo_sizes" to photoSizes
-            ), base(NewsfeedCommentsResponse.serializer())
-        )
-    }
-
-    //https://vk.com/dev/newsfeed.getMentions
+    //https://vk.ru/dev/newsfeed.getMentions
     fun getMentions(
         owner_id: Long?,
         count: Int?,
@@ -61,33 +29,7 @@ class INewsfeedService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/newsfeed.getLists
-    fun getLists(
-        listIds: String?,
-        extended: Int?
-    ): Flow<BaseResponse<Items<VKApiFeedList>>> {
-        return rest.request(
-            "newsfeed.getLists", form(
-                "list_ids" to listIds,
-                "extended" to extended
-            ), items(VKApiFeedList.serializer())
-        )
-    }
-
-    //https://vk.com/dev/newsfeed.saveList
-    fun saveList(
-        title: String?,
-        source_ids: String?
-    ): Flow<BaseResponse<Int>> {
-        return rest.request(
-            "newsfeed.saveList", form(
-                "title" to title,
-                "source_ids" to source_ids
-            ), baseInt
-        )
-    }
-
-    //https://vk.com/dev/newsfeed.getBanned
+    //https://vk.ru/dev/newsfeed.getBanned
     fun getBanned(
         extended: Int?,
         fields: String?
@@ -100,7 +42,7 @@ class INewsfeedService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/newsfeed.deleteBan
+    //https://vk.ru/dev/newsfeed.deleteBan
     fun deleteBan(
         user_ids: String?,
         group_ids: String?
@@ -113,7 +55,7 @@ class INewsfeedService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/newsfeed.addBan
+    //https://vk.ru/dev/newsfeed.addBan
     fun addBan(
         user_ids: String?,
         group_ids: String?
@@ -126,7 +68,7 @@ class INewsfeedService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/newsfeed.ignoreItem
+    //https://vk.ru/dev/newsfeed.ignoreItem
     fun ignoreItem(
         type: String?,
         owner_id: Long?,
@@ -139,11 +81,6 @@ class INewsfeedService : IServiceRest() {
                 "item_id" to item_id
             ), base(IgnoreItemResponse.serializer())
         )
-    }
-
-    //https://vk.com/dev/newsfeed.deleteList
-    fun deleteList(list_id: Int?): Flow<BaseResponse<Int>> {
-        return rest.request("newsfeed.deleteList", form("list_id" to list_id), baseInt)
     }
 
     /**
@@ -269,26 +206,6 @@ class INewsfeedService : IServiceRest() {
                 "end_time" to endTime,
                 "max_photos" to maxPhotoCount,
                 "source_ids" to sourceIds,
-                "start_from" to startFrom,
-                "count" to count,
-                "fields" to fields
-            ), base(NewsfeedResponse.serializer())
-        )
-    }
-
-    fun getRecommended(
-        startTime: Long?,
-        endTime: Long?,
-        maxPhotoCount: Int?,
-        startFrom: String?,
-        count: Int?,
-        fields: String?
-    ): Flow<BaseResponse<NewsfeedResponse>> {
-        return rest.request(
-            "newsfeed.getRecommended", form(
-                "start_time" to startTime,
-                "end_time" to endTime,
-                "max_photos" to maxPhotoCount,
                 "start_from" to startFrom,
                 "count" to count,
                 "fields" to fields

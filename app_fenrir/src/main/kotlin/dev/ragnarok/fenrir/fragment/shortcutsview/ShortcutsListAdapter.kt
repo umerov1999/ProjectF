@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso3.Transformation
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.model.ShortcutStored
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.view.AspectRatioImageView
@@ -95,7 +96,7 @@ class ShortcutsListAdapter(private var data: List<ShortcutStored>) :
             v: View,
             menuInfo: ContextMenu.ContextMenuInfo?
         ) {
-            val position = recyclerView?.getChildAdapterPosition(v) ?: 0
+            val position = recyclerView?.getChildAdapterPosition(v).orZero()
             val page = data[position]
             menu.setHeaderTitle(page.name)
             menu.add(0, v.id, 0, R.string.delete).setOnMenuItemClickListener {

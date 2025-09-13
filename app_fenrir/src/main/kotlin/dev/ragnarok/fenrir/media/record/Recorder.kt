@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.media.record
 import android.content.Context
 import android.media.MediaRecorder
 import android.os.Build
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.Settings
 
@@ -56,7 +57,7 @@ class Recorder(val filePath: String, val context: Context) {
     val maxAmplitude: Int
         get() {
             assertRecorderNotNull()
-            return mRecorder?.maxAmplitude ?: 0
+            return mRecorder?.maxAmplitude.orZero()
         }
     val currentRecordDuration: Long
         get() = mCurrentRecordingSectionStartTime.requireNonNull({

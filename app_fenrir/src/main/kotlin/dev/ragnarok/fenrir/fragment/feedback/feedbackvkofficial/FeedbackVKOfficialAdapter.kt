@@ -24,6 +24,7 @@ import dev.ragnarok.fenrir.model.FeedbackVKOfficialList
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.PhotoSize
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.place.PlaceFactory.getSimpleGalleryPlace
 import dev.ragnarok.fenrir.requireNonNull
@@ -416,7 +417,7 @@ class FeedbackVKOfficialAdapter(
     }
 
     override fun getItemCount(): Int {
-        return if (data?.items == null) 0 else (data?.items?.size ?: 0)
+        return data?.items?.size.orZero()
     }
 
     fun setData(data: FeedbackVKOfficialList) {

@@ -87,7 +87,6 @@ import dev.ragnarok.fenrir.fragment.docs.DocsListPresenter
 import dev.ragnarok.fenrir.fragment.fave.FaveTabsFragment
 import dev.ragnarok.fenrir.fragment.feed.FeedFragment
 import dev.ragnarok.fenrir.fragment.feed.feedbanned.FeedBannedFragment
-import dev.ragnarok.fenrir.fragment.feed.newsfeedcomments.NewsfeedCommentsFragment
 import dev.ragnarok.fenrir.fragment.feed.newsfeedmentions.NewsfeedMentionsFragment
 import dev.ragnarok.fenrir.fragment.feedback.FeedbackFragment
 import dev.ragnarok.fenrir.fragment.feedback.feedbackvkofficial.FeedbackVKOfficialFragment
@@ -177,6 +176,7 @@ import dev.ragnarok.fenrir.model.drawer.AbsMenuItem
 import dev.ragnarok.fenrir.model.drawer.RecentChat
 import dev.ragnarok.fenrir.model.drawer.SectionMenuItem
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.place.PlaceProvider
@@ -210,7 +210,6 @@ import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView.NavigationDrawerCallbacks
 import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.getInstance
 import kotlinx.coroutines.flow.filter
-import java.util.regex.Pattern
 
 open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSectionResumeCallback,
     AppStyleable, PlaceProvider, ServiceConnection, UpdatableNavigation,
@@ -240,18 +239,15 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
         if (result.resultCode == RESULT_OK) {
             val scanner = result.data?.extras?.getString(Extra.URL)
             if (scanner.nonNullNoEmpty()) {
-                val PATTERN: Pattern =
-                    Pattern.compile("qr\\.vk\\.com/ca[?]q=(\\w+)")
-                val matcher = PATTERN.matcher(scanner)
                 try {
-                    if (matcher.find()) {
-                        matcher.group(1)
-                            ?.let {
-                                PlaceFactory.getProcessAuthCodePlace(mAccountId, it)
-                                    .tryOpenWith(this)
-                                return@registerForActivityResult
-                            }
-                    }
+                    val PATTERN = Regex("qr\\.vk\\.(?:ru|com|me)/ca[?]q=(\\w+)")
+                    val matcher = PATTERN.find(scanner)
+                    matcher?.groupValues?.getOrNull(1)
+                        ?.let {
+                            PlaceFactory.getProcessAuthCodePlace(mAccountId, it)
+                                .tryOpenWith(this)
+                            return@registerForActivityResult
+                        }
                 } catch (_: NumberFormatException) {
                 }
 
@@ -662,18 +658,10 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                             false
                         )
                     )
-                    menus.add(
-                        OptionRequest(
-                            2,
-                            getString(R.string.stories),
-                            R.drawable.story_outline,
-                            true
-                        )
-                    )
                     if (Utils.isOfficialVKCurrent) {
                         menus.add(
                             OptionRequest(
-                                3,
+                                2,
                                 getString(R.string.clips),
                                 R.drawable.clip_outline,
                                 true
@@ -682,7 +670,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     }
                     menus.add(
                         OptionRequest(
-                            4,
+                            3,
                             getString(R.string.settings),
                             R.drawable.preferences,
                             true
@@ -690,7 +678,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     )
                     menus.add(
                         OptionRequest(
-                            5,
+                            4,
                             getString(R.string.scan_qr),
                             R.drawable.qr_code,
                             false
@@ -717,8 +705,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                             1 -> {
                                 val clipBoard =
                                     getSystemService(CLIPBOARD_SERVICE) as ClipboardManager?
-                                if (clipBoard != null && clipBoard.primaryClip != null && (clipBoard.primaryClip?.itemCount
-                                        ?: 0) > 0 && (clipBoard.primaryClip
+                                if (clipBoard != null && clipBoard.primaryClip != null && clipBoard.primaryClip?.itemCount.orZero() > 0 && (clipBoard.primaryClip
                                         ?: return@show).getItemAt(0).text != null
                                 ) {
                                     val temp =
@@ -733,41 +720,16 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                             }
 
                             2 -> {
-                                mCompositeJob.add(
-                                    InteractorFactory.createStoriesInteractor()
-                                        .getStories(
-                                            Settings.get().accounts().current,
-                                            null
-                                        )
-                                        .fromIOToMain({
-                                            if (it.isEmpty()) {
-                                                createCustomToast(this@MainActivity).showToastError(
-                                                    R.string.list_is_empty
-                                                )
-                                            }
-                                            PlaceFactory.getHistoryVideoPreviewPlace(
-                                                mAccountId,
-                                                ArrayList(it),
-                                                0
-                                            ).tryOpenWith(this@MainActivity)
-                                        }) {
-                                            createCustomToast(this@MainActivity).showToastThrowable(
-                                                it
-                                            )
-                                        })
-                            }
-
-                            3 -> {
                                 PlaceFactory.getShortVideoPlace(mAccountId, null)
                                     .tryOpenWith(this@MainActivity)
                             }
 
-                            4 -> {
+                            3 -> {
                                 PlaceFactory.getPreferencesPlace(mAccountId)
                                     .tryOpenWith(this@MainActivity)
                             }
 
-                            5 -> {
+                            4 -> {
                                 val intent =
                                     Intent(
                                         this@MainActivity,
@@ -1086,6 +1048,14 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             startAccountsActivity()
             return
         }
+        if (sectionDrawerItem.section == AbsNavigationView.PAGE_STORIES) {
+            PlaceFactory.getHistoryVideoPreviewPlace(
+                mAccountId,
+                ArrayList(),
+                0
+            ).tryOpenWith(this)
+            return
+        }
         mCurrentFrontSection = item
         navigationView?.selectPage(item)
         if (Settings.get().main().isDo_not_clear_back_stack && menu && isPlaying) {
@@ -1165,12 +1135,6 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 PlaceFactory.getSearchPlace(
                     aid,
                     SearchTabsFragment.TAB_PEOPLE
-                )
-            )
-
-            AbsNavigationView.PAGE_NEWSFEED_COMMENTS -> openPlace(
-                PlaceFactory.getNewsfeedCommentsPlace(
-                    aid
                 )
             )
 
@@ -1591,15 +1555,6 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             Place.SINGLE_SEARCH -> {
                 val singleTabSearchFragment = SingleTabSearchFragment.newInstance(args)
                 attachToFront(singleTabSearchFragment)
-            }
-
-            Place.NEWSFEED_COMMENTS -> {
-                val newsfeedCommentsFragment = NewsfeedCommentsFragment.newInstance(
-                    args.getLong(
-                        Extra.ACCOUNT_ID
-                    )
-                )
-                attachToFront(newsfeedCommentsFragment)
             }
 
             Place.COMMUNITY_CONTROL -> {

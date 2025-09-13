@@ -32,6 +32,11 @@
 #define TEXT(A) static_cast<TextImpl*>(A)
 #define CONST_TEXT(A) static_cast<const TextImpl*>(A)
 
+struct TextBox {
+    Point size;
+};
+
+
 struct TextImpl : Text
 {
     Paint::Impl impl;
@@ -40,7 +45,11 @@ struct TextImpl : Text
     FontMetrics metrics;
     char* utf8 = nullptr;
     float fontSize;
-    bool italic = false;
+    float outlineWidth = 0.0f;
+    float italicShear = 0.0f;
+    Point align{};
+
+    TextBox* box = nullptr;
 
     TextImpl() : impl(Paint::Impl(this)), shape(Shape::gen())
     {
@@ -50,6 +59,7 @@ struct TextImpl : Text
     ~TextImpl()
     {
         tvg::free(utf8);
+        tvg::free(box);
         LoaderMgr::retrieve(loader);
         delete(shape);
     }
@@ -65,15 +75,10 @@ struct TextImpl : Text
         return Result::Success;
     }
 
-    Result font(const char* name, float size, const char* style)
+    Result font(const char* name)
     {
         auto loader = name ? LoaderMgr::font(name) : LoaderMgr::anyfont();
         if (!loader) return Result::InsufficientCondition;
-
-        if (style && strstr(style, "italic")) italic = true;
-        else italic = false;
-
-        fontSize = size;
 
         //Same resource has been loaded.
         if (this->loader == loader) {
@@ -108,7 +113,7 @@ struct TextImpl : Text
         //reload
         if (impl.marked(RenderUpdateFlag::Path)) loader->read(shape, utf8, metrics);
 
-        return loader->transform(shape, metrics, fontSize, italic);
+        return loader->transform(shape, metrics, fontSize, italicShear);
     }
 
     bool skip(RenderUpdateFlag flag)
@@ -117,28 +122,49 @@ struct TextImpl : Text
         return false;
     }
 
+    void arrange(Matrix& m, float scale)
+    {
+        //alignment
+        m.e13 -= (metrics.width / scale) * align.x;
+        m.e23 -= ((metrics.ascent - metrics.descent) / scale) * align.y;
+
+        //layouting
+        if (box) {
+            m.e13 += box->size.x * align.x;
+            m.e23 += box->size.y * align.y;
+        }
+    }
+
+    void layout(float w, float h)
+    {
+        if (!box) box = tvg::calloc<TextBox*>(1, sizeof(TextBox));
+        box->size = {w, h};
+        impl.mark(RenderUpdateFlag::Transform);
+    }
+
     bool update(RenderMethod* renderer, const Matrix& transform, Array<RenderData>& clips, uint8_t opacity, RenderUpdateFlag flag, TVG_UNUSED bool clipper)
     {
         auto scale = 1.0f / load();
         if (tvg::zero(scale)) return false;
 
+        arrange(const_cast<Matrix&>(shape->transform()), scale);
+
         //transform the gradient coordinates based on the final scaled font.
         auto fill = SHAPE(shape)->rs.fill;
-        if (fill && SHAPE(shape)->impl.renderFlag & RenderUpdateFlag::Gradient) {
+        if (fill && SHAPE(shape)->impl.marked(RenderUpdateFlag::Gradient)) {
             if (fill->type() == Type::LinearGradient) {
-                LINEAR(fill)->x1 *= scale;
-                LINEAR(fill)->y1 *= scale;
-                LINEAR(fill)->x2 *= scale;
-                LINEAR(fill)->y2 *= scale;
+                LINEAR(fill)->p1 *= scale;
+                LINEAR(fill)->p2 *= scale;
             } else {
-                RADIAL(fill)->cx *= scale;
-                RADIAL(fill)->cy *= scale;
+                RADIAL(fill)->center *= scale;
                 RADIAL(fill)->r *= scale;
-                RADIAL(fill)->fx *= scale;
-                RADIAL(fill)->fy *= scale;
+                RADIAL(fill)->focal *= scale;
                 RADIAL(fill)->fr *= scale;
             }
         }
+
+        if (outlineWidth > 0.0f && impl.marked(RenderUpdateFlag::Stroke)) shape->strokeWidth(outlineWidth * scale);
+
         PAINT(shape)->update(renderer, transform, clips, opacity, flag, false);
         return true;
     }
@@ -151,8 +177,10 @@ struct TextImpl : Text
 
     bool bounds(Point* pt4, const Matrix& m, bool obb)
     {
-        if (load() == 0.0f) return false;
-        return PAINT(shape)->bounds(pt4, &m, obb);
+        auto scale = 1.0f / load();
+        if (tvg::zero(scale)) return false;
+        arrange(const_cast<Matrix&>(m), scale);
+        return PAINT(shape)->bounds(pt4, &const_cast<Matrix&>(m), obb);
     }
 
     Paint* duplicate(Paint* ret)
@@ -171,9 +199,14 @@ struct TextImpl : Text
             ++dup->loader->sharing;
         }
 
+        dup->metrics = metrics;
         dup->utf8 = tvg::duplicate(utf8);
-        dup->italic = italic;
         dup->fontSize = fontSize;
+        dup->italicShear = italicShear;
+        dup->outlineWidth = outlineWidth;
+        dup->align = align;
+
+        if (box) dup->layout(box->size.x, box->size.y);
 
         return text;
     }

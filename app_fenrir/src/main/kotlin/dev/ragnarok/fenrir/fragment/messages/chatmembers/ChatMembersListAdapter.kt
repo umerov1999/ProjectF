@@ -60,7 +60,7 @@ class ChatMembersListAdapter(context: Context, private var data: List<AppChatUse
             app = user.onlineApp
         }
         val iconRes = getOnlineIcon(online, onlineMobile, platform, app)
-        holder.vOnline.setIcon(iconRes ?: 0)
+        holder.vOnline.setIcon(iconRes.orZero())
         holder.vOnline.visibility = if (online) View.VISIBLE else View.GONE
         val userAvatarUrl = user?.maxSquareAvatar
         if (userAvatarUrl.isNullOrEmpty()) {
@@ -165,7 +165,7 @@ class ChatMembersListAdapter(context: Context, private var data: List<AppChatUse
         val tvAdmin: TextView
         val vRemove: View
         override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo?) {
-            val position = recyclerView?.getChildAdapterPosition(v) ?: 0
+            val position = recyclerView?.getChildAdapterPosition(v).orZero()
             val item = data[position]
             if (isOwner && !item.isOwner) {
                 menu.add(

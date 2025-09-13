@@ -68,7 +68,7 @@ object UserInfoResolveUtil {
         int endIndex = title.length() + COLON.length();
         String fullLine = title + COLON + body;
         Spannable spannable = bodySupportOwnerLinks ? OwnerLinkSpanFactory.withSpans(fullLine, true, false, listener) :
-                Spannable.Factory.getInstance().newSpannable(fullLine);
+                SpannableStringBuilder(fullLine);
 
         if (spannable != null) {
             spannable.setSpan(new ForegroundColorSpan(CurrentTheme.getPrimaryTextColorCode(context)), 0, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

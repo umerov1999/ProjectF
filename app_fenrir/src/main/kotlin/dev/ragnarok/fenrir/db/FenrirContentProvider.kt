@@ -64,10 +64,9 @@ class FenrirContentProvider : ContentProvider() {
         const val URI_FAVE_ARTICLES = 41
         const val URI_FAVE_PRODUCTS = 42
         const val URI_COUNTRIES = 43
-        const val URI_FEED_LISTS = 44
-        const val URI_FRIEND_LISTS = 45
-        const val URI_KEYS = 46
-        const val URI_PEERS = 47
+        const val URI_FRIEND_LISTS = 44
+        const val URI_KEYS = 45
+        const val URI_PEERS = 46
 
         // path
         private const val USER_PATH = "users"
@@ -101,7 +100,6 @@ class FenrirContentProvider : ContentProvider() {
         private const val FAVE_LINKS_PATH = "fave_links"
         private const val FAVE_POSTS_PATH = "fave_posts"
         private const val COUNTRIES_PATH = "countries"
-        private const val FEED_LISTS_PATH = "feed_lists"
         private const val FRIEND_LISTS_PATH = "friends_lists"
         private const val KEYS_PATH = "keys"
 
@@ -178,8 +176,6 @@ class FenrirContentProvider : ContentProvider() {
             "vnd.android.cursor.dir/vnd.$AUTHORITY.$FAVE_POSTS_PATH"
         val COUNTRIES_CONTENT_TYPE =
             "vnd.android.cursor.dir/vnd.$AUTHORITY.$COUNTRIES_PATH"
-        val FEED_LISTS_CONTENT_TYPE =
-            "vnd.android.cursor.dir/vnd.$AUTHORITY.$FEED_LISTS_PATH"
         val FRIEND_LISTS_CONTENT_TYPE =
             "vnd.android.cursor.dir/vnd.$AUTHORITY.$FRIEND_LISTS_PATH"
         val KEYS_CONTENT_TYPE = "vnd.android.cursor.dir/vnd.$AUTHORITY.$KEYS_PATH"
@@ -237,8 +233,6 @@ class FenrirContentProvider : ContentProvider() {
             "content://$AUTHORITY/$FAVE_POSTS_PATH".toUri()
         private val COUNTRIES_CONTENT_URI =
             "content://$AUTHORITY/$COUNTRIES_PATH".toUri()
-        private val FEED_LISTS_CONTENT_URI =
-            "content://$AUTHORITY/$FEED_LISTS_PATH".toUri()
         private val FRIEND_LISTS_CONTENT_URI =
             "content://$AUTHORITY/$FRIEND_LISTS_PATH".toUri()
         private val KEYS_CONTENT_URI = "content://$AUTHORITY/$KEYS_PATH".toUri()
@@ -276,7 +270,6 @@ class FenrirContentProvider : ContentProvider() {
         private val sFaveArticlesProjectionMap: MutableMap<String, String>
         private val sFaveProductsProjectionMap: MutableMap<String, String>
         private val sCountriesProjectionMap: MutableMap<String, String>
-        private val sFeedListsProjectionMap: MutableMap<String, String>
         private val sFriendListsProjectionMap: MutableMap<String, String>
         private val sKeysProjectionMap: MutableMap<String, String>
 
@@ -459,10 +452,6 @@ class FenrirContentProvider : ContentProvider() {
             return appendAccountId(NOTIFICATIONS_CONTENT_URI, aid)
         }
 
-        fun getFeedListsContentUriFor(aid: Long): Uri {
-            return appendAccountId(FEED_LISTS_CONTENT_URI, aid)
-        }
-
         fun getPhotoAlbumsContentUriFor(aid: Long): Uri {
             return appendAccountId(PHOTO_ALBUMS_CONTENT_URI, aid)
         }
@@ -533,7 +522,6 @@ class FenrirContentProvider : ContentProvider() {
             sUriMatcher.addURI(AUTHORITY, FAVE_PRODUCTS_PATH, URI_FAVE_PRODUCTS)
             sUriMatcher.addURI(AUTHORITY, FAVE_POSTS_PATH, URI_FAVE_POSTS)
             sUriMatcher.addURI(AUTHORITY, COUNTRIES_PATH, URI_COUNTRIES)
-            sUriMatcher.addURI(AUTHORITY, FEED_LISTS_PATH, URI_FEED_LISTS)
             sUriMatcher.addURI(AUTHORITY, FRIEND_LISTS_PATH, URI_FRIEND_LISTS)
             sUriMatcher.addURI(AUTHORITY, KEYS_PATH, URI_KEYS)
         }
@@ -1251,15 +1239,6 @@ class FenrirContentProvider : ContentProvider() {
             sCountriesProjectionMap[BaseColumns._ID] = CountriesColumns.FULL_ID
             sCountriesProjectionMap[CountriesColumns.NAME] = CountriesColumns.FULL_NAME
 
-            sFeedListsProjectionMap = HashMap()
-            sFeedListsProjectionMap[BaseColumns._ID] =
-                FeedListsColumns.FULL_ID
-            sFeedListsProjectionMap[FeedListsColumns.TITLE] =
-                FeedListsColumns.FULL_TITLE
-            sFeedListsProjectionMap[FeedListsColumns.NO_REPOSTS] = FeedListsColumns.FULL_NO_REPOSTS
-            sFeedListsProjectionMap[FeedListsColumns.SOURCE_IDS] =
-                FeedListsColumns.FULL_SOURCE_IDS
-
             sFriendListsProjectionMap = HashMap()
             sFriendListsProjectionMap[BaseColumns._ID] = FriendListsColumns.FULL_ID
             sFriendListsProjectionMap[FriendListsColumns.USER_ID] =
@@ -1510,11 +1489,6 @@ class FenrirContentProvider : ContentProvider() {
             URI_COUNTRIES -> {
                 rowId = db.replace(CountriesColumns.TABLENAME, null, values)
                 resultUri = ContentUris.withAppendedId(COUNTRIES_CONTENT_URI, rowId)
-            }
-
-            URI_FEED_LISTS -> {
-                rowId = db.replace(FeedListsColumns.TABLENAME, null, values)
-                resultUri = ContentUris.withAppendedId(FEED_LISTS_CONTENT_URI, rowId)
             }
 
             URI_FRIEND_LISTS -> {
@@ -1863,12 +1837,6 @@ class FenrirContentProvider : ContentProvider() {
                 URI_COUNTRIES
             }
 
-            URI_FEED_LISTS -> {
-                _QB.tables = FeedListsColumns.TABLENAME
-                _QB.projectionMap = sFeedListsProjectionMap
-                URI_FEED_LISTS
-            }
-
             URI_FRIEND_LISTS -> {
                 _QB.tables = FriendListsColumns.TABLENAME
                 _QB.projectionMap = sFriendListsProjectionMap
@@ -1919,7 +1887,6 @@ class FenrirContentProvider : ContentProvider() {
                 URI_FAVE_LINKS -> FaveLinksColumns.FULL_ID + " ASC"
                 URI_FAVE_POSTS -> FavePostsColumns.FULL_ID + " ASC"
                 URI_COUNTRIES -> CountriesColumns.FULL_ID + " ASC"
-                URI_FEED_LISTS -> FeedListsColumns.FULL_ID + " ASC"
                 URI_FRIEND_LISTS -> FriendListsColumns.FULL_ID + " ASC"
                 URI_KEYS -> EncryptionKeysForMessagesColumns.FULL_ID + " ASC"
                 else -> throw UnknownError("Unknown table type for sort order")
@@ -1991,7 +1958,6 @@ class FenrirContentProvider : ContentProvider() {
             URI_FAVE_LINKS -> return FAVE_LINKS_CONTENT_TYPE
             URI_FAVE_POSTS -> return FAVE_POSTS_CONTENT_TYPE
             URI_COUNTRIES -> return COUNTRIES_CONTENT_TYPE
-            URI_FEED_LISTS -> return FEED_LISTS_CONTENT_TYPE
             URI_FRIEND_LISTS -> return FRIEND_LISTS_CONTENT_TYPE
             URI_KEYS -> return KEYS_CONTENT_TYPE
         }
@@ -2070,7 +2036,6 @@ class FenrirContentProvider : ContentProvider() {
             URI_FAVE_LINKS -> tbName = FaveLinksColumns.TABLENAME
             URI_FAVE_POSTS -> tbName = FavePostsColumns.TABLENAME
             URI_COUNTRIES -> tbName = CountriesColumns.TABLENAME
-            URI_FEED_LISTS -> tbName = FeedListsColumns.TABLENAME
             URI_FRIEND_LISTS -> tbName = FriendListsColumns.TABLENAME
             URI_KEYS -> tbName = EncryptionKeysForMessagesColumns.TABLENAME
             else -> throw IllegalArgumentException("Wrong URI: $uri")
@@ -2197,7 +2162,6 @@ class FenrirContentProvider : ContentProvider() {
             URI_FAVE_LINKS -> tbName = FaveLinksColumns.TABLENAME
             URI_FAVE_POSTS -> tbName = FavePostsColumns.TABLENAME
             URI_COUNTRIES -> tbName = CountriesColumns.TABLENAME
-            URI_FEED_LISTS -> tbName = FeedListsColumns.TABLENAME
             URI_FRIEND_LISTS -> tbName = FriendListsColumns.TABLENAME
             URI_KEYS -> tbName = EncryptionKeysForMessagesColumns.TABLENAME
             else -> throw IllegalArgumentException("Wrong URI: $uri")

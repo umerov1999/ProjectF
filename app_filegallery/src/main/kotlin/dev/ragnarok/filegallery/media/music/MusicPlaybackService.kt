@@ -45,6 +45,7 @@ import dev.ragnarok.filegallery.getParcelableArrayListExtraCompat
 import dev.ragnarok.filegallery.insertAfter
 import dev.ragnarok.filegallery.media.exo.ExoUtil
 import dev.ragnarok.filegallery.model.Audio
+import dev.ragnarok.filegallery.orZero
 import dev.ragnarok.filegallery.picasso.PicassoInstance
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.util.AppPerms
@@ -581,7 +582,7 @@ class MusicPlaybackService : Service() {
      */
     val bufferPercent: Int
         get() {
-            synchronized(this) { return mPlayer?.bufferPercent ?: 0 }
+            synchronized(this) { return mPlayer?.bufferPercent.orZero() }
         }
 
     fun doNotDestroyWhenActivityRecreated() {
@@ -592,7 +593,7 @@ class MusicPlaybackService : Service() {
 
     val bufferPos: Long
         get() {
-            synchronized(this) { return mPlayer?.bufferPos ?: 0 }
+            synchronized(this) { return mPlayer?.bufferPos.orZero() }
         }
 
     var shuffleMode: Int
@@ -1246,11 +1247,11 @@ class MusicPlaybackService : Service() {
         }
 
         override fun getBufferPercent(): Int {
-            return mService.get()?.bufferPercent ?: 0
+            return mService.get()?.bufferPercent.orZero()
         }
 
         override fun getBufferPosition(): Long {
-            return mService.get()?.bufferPos ?: 0
+            return mService.get()?.bufferPos.orZero()
         }
 
         override fun doNotDestroyWhenActivityRecreated() {

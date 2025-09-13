@@ -4,6 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.module.parcel.ParcelNative
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.putBoolean
 import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.writeTypedObjectCompat
@@ -15,7 +16,7 @@ class ParcelableOwnerWrapper : Parcelable, ParcelNative.ParcelableNative {
 
     constructor(owner: Owner?) {
         this.owner = owner
-        type = owner?.ownerType ?: 0
+        type = owner?.ownerType.orZero()
         isNull = owner == null
     }
 

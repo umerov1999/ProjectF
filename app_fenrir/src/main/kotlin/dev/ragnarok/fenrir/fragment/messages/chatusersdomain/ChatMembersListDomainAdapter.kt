@@ -53,7 +53,7 @@ class ChatMembersListDomainAdapter(context: Context, private var data: List<AppC
             app = user.onlineApp
         }
         val iconRes = getOnlineIcon(online, onlineMobile, platform, app)
-        holder.vOnline.setIcon(iconRes ?: 0)
+        holder.vOnline.setIcon(iconRes.orZero())
         holder.vOnline.visibility = if (online) View.VISIBLE else View.GONE
         val userAvatarUrl = user?.maxSquareAvatar
         if (userAvatarUrl.isNullOrEmpty()) {

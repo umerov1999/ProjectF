@@ -192,11 +192,6 @@ object PlaceFactory {
             .withParcelableExtra(Extra.OWNER, community)
     }
 
-    fun getNewsfeedCommentsPlace(accountId: Long): Place {
-        return Place(Place.NEWSFEED_COMMENTS)
-            .withLongExtra(Extra.ACCOUNT_ID, accountId)
-    }
-
     fun getSingleTabSearchPlace(
         accountId: Long,
         @SearchContentType type: Int,

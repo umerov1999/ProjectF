@@ -620,15 +620,15 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
     }
 
     override fun notifyWallItemChanged(position: Int) {
-        mWallAdapter?.notifyItemChanged(position + (mWallAdapter?.headersCount ?: 0))
+        mWallAdapter?.notifyItemChanged(position + mWallAdapter?.headersCount.orZero())
     }
 
     override fun notifyWallDataAdded(position: Int, count: Int) {
-        mWallAdapter?.notifyItemRangeInserted(position + (mWallAdapter?.headersCount ?: 0), count)
+        mWallAdapter?.notifyItemRangeInserted(position + mWallAdapter?.headersCount.orZero(), count)
     }
 
     override fun notifyWallItemRemoved(index: Int) {
-        mWallAdapter?.notifyItemRemoved(index + (mWallAdapter?.headersCount ?: 0))
+        mWallAdapter?.notifyItemRemoved(index + mWallAdapter?.headersCount.orZero())
     }
 
     override fun onOwnerClick(ownerId: Long) {

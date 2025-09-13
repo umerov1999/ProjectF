@@ -15,6 +15,7 @@ interface IBasicMessageListView : IMvpView, IAttachmentsPlacesView,
     fun configNowVoiceMessagePlaying(
         id: Int,
         progress: Float,
+        duration: Long,
         paused: Boolean,
         amin: Boolean,
         speed: Boolean
@@ -25,6 +26,7 @@ interface IBasicMessageListView : IMvpView, IAttachmentsPlacesView,
         play: Boolean,
         paused: Boolean,
         progress: Float,
+        duration: Long,
         amin: Boolean,
         speed: Boolean
     )

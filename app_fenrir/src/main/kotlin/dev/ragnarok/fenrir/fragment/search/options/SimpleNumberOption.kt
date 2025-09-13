@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.fragment.search.options
 
 import android.os.Parcel
 import android.os.Parcelable
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.ParcelUtils.readObjectInteger
 import dev.ragnarok.fenrir.util.ParcelUtils.writeObjectInteger
 
@@ -33,7 +34,7 @@ class SimpleNumberOption : BaseOption {
 
     override fun hashCode(): Int {
         var result = super.hashCode()
-        result = 31 * result + (value?.hashCode() ?: 0)
+        result = 31 * result + value?.hashCode().orZero()
         return result
     }
 

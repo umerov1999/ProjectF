@@ -8,7 +8,7 @@ import dev.ragnarok.fenrir.api.rest.IServiceRest
 import kotlinx.coroutines.flow.Flow
 
 class ILikesService : IServiceRest() {
-    //https://vk.com/dev/likes.getList
+    //https://vk.ru/dev/likes.getList
     fun getList(
         type: String?,
         ownerId: Long?,
@@ -39,7 +39,7 @@ class ILikesService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/likes.delete
+    //https://vk.ru/dev/likes.delete
     fun delete(
         type: String?,
         ownerId: Long?,
@@ -56,7 +56,7 @@ class ILikesService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/likes.add
+    //https://vk.ru/dev/likes.add
     fun add(
         type: String?,
         ownerId: Long?,
@@ -73,7 +73,7 @@ class ILikesService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/likes.isLiked
+    //https://vk.ru/dev/likes.isLiked
     fun isLiked(
         type: String?,
         ownerId: Long?,

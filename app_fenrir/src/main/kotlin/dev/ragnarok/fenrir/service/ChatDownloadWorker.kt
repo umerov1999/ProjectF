@@ -78,9 +78,9 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
 
     private fun getAvatarUrl(owner: Owner?, owner_id: Long): String {
         if (owner_id >= VKApiMessage.CHAT_PEER) {
-            return "https://vk.com/images/icons/im_multichat_200.png"
+            return "https://vk.ru/images/icons/im_multichat_200.png"
         }
-        val AVATAR_USER_DEFAULT = "https://vk.com/images/camera_200.png?ava=1"
+        val AVATAR_USER_DEFAULT = "https://vk.ru/images/camera_200.png?ava=1"
         return owner?.maxSquareAvatar ?: AVATAR_USER_DEFAULT
     }
 
@@ -154,7 +154,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
         msg_html = StringBuilder(
             Apply(
                 "<#PAGE_LINK#>",
-                "https://vk.com/" + (if (i.sender?.ownerId.orZero() < 0) "club" else "id") + abs(i.sender?.ownerId.orZero()),
+                "https://vk.ru/" + (if (i.sender?.ownerId.orZero() < 0) "club" else "id") + abs(i.sender?.ownerId.orZero()),
                 msg_html.toString()
             )
         )
@@ -266,7 +266,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                     var atcontent = Image
                     atcontent = Apply(
                         "<#ORIGINAL_IMAGE_LINK#>",
-                        "https://vk.com/album" + att.ownerId + "_" + att.getObjectId(),
+                        "https://vk.ru/album" + att.ownerId + "_" + att.getObjectId(),
                         atcontent
                     )
                     atcontent = Apply(
@@ -298,7 +298,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                     } else if (att.video != null) {
                         atcontent = Apply(
                             "<#ORIGINAL_IMAGE_LINK#>",
-                            "https://vk.com/video" + att.video?.ownerId + "_" + att.video?.id,
+                            "https://vk.ru/video" + att.video?.ownerId + "_" + att.video?.id,
                             atcontent
                         )
                         atcontent = Apply("<#IMAGE_LINK#>", att.video?.image, atcontent)
@@ -311,7 +311,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                     var atcontent = Image
                     atcontent = Apply(
                         "<#ORIGINAL_IMAGE_LINK#>",
-                        "https://vk.com/wall" + att.ownerId + "_" + att.vkid,
+                        "https://vk.ru/wall" + att.ownerId + "_" + att.vkid,
                         atcontent
                     )
                     atcontent = Apply(
@@ -352,7 +352,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                     var atcontent = Image
                     atcontent = Apply(
                         "<#ORIGINAL_IMAGE_LINK#>",
-                        "https://vk.com/video" + att.ownerId + "_" + att.id,
+                        "https://vk.ru/video" + att.ownerId + "_" + att.id,
                         atcontent
                     )
                     atcontent = Apply("<#IMAGE_LINK#>", att.image, atcontent)
@@ -364,7 +364,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                     var atcontent = Image
                     atcontent = Apply(
                         "<#ORIGINAL_IMAGE_LINK#>",
-                        "https://vk.com/narrative" + att.owner_id + "_" + att.id,
+                        "https://vk.ru/narrative" + att.owner_id + "_" + att.id,
                         atcontent
                     )
                     atcontent = Apply("<#IMAGE_LINK#>", att.cover, atcontent)
@@ -432,7 +432,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
             main = Apply("<#AVATAR_URL#>", getAvatarUrl(owner, owner_id), main)
             main = Apply(
                 "<#PAGE_LINK#>",
-                if (owner_id < VKApiMessage.CHAT_PEER) "https://vk.com/" + (if (owner_id < 0) "club" else "id") + abs(
+                if (owner_id < VKApiMessage.CHAT_PEER) "https://vk.ru/" + (if (owner_id < 0) "club" else "id") + abs(
                     owner_id
                 ) else "",
                 main

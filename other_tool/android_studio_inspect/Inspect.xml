@@ -50,6 +50,7 @@
   <inspection_tool class="ComposePreviewNotSupportedInUnitTestFiles" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="ConstPropertyName" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
   <inspection_tool class="Constructor" enabled="false" level="ERROR" enabled_by_default="false" />
+  <inspection_tool class="ConsumerRulesInspection" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="CrossfadeLabel" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="DanglingJavadoc" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="DeclaringClassMigration" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -59,6 +60,7 @@
   <inspection_tool class="DirectUseOfResultType" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
   <inspection_tool class="EmptyMethod" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="EnumEntryName" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+  <inspection_tool class="ExpensiveKeepRuleInspection" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="ExtensionRegisteredAsServiceOrComponent" enabled="false" level="ERROR" enabled_by_default="false" />
   <inspection_tool class="FileEqualsUsage" enabled="false" level="WARNING" enabled_by_default="false" />
   <inspection_tool class="ForbiddenInSuspectContextMethod" enabled="false" level="WARNING" enabled_by_default="false" />

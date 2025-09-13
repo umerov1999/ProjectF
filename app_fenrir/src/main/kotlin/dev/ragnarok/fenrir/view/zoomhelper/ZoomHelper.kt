@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.addZoomableView
 import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.getZoomableViewTag
 import dev.ragnarok.fenrir.view.zoomhelper.ZoomHelper.Companion.skipLayout
@@ -216,7 +217,7 @@ class ZoomHelper {
                 placeHolderView = PlaceHolderView(view)
                 placeHolderView?.isEnabled = placeHolderEnabled
 
-                val index: Int = viewIndex ?: 0
+                val index: Int = viewIndex.orZero()
                 zoomableViewParent?.addView(placeHolderView, index, viewLayoutParams)
                 zoomableViewParent?.removeView(view)
                 frameLayout.addView(zoomableView, viewFrameLayoutParams)

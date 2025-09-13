@@ -19,6 +19,7 @@ import dev.ragnarok.filegallery.media.music.PlayerStatus
 import dev.ragnarok.filegallery.model.Audio
 import dev.ragnarok.filegallery.model.FileType
 import dev.ragnarok.filegallery.model.tags.TagDir
+import dev.ragnarok.filegallery.orZero
 import dev.ragnarok.filegallery.picasso.PicassoInstance
 import dev.ragnarok.filegallery.settings.CurrentTheme
 import dev.ragnarok.filegallery.settings.Settings
@@ -279,7 +280,7 @@ class TagDirAdapter(context: Context, private var data: List<TagDir>) :
             v: View,
             menuInfo: ContextMenu.ContextMenuInfo?
         ) {
-            val position: Int = recyclerView?.getChildAdapterPosition(v) ?: 0
+            val position: Int = recyclerView?.getChildAdapterPosition(v).orZero()
             val dir: TagDir = data[position]
             menu.setHeaderTitle(dir.name)
 
@@ -308,7 +309,7 @@ class TagDirAdapter(context: Context, private var data: List<TagDir>) :
             v: View,
             menuInfo: ContextMenu.ContextMenuInfo?
         ) {
-            val position: Int = recyclerView?.getChildAdapterPosition(v) ?: 0
+            val position: Int = recyclerView?.getChildAdapterPosition(v).orZero()
             val dir: TagDir = data[position]
             menu.setHeaderTitle(dir.name)
 

@@ -25,7 +25,7 @@ class IUsersService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/users.getFollowers
+    //https://vk.ru/dev/users.getFollowers
     fun getFollowers(
         userId: Long?,
         offset: Int?,
@@ -62,7 +62,7 @@ class IUsersService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/users.search
+    //https://vk.ru/dev/users.search
     fun search(
         query: String?,
         sort: Int?,

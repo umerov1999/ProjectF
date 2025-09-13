@@ -272,16 +272,19 @@ class GifPagerActivity : AbsDocumentPreviewActivity<GifPagerPresenter, IGifPager
                     when (event.action) {
                         MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
                             container.requestDisallowInterceptTouchEvent(true)
-                            return@setOnTouchListener false
+                            true
                         }
 
                         MotionEvent.ACTION_UP -> {
                             container.requestDisallowInterceptTouchEvent(false)
-                            return@setOnTouchListener true
+                            true
                         }
+
+                        else -> false
                     }
+                } else {
+                    false
                 }
-                true
             }
             return ret
         }

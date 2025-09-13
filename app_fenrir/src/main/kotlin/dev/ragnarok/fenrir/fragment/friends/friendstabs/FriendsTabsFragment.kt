@@ -113,7 +113,7 @@ class FriendsTabsFragment : BaseMvpFragment<FriendsTabsPresenter, IFriendsTabsVi
         setupTabCounterView(TAB_FOLLOWERS, counters.followers)
         setupTabCounterView(TAB_REQUESTS, 0)
         setupTabCounterView(TAB_MUTUAL, counters.mutual)
-        for (i in 0 until (tabLayout?.tabCount ?: 0)) {
+        for (i in 0 until tabLayout?.tabCount.orZero()) {
             tabLayout?.getTabAt(i)?.text = adapter?.getPageTitle(i)
         }
     }

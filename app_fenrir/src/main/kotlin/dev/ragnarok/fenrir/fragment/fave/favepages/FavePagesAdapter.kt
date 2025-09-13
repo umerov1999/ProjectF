@@ -182,7 +182,7 @@ class FavePagesAdapter(private var data: List<FavePage>, private val context: Co
         val ivVerified: ImageView
         val ivMonitor: ImageView
         override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo?) {
-            val position = recyclerView?.getChildAdapterPosition(v) ?: 0
+            val position = recyclerView?.getChildAdapterPosition(v).orZero()
             val favePage = data[position]
             menu.setHeaderTitle(favePage.owner?.fullName)
             menu.add(0, v.id, 0, R.string.delete).setOnMenuItemClickListener {

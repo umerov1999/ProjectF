@@ -24,7 +24,6 @@ import dev.ragnarok.fenrir.util.Logger
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import java.io.UnsupportedEncodingException
-import java.util.regex.Pattern
 
 class LoginActivity : AppCompatActivity() {
     private var TLogin: String? = null
@@ -162,14 +161,14 @@ class LoginActivity : AppCompatActivity() {
 
         @Throws(Exception::class)
         internal fun tryExtractAccessTokens(url: String): ArrayList<Token> {
-            val p = Pattern.compile("access_token_(\\d*)=(.*?)(&|$)")
             val tokens = ArrayList<Token>()
-            val matcher = p.matcher(url)
-            while (matcher.find()) {
-                val groupid = matcher.group(1)
-                val token = matcher.group(2)
-                if (groupid.nonNullNoEmpty() && token.nonNullNoEmpty()) {
-                    tokens.add(Token(-groupid.toLong(), token))
+            val p = Regex("access_token_(\\d*)=(.*?)(&|$)")
+            val res = p.findAll(url)
+            for (i in res) {
+                val groupId = i.groupValues.getOrNull(1)
+                val token = i.groupValues.getOrNull(2)
+                if (groupId.nonNullNoEmpty() && token.nonNullNoEmpty()) {
+                    tokens.add(Token(-groupId.toLong(), token))
                 }
             }
             if (tokens.isEmpty()) {

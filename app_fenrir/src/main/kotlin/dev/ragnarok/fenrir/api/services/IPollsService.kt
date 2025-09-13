@@ -29,7 +29,7 @@ class IPollsService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/polls.deleteVote
+    //https://vk.ru/dev/polls.deleteVote
     fun deleteVote(
         ownerId: Long?,
         pollId: Int,
@@ -46,7 +46,7 @@ class IPollsService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/polls.addVote
+    //https://vk.ru/dev/polls.addVote
     fun addVote(
         ownerId: Long?,
         pollId: Int,

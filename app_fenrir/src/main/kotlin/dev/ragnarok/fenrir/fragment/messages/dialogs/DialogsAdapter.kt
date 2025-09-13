@@ -24,6 +24,7 @@ import dev.ragnarok.fenrir.model.Dialog
 import dev.ragnarok.fenrir.model.MessageType
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.model.UserPlatform
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.CurrentTheme
@@ -244,7 +245,7 @@ class DialogsAdapter(private val mContext: Context, private var mDialogs: List<D
             holder.blacklisted.visibility = View.GONE
         }
         val iconRes = getOnlineIcon(online, onlineMobile, platform, app)
-        holder.ivOnline.setIcon(iconRes ?: 0)
+        holder.ivOnline.setIcon(iconRes.orZero())
         holder.ivDialogType.setImageResource(if (dialog.isGroupChannel) R.drawable.channel else R.drawable.person_multiple)
         holder.ivDialogType.visibility = if (dialog.isChat) View.VISIBLE else View.GONE
         holder.ivUnreadTicks.visibility = if (dialog.isLastMessageOut) View.VISIBLE else View.GONE

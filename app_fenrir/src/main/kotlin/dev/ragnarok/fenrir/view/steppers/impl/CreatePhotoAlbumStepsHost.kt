@@ -7,6 +7,7 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.getBoolean
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Privacy
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.putBoolean
 import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.view.steppers.base.AbsStepsHost
@@ -36,8 +37,7 @@ class CreatePhotoAlbumStepsHost : AbsStepsHost<PhotoAlbumState>(PhotoAlbumState(
 
     override fun canMoveNext(index: Int, state: PhotoAlbumState): Boolean {
         return when (index) {
-            STEP_TITLE_AND_DESCRIPTION -> !state.title.isNullOrEmpty() && (state.title?.trim()?.length
-                ?: 0) > 1
+            STEP_TITLE_AND_DESCRIPTION -> !state.title.isNullOrEmpty() && state.title?.trim()?.length.orZero() > 1
 
             STEP_UPLOAD_AND_COMMENTS, STEP_PRIVACY_VIEW, STEP_PRIVACY_COMMENT -> true
             else -> throw IllegalStateException("Invalid step index, index: $index")

@@ -1,8 +1,6 @@
 package dev.ragnarok.fenrir.fragment.feed
 
-import android.content.Context
 import android.os.Bundle
-import android.text.InputType
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.db.model.PostUpdate
 import dev.ragnarok.fenrir.domain.IFaveInteractor
@@ -11,24 +9,19 @@ import dev.ragnarok.fenrir.domain.IWallsRepository
 import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.domain.Repository
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
-import dev.ragnarok.fenrir.model.FeedList
 import dev.ragnarok.fenrir.model.FeedSource
 import dev.ragnarok.fenrir.model.LoadMoreState
 import dev.ragnarok.fenrir.model.News
-import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.util.InputTextDialog
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.needReloadNews
 import dev.ragnarok.fenrir.util.coroutines.CompositeJob
-import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.dummy
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
-import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 
 class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     PlaceSupportPresenter<IFeedView>(accountId, savedInstanceState) {
@@ -46,21 +39,6 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
     private var cacheLoadingNow = false
     private var mTmpFeedScrollOnGuiReady: String? = null
     private var needAskWhenGuiReady = false
-    private fun refreshFeedSources() {
-        appendJob(
-            feedInteractor.getCachedFeedLists(accountId)
-                .fromIOToMain({ lists ->
-                    onFeedListsUpdated(lists)
-                    requestActualFeedLists()
-                }) { requestActualFeedLists() })
-    }
-
-    internal fun requestActualFeedLists() {
-        appendJob(
-            feedInteractor.getActualFeedLists(accountId)
-                .fromIOToMain({ lists -> onFeedListsUpdated(lists) }, { onActualFeedGetError(it) })
-        )
-    }
 
     private fun onPostUpdateEvent(update: PostUpdate) {
         update.likeUpdate.requireNonNull {
@@ -245,21 +223,6 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
         return mNextFrom.nonNullNoEmpty() && !cacheLoadingNow && !loadingNow
     }
 
-    private fun onFeedListsUpdated(lists: List<FeedList>) {
-        val sources: MutableList<FeedSource> = ArrayList(lists.size)
-        for (list in lists) {
-            sources.add(FeedSource("list" + list.id, list.title, true))
-        }
-        mFeedSources.clear()
-        mFeedSources.addAll(createDefaultFeedSources())
-        mFeedSources.addAll(sources)
-        val selected = refreshFeedSourcesSelection()
-        view?.notifyFeedSourcesChanged()
-        if (selected != -1) {
-            view?.scrollFeedSourcesToPosition(selected)
-        }
-    }
-
     private fun refreshFeedSourcesSelection(): Int {
         var result = -1
         for (i in mFeedSources.indices) {
@@ -347,41 +310,6 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
         }
     }
 
-    fun fireAddToFaveList(context: Context, owners: ArrayList<Owner>?) {
-        if (owners.isNullOrEmpty()) {
-            return
-        }
-        val iIds: MutableList<Long> = ArrayList(owners.size)
-        for (i in owners) {
-            iIds.add(i.ownerId)
-        }
-        InputTextDialog.Builder(context)
-            .setTitleRes(R.string.set_news_list_title)
-            .setAllowEmpty(false)
-            .setInputType(InputType.TYPE_CLASS_TEXT)
-            .setCallback(object : InputTextDialog.Callback {
-                override fun onChanged(newValue: String?) {
-                    appendJob(
-                        feedInteractor.saveList(
-                            accountId,
-                            newValue?.trim(),
-                            iIds
-                        )
-                            .fromIOToMain({
-                                createCustomToast(context).showToastSuccessBottom(R.string.success)
-                                requestActualFeedLists()
-                            }) { i ->
-                                showError(i)
-                            })
-                }
-
-                override fun onCanceled() {
-
-                }
-            })
-            .show()
-    }
-
     fun fireFeedSourceClick(entry: FeedSource) {
         mSourceIds = entry.value
         mNextFrom = null
@@ -392,14 +320,6 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
         refreshFeedSourcesSelection()
         view?.notifyFeedSourcesChanged()
         requestFeedAtLast(null)
-    }
-
-    fun fireFeedSourceDelete(id: Int?) {
-        appendJob(
-            feedInteractor.deleteList(accountId, id)
-                .fromIOToMain(dummy()) { t ->
-                    showError(t)
-                })
     }
 
     fun fireNewsShareLongClick(news: News) {
@@ -512,7 +432,6 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
             data.add(FeedSource(null, R.string.news_feed, false))
             data.add(FeedSource("likes", R.string.likes_posts, false))
             data.add(FeedSource("updates_full", R.string.updates, false))
-            data.add(FeedSource("friends", R.string.friends, false))
             if (Utils.isOfficialVKCurrent) {
                 data.add(FeedSource("top", R.string.interesting, false))
             }
@@ -522,7 +441,6 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
             data.add(FeedSource("updates_photos", R.string.photos, false))
             data.add(FeedSource("updates_videos", R.string.videos, false))
             data.add(FeedSource("updates_audios", R.string.audios, false))
-            data.add(FeedSource("recommendation", R.string.recommendation, false))
             return data
         }
     }
@@ -534,9 +452,8 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
         feedInteractor = InteractorFactory.createFeedInteractor()
         mFeed = ArrayList()
         mFeedSources = ArrayList(createDefaultFeedSources())
-        refreshFeedSourcesSelection()
         restoreNextFromAndFeedSources()
-        refreshFeedSources()
+        refreshFeedSourcesSelection()
         val scrollState = Settings.get()
             .main()
             .restoreFeedScrollState(accountId)

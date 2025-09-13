@@ -343,8 +343,10 @@ static bool _draw(LottieGroup* parent, LottieShape* shape, RenderContext* ctx)
 }
 
 
-static void _repeat(LottieGroup* parent, Shape* path, RenderContext* ctx)
+static void _repeat(LottieGroup* parent, Shape* path, LottieRenderPooler<Shape>* pooler, RenderContext* ctx)
 {
+    path->ref();  //prevent pooler returns the same path.
+
     Array<Shape*> propagators;
     propagators.push(ctx->propagator);
     Array<Shape*> shapes;
@@ -355,10 +357,12 @@ static void _repeat(LottieGroup* parent, Shape* path, RenderContext* ctx)
         for (int i = 0; i < repeater->cnt; ++i) {
             auto multiplier = repeater->offset + static_cast<float>(i);
             ARRAY_FOREACH(p, propagators) {
-                auto shape = static_cast<Shape*>((*p)->duplicate());
+                auto shape = pooler->pooling();
+                shape->ref();   //prevent pooler returns the same shape
+                PAINT((*p))->duplicate(shape);
                 SHAPE(shape)->rs.path = SHAPE(path)->rs.path;
                 auto opacity = tvg::lerp<uint8_t>(repeater->startOpacity, repeater->endOpacity, static_cast<float>(i + 1) / repeater->cnt);
-                shape->opacity(MULTIPLY((*p)->opacity(), opacity));
+                shape->opacity(MULTIPLY(shape->opacity(), opacity));
 
                 auto m = tvg::identity();
                 translate(&m, repeater->position * multiplier + repeater->anchor);
@@ -380,16 +384,19 @@ static void _repeat(LottieGroup* parent, Shape* path, RenderContext* ctx)
         if (repeater->inorder) {
             ARRAY_FOREACH(p, shapes) {
                 parent->scene->push(*p);
+                (*p)->unref();
                 propagators.push(*p);
             }
         } else if (!shapes.empty()) {
-            ARRAY_REVERSE_FOREACH(shape, shapes) {
-                parent->scene->push(*shape);
-                propagators.push(*shape);
+            ARRAY_REVERSE_FOREACH(p, shapes) {
+                parent->scene->push(*p);
+                (*p)->unref();
+                propagators.push(*p);
             }
         }
         shapes.clear();
     }
+    path->unref();
 }
 
 
@@ -433,7 +440,7 @@ void LottieBuilder::updateRect(LottieGroup* parent, LottieObject** child, float 
         auto shape = rect->pooling();
         shape->reset();
         appendRect(shape, pos, size, r, rect->clockwise, ctx);
-        _repeat(parent, shape, ctx);
+        _repeat(parent, shape, rect, ctx);
     }
 }
 
@@ -467,7 +474,7 @@ void LottieBuilder::updateEllipse(LottieGroup* parent, LottieObject** child, flo
         auto shape = ellipse->pooling();
         shape->reset();
         _appendCircle(shape, pos, size, ellipse->clockwise, ctx);
-        _repeat(parent, shape, ctx);
+        _repeat(parent, shape, ellipse, ctx);
     }
 }
 
@@ -485,7 +492,7 @@ void LottieBuilder::updatePath(LottieGroup* parent, LottieObject** child, float 
         auto shape = path->pooling();
         shape->reset();
         path->pathset(frameNo, SHAPE(shape)->rs.path, ctx->transform, tween, exps, ctx->modifier);
-        _repeat(parent, shape, ctx);
+        _repeat(parent, shape, path, ctx);
     }
 }
 
@@ -705,7 +712,7 @@ void LottieBuilder::updatePolystar(LottieGroup* parent, LottieObject** child, fl
         shape->reset();
         if (star->type == LottiePolyStar::Star) updateStar(star, frameNo, (identity ? nullptr : &matrix), shape, ctx, tween, exps);
         else updatePolygon(parent, star, frameNo, (identity  ? nullptr : &matrix), shape, ctx, tween, exps);
-        _repeat(parent, shape, ctx);
+        _repeat(parent, shape, star, ctx);
     }
 }
 
@@ -910,20 +917,14 @@ static void _fontText(TextDocument& doc, Scene* scene)
     auto cnt = 0;
     while (token) {
         auto txt = Text::gen();
-        if (txt->font(doc.name, size) != Result::Success) {
-            //fallback to any available font
-            txt->font(nullptr, size);
+        if (txt->font(doc.name) != Result::Success) {
+            txt->font(nullptr);  //fallback to any available font
         }
-
+        txt->size(size);
         txt->text(token);
         txt->fill(doc.color.r, doc.color.g, doc.color.b);
-
-        float width;
-        txt->bounds(nullptr, nullptr, &width, nullptr);
-
-        auto cursorX = width * doc.justify;
-        auto cursorY = lineHeight * cnt;
-        txt->translate(cursorX, -lineHeight + cursorY);
+        txt->align(-doc.justify, 0.0f);
+        txt->translate(0.0f, lineHeight * cnt - lineHeight);
 
         token = std::strtok(nullptr, delim);
         scene->push(txt);
@@ -1385,7 +1386,7 @@ void LottieBuilder::updateLayer(LottieComposition* comp, Scene* scene, LottieLay
 
     layer->scene->transform(layer->cache.matrix);
 
-    if (!updateMatte(comp, frameNo, scene, layer)) return;
+    if (!layer->matteSrc && !updateMatte(comp, frameNo, scene, layer)) return;
 
     switch (layer->type) {
         case LottieLayer::Precomp: {

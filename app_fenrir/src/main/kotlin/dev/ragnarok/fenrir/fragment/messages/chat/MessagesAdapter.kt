@@ -566,11 +566,19 @@ class MessagesAdapter(
     fun configNowVoiceMessagePlaying(
         voiceId: Int,
         progress: Float,
+        duration: Long,
         paused: Boolean,
         amin: Boolean,
         speed: Boolean
     ) {
-        attachmentsViewBinder.configNowVoiceMessagePlaying(voiceId, progress, paused, amin, speed)
+        attachmentsViewBinder.configNowVoiceMessagePlaying(
+            voiceId,
+            progress,
+            duration,
+            paused,
+            amin,
+            speed
+        )
     }
 
     fun bindVoiceHolderById(
@@ -578,10 +586,19 @@ class MessagesAdapter(
         play: Boolean,
         paused: Boolean,
         progress: Float,
+        duration: Long,
         amin: Boolean,
         speed: Boolean
     ) {
-        attachmentsViewBinder.bindVoiceHolderById(holderId, play, paused, progress, amin, speed)
+        attachmentsViewBinder.bindVoiceHolderById(
+            holderId,
+            play,
+            paused,
+            progress,
+            duration,
+            amin,
+            speed
+        )
     }
 
     fun disableVoiceMessagePlaying() {

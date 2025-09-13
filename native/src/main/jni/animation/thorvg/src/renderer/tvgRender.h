@@ -160,6 +160,7 @@ struct RenderRegion
     {
     public:
         static constexpr const int PARTITIONING = 16;   //must be N*N
+        bool support = true;
 
         void init(uint32_t w, uint32_t h);
         void commit();
@@ -175,7 +176,7 @@ struct RenderRegion
 
         bool deactivated()
         {
-            return disabled;
+            return (!support || disabled);
         }
 
         const RenderRegion& partition(int idx)
@@ -206,6 +207,7 @@ struct RenderRegion
     struct RenderDirtyRegion
     {
         static constexpr const int PARTITIONING = 16;   //must be N*N
+        bool support = true;
 
         void init(uint32_t w, uint32_t h) {}
         void commit() {}
@@ -308,20 +310,17 @@ struct RenderStroke
         else fill = nullptr;
 
         tvg::free(dash.pattern);
+        dash = rhs.dash;
         if (rhs.dash.count > 0) {
             dash.pattern = tvg::malloc<float*>(sizeof(float) * rhs.dash.count);
             memcpy(dash.pattern, rhs.dash.pattern, sizeof(float) * rhs.dash.count);
-        } else {
-            dash.pattern = nullptr;
         }
-        dash.count = rhs.dash.count;
-        dash.offset = rhs.dash.offset;
-        dash.length = rhs.dash.length;
+
         miterlimit = rhs.miterlimit;
+        trim = rhs.trim;
         cap = rhs.cap;
         join = rhs.join;
         first = rhs.first;
-        trim = rhs.trim;
     }
 
     ~RenderStroke()

@@ -2,16 +2,23 @@ package dev.ragnarok.fenrir.domain.impl
 
 import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.interfaces.INetworker
+import dev.ragnarok.fenrir.api.model.CommentsDto
 import dev.ragnarok.fenrir.api.model.VKApiNews
 import dev.ragnarok.fenrir.api.model.response.IgnoreItemResponse
+import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse.Dto
+import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse.PhotoDto
+import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse.PostDto
+import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse.TopicDto
+import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse.VideoDto
 import dev.ragnarok.fenrir.db.interfaces.IStorages
-import dev.ragnarok.fenrir.db.model.entity.FeedListEntity
 import dev.ragnarok.fenrir.db.model.entity.NewsDboEntity
 import dev.ragnarok.fenrir.domain.IFeedInteractor
 import dev.ragnarok.fenrir.domain.IOwnersRepository
 import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapNews
 import dev.ragnarok.fenrir.domain.mappers.Dto2Entity.mapOwners
+import dev.ragnarok.fenrir.domain.mappers.Dto2Model.buildComment
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.buildNews
+import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transform
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformOwners
 import dev.ragnarok.fenrir.domain.mappers.Dto2Model.transformPosts
 import dev.ragnarok.fenrir.domain.mappers.Entity2Model.buildNewsFromDbo
@@ -19,13 +26,21 @@ import dev.ragnarok.fenrir.domain.mappers.Entity2Model.fillOwnerIds
 import dev.ragnarok.fenrir.fragment.search.criteria.NewsFeedCriteria
 import dev.ragnarok.fenrir.fragment.search.options.SimpleDateOption
 import dev.ragnarok.fenrir.fragment.search.options.SimpleGPSOption
-import dev.ragnarok.fenrir.model.FeedList
-import dev.ragnarok.fenrir.model.FeedSourceCriteria
+import dev.ragnarok.fenrir.model.Comment
+import dev.ragnarok.fenrir.model.Commented
+import dev.ragnarok.fenrir.model.IOwnersBundle
 import dev.ragnarok.fenrir.model.News
+import dev.ragnarok.fenrir.model.NewsfeedComment
 import dev.ragnarok.fenrir.model.Owner
+import dev.ragnarok.fenrir.model.PhotoWithOwner
 import dev.ragnarok.fenrir.model.Post
+import dev.ragnarok.fenrir.model.TopicWithOwner
+import dev.ragnarok.fenrir.model.VideoWithOwner
 import dev.ragnarok.fenrir.model.criteria.FeedCriteria
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.nonNullNoEmptyOrNullable
+import dev.ragnarok.fenrir.orZero
+import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.ISettings
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
@@ -80,22 +95,11 @@ class FeedInteractor(
         sourceIds: String?
     ): Flow<Pair<List<News>, String?>> {
         return when (sourceIds) {
-            "likes", "recommendation", "top" -> {
+            "likes", "top" -> {
                 when (sourceIds) {
                     "likes" -> networker.vkDefault(accountId)
                         .newsfeed()
                         .getFeedLikes(maxPhotos, startFrom, count, Fields.FIELDS_BASE_OWNER)
-
-                    "recommendation" -> networker.vkDefault(accountId)
-                        .newsfeed()
-                        .getRecommended(
-                            null,
-                            null,
-                            maxPhotos,
-                            startFrom,
-                            count,
-                            Fields.FIELDS_BASE_OWNER
-                        )
 
                     else -> networker.vkDefault(accountId)
                         .newsfeed()
@@ -229,8 +233,8 @@ class FeedInteractor(
                 criteria.query,
                 true,
                 count,
-                if ((gpsOption?.lat_gps ?: 0.0) < 0.1) null else gpsOption?.lat_gps,
-                if ((gpsOption?.long_gps ?: 0.0) < 0.1) null else gpsOption?.long_gps,
+                if ((gpsOption?.lat_gps.orZero()) < 0.1) null else gpsOption?.lat_gps,
+                if ((gpsOption?.long_gps.orZero()) < 0.1) null else gpsOption?.long_gps,
                 if (startDateOption?.timeUnix == 0L) null else startDateOption?.timeUnix,
                 if (endDateOption?.timeUnix == 0L) null else endDateOption?.timeUnix,
                 startFrom,
@@ -256,11 +260,6 @@ class FeedInteractor(
             }
     }
 
-    override fun saveList(accountId: Long, title: String?, listIds: Collection<Long>): Flow<Int> {
-        return networker.vkDefault(accountId)
-            .newsfeed().saveList(title, listIds)
-    }
-
     override fun addBan(accountId: Long, listIds: Collection<Long>): Flow<Int> {
         return networker.vkDefault(accountId)
             .newsfeed().addBan(listIds)
@@ -278,11 +277,6 @@ class FeedInteractor(
             }
     }
 
-    override fun deleteList(accountId: Long, list_id: Int?): Flow<Int> {
-        return networker.vkDefault(accountId)
-            .newsfeed().deleteList(list_id)
-    }
-
     override fun ignoreItem(
         accountId: Long,
         type: String?,
@@ -291,47 +285,6 @@ class FeedInteractor(
     ): Flow<IgnoreItemResponse> {
         return networker.vkDefault(accountId)
             .newsfeed().ignoreItem(type, owner_id, item_id)
-    }
-
-    override fun getCachedFeedLists(accountId: Long): Flow<List<FeedList>> {
-        val criteria = FeedSourceCriteria(accountId)
-        return stores.feed()
-            .getAllLists(criteria)
-            .map { entities ->
-                val lists: MutableList<FeedList> = ArrayList(entities.size)
-                for (entity in entities) {
-                    lists.add(createFeedListFromEntity(entity))
-                }
-                lists
-            }
-    }
-
-    override fun getActualFeedLists(accountId: Long): Flow<List<FeedList>> {
-        return networker.vkDefault(accountId)
-            .newsfeed()
-            .getLists(null)
-            .map { items ->
-                listEmptyIfNull(
-                    items.items
-                )
-            }
-            .flatMapConcat { dtos ->
-                val entities: MutableList<FeedListEntity> = ArrayList(dtos.size)
-                val lists: MutableList<FeedList> = ArrayList()
-                for (dto in dtos) {
-                    val entity = FeedListEntity(dto.id)
-                        .setTitle(dto.title)
-                        .setNoReposts(dto.no_reposts)
-                        .setSourceIds(dto.source_ids)
-                    entities.add(entity)
-                    lists.add(createFeedListFromEntity(entity))
-                }
-                stores.feed()
-                    .storeLists(accountId, entities)
-                    .map {
-                        lists
-                    }
-            }
     }
 
     override fun getCachedFeed(accountId: Long): Flow<List<News>> {
@@ -358,9 +311,104 @@ class FeedInteractor(
             }
     }
 
+    override fun getMentions(
+        accountId: Long,
+        owner_id: Long?,
+        count: Int?,
+        offset: Int?,
+        startTime: Long?,
+        endTime: Long?
+    ): Flow<Pair<List<NewsfeedComment>, String?>> {
+        return networker.vkDefault(accountId)
+            .newsfeed()
+            .getMentions(owner_id, count, offset, startTime, endTime)
+            .flatMapConcat { response ->
+                val owners = transformOwners(response.profiles, response.groups)
+                val ownIds = VKOwnIds()
+                val dtos = listEmptyIfNull(response.items)
+                for (dto in dtos) {
+                    if (dto is PostDto) {
+                        val post = dto.post ?: continue
+                        ownIds.append(post)
+                        ownIds.append(post.comments)
+                    }
+                }
+                ownersRepository.findBaseOwnersDataAsBundle(
+                    accountId,
+                    ownIds.all,
+                    IOwnersRepository.MODE_ANY,
+                    owners
+                )
+                    .map { bundle ->
+                        val comments: MutableList<NewsfeedComment> = ArrayList(dtos.size)
+                        for (dto in dtos) {
+                            val comment = createFrom(dto, bundle)
+                            if (comment != null) {
+                                comments.add(comment)
+                            }
+                        }
+                        create(comments, response.nextFrom)
+                    }
+            }
+    }
+
     companion object {
-        internal fun createFeedListFromEntity(entity: FeedListEntity): FeedList {
-            return FeedList(entity.id, entity.title)
+        private fun oneMentionFrom(
+            commented: Commented,
+            dto: CommentsDto?,
+            bundle: IOwnersBundle
+        ): Comment? {
+            return dto?.list.nonNullNoEmptyOrNullable {
+                buildComment(commented, it[it.size - 1], bundle)
+            }
+        }
+
+        internal fun createFrom(dto: Dto, bundle: IOwnersBundle): NewsfeedComment? {
+            if (dto is PhotoDto) {
+                val photoDto = dto.photo
+                val photo = transform(photoDto ?: return null)
+                val commented = Commented.from(photo)
+                val photoOwner = bundle.getById(photo.ownerId)
+                return NewsfeedComment(PhotoWithOwner(photo, photoOwner))
+                    .setComment(oneMentionFrom(commented, photoDto.comments, bundle))
+            }
+            if (dto is VideoDto) {
+                val videoDto = dto.video
+                val video = transform(videoDto ?: return null)
+                val commented = Commented.from(video)
+                val videoOwner = bundle.getById(video.ownerId)
+                return NewsfeedComment(VideoWithOwner(video, videoOwner))
+                    .setComment(oneMentionFrom(commented, videoDto.comments, bundle))
+            }
+            if (dto is PostDto) {
+                val postDto = dto.post
+                val post = transform(postDto ?: return null, bundle)
+                val commented = Commented.from(post)
+                return NewsfeedComment(post).setComment(
+                    oneMentionFrom(
+                        commented,
+                        postDto.comments,
+                        bundle
+                    )
+                )
+            }
+            if (dto is TopicDto) {
+                val topicDto = dto.topic
+                val topic = transform(topicDto ?: return null, bundle)
+                topicDto.comments.requireNonNull {
+                    topic.setCommentsCount(it.count)
+                }
+                val commented = Commented.from(topic)
+                val owner = bundle.getById(topic.ownerId)
+                return NewsfeedComment(TopicWithOwner(topic, owner)).setComment(
+                    oneMentionFrom(
+                        commented,
+                        topicDto.comments,
+                        bundle
+                    )
+                )
+            }
+            return null
         }
     }
 }

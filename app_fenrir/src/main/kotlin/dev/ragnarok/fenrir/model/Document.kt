@@ -181,7 +181,7 @@ class Document : AbsModel, ParcelNative.ParcelableNative {
     }
 
     fun generateWebLink(): String {
-        return String.format("vk.com/doc%s_%s", ownerId, id)
+        return String.format("vk.ru/doc%s_%s", ownerId, id)
     }
 
     val isGif: Boolean

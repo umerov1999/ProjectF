@@ -21,7 +21,6 @@ import dev.ragnarok.fenrir.util.AppPerms
 import dev.ragnarok.fenrir.util.Logger.wtf
 import dev.ragnarok.fenrir.util.Utils.makeImmutablePendingIntent
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromScopeToMain
-import java.util.regex.Pattern
 
 class NewPostPushMessage {
     private var accountId = 0L
@@ -36,22 +35,25 @@ class NewPostPushMessage {
             wtf("NewPostPushMessage", "url is NULL!!!")
             return
         }
-        val matcher = PATTERN_WALL_POST.matcher(pUrl)
-        if (matcher.find()) {
-            matcher.group(1)?.let {
-                val app = context.applicationContext
-                getRx(app, accountId, it.toLong())
-                    .fromScopeToMain(
-                        INSTANCE,
-                        { ownerInfo ->
-                            notifyImpl(
-                                app,
-                                ownerInfo.avatar
-                            )
-                        }, { notifyImpl(app, null) })
-            } ?: notifyImpl(context, null)
-        } else {
-            notifyImpl(context, null)
+        try {
+            val matcher = PATTERN_WALL_POST.find(pUrl)
+            if (matcher != null) {
+                matcher.groupValues.getOrNull(1)?.let {
+                    val app = context.applicationContext
+                    getRx(app, accountId, it.toLong())
+                        .fromScopeToMain(
+                            INSTANCE,
+                            { ownerInfo ->
+                                notifyImpl(
+                                    app,
+                                    ownerInfo.avatar
+                                )
+                            }, { notifyImpl(app, null) })
+                } ?: notifyImpl(context, null)
+            } else {
+                notifyImpl(context, null)
+            }
+        } catch (_: Exception) {
         }
     }
 
@@ -87,8 +89,8 @@ class NewPostPushMessage {
     }
 
     companion object {
-        private val PATTERN_WALL_POST =
-            Pattern.compile("vk.com/(?:[\\w.\\d]+\\?(?:[\\w=&]+)?w=)?wall(-?\\d*)_(\\d*)")
+        private val PATTERN_WALL_POST: Regex =
+            Regex("vk\\.(?:ru|com|me)/(?:[\\w.\\d]+\\?(?:[\\w=&]+)?w=)?wall(-?\\d*)_(\\d*)")
 
         fun fromRemoteMessage(accountId: Long, remote: RemoteMessage): NewPostPushMessage {
             val message = NewPostPushMessage()

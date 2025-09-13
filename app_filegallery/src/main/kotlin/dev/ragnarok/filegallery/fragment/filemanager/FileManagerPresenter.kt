@@ -16,6 +16,7 @@ import dev.ragnarok.filegallery.model.FileType
 import dev.ragnarok.filegallery.model.Photo
 import dev.ragnarok.filegallery.model.Video
 import dev.ragnarok.filegallery.model.tags.TagOwner
+import dev.ragnarok.filegallery.orZero
 import dev.ragnarok.filegallery.settings.Settings
 import dev.ragnarok.filegallery.upload.IUploadManager
 import dev.ragnarok.filegallery.upload.Upload
@@ -64,8 +65,8 @@ class FileManagerPresenter(
         ) {
             return@FilenameFilter false
         }
-        var ret = !sel.isHidden && sel.canRead() && (sel.isDirectory && (sel.list()?.size
-            ?: 0) > 0 || !sel.isDirectory)
+        var ret =
+            !sel.isHidden && sel.canRead() && (sel.isDirectory && sel.list()?.size.orZero() > 0 || !sel.isDirectory)
         if (!sel.isDirectory && ret) {
             ret = false
             for (i in Settings.get().main().photoExt) {

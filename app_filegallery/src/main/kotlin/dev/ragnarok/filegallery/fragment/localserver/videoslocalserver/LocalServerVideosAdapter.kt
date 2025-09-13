@@ -26,7 +26,6 @@ import dev.ragnarok.filegallery.util.Utils
 import dev.ragnarok.filegallery.util.coroutines.CancelableJob
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.filegallery.util.toast.CustomToast.Companion.createCustomToast
-import java.util.regex.Pattern
 
 class LocalServerVideosAdapter(private val context: Context, private var data: List<Video>) :
     RecyclerView.Adapter<LocalServerVideosAdapter.Holder>() {
@@ -257,17 +256,14 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
     }
 
     companion object {
-        private val PATTERN_FENRIR_SERVER_TRACK_HASH = Pattern.compile("hash=([^&]*)")
+        private val PATTERN_FENRIR_SERVER_TRACK_HASH: Regex = Regex("hash=([^&]*)")
         fun parseLocalServerURL(string: String?): String? {
             string ?: return null
-            val matcher = PATTERN_FENRIR_SERVER_TRACK_HASH.matcher(string)
-            try {
-                if (matcher.find()) {
-                    return matcher.group(1)
-                }
+            return try {
+                PATTERN_FENRIR_SERVER_TRACK_HASH.find(string)?.groupValues?.getOrNull(1)
             } catch (_: NumberFormatException) {
+                null
             }
-            return null
         }
     }
 

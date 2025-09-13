@@ -24,6 +24,8 @@ class SlidrConfig internal constructor() {
      */
     var isEdgeOnly = false
         private set
+    var isOneFinger = true
+        private set
     private var edgeSize = 0.18f
 
     /**
@@ -160,6 +162,10 @@ class SlidrConfig internal constructor() {
         return edgeSize * size
     }
 
+    fun setIsOneFinger(isOneFinger: Boolean) {
+        this.isOneFinger = isOneFinger
+    }
+
     /**
      * The Builder for this configuration class. This is the only way to create a
      * configuration
@@ -208,6 +214,11 @@ class SlidrConfig internal constructor() {
 
         fun setAlphaForView(alphaForView: Boolean): Builder {
             config.alphaForView = alphaForView
+            return this
+        }
+
+        fun setIsOneFinger(isOneFinger: Boolean): Builder {
+            config.isOneFinger = isOneFinger
             return this
         }
 

@@ -44,6 +44,7 @@ import dev.ragnarok.fenrir.model.Sticker
 import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.model.menu.options.CommentsOption
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.picasso.transforms.RoundTransformation
 import dev.ragnarok.fenrir.place.Place
@@ -183,7 +184,7 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
         mCenterProgressBar = root.findViewById(R.id.progress_bar)
         mEmptyView = root.findViewById(R.id.empty_text)
         ItemTouchHelper(MessagesReplyItemCallback { o ->
-            presenter?.fireReplyToCommentClick(mAdapter?.getItemRawPosition(o) ?: 0)
+            presenter?.fireReplyToCommentClick(mAdapter?.getItemRawPosition(o).orZero())
         }).attachToRecyclerView(mRecyclerView)
         return root
     }
@@ -235,8 +236,8 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
     }
 
     override fun notifyDataAddedToTop(count: Int) {
-        val startSize = mAdapter?.realItemCount ?: 0
-        mAdapter?.notifyItemRangeInserted(startSize + (mAdapter?.headersCount ?: 0), count)
+        val startSize = mAdapter?.realItemCount.orZero()
+        mAdapter?.notifyItemRangeInserted(startSize + mAdapter?.headersCount.orZero(), count)
     }
 
     override fun notifyDataAddedToBottom(count: Int) {
@@ -245,14 +246,14 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
     }
 
     override fun notifyItemChanged(index: Int) {
-        mAdapter?.notifyItemChanged(index + (mAdapter?.headersCount ?: 0))
+        mAdapter?.notifyItemChanged(index + mAdapter?.headersCount.orZero())
     }
 
     override fun moveFocusTo(index: Int, smooth: Boolean) {
         if (mAdapter == null) {
             return
         }
-        val adapterPosition = index + (mAdapter?.headersCount ?: 0)
+        val adapterPosition = index + mAdapter?.headersCount.orZero()
         if (smooth) {
             mRecyclerView?.smoothScrollToPosition(adapterPosition)
         } else {
@@ -342,7 +343,7 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
     }
 
     override fun scrollToPosition(position: Int) {
-        mLinearLayoutManager?.scrollToPosition(position + (mAdapter?.headersCount ?: 0))
+        mLinearLayoutManager?.scrollToPosition(position + mAdapter?.headersCount.orZero())
     }
 
     override fun showCommentSentToast() {

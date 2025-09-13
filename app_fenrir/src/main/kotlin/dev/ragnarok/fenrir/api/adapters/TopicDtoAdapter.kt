@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.api.adapters
 import dev.ragnarok.fenrir.api.model.CommentsDto
 import dev.ragnarok.fenrir.api.model.VKApiTopic
 import dev.ragnarok.fenrir.kJson
+import dev.ragnarok.fenrir.orZero
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonObject
@@ -36,7 +37,7 @@ class TopicDtoAdapter : AbsDtoAdapter<VKApiTopic>("VKApiTopic") {
                     )
             } else {
                 dto.comments = CommentsDto()
-                dto.comments?.count = commentsJson?.asPrimitiveSafe?.intOrNull ?: 0
+                dto.comments?.count = commentsJson?.asPrimitiveSafe?.intOrNull.orZero()
             }
         }
         dto.first_comment = optString(root, "first_comment")

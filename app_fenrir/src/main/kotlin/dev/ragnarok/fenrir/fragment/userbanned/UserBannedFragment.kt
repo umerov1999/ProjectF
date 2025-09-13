@@ -26,6 +26,7 @@ import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.SelectProfileCriteria
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.PlaceFactory.getFriendsFollowersPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
@@ -86,7 +87,7 @@ class UserBannedFragment : BaseMvpFragment<UserBannedPresenter, IUserBannedView>
     private fun resolveEmptyTextVisibility() {
         if (mPeopleAdapter != null && mEmptyText != null) {
             mEmptyText?.visibility =
-                if ((mPeopleAdapter?.itemCount ?: 0) > 0) View.GONE else View.VISIBLE
+                if (mPeopleAdapter?.itemCount.orZero() > 0) View.GONE else View.VISIBLE
         }
     }
 

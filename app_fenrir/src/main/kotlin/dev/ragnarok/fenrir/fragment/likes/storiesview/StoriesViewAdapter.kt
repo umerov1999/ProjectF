@@ -15,6 +15,7 @@ import dev.ragnarok.fenrir.fragment.communities.CommunitiesAdapter.Companion.get
 import dev.ragnarok.fenrir.model.Community
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.User
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.toColor
@@ -106,7 +107,7 @@ class StoriesViewAdapter(
                 user.platform,
                 user.onlineApp
             )
-        holder.online.setIcon(onlineIcon ?: 0)
+        holder.online.setIcon(onlineIcon.orZero())
         val avaUrl = user.maxSquareAvatar
         displayAvatar(
             holder.avatar,

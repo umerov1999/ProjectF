@@ -16,6 +16,7 @@ import dev.ragnarok.fenrir.model.Audio
 import dev.ragnarok.fenrir.model.AudioPlaylist
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.ParcelableOwnerWrapper
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.putBoolean
 import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.toColor
@@ -52,7 +53,7 @@ class CatalogV2RecommendationPlaylist : AbsModel {
         id = res.id
         owner_id = res.owner_id
         color = res.color?.toColor() ?: Color.BLACK
-        percentage = res.percentage ?: 0.0
+        percentage = res.percentage.orZero()
         percentage_title = res.percentage_title
 
         if (owner_id < 0) {

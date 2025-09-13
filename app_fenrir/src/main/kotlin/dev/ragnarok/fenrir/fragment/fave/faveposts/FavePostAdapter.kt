@@ -263,7 +263,7 @@ class FavePostAdapter(
         val shareButton: CircleCounterButton
         val commentsButton: CircleCounterButton
         override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo?) {
-            val position = recyclerView?.getChildAdapterPosition(v) ?: 0
+            val position = recyclerView?.getChildAdapterPosition(v).orZero()
             val post = getItems()[position]
             menu.setHeaderTitle(post.authorName)
             menu.add(0, v.id, 0, R.string.delete).setOnMenuItemClickListener {

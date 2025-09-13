@@ -22,7 +22,7 @@ internal class SideDrawerSettings(context: Context) : ISideDrawerSettings {
             DrawerCategory(SwitchableCategory.DIALOGS),
             DrawerCategory(SwitchableCategory.FEED),
             DrawerCategory(SwitchableCategory.FEEDBACK),
-            DrawerCategory(SwitchableCategory.NEWSFEED_COMMENTS),
+            DrawerCategory(SwitchableCategory.STORIES),
             DrawerCategory(SwitchableCategory.GROUPS),
             DrawerCategory(SwitchableCategory.PHOTOS),
             DrawerCategory(SwitchableCategory.VIDEOS),

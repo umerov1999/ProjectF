@@ -83,7 +83,7 @@ class FeedbackInteractor(
             .getOfficial(count, startFrom, null, null, null)
             .flatMapConcat { uit ->
                 cache.notifications()
-                    .insertOfficial(accountId, uit.items.orEmpty(), startFrom?.orZero() == 0)
+                    .insertOfficial(accountId, uit.items.orEmpty(), startFrom.orZero() == 0)
                     .map {
                         uit
                     }

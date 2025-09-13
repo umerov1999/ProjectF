@@ -13,16 +13,15 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.ShortcutUtils
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.hiddenIO
-import java.util.regex.Pattern
 
 class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
     RxSupportPresenter<IShortcutsView>(savedInstanceState) {
     private val pInteractor: ITempDataStorage = Includes.stores.tempStore()
     private val shortcuts: MutableList<ShortcutStored> = ArrayList()
 
-    private val PATTERN_ACCOUNT: Pattern = Pattern.compile("fenrir_account_(-?\\d*)")
-    private val PATTERN_WALL: Pattern = Pattern.compile("fenrir_wall_(-?\\d*)_aid_(-?\\d*)")
-    private val PATTERN_PEER: Pattern = Pattern.compile("fenrir_peer_(-?\\d*)_aid_(-?\\d*)")
+    private val PATTERN_ACCOUNT: Regex = Regex("fenrir_account_(-?\\d*)")
+    private val PATTERN_WALL: Regex = Regex("fenrir_wall_(-?\\d*)_aid_(-?\\d*)")
+    private val PATTERN_PEER: Regex = Regex("fenrir_peer_(-?\\d*)_aid_(-?\\d*)")
 
     override fun onGuiCreated(viewHost: IShortcutsView) {
         super.onGuiCreated(viewHost)
@@ -50,10 +49,10 @@ class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
     }
 
     private fun tryAccount(context: Context, shortcut: ShortcutStored): Boolean {
-        val matcher = PATTERN_ACCOUNT.matcher(shortcut.action)
         try {
-            if (matcher.find()) {
-                val id = matcher.group(1)?.toLong() ?: return false
+            val matcher = PATTERN_ACCOUNT.find(shortcut.action)
+            if (matcher != null) {
+                val id = matcher.groupValues.getOrNull(1)?.toLong() ?: return false
                 appendJob(
                     Repository.owners.getBaseOwnerInfo(
                         Settings.get().accounts().current,
@@ -88,11 +87,11 @@ class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
     }
 
     private fun tryWall(context: Context, shortcut: ShortcutStored): Boolean {
-        val matcher = PATTERN_WALL.matcher(shortcut.action)
         try {
-            if (matcher.find()) {
-                val id = matcher.group(1)?.toLong() ?: return false
-                val account_id = matcher.group(2)?.toLong() ?: return false
+            val matcher = PATTERN_WALL.find(shortcut.action)
+            if (matcher != null) {
+                val id = matcher.groupValues.getOrNull(1)?.toLong() ?: return false
+                val account_id = matcher.groupValues.getOrNull(2)?.toLong() ?: return false
                 appendJob(
                     Repository.owners.getBaseOwnerInfo(
                         Settings.get().accounts().current,
@@ -129,11 +128,11 @@ class ShortcutsViewPresenter(savedInstanceState: Bundle?) :
     }
 
     private fun tryPeer(context: Context, shortcut: ShortcutStored): Boolean {
-        val matcher = PATTERN_PEER.matcher(shortcut.action)
         try {
-            if (matcher.find()) {
-                val id = matcher.group(1)?.toLong() ?: return false
-                val account_id = matcher.group(2)?.toLong() ?: return false
+            val matcher = PATTERN_PEER.find(shortcut.action)
+            if (matcher != null) {
+                val id = matcher.groupValues.getOrNull(1)?.toLong() ?: return false
+                val account_id = matcher.groupValues.getOrNull(2)?.toLong() ?: return false
                 appendJob(
                     ShortcutUtils.createChatShortcutRx(
                         context,

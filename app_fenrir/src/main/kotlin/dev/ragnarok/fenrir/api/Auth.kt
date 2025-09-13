@@ -11,12 +11,12 @@ import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 
 object Auth {
-    const val redirect_url = "https://oauth.vk.com/blank.html"
+    const val redirect_url = "https://oauth.vk.ru/blank.html"
     private const val TAG = "Fenrir.Auth"
 
     @Throws(UnsupportedEncodingException::class)
     fun getUrl(api_id: String, scope: String, groupIds: String?): String {
-        var url = "https://oauth.vk.com/authorize?client_id=$api_id"
+        var url = "https://oauth.vk.ru/authorize?client_id=$api_id"
         url = (url + "&display=mobile&scope="
                 + scope + "&redirect_uri=" + URLEncoder.encode(
             redirect_url,
@@ -39,11 +39,11 @@ object Auth {
         return url
     }
 
-    //http://vk.com/dev/permission
+    //http://vk.ru/dev/permission
     //return "notify,friends,photos,audio,video,stories,pages,status,notes,messages,wall,offline,docs,groups,notifications,stats,email,market";
 
     val scope: String
-        get() =//http://vk.com/dev/permission
+        get() =//http://vk.ru/dev/permission
             //return "notify,friends,photos,audio,video,stories,pages,status,notes,messages,wall,offline,docs,groups,notifications,stats,email,market";
             if (Constants.DEFAULT_ACCOUNT_TYPE == AccountType.KATE) {
                 "notify,friends,photos,audio,video,docs,status,notes,pages,wall,groups,messages,offline,notifications,stories"

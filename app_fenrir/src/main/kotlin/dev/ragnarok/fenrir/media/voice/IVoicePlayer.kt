@@ -6,12 +6,14 @@ import dev.ragnarok.fenrir.util.Optional
 interface IVoicePlayer {
     fun toggle(id: Int, audio: VoiceMessage): Boolean
     val progress: Float
+    val duration: Long
     fun setCallback(listener: IPlayerStatusListener?)
     fun setErrorListener(errorListener: IErrorListener?)
     val playingVoiceId: Optional<Int>
     val isSupposedToPlay: Boolean
     val isPlaybackSpeed: Boolean
     fun togglePlaybackSpeed()
+    fun setPlayPositionChanged(position: Long)
     fun release()
     interface IPlayerStatusListener {
         fun onPlayerStatusChange(status: Int)

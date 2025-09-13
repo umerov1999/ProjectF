@@ -1619,13 +1619,13 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             }
 
             editText("vk_api_domain", parentFragmentManager) {
-                defaultValue = "api.vk.com"
+                defaultValue = "api.vk.ru"
                 titleRes = R.string.settings_domain
                 iconRes = R.drawable.web_settings
                 isTrim = true
                 onTextChanged {
                     if (it.isNullOrEmpty()) {
-                        commitString("api.vk.com")
+                        commitString("api.vk.ru")
                         reload()
                     }
                     Includes.proxySettings.broadcastUpdate(null)
@@ -1633,13 +1633,13 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
             }
 
             editText("vk_auth_domain", parentFragmentManager) {
-                defaultValue = "oauth.vk.com"
+                defaultValue = "oauth.vk.ru"
                 titleRes = R.string.settings_vk_auth_domain
                 iconRes = R.drawable.web_settings
                 isTrim = true
                 onTextChanged {
                     if (it.isNullOrEmpty()) {
-                        commitString("oauth.vk.com")
+                        commitString("oauth.vk.ru")
                         reload()
                     }
                     Includes.proxySettings.broadcastUpdate(null)
@@ -2403,12 +2403,8 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
         }
         enabledCategoriesName.add(getString(R.string.search))
         enabledCategoriesValues.add("11")
-        if (isEnabledNavigationCategoryById(drawerSettings, SwitchableCategory.NEWSFEED_COMMENTS)) {
-            enabledCategoriesName.add(getString(R.string.drawer_newsfeed_comments))
-            enabledCategoriesValues.add("12")
-        }
         enabledCategoriesName.add(getString(R.string.profile))
-        enabledCategoriesValues.add("13")
+        enabledCategoriesValues.add("12")
         return selItems(
             enabledCategoriesName.toTypedArray(),
             enabledCategoriesValues.toTypedArray()

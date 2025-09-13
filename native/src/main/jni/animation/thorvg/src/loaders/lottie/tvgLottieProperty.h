@@ -662,20 +662,20 @@ struct LottieColorStop : LottieProperty
 
     void release()
     {
-        if (exp) {
-            delete(exp);
-            exp = nullptr;
-        }
+        delete(exp);
+        exp = nullptr;
 
-        if (value.data) {
-            tvg::free(value.data);
-            value.data = nullptr;
-        }
+        tvg::free(value.data);
+        value.data = nullptr;
+
+        delete(value.input);
+        value.input = nullptr;
 
         if (!frames) return;
 
         ARRAY_FOREACH(p, *frames) {
             tvg::free((*p).value.data);
+            delete((*p).value.input);
         }
         tvg::free(frames->data);
         tvg::free(frames);
@@ -806,18 +806,27 @@ struct LottieColorStop : LottieProperty
     {
         if (LottieProperty::copy(&rhs, shallow)) return;
 
+        //the rhs colorstop is supposed be populated already.
+
         if (rhs.frames) {
             if (shallow) {
                 frames = rhs.frames;
                 rhs.frames = nullptr;
             } else {
-                frames = new Array<LottieScalarFrame<ColorStop>>;
+                frames = tvg::calloc<Array<LottieScalarFrame<ColorStop>>*>(1, sizeof(Array<LottieScalarFrame<ColorStop>>));
                 *frames = *rhs.frames;
+                for (uint32_t i = 0; i < (*rhs.frames).count; ++i) {
+                    (*frames)[i].value.copy((*rhs.frames)[i].value, rhs.count);
+                }
             }
         } else {
             frames = nullptr;
-            value = rhs.value;
-            rhs.value = ColorStop();
+            if (shallow) {
+                value = rhs.value;
+                rhs.value = ColorStop();
+            } else {
+                value.copy(rhs.value, rhs.count);
+            }
         }
         populated = rhs.populated;
         count = rhs.count;

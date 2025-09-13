@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.model.FaveLink
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
@@ -96,7 +97,7 @@ class FaveLinksAdapter(private var data: List<FaveLink>, private val context: Co
         val tvDescription: TextView
         val tvURL: TextView
         override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo?) {
-            val position = recyclerView?.getChildAdapterPosition(v) ?: 0
+            val position = recyclerView?.getChildAdapterPosition(v).orZero()
             val faveLink = data[position]
             menu.setHeaderTitle(faveLink.title)
             menu.add(0, v.id, 0, R.string.delete).setOnMenuItemClickListener {

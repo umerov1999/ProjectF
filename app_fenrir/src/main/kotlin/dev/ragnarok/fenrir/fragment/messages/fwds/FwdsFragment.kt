@@ -129,11 +129,12 @@ class FwdsFragment : PlaceSupportMvpFragment<FwdsPresenter, IFwdsView>(), OnMess
     override fun configNowVoiceMessagePlaying(
         id: Int,
         progress: Float,
+        duration: Long,
         paused: Boolean,
         amin: Boolean,
         speed: Boolean
     ) {
-        mAdapter?.configNowVoiceMessagePlaying(id, progress, paused, amin, speed)
+        mAdapter?.configNowVoiceMessagePlaying(id, progress, duration, paused, amin, speed)
     }
 
     override fun bindVoiceHolderById(
@@ -141,10 +142,11 @@ class FwdsFragment : PlaceSupportMvpFragment<FwdsPresenter, IFwdsView>(), OnMess
         play: Boolean,
         paused: Boolean,
         progress: Float,
+        duration: Long,
         amin: Boolean,
         speed: Boolean
     ) {
-        mAdapter?.bindVoiceHolderById(holderId, play, paused, progress, amin, speed)
+        mAdapter?.bindVoiceHolderById(holderId, play, paused, progress, duration, amin, speed)
     }
 
     override fun disableVoicePlaying() {
@@ -188,14 +190,12 @@ class FwdsFragment : PlaceSupportMvpFragment<FwdsPresenter, IFwdsView>(), OnMess
         voiceHolderId: Int,
         voiceMessageId: Int,
         messageId: Int,
-        peerId: Long,
         voiceMessage: VoiceMessage
     ) {
         presenter?.fireVoicePlayButtonClick(
             voiceHolderId,
             voiceMessageId,
             messageId,
-            peerId,
             voiceMessage
         )
     }
@@ -209,6 +209,10 @@ class FwdsFragment : PlaceSupportMvpFragment<FwdsPresenter, IFwdsView>(), OnMess
             voiceMessageId,
             messageId
         )
+    }
+
+    override fun onPlayPositionChanged(position: Long) {
+        presenter?.firePlayPositionChanged(position)
     }
 
     companion object {

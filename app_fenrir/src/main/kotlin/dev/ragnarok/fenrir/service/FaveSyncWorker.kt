@@ -45,7 +45,6 @@ import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingle
 import dev.ragnarok.fenrir.util.toast.CustomToast
 import java.io.File
 import java.io.FileOutputStream
-import java.util.regex.Pattern
 import kotlin.math.abs
 
 class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
@@ -103,7 +102,7 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
     }
 
     private val FAVE_GET_COUNT = 500
-    private val PATTERN_WALL: Pattern = Pattern.compile("fenrir_wall_(-?\\d*)_aid_(-?\\d*)")
+    private val PATTERN_WALL: Regex = Regex("fenrir_wall_(-?\\d*)_aid_(-?\\d*)")
 
     @SuppressLint("CheckResult")
     private fun fetchInfo(id: Long, accountId: Long, log: StringBuilder) {
@@ -518,13 +517,17 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
         }
         for (i in shortcutList) {
             curr++
-            val matcher = PATTERN_WALL.matcher(i.action)
+            var regexSuccess = false
             var sid = 0L
             var saccount_id = 0L
             try {
-                if (matcher.find()) {
-                    sid = matcher.group(1)?.toLong() ?: continue
-                    saccount_id = matcher.group(2)?.toLong() ?: continue
+                val matcher = PATTERN_WALL.find(i.action)
+                if (matcher != null) {
+                    sid = matcher.groupValues.getOrNull(1)?.toLong()
+                        ?: throw NumberFormatException("sid")
+                    saccount_id = matcher.groupValues.getOrNull(2)?.toLong()
+                        ?: throw NumberFormatException("account_id")
+                    regexSuccess = true
                 }
             } catch (e: Exception) {
                 log.append("+++++++++++++++REGEX_SHORTCUT++++++++++++++++++++++++\r\n")
@@ -535,9 +538,10 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
                     )
                 )
                 log.append("\r\n-----------------------------------------------\r\n")
-                continue
             }
-            fetchInfo(sid, saccount_id, log)
+            if (regexSuccess) {
+                fetchInfo(sid, saccount_id, log)
+            }
             mBuilder.setContentTitle(
                 applicationContext.getString(R.string.sync) + " " + (curr.toDouble() / alls * 100).toInt()
                     .toString() + "%"

@@ -18,6 +18,7 @@ import dev.ragnarok.fenrir.fragment.search.criteria.AudioSearchCriteria
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.currentAudio
 import dev.ragnarok.fenrir.model.Audio
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getSingleURLPhotoPlace
 import dev.ragnarok.fenrir.settings.Settings
@@ -80,7 +81,7 @@ class AudiosSearchFragment :
                 if (curr != null) {
                     val index = presenter?.getAudioPos(curr) ?: -1
                     if (index >= 0) {
-                        recyclerView.scrollToPosition(index + (mAdapter?.headersCount ?: 0))
+                        recyclerView.scrollToPosition(index + mAdapter?.headersCount.orZero())
                     } else createCustomToast(requireActivity()).showToast(R.string.audio_not_found)
                 } else createCustomToast(requireActivity()).showToastError(R.string.null_audio)
             }

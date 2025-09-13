@@ -426,8 +426,12 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
             override fun onProviderDisabled(provider: String) {}
             override fun onProviderEnabled(provider: String) {}
 
-            @Deprecated("")
-            override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
+            @Deprecated(
+                "This is a no-op",
+                level = DeprecationLevel.ERROR,
+                replaceWith = ReplaceWith("")
+            )
+            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
             }
         }
         val networkLocation: LocationListener = object : LocationListener {
@@ -442,8 +446,12 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
             override fun onProviderDisabled(provider: String) {}
             override fun onProviderEnabled(provider: String) {}
 
-            @Deprecated("")
-            override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
+            @Deprecated(
+                "This is a no-op",
+                level = DeprecationLevel.ERROR,
+                replaceWith = ReplaceWith("")
+            )
+            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
             }
         }
         var gps_enabled = false

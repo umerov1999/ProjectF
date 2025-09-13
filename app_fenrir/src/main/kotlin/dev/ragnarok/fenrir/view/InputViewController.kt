@@ -17,6 +17,7 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.model.Keyboard
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppTextUtils
@@ -244,7 +245,7 @@ class InputViewController(
             }
             mInputField.setText("$txt $text")
             mInputField.requestFocus()
-            if (text.nonNullNoEmpty()) mInputField.setSelection(mInputField.text?.length ?: 0)
+            if (text.nonNullNoEmpty()) mInputField.setSelection(mInputField.text?.length.orZero())
             callback.onInputTextChanged("$txt $text")
             mInputField.addTextChangedListener(mTextWatcher)
         }

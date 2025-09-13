@@ -26,6 +26,7 @@
 #include "tvgCommon.h"
 #include "tvgStr.h"
 #include "tvgCompressor.h"
+#include "tvgInlist.h"
 #include "tvgRender.h"
 #include "tvgLottieProperty.h"
 #include "tvgLottieRenderPooler.h"
@@ -277,7 +278,7 @@ struct LottieObject
     {
     }
 
-    virtual void override(LottieProperty* prop, bool shallow, bool release)
+    virtual void override(LottieProperty* prop, bool release)
     {
         TVGERR("LOTTIE", "Unsupported slot type");
     }
@@ -463,10 +464,10 @@ struct LottieText : LottieObject, LottieRenderPooler<tvg::Shape>
         LottieObject::type = LottieObject::Text;
     }
 
-    void override(LottieProperty* prop, bool shallow, bool release = false) override
+    void override(LottieProperty* prop, bool release = false) override
     {
         if (release) doc.release();
-        doc.copy(*static_cast<LottieTextDoc*>(prop), shallow);
+        doc.copy(*static_cast<LottieTextDoc*>(prop), false);
     }
 
     LottieProperty* property(uint16_t ix) override
@@ -520,7 +521,7 @@ struct LottieTrimpath : LottieObject
 };
 
 
-struct LottieShape : LottieObject, LottieRenderPooler<tvg::Shape>
+struct LottieShape : LottieObject, LottieRenderPooler<Shape>
 {
     bool clockwise = true;   //clockwise or counter-clockwise
 
@@ -684,27 +685,27 @@ struct LottieTransform : LottieObject
         return nullptr;
     }
 
-    void override(LottieProperty* prop, bool shallow, bool release) override
+    void override(LottieProperty* prop, bool release) override
     {
         switch (prop->type) {
             case LottieProperty::Type::Float: {
                 if (release) rotation.release();
-                rotation.copy(*static_cast<LottieFloat*>(prop), shallow);
+                rotation.copy(*static_cast<LottieFloat*>(prop), false);
                 break;
             }
             case LottieProperty::Type::Scalar: {
                 if (release) scale.release();
-                scale.copy(*static_cast<LottieScalar*>(prop), shallow);
+                scale.copy(*static_cast<LottieScalar*>(prop), false);
                 break;
             }
             case LottieProperty::Type::Vector: {
                 if (release) position.release();
-                position.copy(*static_cast<LottieVector*>(prop), shallow);
+                position.copy(*static_cast<LottieVector*>(prop), false);
                 break;
             }
             case LottieProperty::Type::Opacity: {
                 if (release) opacity.release();
-                opacity.copy(*static_cast<LottieOpacity*>(prop), shallow);
+                opacity.copy(*static_cast<LottieOpacity*>(prop), false);
                 break;
             }
             default: break;
@@ -755,10 +756,10 @@ struct LottieSolidStroke : LottieSolid, LottieStroke
         return LottieSolid::property(ix);
     }
 
-    void override(LottieProperty* prop, bool shallow, bool release) override
+    void override(LottieProperty* prop, bool release) override
     {
         if (release) color.release();
-        color.copy(*static_cast<LottieColor*>(prop), shallow);
+        color.copy(*static_cast<LottieColor*>(prop), false);
     }
 };
 
@@ -770,14 +771,14 @@ struct LottieSolidFill : LottieSolid
         LottieObject::type = LottieObject::SolidFill;
     }
 
-    void override(LottieProperty* prop, bool shallow, bool release) override
+    void override(LottieProperty* prop, bool release) override
     {
         if (prop->type == LottieProperty::Type::Color) {
             if (release) color.release();
-            color.copy(*static_cast<LottieColor*>(prop), shallow);
+            color.copy(*static_cast<LottieColor*>(prop), false);
         } else if (prop->type == LottieProperty::Type::Opacity) {
             if (release) opacity.release();
-            opacity.copy(*static_cast<LottieOpacity*>(prop), shallow);
+            opacity.copy(*static_cast<LottieOpacity*>(prop), false);
         }
     }
 
@@ -818,10 +819,10 @@ struct LottieGradient : LottieObject
         return nullptr;
     }
 
-    void override(LottieProperty* prop, bool shallow, bool release = false) override
+    void override(LottieProperty* prop, bool release = false) override
     {
         if (release) colorStops.release();
-        colorStops.copy(*static_cast<LottieColorStop*>(prop), shallow);
+        colorStops.copy(*static_cast<LottieColorStop*>(prop), false);
         prepare();
     }
 
@@ -874,10 +875,10 @@ struct LottieImage : LottieObject, LottieRenderPooler<tvg::Picture>
 {
     LottieBitmap data;
 
-    void override(LottieProperty* prop, bool shallow, bool release = false) override
+    void override(LottieProperty* prop, bool release = false) override
     {
         if (release) data.release();
-        data.copy(*static_cast<LottieBitmap*>(prop), shallow);
+        data.copy(*static_cast<LottieBitmap*>(prop), false);
         update();
     }
 
@@ -1057,22 +1058,23 @@ struct LottieLayer : LottieGroup
 
 struct LottieSlot
 {
-    struct Pair {
+    struct Pair
+    {
         LottieObject* obj;
         LottieProperty* prop;
     };
 
-    void assign(LottieObject* target, bool byDefault, ColorReplace* colorReplacement);
+    void add(uint32_t slotcode, LottieProperty* prop);
+    void apply(LottieProperty* prop, bool byDefault = false, ColorReplace* colorReplacement = nullptr);
     void reset();
 
-    LottieSlot(LottieLayer* layer, LottieObject* parent, char* sid, LottieObject* obj, LottieProperty::Type type) : context{layer, parent}, sid(sid), type(type)
+    LottieSlot(LottieLayer* layer, LottieObject* parent, unsigned long sid, LottieObject* obj, LottieProperty::Type type) : context{layer, parent}, sid(sid), type(type)
     {
-        pairs.push({obj});
+        pairs.push({obj, nullptr});
     }
 
     ~LottieSlot()
     {
-        tvg::free(sid);
         if (!overridden) return;
         ARRAY_FOREACH(pair, pairs) delete(pair->prop);
     }
@@ -1082,8 +1084,8 @@ struct LottieSlot
         LottieObject* parent;
     } context;
 
-    char* sid;
-    Array<Pair> pairs;
+    unsigned long sid;    // djb2 encoded
+    Array<Pair> pairs;    // object-property pairs that can be overridden by this slot
     LottieProperty::Type type;
 
     bool overridden = false;

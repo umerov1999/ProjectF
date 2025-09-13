@@ -14,7 +14,7 @@ import androidx.annotation.StringDef
     SwitchableCategory.DOCS,
     SwitchableCategory.FAVES,
     SwitchableCategory.SEARCH,
-    SwitchableCategory.NEWSFEED_COMMENTS
+    SwitchableCategory.STORIES
 )
 @Retention(
     AnnotationRetention.SOURCE
@@ -32,6 +32,6 @@ annotation class SwitchableCategory {
         const val DOCS = "docs"
         const val FAVES = "faves"
         const val SEARCH = "search"
-        const val NEWSFEED_COMMENTS = "newsfeed_comments"
+        const val STORIES = "stories"
     }
 }

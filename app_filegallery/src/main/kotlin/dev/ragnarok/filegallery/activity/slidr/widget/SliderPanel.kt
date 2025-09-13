@@ -546,7 +546,7 @@ class SliderPanel : FrameLayout {
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-        if (isLocked) {
+        if (isLocked || config.isOneFinger && ev.pointerCount >= 2) {
             return false
         }
         startX = ev.x
@@ -566,7 +566,7 @@ class SliderPanel : FrameLayout {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (isLocked) {
+        if (isLocked || config.isOneFinger && event.pointerCount >= 2) {
             return false
         }
         try {

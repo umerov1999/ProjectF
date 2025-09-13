@@ -217,12 +217,10 @@ abstract class AbsMessageListPresenter<V : IBasicMessageListView> internal const
 
     protected open fun onActionModeForwardClick() {}
 
-    @Suppress("UNUSED_PARAMETER")
     fun fireVoicePlayButtonClick(
         voiceHolderId: Int,
         voiceMessageId: Int,
         messageId: Int,
-        peerId: Long,
         voiceMessage: VoiceMessage
     ) {
         val player = mVoicePlayer ?: return
@@ -244,12 +242,14 @@ abstract class AbsMessageListPresenter<V : IBasicMessageListView> internal const
             } else {
                 val paused = !player.isSupposedToPlay
                 val progress = player.progress
+                val duration = player.duration
                 val isSpeed = player.isPlaybackSpeed
                 view?.bindVoiceHolderById(
                     voiceHolderId,
                     true,
                     paused,
                     progress,
+                    duration,
                     false,
                     isSpeed
                 )
@@ -257,6 +257,10 @@ abstract class AbsMessageListPresenter<V : IBasicMessageListView> internal const
         } catch (_: Exception) {
         }
         syncVoiceLookupState()
+    }
+
+    fun firePlayPositionChanged(position: Long) {
+        mVoicePlayer?.setPlayPositionChanged(position)
     }
 
     fun fireVoicePlaybackSpeed() {
@@ -270,12 +274,14 @@ abstract class AbsMessageListPresenter<V : IBasicMessageListView> internal const
             view?.disableVoicePlaying()
         } else {
             val progress = player.progress
+            val duration = player.duration
             val paused = !player.isSupposedToPlay
             val isSpeed = player.isPlaybackSpeed
 
             view?.configNowVoiceMessagePlaying(
                 optionalVoiceMessageId.get() ?: return,
                 progress,
+                duration,
                 paused,
                 anim,
                 isSpeed
@@ -299,6 +305,7 @@ abstract class AbsMessageListPresenter<V : IBasicMessageListView> internal const
             play,
             paused,
             player.progress,
+            player.duration,
             false,
             isSpeed
         )

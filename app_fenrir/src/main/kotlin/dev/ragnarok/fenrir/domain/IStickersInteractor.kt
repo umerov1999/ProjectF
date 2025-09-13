@@ -10,6 +10,6 @@ interface IStickersInteractor {
     fun receiveAndStoreStickerSets(accountId: Long): Flow<Boolean>
     fun receiveAndStoreKeywordsStickers(accountId: Long): Flow<Boolean>
     fun getStickerSets(accountId: Long): Flow<List<StickerSet>>
-    fun getKeywordsStickers(accountId: Long, s: String?): Flow<List<Sticker>>
+    fun getKeywordsStickers(accountId: Long, s: String): Flow<List<Sticker>>
     fun placeToStickerCache(context: Context): Flow<Boolean>
 }

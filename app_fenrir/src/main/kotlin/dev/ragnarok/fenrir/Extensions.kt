@@ -317,7 +317,15 @@ fun Byte?.orZero(): Byte {
 }
 
 fun Long?.orZero(): Long {
-    return this ?: 0
+    return this ?: 0L
+}
+
+fun Float?.orZero(): Float {
+    return this ?: 0.0f
+}
+
+fun Double?.orZero(): Double {
+    return this ?: 0.0
 }
 
 inline fun <reified T, reified E : List<T>> E?.requireNonNull(block: (E) -> Unit) {

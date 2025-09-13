@@ -10,4 +10,7 @@ class WallCommentThreadLink(
 ) {
     override val isValid: Boolean
         get() = ownerId != 0L && postId > 0 && commentId > 0 && threadId > 0
+
+    val validOrNull: AbsLink?
+        get() = if (isValid) this else null
 }

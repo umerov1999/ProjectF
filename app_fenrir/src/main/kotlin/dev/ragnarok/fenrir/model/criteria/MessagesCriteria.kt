@@ -1,5 +1,7 @@
 package dev.ragnarok.fenrir.model.criteria
 
+import dev.ragnarok.fenrir.orZero
+
 class MessagesCriteria(val accountId: Long, val peerId: Long) : Criteria() {
     var startMessageId: Int? = null
         private set
@@ -25,7 +27,7 @@ class MessagesCriteria(val accountId: Long, val peerId: Long) : Criteria() {
     override fun hashCode(): Int {
         var result = accountId.hashCode()
         result = 31 * result + peerId.hashCode()
-        result = 31 * result + (startMessageId?.hashCode() ?: 0)
+        result = 31 * result + startMessageId?.hashCode().orZero()
         return result
     }
 

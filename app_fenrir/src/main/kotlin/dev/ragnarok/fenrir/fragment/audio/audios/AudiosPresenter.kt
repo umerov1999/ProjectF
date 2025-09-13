@@ -145,7 +145,7 @@ class AudiosPresenter(
         setLoadingNow(false)
         if (needDeadHelper) {
             for (i in audios) {
-                if (i.url.isNullOrEmpty() || "https://vk.com/mp3/audio_api_unavailable.mp3" == i.url) {
+                if (i.url.isNullOrEmpty() || i.url?.contains("audio_api_unavailable") == true) {
                     needDeadHelper = false
                     view?.showAudioDeadHelper()
                     break

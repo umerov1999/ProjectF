@@ -170,7 +170,7 @@ class IGroupsService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/groups.getBanned
+    //https://vk.ru/dev/groups.getBanned
     fun getBanned(
         groupId: Long,
         offset: Int?,
@@ -223,7 +223,7 @@ class IGroupsService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/groups.search
+    //https://vk.ru/dev/groups.search
     fun search(
         query: String?,
         type: String?,
@@ -260,12 +260,12 @@ class IGroupsService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/groups.leave
+    //https://vk.ru/dev/groups.leave
     fun leave(groupId: Long): Flow<BaseResponse<Int>> {
         return rest.request("groups.leave", form("group_id" to groupId), baseInt)
     }
 
-    //https://vk.com/dev/groups.join
+    //https://vk.ru/dev/groups.join
     fun join(
         groupId: Long,
         notSure: Int?
@@ -278,7 +278,7 @@ class IGroupsService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/groups.get
+    //https://vk.ru/dev/groups.get
     operator fun get(
         userId: Long?,
         extended: Int?,

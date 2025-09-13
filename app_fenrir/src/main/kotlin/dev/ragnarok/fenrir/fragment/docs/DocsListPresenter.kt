@@ -173,7 +173,7 @@ class DocsListPresenter(
                 when (i) {
                     0 -> shareLink(
                         (context as Activity),
-                        String.format("vk.com/doc%s_%s", document.ownerId, document.id),
+                        String.format("vk.ru/doc%s_%s", document.ownerId, document.id),
                         document.title
                     )
 

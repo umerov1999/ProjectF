@@ -1,4 +1,4 @@
-package dev.ragnarok.fenrir.fragment.feed.newsfeedcomments
+package dev.ragnarok.fenrir.fragment.feed.newsfeedmentions
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -20,7 +20,7 @@ import dev.ragnarok.fenrir.fragment.base.AttachmentsHolder.Companion.forComment
 import dev.ragnarok.fenrir.fragment.base.AttachmentsHolder.Companion.forPost
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder
 import dev.ragnarok.fenrir.fragment.base.AttachmentsViewBinder.OnAttachmentsActionCallback
-import dev.ragnarok.fenrir.fragment.feed.newsfeedcomments.NewsfeedCommentsAdapter.AbsHolder
+import dev.ragnarok.fenrir.fragment.feed.newsfeedmentions.NewsfeedMentionsAdapter.AbsHolder
 import dev.ragnarok.fenrir.ifNonNull
 import dev.ragnarok.fenrir.link.LinkHelper
 import dev.ragnarok.fenrir.link.internal.LinkActionAdapter
@@ -47,7 +47,7 @@ import dev.ragnarok.fenrir.view.AspectRatioImageView
 import dev.ragnarok.fenrir.view.VideoServiceIcons.getIconByType
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
 
-class NewsfeedCommentsAdapter(
+class NewsfeedMentionsAdapter(
     private val context: Context, private var data: List<NewsfeedComment>,
     callback: OnAttachmentsActionCallback
 ) : AbsRecyclerViewAdapter<AbsHolder>() {
@@ -68,7 +68,7 @@ class NewsfeedCommentsAdapter(
         when (viewType) {
             VTYPE_POST -> return PostHolder(
                 inflater.inflate(
-                    R.layout.item_newsfeed_comment_post,
+                    R.layout.item_feed_mention_post,
                     parent,
                     false
                 )
@@ -76,7 +76,7 @@ class NewsfeedCommentsAdapter(
 
             VTYPE_VIDEO -> return VideoHolder(
                 inflater.inflate(
-                    R.layout.item_newsfeed_comment_video,
+                    R.layout.item_feed_mention_video,
                     parent,
                     false
                 )
@@ -84,7 +84,7 @@ class NewsfeedCommentsAdapter(
 
             VTYPE_PHOTO -> return PhotoHolder(
                 inflater.inflate(
-                    R.layout.item_newsfeed_comment_photo,
+                    R.layout.item_feed_mention_photo,
                     parent,
                     false
                 )
@@ -92,7 +92,7 @@ class NewsfeedCommentsAdapter(
 
             VTYPE_TOPIC -> return TopicHolder(
                 inflater.inflate(
-                    R.layout.item_newsfeed_comment_topic,
+                    R.layout.item_feed_mention_topic,
                     parent,
                     false
                 )

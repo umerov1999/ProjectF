@@ -4,8 +4,8 @@ buildscript {
 
     ext.appCompileSDK = 36
     ext.appBuildTools = "36.0.0"
-    ext.appNdk = "29.0.13599879"
-    ext.appCMake = "4.1.0"
+    ext.appNdk = "29.0.14033849"
+    ext.appCMake = "4.1.1"
     ext.appMinSDK = developer_build ? 29 : 26
     ext.appTargetSDK = 35
     ext.appFenrirVersionCode = 999
@@ -14,13 +14,13 @@ buildscript {
     ext.appFileGalleryVersionName = "1.999"
 
     //androidx libraries
-    ext.activityVersion = "1.12.0-alpha06"
+    ext.activityVersion = "1.12.0-alpha08"
     ext.annotationVersion = "1.9.1"
     ext.appcompatVersion = "1.7.1"
     ext.biometricVersion = "1.4.0-alpha04"
     ext.browserVersion = "1.9.0"
     ext.cardviewVersion = "1.0.0"
-    ext.collectionVersion = "1.5.0"
+    ext.collectionVersion = "1.6.0-alpha01"
     ext.concurentVersion = "1.3.0"
     ext.constraintlayoutVersion = "2.2.1"
     ext.coordinatorlayoutVersion = "1.3.0"
@@ -32,34 +32,34 @@ buildscript {
     ext.dynamicanimationVersion = "1.1.0"
     ext.exifinterfaceVersion = "1.4.1"
     ext.fragmentVersion = "1.8.9"
-    ext.graphicsShapesAndroidVersion = "1.1.0-beta01"
-    ext.lifecycleVersion = "2.9.2"
+    ext.graphicsShapesAndroidVersion = "1.1.0-rc01"
+    ext.lifecycleVersion = "2.9.3"
     ext.mediaVersion = "1.7.1"
     ext.media3Version = "1.8.0"
     ext.resourceInspectionAnnotation = "1.0.1"
-    ext.savedStateVersion = "1.3.1"
+    ext.savedStateVersion = "1.3.2"
     ext.swiperefreshlayoutVersion = "1.2.0-beta01"
     ext.tracingVersion = "1.3.0"
     ext.transitionVersion = "1.6.0"
     ext.vectordrawableVersion = "1.2.0"
     ext.webkitVersion = "1.14.0"
-    ext.workVersion = "2.10.3"
+    ext.workVersion = "2.11.0-alpha01"
 
     //firebase libraries
     ext.firebaseDatatransportVersion = "20.0.0"
     ext.firebaseMessagingVersion = "25.0.0"
 
     //firebase common libraries
-    ext.firebaseCommonVersion = "22.0.0"
+    ext.firebaseCommonVersion = "22.0.1"
     ext.firebaseInstallationsInteropVersion = "17.2.0"
     ext.firebaseComponentsVersion = "19.0.0"
     ext.firebaseAnnotationsVersion = "17.0.0"
-    ext.playServicesTasksVersion = "18.3.2"
-    ext.playServicesBase = "18.7.2"
+    ext.playServicesTasksVersion = "18.4.0"
+    ext.playServicesBase = "18.8.0"
     ext.autoValueVersion = "1.11.0"
 
     //common libraries
-    ext.kotlin_version = "2.2.10"
+    ext.kotlin_version = "2.2.20"
     ext.kotlin_coroutines = "1.10.2"
     ext.kotlin_serializer = "1.9.0"
     ext.okhttpLibraryVersion = "5.1.0"
@@ -67,7 +67,7 @@ buildscript {
     ext.guavaVersion = "33.4.8-android"
     ext.errorProneVersion = "2.41.0"
     ext.checkerCompatQualVersion = "2.5.6"
-    ext.checkerQualAndroidVersion = "3.49.5"
+    ext.checkerQualAndroidVersion = "3.50.0"
     ext.jspecifyAnnotation = "1.0.0"
     ext.desugarLibraryVersion = "2.1.5"
 
@@ -95,7 +95,7 @@ buildscript {
         //maven { url = 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:8.12.1"
+        classpath "com.android.tools.build:gradle:8.13.0"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
         classpath "com.google.gms:google-services:4.4.3"

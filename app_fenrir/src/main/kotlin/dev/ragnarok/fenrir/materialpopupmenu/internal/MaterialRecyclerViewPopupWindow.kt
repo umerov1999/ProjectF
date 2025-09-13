@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.materialpopupmenu.PopupAnimation
+import dev.ragnarok.fenrir.orZero
 import kotlin.math.ceil
 
 /**
@@ -343,8 +344,8 @@ internal class MaterialRecyclerViewPopupWindow(
             itemView.forceLayout()
 
             val marginLayoutParams = childLp as? ViewGroup.MarginLayoutParams
-            val topMargin = marginLayoutParams?.topMargin ?: 0
-            val bottomMargin = marginLayoutParams?.bottomMargin ?: 0
+            val topMargin = marginLayoutParams?.topMargin.orZero()
+            val bottomMargin = marginLayoutParams?.bottomMargin.orZero()
             val verticalMargin = topMargin + bottomMargin
 
             returnedHeight += itemView.measuredHeight + verticalMargin

@@ -326,8 +326,8 @@ class VKApiCommunity
         const val TYPE_GROUP = "group"
         const val TYPE_PAGE = "page"
         const val TYPE_EVENT = "event"
-        const val PHOTO_50 = "http://vk.com/images/community_50.gif"
-        const val PHOTO_100 = "http://vk.com/images/community_100.gif"
+        const val PHOTO_50 = "http://vk.ru/images/community_50.gif"
+        const val PHOTO_100 = "http://vk.ru/images/community_100.gif"
 
         fun create(id: Long): VKApiCommunity {
             val community = VKApiCommunity()

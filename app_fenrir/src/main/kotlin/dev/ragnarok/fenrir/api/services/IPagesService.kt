@@ -6,7 +6,7 @@ import dev.ragnarok.fenrir.api.rest.IServiceRest
 import kotlinx.coroutines.flow.Flow
 
 class IPagesService : IServiceRest() {
-    //https://vk.com/dev/pages.get
+    //https://vk.ru/dev/pages.get
     operator fun get(
         ownerId: Long,
         pageId: Int,

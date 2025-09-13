@@ -85,7 +85,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                     requireArguments().getLong(Extra.ACCOUNT_ID),
                     null,
                     null,
-                    "https://vk.com/audio?section=recoms_friends"
+                    "https://vk.ru/audio?section=recoms_friends"
                 ).tryOpenWith(requireActivity())
                 return true
             }
@@ -96,7 +96,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                     requireArguments().getLong(Extra.ACCOUNT_ID),
                     null,
                     null,
-                    "https://vk.com/audio?section=recommended_groups"
+                    "https://vk.ru/audio?section=recommended_groups"
                 ).tryOpenWith(requireActivity())
                 return true
             }
@@ -107,7 +107,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                     requireArguments().getLong(Extra.ACCOUNT_ID),
                     null,
                     null,
-                    "https://vk.com/audio?section=recent"
+                    "https://vk.ru/audio?section=recent"
                 ).tryOpenWith(requireActivity())
                 return true
             }
@@ -118,7 +118,7 @@ class CatalogV2ListFragment : BaseMvpFragment<CatalogV2ListPresenter, ICatalogV2
                     requireArguments().getLong(Extra.ACCOUNT_ID),
                     null,
                     null,
-                    "https://vk.com/audio?section=artist_recoms"
+                    "https://vk.ru/audio?section=artist_recoms"
                 ).tryOpenWith(requireActivity())
                 return true
             }

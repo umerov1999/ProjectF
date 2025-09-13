@@ -18,7 +18,7 @@ import dev.ragnarok.fenrir.api.rest.IServiceRest
 import kotlinx.coroutines.flow.Flow
 
 class IPhotosService : IServiceRest() {
-    //https://vk.com/dev/photos.deleteAlbum
+    //https://vk.ru/dev/photos.deleteAlbum
     fun deleteAlbum(
         albumId: Int,
         groupId: Long?
@@ -31,7 +31,7 @@ class IPhotosService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/photos.restore
+    //https://vk.ru/dev/photos.restore
     fun restore(
         ownerId: Long?,
         photoId: Int
@@ -44,7 +44,7 @@ class IPhotosService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/photos.delete
+    //https://vk.ru/dev/photos.delete
     fun delete(
         ownerId: Long?,
         photoId: Int
@@ -57,7 +57,7 @@ class IPhotosService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/photos.deleteComment
+    //https://vk.ru/dev/photos.deleteComment
     fun deleteComment(
         ownerId: Long?,
         commentId: Int
@@ -70,7 +70,7 @@ class IPhotosService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/photos.restoreComment
+    //https://vk.ru/dev/photos.restoreComment
     fun restoreComment(
         ownerId: Long?,
         commentId: Int
@@ -83,7 +83,7 @@ class IPhotosService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/photos.getComments
+    //https://vk.ru/dev/photos.getComments
     fun getComments(
         ownerId: Long?,
         photoId: Int,

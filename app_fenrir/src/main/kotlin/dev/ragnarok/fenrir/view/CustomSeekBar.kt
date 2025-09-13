@@ -63,34 +63,31 @@ class CustomSeekBar @JvmOverloads constructor(
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        return onTouch(event.action, event.x, event.y)
-    }
-
-    private fun onTouch(action: Int, x: Float, y: Float): Boolean {
         if (duration <= 0) {
             return false
         }
-        if (action == MotionEvent.ACTION_DOWN) {
+        if (event.action == MotionEvent.ACTION_DOWN) {
             val additionWidth = (layoutHeight - thumbWidth) / 2
-            if (x >= -additionWidth && x <= layoutWidth + additionWidth && y >= 0 && y <= layoutHeight) {
-                if (!(thumbX - additionWidth <= x && x <= thumbX + thumbWidth + additionWidth)) {
-                    thumbX = x.toInt() - thumbWidth / 2
+            if (event.x >= -additionWidth && event.x <= layoutWidth + additionWidth && event.y >= 0 && event.y <= layoutHeight) {
+                if (!(thumbX - additionWidth <= event.x && event.x <= thumbX + thumbWidth + additionWidth)) {
+                    thumbX = event.x.toInt() - thumbWidth / 2
                     if (thumbX < 0) {
                         thumbX = 0
                     } else if (thumbX > layoutWidth - thumbWidth) {
                         thumbX = layoutWidth - thumbWidth
                     }
                 }
+                parent?.requestDisallowInterceptTouchEvent(true)
                 isDragging = true
                 draggingThumbX = thumbX
-                thumbDX = (x - thumbX).toInt()
+                thumbDX = (event.x - thumbX).toInt()
                 invalidate()
                 return true
             }
-        } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+        } else if (event.action == MotionEvent.ACTION_UP || event.action == MotionEvent.ACTION_CANCEL) {
             if (isDragging) {
                 parent?.requestDisallowInterceptTouchEvent(false)
-                if (action == MotionEvent.ACTION_UP && delegate != null) {
+                if (event.action == MotionEvent.ACTION_UP && delegate != null) {
                     currentPosition =
                         (duration * (draggingThumbX.toDouble() / (layoutWidth - thumbWidth).toDouble())).toLong()
                     delegate?.onSeekBarDrag(currentPosition)
@@ -99,10 +96,9 @@ class CustomSeekBar @JvmOverloads constructor(
                 invalidate()
                 return true
             }
-        } else if (action == MotionEvent.ACTION_MOVE) {
+        } else if (event.action == MotionEvent.ACTION_MOVE) {
             if (isDragging) {
-                parent?.requestDisallowInterceptTouchEvent(true)
-                draggingThumbX = (x - thumbDX).toInt()
+                draggingThumbX = (event.x - thumbDX).toInt()
                 if (draggingThumbX < 0) {
                     draggingThumbX = 0
                 } else if (draggingThumbX > layoutWidth - thumbWidth) {

@@ -19,6 +19,7 @@ import dev.ragnarok.fenrir.model.catalog_v2_audio.CatalogV2SortListCategory
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.FileUtils
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.ISettings.IMainSettings
 import dev.ragnarok.fenrir.settings.theme.ThemeOverlay
 import dev.ragnarok.fenrir.toColor
@@ -164,8 +165,7 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override val photoRoundMode: Int
         get() = try {
-            getPreferences(app).getString("photo_rounded_view", "0")?.trim()?.toInt()
-                ?: 0
+            getPreferences(app).getString("photo_rounded_view", "0")?.trim()?.toInt().orZero()
         } catch (_: Exception) {
             0
         }
@@ -451,11 +451,11 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override val apiDomain: String
         get() = getPreferences(app)
-            .getString("vk_api_domain", "api.vk.com")!!.trim()
+            .getString("vk_api_domain", "api.vk.ru")!!.trim()
 
     override val authDomain: String
         get() = getPreferences(app)
-            .getString("vk_auth_domain", "oauth.vk.com")!!.trim()
+            .getString("vk_auth_domain", "oauth.vk.ru")!!.trim()
 
     override val isDeveloper_mode: Boolean
         get() = getPreferences(app).getBoolean("developer_mode", Constants.forceDeveloperMode)

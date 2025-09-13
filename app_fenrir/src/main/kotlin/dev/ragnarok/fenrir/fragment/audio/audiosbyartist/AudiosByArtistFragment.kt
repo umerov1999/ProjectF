@@ -27,6 +27,7 @@ import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.media.music.MusicPlaybackController.currentAudio
 import dev.ragnarok.fenrir.model.Audio
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getSingleURLPhotoPlace
@@ -171,7 +172,7 @@ class AudiosByArtistFragment : BaseMvpFragment<AudiosByArtistPresenter, IAudiosB
                         presenter?.getAudioPos(curr) ?: -1
                     if (index >= 0) {
                         recyclerView.scrollToPosition(
-                            index + (mAudioRecyclerAdapter?.headersCount ?: 0)
+                            index + mAudioRecyclerAdapter?.headersCount.orZero()
                         )
                     } else createCustomToast(requireActivity()).showToast(R.string.audio_not_found)
                 } else createCustomToast(requireActivity()).showToastError(R.string.null_audio)

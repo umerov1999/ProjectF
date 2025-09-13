@@ -33,6 +33,7 @@ import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.animation.AnimatedFileDrawable
 import dev.ragnarok.fenrir.module.animation.LoadedFrom
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
@@ -735,22 +736,21 @@ class TouchImageView @JvmOverloads constructor(
         }
 
     internal fun orientationMismatch(drawable: Drawable?): Boolean {
-        return viewWidth > viewHeight != (drawable?.intrinsicWidth
-            ?: 0) > (drawable?.intrinsicHeight ?: 0)
+        return viewWidth > viewHeight != drawable?.intrinsicWidth.orZero() > drawable?.intrinsicHeight.orZero()
     }
 
     private fun getDrawableWidth(drawable: Drawable?): Int {
         return if (orientationMismatch(drawable) && isRotateImageToFitScreen) {
-            drawable?.intrinsicHeight ?: 0
+            drawable?.intrinsicHeight.orZero()
         } else
-            drawable?.intrinsicWidth ?: 0
+            drawable?.intrinsicWidth.orZero()
     }
 
     private fun getDrawableHeight(drawable: Drawable?): Int {
         return if (orientationMismatch(drawable) && isRotateImageToFitScreen) {
-            drawable?.intrinsicWidth ?: 0
+            drawable?.intrinsicWidth.orZero()
         } else
-            drawable?.intrinsicHeight ?: 0
+            drawable?.intrinsicHeight.orZero()
     }
 
     /**

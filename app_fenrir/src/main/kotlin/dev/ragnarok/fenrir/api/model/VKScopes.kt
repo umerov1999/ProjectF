@@ -3,7 +3,7 @@ package dev.ragnarok.fenrir.api.model
 /**
  * Application Access Permissions
  *
- * @see [http://vk.com/dev/permissions](http://vk.com/dev/permissions)
+ * @see [http://vk.ru/dev/permissions](http://vk.ru/dev/permissions)
  */
 object VKScopes {
     /**
@@ -54,13 +54,13 @@ object VKScopes {
     /**
      * Access to offers (obsolete methods).
      */
-    @Deprecated("")
+    @Deprecated("This is a no-op", level = DeprecationLevel.ERROR, replaceWith = ReplaceWith(""))
     val OFFERS = "offers"
 
     /**
      * Access to questions (obsolete methods).
      */
-    @Deprecated("")
+    @Deprecated("This is a no-op", level = DeprecationLevel.ERROR, replaceWith = ReplaceWith(""))
     val QUESTIONS = "questions"
 
     /**
@@ -89,7 +89,7 @@ object VKScopes {
     const val STATS = "stats"
 
     /**
-     * Access to advanced methods for [Ads API](http://vk.com/dev/ads).
+     * Access to advanced methods for [Ads API](http://vk.ru/dev/ads).
      */
     const val ADS = "ads"
 

@@ -111,6 +111,28 @@ enum class ColorSpace : uint8_t
 
 
 /**
+ * @brief Enumeration to specify rendering engine behavior.
+ *
+ * @note The availability or behavior of @c SmartRender may vary depending on platform or backend support.
+ *       It attempts to optimize rendering performance by updating only the regions  of the canvas that have
+ *       changed between frames (partial redraw). This can be highly effective in scenarios  where most of the
+ *       canvas remains static and only small portions are updated—such as simple animations or GUI interactions.
+ *       However, in complex scenes where a large portion of the canvas changes frequently (e.g., full-screen animations
+ *       or heavy object movements), the overhead of tracking changes and managing update regions may outweigh the benefits,
+ *       resulting in decreased performance compared to the default rendering mode. Thus, it is recommended to benchmark
+ *       both modes in your specific use case to determine the optimal setting.
+ *
+ * @note Experimental API
+ */
+enum class EngineOption : uint8_t
+{
+    None = 0,                   /**< No engine options are enabled. This may be used to explicitly disable all optional behaviors. */
+    Default = 1 << 0,           /**< Uses the default rendering mode. */
+    SmartRender = 1 << 1        /**< Enables automatic partial (smart) rendering optimizations. */
+};
+
+
+/**
  * @brief Enumeration specifying the values of the path commands accepted by ThorVG.
  */
 enum class PathCommand : uint8_t
@@ -216,7 +238,7 @@ enum class BlendMethod : uint8_t
     Color,             ///< Combine with HSL(Sh + Ss + Dl) then convert it to RGB. @since 1.0
     Luminosity,        ///< Combine with HSL(Dh + Ds + Sl) then convert it to RGB. @since 1.0
     Add,               ///< Simply adds pixel values of one layer with the other. (S + D)
-    Composition = 255  ///< Used for intermediate composition. Only valid when applied to a Scene. @since 1.0
+    Composition = 255  ///< For intermediate composition layers; suitable for use with Scene or Picture. @since 1.0
 };
 
 
@@ -808,45 +830,66 @@ public:
     Result remove(Paint* paint = nullptr) noexcept;
 
     /**
-     * @brief Requests the canvas to update the paint for up-to-date render preparation.
+     * @brief Requests the canvas to update modified paint objects in preparation for rendering.
      *
-     * @note Only modified paint instances will undergo the internal update process.
-     * @note The update operation may be asynchronous if the assigned thread count is greater than zero.
+     * This function triggers an internal update for all paint instances that have been modified
+     * since the last update. It ensures that the canvas state is ready for accurate rendering.
+     *
+     * @retval Result::InsufficientCondition The canvas is not properly prepared.
+     *         This may occur if the canvas target has not been set or if the update is called during drawing.
+     *         Call Canvas::sync() before trying.
+     *
+     * @note Only paint objects that have been changed will be processed.
+     * @note If the canvas is configured with multiple threads, the update may be performed asynchronously.
+     *
+     * @see Canvas::sync()
      */
     Result update() noexcept;
 
     /**
-     * @brief Requests the canvas to render Paint objects.
+     * @brief Requests the canvas to render the Paint objects.
      *
      * @param[in] clear If @c true, clears the target buffer to zero before drawing.
      *
+     * @retval Result::InsufficientCondition The canvas is not properly prepared.
+     *         This may occur if Canvas::target() has not been set or if draw() is called multiple times
+     *         without calling Canvas::sync() in between.
+     *
      * @note Clearing the buffer is unnecessary if the canvas will be fully covered 
-     *       with opaque content, which can improve performance.
-     * @note Drawing may be asynchronous if the thread count is greater than zero. 
-     *       To ensure drawing is complete, call sync() afterwards.
+     *       with opaque content. Skipping the clear can improve performance.
+     * @note Drawing may be performed asynchronously if the thread count is greater than zero.
+     *       To ensure the drawing process is complete, call sync() afterwards.
+     * @note If the canvas has not been updated prior to Canvas::draw(), it may implicitly perform Canvas::update().
      *
      * @see Canvas::sync()
+     * @see Canvas::update()
      */
     Result draw(bool clear = false) noexcept;
 
     /**
-     * @brief Sets the drawing region in the canvas.
+     * @brief Sets the drawing region of the canvas.
      *
-     * This function defines the rectangular area of the canvas that will be used for drawing operations.
-     * The specified viewport is used to clip the rendering output to the boundaries of the rectangle.
+     * This function defines a rectangular area of the canvas to be used for drawing operations.
+     * The specified viewport clips rendering output to the boundaries of that rectangle.
+     *
+     * Please note that changing the viewport is only allowed at the beginning of the rendering sequence—that is, after calling Canvas::sync().
      *
      * @param[in] x The x-coordinate of the upper-left corner of the rectangle.
      * @param[in] y The y-coordinate of the upper-left corner of the rectangle.
      * @param[in] w The width of the rectangle.
      * @param[in] h The height of the rectangle.
      *
+     * @retval Result::InsufficientCondition If the canvas is not in a synced state.
+     *
+     * @see Canvas::sync()
      * @see SwCanvas::target()
      * @see GlCanvas::target()
      * @see WgCanvas::target()
      *
-     * @warning It's not allowed to change the viewport during Canvas::push() - Canvas::sync() or Canvas::update() - Canvas::sync().
+     * @warning Changing the viewport is not allowed after calling Canvas::push(),
+     *          Canvas::remove(), Canvas::update(), or Canvas::draw().
      *
-     * @note When resetting the target, the viewport will also be reset to the target size.
+     * @note When the target is reset, the viewport will also be reset to match the target size.
      * @since 0.15
      */
     Result viewport(int32_t x, int32_t y, int32_t w, int32_t h) noexcept;
@@ -856,8 +899,6 @@ public:
      *
      * The Canvas rendering can be performed asynchronously. To make sure that rendering is finished,
      * the sync() must be called after the draw() regardless of threading.
-     *
-     * @retval Result::InsufficientCondition: The canvas is either already in sync condition or in a damaged condition (a draw is required before syncing).
      *
      * @see Canvas::draw()
      */
@@ -1140,21 +1181,37 @@ public:
     Result appendPath(const PathCommand* cmds, uint32_t cmdCnt, const Point* pts, uint32_t ptsCnt) noexcept;
 
     /**
-     * @brief Sets the stroke width for all of the figures from the path.
+     * @brief Sets the stroke width for the path.
      *
-     * @param[in] width The width of the stroke. The default value is 0.
+     * This function defines the thickness of the stroke applied to all figures
+     * in the path object. A stroke is the outline drawn along the edges of the
+     * path's geometry.
      *
+     * @param[in] width The width of the stroke in pixels. Must be positive value. (The default is 0)
+     *
+     * @note A value of @p width 0 disables the stroke.
+     *
+     * @see strokeFill()
      */
     Result strokeWidth(float width) noexcept;
 
     /**
-     * @brief Sets the color of the stroke for all of the figures from the path.
+     * @brief Sets the stroke color for the path.
+     *
+     * This function defines the RGBA color of the stroke applied to all figures
+     * in the path object. The stroke color is used when rendering the outline
+     * of the path geometry.
      *
      * @param[in] r The red color channel value in the range [0 ~ 255]. The default value is 0.
      * @param[in] g The green color channel value in the range [0 ~ 255]. The default value is 0.
      * @param[in] b The blue color channel value in the range [0 ~ 255]. The default value is 0.
      * @param[in] a The alpha channel value in the range [0 ~ 255], where 0 is completely transparent and 255 is opaque. The default value is 0.
      *
+     * @note If the stroke width is 0 (default), the stroke will not be visible regardless of the color.
+     * @note Either a solid color or a gradient fill is applied, depending on what was set as last.
+     *
+     * @see strokeWidth()
+     * @see strokeFill(Fill* f)
      */
     Result strokeFill(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) noexcept;
 
@@ -1163,7 +1220,12 @@ public:
      *
      * @param[in] f The gradient fill.
      *
-     * @retval Result::MemoryCorruption In case a @c nullptr is passed as the argument.
+     * @retval Result::InvalidArgument In case a @c nullptr is passed as the argument.
+     *
+     * @note If the stroke width is 0 (default), the stroke will not be visible regardless of the color.
+     * @note Either a solid color or a gradient fill is applied, depending on what was set as last.
+     *
+     * @see strokeFill(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
      */
     Result strokeFill(Fill* f) noexcept;
 
@@ -1477,6 +1539,50 @@ public:
     Result size(float* w, float* h) const noexcept;
 
     /**
+     * @brief Sets the normalized origin point of the Picture object.
+     *
+     * This method defines the origin point of the Picture using normalized coordinates.
+     * Unlike a typical pivot point used only for transformations, this origin affects both
+     * the transformation behavior and the actual rendering position of the Picture.
+     *
+     * The specified origin becomes the reference point for positioning the Picture on the canvas.
+     * For example, setting the origin to (0.5f, 0.5f) moves the visual center of the picture
+     * to the position specified by Paint::translate().
+     *
+     * The coordinates are given in a normalized range relative to the picture's bounds:
+     * - (0.0f, 0.0f): top-left corner
+     * - (0.5f, 0.5f): center
+     * - (1.0f, 1.0f): bottom-right corner
+     *
+     * @param[in] x The normalized x-coordinate of the origin point (range: 0.0f to 1.0f).
+     * @param[in] y The normalized y-coordinate of the origin point (range: 0.0f to 1.0f).
+     *
+     * @note This origin directly affects how the Picture is placed on the canvas when using
+     *       transformations such as translate(), rotate(), or scale().
+     *
+     * @see Paint::translate()
+     * @see Paint::rotate()
+     * @see Paint::scale()
+     *
+     * @since 1.0
+     */
+    Result origin(float x, float y) noexcept;
+
+    /**
+     * @brief Gets the normalized origin point of the Picture object.
+     *
+     * This method retrieves the current origin point of the Picture, expressed
+     * in normalized coordinates relative to the picture’s bounds.
+     *
+     * @param[out] x The normalized x-coordinate of the origin (range: 0.0f to 1.0f).
+     * @param[out] y The normalized y-coordinate of the origin (range: 0.0f to 1.0f).
+     *
+     * @see origin()
+     * @since 1.0
+     */
+    Result origin(float* x, float* y) const noexcept;
+
+    /**
      * @brief Loads raw image data in a specific format from a memory block of the given size.
      *
      * ThorVG efficiently caches the loaded data, using the provided @p data address as a key
@@ -1492,7 +1598,7 @@ public:
      *
      * @since 0.9
      */
-    Result load(uint32_t* data, uint32_t w, uint32_t h, ColorSpace cs, bool copy = false) noexcept;
+    Result load(const uint32_t* data, uint32_t w, uint32_t h, ColorSpace cs, bool copy = false) noexcept;
 
     /**
      * @brief Retrieve a paint object from the Picture scene by its Unique ID.
@@ -1649,30 +1755,44 @@ class TVG_API Text : public Paint
 {
 public:
     /**
-     * @brief Sets the font properties for the text.
+     * @brief Sets the font family for the text.
      *
-     * This function allows you to define the font characteristics used for text rendering.
-     * It sets the font name, size and optionally the style.
+     * This function specifies the name of the font to be used when rendering text.
      *
-     * @param[in] name The name of the font. This should correspond to a font available in the canvas.
-     *                 If set to @c nullptr, ThorVG will attempt to select a fallback font available on the system.
-     * @param[in] size The size of the font in points. This determines how large the text will appear.
-     * @param[in] style The style of the font. It can be used to set the font to 'italic'.
-     *                  If not specified, the default style is used. Only 'italic' style is supported currently.
+     * @param[in] name The name of the font. This should match a font available through the canvas backend.
+     *                 If set to @c nullptr, ThorVG will attempt to select a fallback font available on the engine.
      *
      * @retval Result::InsufficientCondition when the specified @p name cannot be found.
      *
-     * @note If the @p name is not specified, ThorVG will select any available font candidate.
-     * @since 1.0
+     * @note This function only sets the font family name. Use @ref size() to define the font size.
+     * @note If the @p name is not specified, ThorVG will select an available fallback font.
      *
-     * @code
-     * // Tip for fallback support to use any available font.
-     * if (text->font("Arial", 24) != tvg::Result::Success) {
-     *     text->font(nullptr, 24);
-     * }
-     * @endcode
+     * @see Text::size()
+     * @see Text::load()
+     *
+     * @since 1.0
      */
-    Result font(const char* name, float size, const char* style = nullptr) noexcept;
+    Result font(const char* name) noexcept;
+
+    /**
+     * @brief Sets the font size for the text.
+     *
+     * This function sets the font size used during text rendering.
+     * The size is specified in point units, and supports floating-point precision
+     * for smooth scaling and animation effects.
+     *
+     * @param[in] size The font size in points. Must be greater than 0.0.
+     *
+     * @retval Result::InvalidArguments if the @p size is less than or equal to 0.
+     *
+     * @note Use this function in combination with @ref font() to fully define text appearance.
+     * @note Fractional sizes (e.g., 12.5) are supported for sub-pixel rendering and animations.
+     *
+     * @see Text::font()
+     *
+     * @since 1.0
+     */
+    Result size(float size) noexcept;
 
     /**
      * @brief Assigns the given unicode text to be rendered.
@@ -1687,6 +1807,79 @@ public:
     Result text(const char* text) noexcept;
 
     /**
+     * @brief Sets text alignment or anchor per axis.
+     *
+     * If layout width/height is set on an axis, align within the layout box.
+     * Otherwise, treat it as an anchor within the text bounds which point of
+     * the text box is pinned to the paint position.
+     *
+     * @param[in] x Horizontal alignment/anchor in [0..1]: 0=left/start, 0.5=center, 1=right/end. (Default is 0)
+     * @param[in] y Vertical alignment/anchor in [0..1]: 0=top, 0.5=middle, 1=bottom. (Default is 0)
+     *
+     * @note Experimental API
+     *
+     * @see layout()
+     */
+    Result align(float x, float y) noexcept;
+
+    /**
+     * @brief Sets the virtual layout box (constraints) for the text.
+     *
+     * If width/height is set on an axis, that axis is constrained by a virtual layout box and
+     * the text may wrap/align inside it. If width/height == 0, the axis is
+     * unconstrained and @ref align() acts as an anchor on that axis.
+     *
+     * @param[in] w Layout width in user space. Use 0 for no horizontal constraint. (Default is 0)
+     * @param[in] h Layout height in user space. Use 0 for no vertical constraint. (Default is 0)
+     *
+     * @note This defines constraints only; alignment/anchoring is controlled by @ref align().
+     * @note Experimental API
+     *
+     * @see align()
+     */
+    Result layout(float w, float h) noexcept;
+
+    /**
+     * @brief Apply an italic (slant) transformation to the text.
+     *
+     * This function applies a shear transformation to simulate an italic (oblique) style
+     * for the current text object. The shear factor determines the degree of slant
+     * applied along the X-axis.
+     *
+     * @param[in] shear The shear factor to apply. A value of 0.0 applies no slant, while values around 0.5 result in a strong slant.
+     *                  Must be in the range [0.0, 0.5]. Default value is 0.18.
+     *
+     * @note The @p shear factor will be clamped to the valid range if it exceeds the limits.
+     * @note This does not require the font itself to be italic.
+     *       It visually simulates the effect by applying a transformation matrix.
+     *
+     * @warning Excessive slanting may cause visual distortion depending on the font and size.
+     *
+     * @see Text::font()
+     *
+     * @since 1.0
+     */
+    Result italic(float shear = 0.18f) noexcept;
+
+    /**
+     * @brief Sets an outline (stroke) around the text object.
+     *
+     * This function adds an outline to the text with the specified width and RGB color.
+     * The outline enhances the visibility of the text by rendering a stroke around its glyphs.
+     *
+     * @param width The width of the outline. Must be positive value. (The default is 0)
+     * @param r     Red component of the outline color (0–255).
+     * @param g     Green component of the outline color (0–255).
+     * @param b     Blue component of the outline color (0–255).
+     *
+     * @note To disable the outline, set @p width to 0.
+     * @see Text::fill() to set the main text fill color.
+     *
+     * @since 1.0
+     */
+    Result outline(float width, uint8_t r, uint8_t g, uint8_t b) noexcept;
+
+    /**
      * @brief Sets the text color.
      *
      * @param[in] r The red color channel value in the range [0 ~ 255]. The default value is 0.
@@ -1694,6 +1887,7 @@ public:
      * @param[in] b The blue color channel value in the range [0 ~ 255]. The default value is 0.
      *
      * @see Text::font()
+     * @see Text::outline()
      *
      * @since 0.15
      */
@@ -1831,10 +2025,18 @@ public:
     Result target(uint32_t* buffer, uint32_t stride, uint32_t w, uint32_t h, ColorSpace cs) noexcept;
 
     /**
-     * @brief Creates a new SwCanvas object.
+     * @brief Creates a new SwCanvas object with optional rendering engine settings.
+     *
+     * This method generates a software canvas instance that can be used for drawing vector graphics.
+     * It accepts an optional parameter @p op to choose between different rendering engine behaviors.
+     *
+     * @param[in] op The rendering engine option. Default is @c EngineOption::Default.
+     *
      * @return A new SwCanvas object.
+     *
+     * @see enum EngineOption
      */
-    static SwCanvas* gen() noexcept;
+    static SwCanvas* gen(EngineOption op = EngineOption::Default) noexcept;
 
     _TVG_DECLARE_PRIVATE(SwCanvas);
 };

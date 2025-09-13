@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.Utils
 
 open class UpEditFab : FloatingActionButton {
@@ -60,8 +61,7 @@ open class UpEditFab : FloatingActionButton {
         private var scrollMinOffset = Utils.dp(2f)
 
         private fun isAllowScrollIntercept(minDelay: Long): Boolean {
-            return mLastInterceptTime == null || System.currentTimeMillis() - (mLastInterceptTime
-                ?: 0) > minDelay
+            return mLastInterceptTime == null || System.currentTimeMillis() - mLastInterceptTime.orZero() > minDelay
         }
 
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {

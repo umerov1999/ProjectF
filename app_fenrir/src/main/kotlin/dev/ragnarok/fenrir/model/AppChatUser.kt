@@ -4,6 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import dev.ragnarok.fenrir.api.model.interfaces.IdentificableOwner
 import dev.ragnarok.fenrir.getBoolean
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.putBoolean
 
 class AppChatUser : Parcelable, IdentificableOwner {
@@ -62,7 +63,7 @@ class AppChatUser : Parcelable, IdentificableOwner {
     }
 
     override fun getOwnerObjectId(): Long {
-        return member?.ownerId ?: 0
+        return member?.ownerId.orZero()
     }
 
     fun setJoin_date(join_date: Long): AppChatUser {

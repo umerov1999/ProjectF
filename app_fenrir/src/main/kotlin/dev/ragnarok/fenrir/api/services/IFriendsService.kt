@@ -58,7 +58,7 @@ class IFriendsService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/friends.getLists
+    //https://vk.ru/dev/friends.getLists
     fun getLists(
         userId: Long?,
         returnSystem: Int?
@@ -71,7 +71,7 @@ class IFriendsService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/friends.delete
+    //https://vk.ru/dev/friends.delete
     fun delete(userId: Long): Flow<BaseResponse<DeleteFriendResponse>> {
         return rest.request(
             "friends.delete",
@@ -80,7 +80,7 @@ class IFriendsService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/friends.add
+    //https://vk.ru/dev/friends.add
     fun add(
         userId: Long,
         text: String?,
@@ -105,7 +105,7 @@ class IFriendsService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/friends.search
+    //https://vk.ru/dev/friends.search
     fun search(
         userId: Long,
         query: String?,
@@ -134,7 +134,7 @@ class IFriendsService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/friends.getByPhones
+    //https://vk.ru/dev/friends.getByPhones
     fun getByPhones(
         phones: String?,
         fields: String?

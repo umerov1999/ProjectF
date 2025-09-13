@@ -17,7 +17,6 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getDialogsPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getDocumentsPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getFeedPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getFriendsFollowersPlace
-import dev.ragnarok.fenrir.place.PlaceFactory.getNewsfeedCommentsPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getNotificationsPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getPreferencesPlace
@@ -89,7 +88,6 @@ internal class UISettings(context: Context) : IUISettings {
                 )
 
                 Place.NOTIFICATIONS -> return getNotificationsPlace(accountId)
-                Place.NEWSFEED_COMMENTS -> return getNewsfeedCommentsPlace(accountId)
                 Place.COMMUNITIES -> return getCommunitiesPlace(accountId, accountId)
                 Place.VK_PHOTO_ALBUMS -> return getVKPhotoAlbumsPlace(
                     accountId,
@@ -123,8 +121,7 @@ internal class UISettings(context: Context) : IUISettings {
             "9" -> getDocumentsPlace(accountId, accountId, null)
             "10" -> getBookmarksPlace(accountId, FaveTabsFragment.TAB_PAGES)
             "11" -> getSearchPlace(accountId, SearchTabsFragment.TAB_PEOPLE)
-            "12" -> getNewsfeedCommentsPlace(accountId)
-            "13" -> getOwnerWallPlace(accountId, accountId, null)
+            "12" -> getOwnerWallPlace(accountId, accountId, null)
             else -> getDialogsPlace(accountId, accountId, null)
         }
     }

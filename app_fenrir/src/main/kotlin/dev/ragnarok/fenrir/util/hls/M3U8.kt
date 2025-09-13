@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.util.hls
 
 import com.google.common.io.ByteStreams
 import dev.ragnarok.fenrir.Constants
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.Utils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -229,7 +230,7 @@ class M3U8 {
                                 for (i in iv.indices) {
                                     iv[i] =
                                         ivstr?.substring(i * 2, (i + 1) * 2)?.toInt(16)?.toByte()
-                                            ?: 0
+                                            .orZero()
                                 }
                             } else {
                                 Arrays.fill(iv, 0.toByte())

@@ -4,8 +4,6 @@ import dev.ragnarok.fenrir.api.Fields
 import dev.ragnarok.fenrir.api.IServiceProvider
 import dev.ragnarok.fenrir.api.TokenType
 import dev.ragnarok.fenrir.api.interfaces.INewsfeedApi
-import dev.ragnarok.fenrir.api.model.Items
-import dev.ragnarok.fenrir.api.model.VKApiFeedList
 import dev.ragnarok.fenrir.api.model.response.IgnoreItemResponse
 import dev.ragnarok.fenrir.api.model.response.NewsfeedBanResponse
 import dev.ragnarok.fenrir.api.model.response.NewsfeedCommentsResponse
@@ -19,21 +17,6 @@ import kotlin.math.abs
 
 internal class NewsfeedApi(accountId: Long, provider: IServiceProvider) :
     AbsApi(accountId, provider), INewsfeedApi {
-    override fun getLists(listIds: Collection<Int>?): Flow<Items<VKApiFeedList>> {
-        return provideService(INewsfeedService(), TokenType.USER)
-            .flatMapConcat {
-                it.getLists(join(listIds, ","), 1)
-                    .map(extractResponseWithErrorHandling())
-            }
-    }
-
-    override fun saveList(title: String?, listIds: Collection<Long>?): Flow<Int> {
-        return provideService(INewsfeedService(), TokenType.USER)
-            .flatMapConcat {
-                it.saveList(title, join(listIds, ","))
-                    .map(extractResponseWithErrorHandling())
-            }
-    }
 
     override fun addBan(listIds: Collection<Long>): Flow<Int> {
         val users: ArrayList<Long> = ArrayList()
@@ -48,14 +31,6 @@ internal class NewsfeedApi(accountId: Long, provider: IServiceProvider) :
         return provideService(INewsfeedService(), TokenType.USER)
             .flatMapConcat {
                 it.addBan(join(users, ","), join(groups, ","))
-                    .map(extractResponseWithErrorHandling())
-            }
-    }
-
-    override fun deleteList(list_id: Int?): Flow<Int> {
-        return provideService(INewsfeedService(), TokenType.USER)
-            .flatMapConcat {
-                it.deleteList(list_id)
                     .map(extractResponseWithErrorHandling())
             }
     }
@@ -88,33 +63,6 @@ internal class NewsfeedApi(accountId: Long, provider: IServiceProvider) :
                 it.search(
                     query, integerFromBoolean(extended), count, latitude, longitude,
                     startTime, endTime, startFrom, fields
-                )
-                    .map(extractResponseWithErrorHandling())
-            }
-    }
-
-    override fun getComments(
-        count: Int?,
-        filters: String?,
-        reposts: String?,
-        startTime: Long?,
-        endTime: Long?,
-        lastCommentsCount: Int?,
-        startFrom: String?,
-        fields: String?
-    ): Flow<NewsfeedCommentsResponse> {
-        return provideService(INewsfeedService(), TokenType.USER)
-            .flatMapConcat {
-                it.getComments(
-                    count,
-                    filters,
-                    reposts,
-                    startTime,
-                    endTime,
-                    lastCommentsCount,
-                    startFrom,
-                    fields,
-                    null
                 )
                     .map(extractResponseWithErrorHandling())
             }
@@ -164,20 +112,6 @@ internal class NewsfeedApi(accountId: Long, provider: IServiceProvider) :
                     startFrom,
                     count,
                     fields
-                )
-                    .map(extractResponseWithErrorHandling())
-            }
-    }
-
-    override fun getRecommended(
-        startTime: Long?, endTime: Long?,
-        maxPhotoCount: Int?, startFrom: String?, count: Int?, fields: String?
-    ): Flow<NewsfeedResponse> {
-        return provideService(INewsfeedService(), TokenType.USER)
-            .flatMapConcat {
-                it.getRecommended(
-                    startTime, endTime,
-                    maxPhotoCount, startFrom, count, fields
                 )
                     .map(extractResponseWithErrorHandling())
             }

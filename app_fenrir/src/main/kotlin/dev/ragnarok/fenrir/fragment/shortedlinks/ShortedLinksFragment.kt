@@ -25,6 +25,7 @@ import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.listener.TextWatcherAdapter
 import dev.ragnarok.fenrir.model.ShortLink
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.toColor
@@ -143,7 +144,7 @@ class ShortedLinksFragment : BaseMvpFragment<ShortedLinksPresenter, IShortedLink
 
     override fun updateLink(url: String?) {
         mLink?.setText(url)
-        mLink?.setSelection(mLink?.text?.length ?: 0)
+        mLink?.setSelection(mLink?.text?.length.orZero())
         do_Short?.isEnabled = false
         do_Validate?.isEnabled = false
     }

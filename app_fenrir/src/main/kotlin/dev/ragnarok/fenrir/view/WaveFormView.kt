@@ -1,12 +1,14 @@
 package dev.ragnarok.fenrir.view
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.Property
+import android.view.MotionEvent
 import android.view.View
 import androidx.annotation.ColorInt
 import dev.ragnarok.fenrir.R
@@ -57,8 +59,15 @@ class WaveFormView @JvmOverloads constructor(context: Context, attrs: AttributeS
     private var mWaveForm = ByteArray(0)
     private var mMaxValue = 50f
     private var mCurrentActiveProgress = 0f
+    private var mDuration = 0L
     private var mDisplayedProgress = 0f
     private var mAnimator = WeakReference<ObjectAnimator?>(null)
+    private var layoutWidth: Int = 0
+    private var layoutHeight: Int = 0
+    private var pLeft = 0
+    private var thumbProgress = 0F
+    private var isDragging = false
+    private var listener: WaveFormViewListener? = null
     private fun init(context: Context, attrs: AttributeSet?) {
         val a = context.theme.obtainStyledAttributes(attrs, R.styleable.WaveFormView, 0, 0)
         try {
@@ -82,14 +91,78 @@ class WaveFormView @JvmOverloads constructor(context: Context, attrs: AttributeS
         }
     }
 
+    private fun recalculateThumb(eventX: Float, sectionWidth: Float, waves: Int) {
+        var draggingThumbX = (eventX - pLeft).toInt()
+        if (draggingThumbX < 0) {
+            draggingThumbX = 0
+        } else if (draggingThumbX > layoutWidth) {
+            draggingThumbX = layoutWidth
+        }
+        thumbProgress = draggingThumbX.toFloat() / (sectionWidth * waves)
+        mDisplayedProgress = thumbProgress
+        invalidate()
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (mCurrentActiveProgress <= 0f || mDuration <= 1) {
+            return super.onTouchEvent(event)
+        }
+        val sectionWidth = calculateSectionWidth()
+        return if (event.action == MotionEvent.ACTION_DOWN) {
+            isDragging = true
+            parent?.requestDisallowInterceptTouchEvent(true)
+            releaseAnimation()
+            recalculateThumb(event.x, sectionWidth, mWaveForm.size * 3)
+            true
+        } else if (event.action == MotionEvent.ACTION_UP || event.action == MotionEvent.ACTION_CANCEL) {
+            if (isDragging) {
+                parent?.requestDisallowInterceptTouchEvent(false)
+                if (event.action == MotionEvent.ACTION_UP && listener != null) {
+                    listener?.onSeek((mDuration.toFloat() * thumbProgress).toLong())
+                    recalculateThumb(event.x, sectionWidth, mWaveForm.size * 3)
+                } else {
+                    mDisplayedProgress = mCurrentActiveProgress
+                    invalidate()
+                }
+                isDragging = false
+                true
+            } else {
+                super.onTouchEvent(event)
+            }
+        } else if (event.action == MotionEvent.ACTION_MOVE) {
+            if (isDragging) {
+                recalculateThumb(event.x, sectionWidth, mWaveForm.size * 3)
+                true
+            } else {
+                super.onTouchEvent(event)
+            }
+        } else {
+            super.onTouchEvent(event)
+        }
+    }
+
     private fun setCurrentActiveProgress(progress: Float) {
         if (mCurrentActiveProgress == progress) {
             return
         }
         mCurrentActiveProgress = progress
-        mDisplayedProgress = progress
-        releaseAnimation()
-        invalidate()
+        if (!isDragging) {
+            mDisplayedProgress = progress
+            releaseAnimation()
+            invalidate()
+        }
+    }
+
+    fun setListener(listener: WaveFormViewListener) {
+        this.listener = listener
+    }
+
+    fun setDuration(duration: Long) {
+        if (mDuration == duration) {
+            return
+        }
+        mDuration = duration
     }
 
     private fun releaseAnimation() {
@@ -105,11 +178,13 @@ class WaveFormView @JvmOverloads constructor(context: Context, attrs: AttributeS
             return
         }
         mCurrentActiveProgress = progress
-        val animator = ObjectAnimator.ofFloat(this, PROGRESS_PROPERTY, progress)
-        mAnimator = WeakReference(animator)
-        animator.duration = 900
-        //animator.setInterpolator(new AccelerateInterpolator(1.75f));
-        animator.start()
+        if (!isDragging) {
+            val animator = ObjectAnimator.ofFloat(this, PROGRESS_PROPERTY, progress)
+            mAnimator = WeakReference(animator)
+            animator.duration = 900
+            //animator.setInterpolator(new AccelerateInterpolator(1.75f));
+            animator.start()
+        }
     }
 
     fun setCurrentActiveProgress(progress: Float, anim: Boolean) {
@@ -122,6 +197,11 @@ class WaveFormView @JvmOverloads constructor(context: Context, attrs: AttributeS
 
     fun setSectionCount(sectionCount: Int) {
         mSectionCount = sectionCount
+    }
+
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        layoutWidth = right - left
+        layoutHeight = bottom - top
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -144,7 +224,7 @@ class WaveFormView @JvmOverloads constructor(context: Context, attrs: AttributeS
 
     private fun calculateSectionWidth(): Float {
         val count = (mWaveForm.size * 3.03 - 1).toInt()
-        return width.toFloat() / count.toFloat()
+        return layoutWidth.toFloat() / count.toFloat()
     }
 
     fun setWaveForm(waveForm: ByteArray) {
@@ -188,6 +268,10 @@ class WaveFormView @JvmOverloads constructor(context: Context, attrs: AttributeS
 
     fun setNoActiveColor(@ColorInt noActiveColor: Int) {
         mNoActiveColor = noActiveColor
+    }
+
+    interface WaveFormViewListener {
+        fun onSeek(position: Long)
     }
 
     init {

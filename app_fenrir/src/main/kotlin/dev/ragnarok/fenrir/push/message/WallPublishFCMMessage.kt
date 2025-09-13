@@ -53,7 +53,7 @@ class WallPublishFCMMessage {
     }
 
     private fun notifyImpl(context: Context, community: Community, bitmap: Bitmap?) {
-        val url = "vk.com/$place"
+        val url = "vk.ru/$place"
         val link = parse(url)
         if (link !is WallPostLink) {
             logThrowable("Push issues", Exception("Unknown place: $place"))

@@ -212,7 +212,6 @@
     <string name="refresh">Обновить</string>
 
     <string name="set_groupchat_title">Укажите тему беседы</string>
-    <string name="set_news_list_title">Укажите название списка</string>
 
     <string name="copied_to_clipboard">Скопировано в буфер обмена</string>
 
@@ -1010,7 +1009,6 @@
     <string name="search_option_empty_text">Опции поиска недоступны</string>
     <string name="comment_editing_title">Редактирование</string>
     <string name="saving">Сохранение</string>
-    <string name="drawer_newsfeed_comments">Комментарии</string>
     <string name="suggests">Предложенные</string>
     <string name="doc_filter_all">Все документы</string>
     <string name="doc_filter_text">Текст</string>
@@ -1444,7 +1442,6 @@
     <string name="later">Заявка принята, ожидайте…</string>
     <string name="work_manager">Fenrir Work</string>
     <string name="channel_keep_work_manager">WorkManager</string>
-    <string name="action_create_list">Создать список</string>
     <string name="player_has_background">Фон плеера</string>
     <string name="show_mutual_count">Показывать общих друзей</string>
     <string name="show_mutual_count_summary">На странице пользователя</string>
@@ -1659,7 +1656,7 @@
     <string name="sections">Секции</string>
     <string name="do_unimportant">Убрать из важных?</string>
     <string name="enter_to_group_chat">Вступить в групповой чат?</string>
-    <string name="interesting">интересные</string>
+    <string name="interesting">Интересные</string>
     <string name="catalog_v2_edit_list">Редактировать список</string>
     <string name="turn_on">Включить</string>
     <string name="photos_with_user">Фотографии с пользователем</string>

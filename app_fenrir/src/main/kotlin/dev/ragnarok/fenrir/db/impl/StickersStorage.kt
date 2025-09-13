@@ -171,7 +171,7 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
         }
     }
 
-    override fun getKeywordsStickers(accountId: Long, s: String?): Flow<List<StickerDboEntity>> {
+    override fun getKeywordsStickers(accountId: Long, s: String): Flow<List<StickerDboEntity>> {
         return flow {
             val where = "${StickersKeywordsColumns.ACCOUNT_ID} = ?"
             val args = arrayOf(accountId.toString())
@@ -186,12 +186,12 @@ internal class StickersStorage(base: AppStorages) : AbsStorage(base), IStickersS
             )
             val stickers: MutableList<StickerDboEntity> = ArrayList(safeCountOf(cursor))
             while (cursor.moveToNext()) {
-                if (!isActive()) {
+                if (!isActive() || stickers.size > 10) {
                     break
                 }
                 val entity = mapStickersKeywords(cursor)
                 for (v in entity.keywords) {
-                    if (s.equals(v, ignoreCase = true)) {
+                    if (v.contains(s, ignoreCase = true)) {
                         entity.stickers.let { stickers.addAll(it) }
                         cursor.close()
                         emit(stickers)

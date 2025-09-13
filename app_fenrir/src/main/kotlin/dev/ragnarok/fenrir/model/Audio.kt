@@ -198,7 +198,7 @@ class Audio : AbsModel {
         get() {
             if (url.isNullOrEmpty()) {
                 return R.drawable.audio_died
-            } else if ("https://vk.com/mp3/audio_api_unavailable.mp3" == url) {
+            } else if (url?.contains("audio_api_unavailable") == true) {
                 return R.drawable.report
             }
             return R.drawable.song

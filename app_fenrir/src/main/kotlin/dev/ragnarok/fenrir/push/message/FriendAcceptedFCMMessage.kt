@@ -85,7 +85,7 @@ class FriendAcceptedFCMMessage {
         //key: image_type, value: user, class: class java.lang.String
         //key: from_id, value: 339247963, class: class java.lang.String
         //key: id, value: friend_339247963, class: class java.lang.String
-        //key: url, value: https://vk.com/id339247963, class: class java.lang.String
+        //key: url, value: https://vk.ru/id339247963, class: class java.lang.String
         //key: icon, value: done_24, class: class java.lang.String
         //key: time, value: 1540738607, class: class java.lang.String
         //key: type, value: friend_accepted, class: class java.lang.String

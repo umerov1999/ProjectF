@@ -491,7 +491,7 @@ class IMessageService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/messages.getConversations
+    //https://vk.ru/dev/messages.getConversations
     fun getDialogs(
         offset: Int?,
         count: Int?,
@@ -510,7 +510,7 @@ class IMessageService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/messages.getConversationsById
+    //https://vk.ru/dev/messages.getConversationsById
     fun getConversationsById(
         peerIds: String?,
         extended: Int?,
@@ -611,7 +611,7 @@ class IMessageService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/messages.searchDialogs
+    //https://vk.ru/dev/messages.searchDialogs
     fun searchConversations(
         q: String?,
         count: Int?,

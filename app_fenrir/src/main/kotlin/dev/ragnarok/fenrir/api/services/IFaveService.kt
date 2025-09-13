@@ -226,7 +226,7 @@ class IFaveService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/fave.removePage
+    //https://vk.ru/dev/fave.removePage
     fun removePage(
         userId: Long?,
         groupId: Long?

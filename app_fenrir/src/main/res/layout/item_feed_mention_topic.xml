@@ -19,6 +19,7 @@
         android:orientation="vertical">
 
         <RelativeLayout
+            style='style="?android:attr/borderlessButtonStyle"'
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="16dp"
@@ -26,10 +27,46 @@
             android:paddingEnd="16dp"
             android:paddingBottom="8dp">
 
+            <LinearLayout
+                android:id="@+id/comments_counter_root"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/comments_counter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/font_size_additional"
+                    tools:text="1533" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_feed_comment_topic_comment_counter"
+                    app:tint="?android:textColorSecondary" />
+
+            </LinearLayout>
+
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/photo_owner_avatar"
+                android:id="@+id/owner_avatar"
                 android:layout_width="@dimen/avatar_size_small"
                 android:layout_height="@dimen/avatar_size_small"
+                android:background="@drawable/circle_back_white"
+                android:contentDescription="@null" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/creator_avatar"
+                android:layout_width="@dimen/avatar_size_min"
+                android:layout_height="@dimen/avatar_size_min"
+                android:layout_alignEnd="@id/owner_avatar"
+                android:layout_alignBottom="@id/owner_avatar"
                 android:background="@drawable/circle_back_white"
                 android:contentDescription="@null" />
 
@@ -38,56 +75,36 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="16dp"
-                android:layout_toEndOf="@id/photo_owner_avatar"
+                android:layout_toStartOf="@id/comments_counter_root"
+                android:layout_toEndOf="@id/owner_avatar"
                 android:orientation="vertical">
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/photo_owner_name"
+                    android:id="@+id/owner_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:ellipsize="end"
                     android:maxLines="1"
-                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textSize="@dimen/font_size_subtitle"
+                    android:textStyle="bold"
                     tools:text="Owner name" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/photo_datetime"
+                    android:id="@+id/title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:textSize="@dimen/font_size_additional"
                     tools:text="Today 19:26" />
 
             </LinearLayout>
 
         </RelativeLayout>
 
-        <dev.ragnarok.fenrir.view.AspectRatioImageView
-            android:id="@+id/photo_image"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:scaleType="centerCrop"
-            app:aspectRatioEnabled="true"
-            app:aspectRatioH="1"
-            app:aspectRatioW="1"
-            app:dominantMeasurement="width" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/photo_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:maxLines="1"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-            tools:text="Video title" />
-
         <include layout="@layout/line_divider" />
 
         <include
             android:id="@+id/comment_root"
-            layout="@layout/content_newsfeed_comment" />
+            layout="@layout/content_feed_mention" />
 
     </LinearLayout>
 

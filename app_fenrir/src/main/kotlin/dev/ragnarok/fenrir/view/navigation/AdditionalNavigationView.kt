@@ -397,7 +397,7 @@ class AdditionalNavigationView : AbsNavigationView, MenuListAdapter.ActionListen
     private fun getItemBySwitchableCategory(@SwitchableCategory type: String): AbsMenuItem? {
         return when (type) {
             SwitchableCategory.FRIENDS -> SECTION_ITEM_FRIENDS
-            SwitchableCategory.NEWSFEED_COMMENTS -> SECTION_ITEM_NEWSFEED_COMMENTS
+            SwitchableCategory.STORIES -> SECTION_ITEM_STORIES
             SwitchableCategory.GROUPS -> SECTION_ITEM_GROUPS
             SwitchableCategory.PHOTOS -> SECTION_ITEM_PHOTOS
             SwitchableCategory.VIDEOS -> SECTION_ITEM_VIDEOS

@@ -77,6 +77,7 @@ import dev.ragnarok.fenrir.model.Sticker.LocalSticker
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGSVGRender
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
 import dev.ragnarok.fenrir.settings.CurrentTheme
@@ -498,7 +499,7 @@ object Utils {
     }
 
     fun safeLengthOf(text: CharSequence?): Int {
-        return text?.length ?: 0
+        return text?.length.orZero()
     }
 
     inline fun <reified T> indexOf(data: List<T>?, predicate: (T) -> Boolean): Int {
@@ -552,15 +553,15 @@ object Utils {
     }
 
     fun safeCountOf(sparseArray: SparseArray<*>?): Int {
-        return sparseArray?.size ?: 0
+        return sparseArray?.size.orZero()
     }
 
     fun safeCountOf(map: Map<*, *>?): Int {
-        return map?.size ?: 0
+        return map?.size.orZero()
     }
 
     fun safeCountOf(cursor: Cursor?): Int {
-        return cursor?.count ?: 0
+        return cursor?.count.orZero()
     }
 
     fun startOfTodayMillis(): Long {
@@ -887,7 +888,7 @@ object Utils {
     }
 
     fun safeCountOf(collection: Collection<*>?): Int {
-        return collection?.size ?: 0
+        return collection?.size.orZero()
     }
 
     fun safeCountOfMultiple(vararg collections: Collection<*>?): Int {

@@ -40,7 +40,7 @@
 
         <include
             android:id="@+id/comment_root"
-            layout="@layout/content_newsfeed_comment" />
+            layout="@layout/content_feed_mention" />
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

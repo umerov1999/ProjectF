@@ -21,6 +21,7 @@ import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.ParcelableOwnerWrapper
 import dev.ragnarok.fenrir.model.Post
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
@@ -355,7 +356,7 @@ class WallPostPresenter(
     }
 
     fun fireCopyLinkClick() {
-        val link = String.format("vk.com/wall%s_%s", ownerId, postId)
+        val link = String.format("vk.ru/wall%s_%s", ownerId, postId)
         view?.copyLinkToClipboard(link)
     }
 
@@ -407,7 +408,7 @@ class WallPostPresenter(
             val finalType = type
             view?.let {
                 it.displayToolbarTitle(post?.authorName)
-                it.displayToolbarSubtitle(finalType, post?.date ?: 0)
+                it.displayToolbarSubtitle(finalType, post?.date.orZero())
             }
         } else {
             view?.let {

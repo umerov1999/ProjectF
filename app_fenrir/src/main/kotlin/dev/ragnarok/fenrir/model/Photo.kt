@@ -250,7 +250,7 @@ class Photo : AbsModel, ISomeones, ParcelNative.ParcelableNative {
     }
 
     fun generateWebLink(): String {
-        return String.format("vk.com/photo%s_%s", ownerId, id)
+        return String.format("vk.ru/photo%s_%s", ownerId, id)
     }
 
     override fun equals(other: Any?): Boolean {

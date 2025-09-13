@@ -300,10 +300,8 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
 
         override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
             val url = request.url.toString()
-            if (url == "vk.com" || url == "m.vk.com" || url.contains("github.com") || url.contains("vk.com/@") || url.contains(
-                    "vk.com/activation"
-                ) || url.contains("vk.com/login") || url.contains("login.vk.com") || url.contains(
-                    "vk.com/app"
+            if (Regex("((?:vk\\.(?:ru|com|me)/?$)|(?:github.com)|(?:vk\\.(?:ru|com|me)/(?:@|activation|login|app))|(?:login\\.vk\\.(?:ru|com|me)))").containsMatchIn(
+                    url
                 )
             ) {
                 view.loadUrl(url)
@@ -312,7 +310,7 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
             val link = parse(url)
             d(TAG, "shouldOverrideUrlLoading, link: $link, url: $url")
 
-            //link: null, url: https://vk.com/doc124456557_415878705
+            //link: null, url: https://vk.ru/doc124456557_415878705
             if (link == null) {
                 activity?.let { openLinkInBrowser(it, url) }
                 return true

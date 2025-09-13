@@ -8,7 +8,7 @@ import dev.ragnarok.fenrir.api.rest.IServiceRest
 import kotlinx.coroutines.flow.Flow
 
 class IDocsService : IServiceRest() {
-    //https://vk.com/dev/docs.delete
+    //https://vk.ru/dev/docs.delete
     fun delete(
         ownerId: Long?,
         docId: Int

@@ -54,6 +54,7 @@ import dev.ragnarok.fenrir.modalbottomsheetdialogfragment.OptionRequest
 import dev.ragnarok.fenrir.model.Account
 import dev.ragnarok.fenrir.model.SaveAccount
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.PlaceFactory.getPreferencesPlace
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.hasReadStoragePermission
@@ -66,7 +67,6 @@ import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentThem
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
 import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import java.util.Calendar
-import java.util.regex.Pattern
 
 class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IAccountsView,
     AccountAdapter.Callback,
@@ -133,7 +133,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            val accountFromTmp = presenter?.fireResetAndGetTempAccount() ?: 0L
+            val accountFromTmp = presenter?.fireResetAndGetTempAccount().orZero()
             if (accountFromTmp == 0L) {
                 return@registerForActivityResult
             }
@@ -651,16 +651,14 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
         if (result.resultCode == RESULT_OK) {
             val scanner = result.data?.extras?.getString(Extra.URL)
             if (scanner.nonNullNoEmpty()) {
-                val PATTERN: Pattern = Pattern.compile("qr\\.vk\\.com/w2a[?]q=(\\w+)")
-                val matcher = PATTERN.matcher(scanner)
+                val PATTERN = Regex("qr\\.vk\\.(?:ru|com|me)/w2a[?]q=(\\w+)")
                 try {
-                    if (matcher.find()) {
-                        matcher.group(1)
-                            ?.let {
-                                presenter?.fireAuthByQR(it)
-                                return@registerForActivityResult
-                            }
-                    }
+                    val matcher = PATTERN.find(scanner)
+                    matcher?.groupValues?.getOrNull(1)
+                        ?.let {
+                            presenter?.fireAuthByQR(it)
+                            return@registerForActivityResult
+                        }
                     showError(R.string.auth_by_qr_error)
                 } catch (e: Exception) {
                     showThrowable(e)

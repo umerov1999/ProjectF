@@ -34,7 +34,7 @@ class IStoreService : IServiceRest() {
         return rest.request(
             "store.getStickersKeywords",
             form(
-                "aliases" to 1,
+                "aliases" to 0,
                 "all_products" to 0,
                 "need_stickers" to 1
             ),

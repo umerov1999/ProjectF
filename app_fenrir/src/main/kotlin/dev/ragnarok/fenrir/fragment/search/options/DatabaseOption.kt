@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.fragment.search.options
 
 import android.os.Parcel
 import android.os.Parcelable
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.readTypedObjectCompat
 import dev.ragnarok.fenrir.writeTypedObjectCompat
 
@@ -55,7 +56,7 @@ class DatabaseOption : BaseOption {
     override fun hashCode(): Int {
         var result = super.hashCode()
         result = 31 * result + type
-        result = 31 * result + (value?.hashCode() ?: 0)
+        result = 31 * result + value?.hashCode().orZero()
         return result
     }
 

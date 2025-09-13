@@ -10,6 +10,7 @@ import android.os.IBinder
 import android.os.RemoteException
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.model.Audio
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.createPublishSubject
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.myEmit
@@ -425,7 +426,7 @@ object MusicPlaybackController {
 
     fun bufferPercent(): Int {
         try {
-            return mService?.bufferPercent ?: 0
+            return mService?.bufferPercent.orZero()
         } catch (_: RemoteException) {
         }
         return 0
@@ -433,7 +434,7 @@ object MusicPlaybackController {
 
     fun bufferPosition(): Long {
         try {
-            return mService?.bufferPosition ?: 0
+            return mService?.bufferPosition.orZero()
         } catch (_: RemoteException) {
         }
         return 0

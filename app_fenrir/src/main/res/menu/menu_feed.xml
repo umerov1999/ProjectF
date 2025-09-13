@@ -9,11 +9,6 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/action_create_list"
-        android:title="@string/action_create_list"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/action_feed_ban"
         android:title="@string/blocked"
         app:showAsAction="never" />

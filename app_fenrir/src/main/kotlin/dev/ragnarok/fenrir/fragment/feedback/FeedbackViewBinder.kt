@@ -3,6 +3,7 @@ package dev.ragnarok.fenrir.fragment.feedback
 import android.app.Activity
 import android.graphics.Typeface
 import android.text.Spannable
+import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
@@ -76,7 +77,7 @@ class FeedbackViewBinder(
         val actionLink = Link.startOf(action.length)
         action = action + SPACE + context.getString(R.string.video_dative)
         actionLink.end(action.length)
-        val actionSpannable = Spannable.Factory.getInstance().newSpannable(action)
+        val actionSpannable = SpannableStringBuilder(action)
         showAsLink(actionSpannable, actionLink)
         holder.cOwnerTime.setText(actionSpannable, TextView.BufferType.SPANNABLE)
         holder.cChangable.visibility = View.GONE
@@ -144,7 +145,7 @@ class FeedbackViewBinder(
         val actionLink = Link.startOf(action.length)
         action = action + SPACE + context.getString(R.string.photo_dative)
         actionLink.end(action.length)
-        val actionSpannable = Spannable.Factory.getInstance().newSpannable(action)
+        val actionSpannable = SpannableStringBuilder(action)
         showAsLink(actionSpannable, actionLink)
         holder.cOwnerTime.setText(actionSpannable, TextView.BufferType.SPANNABLE)
         holder.cChangable.visibility = View.GONE
@@ -206,7 +207,7 @@ class FeedbackViewBinder(
             }
         }
         actionLink.end(action.length)
-        val actionSpannable = Spannable.Factory.getInstance().newSpannable(action)
+        val actionSpannable = SpannableStringBuilder(action)
         showAsLink(actionSpannable, actionLink)
         holder.cOwnerTime.setText(actionSpannable, TextView.BufferType.SPANNABLE)
         holder.cChangable.visibility = View.GONE
@@ -386,7 +387,7 @@ class FeedbackViewBinder(
         val parentLink = Link.startOf(action.length)
         action = action + SPACE + context.getString(R.string.video_accusative)
         parentLink.end(action.length)
-        val spannable = Spannable.Factory.getInstance().newSpannable(action)
+        val spannable = SpannableStringBuilder(action)
         showAsLink(spannable, parentLink)
         val ownername = feedback?.fullAuthorName + SPACE + context.getString(R.string.commented)
         holder.cOwnerName.text = ownername
@@ -432,7 +433,7 @@ class FeedbackViewBinder(
         val parentLink = Link.startOf(action.length)
         action = action + SPACE + context.getString(R.string.photo_accusative)
         parentLink.end(action.length)
-        val spannable = Spannable.Factory.getInstance().newSpannable(action)
+        val spannable = SpannableStringBuilder(action)
         showAsLink(spannable, parentLink)
         holder.cOwnerName.text = feedback?.fullAuthorName
         holder.cOwnerText.setText(feedBackText, TextView.BufferType.SPANNABLE)
@@ -481,7 +482,7 @@ class FeedbackViewBinder(
             action + SPACE + parentText
         }
         parentLink.end(action.length)
-        val spannable = Spannable.Factory.getInstance().newSpannable(action)
+        val spannable = SpannableStringBuilder(action)
         showAsLink(spannable, parentLink)
         holder.cOwnerName.text = feedback?.fullAuthorName
         holder.cOwnerText.text = feedBackText
@@ -539,7 +540,7 @@ class FeedbackViewBinder(
         val parentLink = Link.startOf(action.length)
         action = action + SPACE + parentText
         parentLink.end(action.length)
-        val spannable = Spannable.Factory.getInstance().newSpannable(action)
+        val spannable = SpannableStringBuilder(action)
         showAsLink(spannable, parentLink)
         holder.cOwnerName.text = feedback?.fullAuthorName
         holder.cOwnerText.text = feedBackText
@@ -589,7 +590,7 @@ class FeedbackViewBinder(
         val parentLink = Link.startOf(action.length)
         action = action + SPACE + parentText
         parentLink.end(action.length)
-        val spannable = Spannable.Factory.getInstance().newSpannable(action)
+        val spannable = SpannableStringBuilder(action)
         showAsLink(spannable, parentLink)
         holder.cOwnerName.text = feedback?.fullAuthorName
         holder.cOwnerText.text = feedBackText
@@ -645,7 +646,7 @@ class FeedbackViewBinder(
         val parentLink = Link.startOf(action.length)
         action = action + SPACE + topic.title
         parentLink.end(action.length)
-        val spannable = Spannable.Factory.getInstance().newSpannable(action)
+        val spannable = SpannableStringBuilder(action)
         showAsLink(spannable, parentLink)
         holder.cOwnerName.text = feedback?.fullAuthorName
         holder.cOwnerTime.setText(spannable, TextView.BufferType.SPANNABLE)
@@ -687,7 +688,7 @@ class FeedbackViewBinder(
         val parentLink = Link.startOf(action.length)
         action = action + SPACE + parentText
         parentLink.end(action.length)
-        val spannable = Spannable.Factory.getInstance().newSpannable(action)
+        val spannable = SpannableStringBuilder(action)
         showAsLink(spannable, parentLink)
         holder.cOwnerName.text = feedback?.fullAuthorName
         holder.cOwnerText.text = feedBackText
@@ -724,7 +725,7 @@ class FeedbackViewBinder(
         val user = users?.get(0)
         var action = genFullUsersString(users.orEmpty())
         action = action + SPACE + context.getString(R.string.subscribed_to_your_updates)
-        val spannable = Spannable.Factory.getInstance().newSpannable(action)
+        val spannable = SpannableStringBuilder(action)
         holder.uName.setText(spannable, TextView.BufferType.SPANNABLE)
         showFirstUserAvatarOnImageView(notification.owners, holder.uAvatar)
         holder.uInfo.visibility = View.GONE
@@ -770,7 +771,7 @@ class FeedbackViewBinder(
         val user = owners?.get(0)
         var action = genFullUsersString(owners.orEmpty())
         action = action + SPACE + context.getString(R.string.accepted_friend_request)
-        val spannable = Spannable.Factory.getInstance().newSpannable(action)
+        val spannable = SpannableStringBuilder(action)
         holder.uName.setText(spannable, TextView.BufferType.SPANNABLE)
         showFirstUserAvatarOnImageView(owners, holder.uAvatar)
         holder.uInfo.visibility = View.GONE
@@ -801,7 +802,7 @@ class FeedbackViewBinder(
         }
         val postLink = Link.startOf(0)
         postLink.end(info.length)
-        val spannable = Spannable.Factory.getInstance().newSpannable(info)
+        val spannable = SpannableStringBuilder(info)
         showAsLink(spannable, postLink)
         holder.uName.text = action
         holder.uInfo.visibility = View.VISIBLE
@@ -832,7 +833,7 @@ class FeedbackViewBinder(
         val photoLink = Link.startOf(action.length)
         action = action + SPACE + context.getString(R.string.video_accusative)
         photoLink.end(action.length)
-        val spannable = Spannable.Factory.getInstance().newSpannable(action)
+        val spannable = SpannableStringBuilder(action)
         showAsLink(spannable, photoLink)
         holder.uName.setText(spannable, TextView.BufferType.SPANNABLE)
         holder.uTime.text = AppTextUtils.getDateFromUnixTime(notification.date)
@@ -858,7 +859,7 @@ class FeedbackViewBinder(
         val link = Link.startOf(action.length)
         action = action + SPACE + context.getString(R.string.photo_ablative)
         link.end(action.length)
-        val spannable = Spannable.Factory.getInstance().newSpannable(action)
+        val spannable = SpannableStringBuilder(action)
         showAsLink(spannable, link)
         holder.uName.setText(spannable, TextView.BufferType.SPANNABLE)
         holder.uTime.text = AppTextUtils.getDateFromUnixTime(notification.date)
@@ -883,7 +884,7 @@ class FeedbackViewBinder(
         val link = Link.startOf(action.length)
         action = action + SPACE + context.getString(R.string.video_ablative)
         link.end(action.length)
-        val spannable = Spannable.Factory.getInstance().newSpannable(action)
+        val spannable = SpannableStringBuilder(action)
         showAsLink(spannable, link)
         holder.uName.setText(spannable, TextView.BufferType.SPANNABLE)
         holder.uInfo.visibility = View.GONE
@@ -913,7 +914,7 @@ class FeedbackViewBinder(
             OwnerLinkSpanFactory.getTextWithCollapseOwnerLinks(postText)?.let { reduce(it) } ?: ""
         }
         link.end(info.length)
-        val spannable = Spannable.Factory.getInstance().newSpannable(info)
+        val spannable = SpannableStringBuilder(info)
         showAsLink(spannable, link)
         holder.uName.text = action
         holder.uInfo.visibility = View.VISIBLE
@@ -947,7 +948,7 @@ class FeedbackViewBinder(
         val photoLink = Link.startOf(action.length)
         action = action + SPACE + context.getString(R.string.photo_accusative)
         photoLink.end(action.length)
-        val spannable = Spannable.Factory.getInstance().newSpannable(action)
+        val spannable = SpannableStringBuilder(action)
         showAsLink(spannable, photoLink)
         holder.uName.setText(spannable, TextView.BufferType.SPANNABLE)
         holder.uInfo.visibility = View.GONE
@@ -1009,8 +1010,8 @@ class FeedbackViewBinder(
         val photoLink = Link.startOf(action.length)
         action = action + SPACE + context.getString(R.string.photo_dative)
         photoLink.end(action.length)
-        val spannable = Spannable.Factory.getInstance().newSpannable(action)
-        val commentSpan = Spannable.Factory.getInstance().newSpannable(commentText)
+        val spannable = SpannableStringBuilder(action)
+        val commentSpan = SpannableStringBuilder(commentText)
         showAsLink(commentSpan, commentLink)
         showAsLink(spannable, photoLink)
         holder.uName.setText(spannable, TextView.BufferType.SPANNABLE)
@@ -1057,8 +1058,8 @@ class FeedbackViewBinder(
         val photoLink = Link.startOf(action.length)
         action = action + SPACE + context.getString(R.string.video_dative)
         photoLink.end(action.length)
-        val spannable = Spannable.Factory.getInstance().newSpannable(action)
-        val spannable1 = Spannable.Factory.getInstance().newSpannable(commentText)
+        val spannable = SpannableStringBuilder(action)
+        val spannable1 = SpannableStringBuilder(commentText)
         showAsLink(spannable1, commentLink)
         showAsLink(spannable, photoLink)
         holder.uName.setText(spannable, TextView.BufferType.SPANNABLE)
@@ -1107,8 +1108,8 @@ class FeedbackViewBinder(
         val photoLink = Link.startOf(action.length)
         action = action + SPACE + topic.title
         photoLink.end(action.length)
-        val spannable = Spannable.Factory.getInstance().newSpannable(action)
-        val spannable1 = Spannable.Factory.getInstance().newSpannable(commentText)
+        val spannable = SpannableStringBuilder(action)
+        val spannable1 = SpannableStringBuilder(commentText)
         showAsLink(spannable1, commentLink)
         showAsLink(spannable, photoLink)
         holder.uName.setText(spannable, TextView.BufferType.SPANNABLE)
@@ -1184,7 +1185,7 @@ class FeedbackViewBinder(
             }
         }
         postLink.end(info.length)
-        val spannable = Spannable.Factory.getInstance().newSpannable(info)
+        val spannable = SpannableStringBuilder(info)
         showAsLink(spannable, commentLink)
         showAsLink(spannable, postLink)
         holder.uName.text = action

@@ -13,7 +13,7 @@ import dev.ragnarok.fenrir.api.rest.IServiceRest
 import kotlinx.coroutines.flow.Flow
 
 class IDatabaseService : IServiceRest() {
-    //https://vk.com/dev/database.getCitiesById
+    //https://vk.ru/dev/database.getCitiesById
     fun getCitiesById(cityIds: String?): Flow<BaseResponse<List<VKApiCity>>> {
         return rest.request(
             "database.getCities",

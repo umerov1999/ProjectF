@@ -383,7 +383,7 @@ class CameraScanActivity : NoMainActivity(), AppStyleable {
         }, ContextCompat.getMainExecutor(this))
 
         viewFinder.setOnTouchListener { _, event ->
-            return@setOnTouchListener when (event.action) {
+            when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     true
                 }

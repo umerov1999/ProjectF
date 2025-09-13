@@ -34,7 +34,7 @@ class IAccountService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/account.getCounters
+    //https://vk.ru/dev/account.getCounters
     /**
      * @param filter friends — новые заявки в друзья;
      * friends_suggestions — предлагаемые друзья;
@@ -56,12 +56,12 @@ class IAccountService : IServiceRest() {
         )
     }
 
-    //https://vk.com/dev/account.unregisterDevice
+    //https://vk.ru/dev/account.unregisterDevice
     fun unregisterDevice(deviceId: String?): Flow<BaseResponse<Int>> {
         return rest.request("account.unregisterDevice", form("device_id" to deviceId), baseInt)
     }
 
-    //https://vk.com/dev/account.registerDevice
+    //https://vk.ru/dev/account.registerDevice
     fun registerDevice(
         api_id: Int?,
         app_id: Int?,

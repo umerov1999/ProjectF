@@ -15,8 +15,6 @@ import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarSubtitle
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarTitle
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
-import dev.ragnarok.fenrir.fragment.feed.newsfeedcomments.INewsfeedCommentsView
-import dev.ragnarok.fenrir.fragment.feed.newsfeedcomments.NewsfeedCommentsAdapter
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.model.NewsfeedComment
 import dev.ragnarok.fenrir.model.Photo
@@ -30,16 +28,16 @@ import dev.ragnarok.fenrir.util.Utils.isLandscape
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 
 class NewsfeedMentionsFragment :
-    PlaceSupportMvpFragment<NewsfeedMentionsPresenter, INewsfeedCommentsView>(),
-    INewsfeedCommentsView, NewsfeedCommentsAdapter.ActionListener {
+    PlaceSupportMvpFragment<NewsfeedMentionsPresenter, INewsfeedMentionsView>(),
+    INewsfeedMentionsView, NewsfeedMentionsAdapter.ActionListener {
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
-    private var mAdapter: NewsfeedCommentsAdapter? = null
+    private var mAdapter: NewsfeedMentionsAdapter? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_newsfeed_comments, container, false)
+        val root = inflater.inflate(R.layout.fragment_feed_mentions, container, false)
         (requireActivity() as AppCompatActivity).setSupportActionBar(root.findViewById(R.id.toolbar))
         mSwipeRefreshLayout = root.findViewById(R.id.refresh)
         mSwipeRefreshLayout?.setOnRefreshListener {
@@ -61,7 +59,7 @@ class NewsfeedMentionsFragment :
                 presenter?.fireScrollToEnd()
             }
         })
-        mAdapter = NewsfeedCommentsAdapter(requireActivity(), emptyList(), this)
+        mAdapter = NewsfeedMentionsAdapter(requireActivity(), emptyList(), this)
         mAdapter?.setActionListener(this)
         mAdapter?.setOwnerClickListener(this)
         recyclerView.adapter = mAdapter

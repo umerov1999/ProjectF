@@ -84,7 +84,7 @@ class ShortVideoPagerPresenter(
             mShortVideos.addAll(shortVideos)
             view?.updateCount(mShortVideos.size)
             view?.notifyDataSetChanged()
-            initStoryPlayer()
+            initShortVideosPlayer()
             resolveToolbarTitle()
             resolveToolbarSubtitle()
         } else {
@@ -125,7 +125,7 @@ class ShortVideoPagerPresenter(
         }
     }
 
-    private fun initStoryPlayer() {
+    private fun initShortVideosPlayer() {
         val update: Boolean = mShortVideoPlayer != null
         val shortVideo = mShortVideos[mCurrentIndex]
         val url = firstNonEmptyString(
@@ -147,7 +147,7 @@ class ShortVideoPagerPresenter(
         }
         try {
             mShortVideoPlayer?.play()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             view?.showError(R.string.unable_to_play_file)
         }
     }
@@ -157,7 +157,7 @@ class ShortVideoPagerPresenter(
             return
         }
         mCurrentIndex = position
-        initStoryPlayer()
+        initShortVideosPlayer()
     }
 
     private fun resolveAspectRatio() {

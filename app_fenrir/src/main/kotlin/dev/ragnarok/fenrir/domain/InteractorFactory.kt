@@ -18,7 +18,6 @@ import dev.ragnarok.fenrir.domain.impl.FeedbackInteractor
 import dev.ragnarok.fenrir.domain.impl.GroupSettingsInteractor
 import dev.ragnarok.fenrir.domain.impl.LikesInteractor
 import dev.ragnarok.fenrir.domain.impl.LocalServerInteractor
-import dev.ragnarok.fenrir.domain.impl.NewsfeedInteractor
 import dev.ragnarok.fenrir.domain.impl.PhotosInteractor
 import dev.ragnarok.fenrir.domain.impl.PollInteractor
 import dev.ragnarok.fenrir.domain.impl.RelationshipInteractor
@@ -29,10 +28,6 @@ import dev.ragnarok.fenrir.domain.impl.VideosInteractor
 import dev.ragnarok.fenrir.settings.Settings
 
 object InteractorFactory {
-    fun createNewsfeedInteractor(): INewsfeedInteractor {
-        return NewsfeedInteractor(networkInterfaces, owners)
-    }
-
     fun createStickersInteractor(): IStickersInteractor {
         return StickersInteractor(networkInterfaces, stores.stickers())
     }

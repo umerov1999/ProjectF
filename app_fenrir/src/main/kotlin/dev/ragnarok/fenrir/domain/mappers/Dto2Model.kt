@@ -273,8 +273,8 @@ object Dto2Model {
 
     fun transformFaveUser(favePage: FavePageResponse): FavePage {
         val id = when (favePage.type) {
-            FavePageType.USER -> favePage.user?.id ?: 0L
-            FavePageType.COMMUNITY -> favePage.group?.id ?: 0L
+            FavePageType.USER -> favePage.user?.id.orZero()
+            FavePageType.COMMUNITY -> favePage.group?.id.orZero()
             else -> 0L
         }
         val page = FavePage(id)

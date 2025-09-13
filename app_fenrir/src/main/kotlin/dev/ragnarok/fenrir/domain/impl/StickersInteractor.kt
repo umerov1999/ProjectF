@@ -107,7 +107,7 @@ class StickersInteractor(private val networker: INetworker, private val storage:
             }
     }
 
-    override fun getKeywordsStickers(accountId: Long, s: String?): Flow<List<Sticker>> {
+    override fun getKeywordsStickers(accountId: Long, s: String): Flow<List<Sticker>> {
         return storage.getKeywordsStickers(accountId, s)
             .map { entities ->
                 mapAll(entities) {

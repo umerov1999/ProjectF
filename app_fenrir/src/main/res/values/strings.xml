@@ -375,7 +375,6 @@
     <string name="refresh">Refresh</string>
 
     <string name="set_groupchat_title">Specify the subject of the conversation</string>
-    <string name="set_news_list_title">Please enter a name for the list</string>
 
     <string name="copied_to_clipboard">Copied to clipboard</string>
 
@@ -1230,7 +1229,6 @@
     <string name="search_option_empty_text">Search options not available</string>
     <string name="comment_editing_title">Editing</string>
     <string name="saving">Saving</string>
-    <string name="drawer_newsfeed_comments">Comments</string>
     <string name="suggests">Suggestions</string>
     <string name="doc_filter_all">All documents</string>
     <string name="doc_filter_text">Text</string>
@@ -1681,7 +1679,6 @@
     <string name="later">Request accepted, please wait…</string>
     <string name="work_manager">Fenrir Work</string>
     <string name="channel_keep_work_manager">WorkManager</string>
-    <string name="action_create_list">Create list</string>
     <string name="player_has_background">Player has background</string>
     <string name="show_mutual_count">Show mutual friends</string>
     <string name="show_mutual_count_summary">On user page</string>
@@ -1896,7 +1893,7 @@
     <string name="sections">Sections</string>
     <string name="do_unimportant">Remove from important?</string>
     <string name="enter_to_group_chat">Enter to group chat?</string>
-    <string name="interesting">interesting</string>
+    <string name="interesting">Interesting</string>
     <string name="catalog_v2_edit_list">Edit list</string>
     <string name="turn_on">Turn on</string>
     <string name="photos_with_user">Photos with user</string>

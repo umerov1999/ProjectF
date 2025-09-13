@@ -42,7 +42,7 @@ class Commented : Parcelable {
 
     /**
      * Тип комментируемого обьекта
-     * Используется в процедуре http://vk.com/dev/execute.getComments
+     * Используется в процедуре https://vk.ru/dev/execute.getComments
      */
     val typeForStoredProcedure: String
         get() = when (sourceType) {

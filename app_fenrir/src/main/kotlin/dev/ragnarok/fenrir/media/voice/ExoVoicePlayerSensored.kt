@@ -29,6 +29,7 @@ import dev.ragnarok.fenrir.media.voice.IVoicePlayer.IErrorListener
 import dev.ragnarok.fenrir.media.voice.IVoicePlayer.IPlayerStatusListener
 import dev.ragnarok.fenrir.model.ProxyConfig
 import dev.ragnarok.fenrir.model.VoiceMessage
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Logger.d
 import dev.ragnarok.fenrir.util.Optional
@@ -205,7 +206,7 @@ class ExoVoicePlayerSensored(context: Context, config: ProxyConfig?) : IVoicePla
         }
     }
 
-    private val duration: Long
+    override val duration: Long
         get() = if (playingEntry == null || playingEntry?.audio?.duration == 0) {
             exoPlayer?.duration?.coerceAtLeast(1L) ?: 1
         } else (playingEntry?.audio?.duration?.times(1000L)) ?: 1
@@ -221,8 +222,7 @@ class ExoVoicePlayerSensored(context: Context, config: ProxyConfig?) : IVoicePla
             }
 
             else -> {
-                val duration = duration
-                val position = exoPlayer?.currentPosition ?: 0
+                val position = exoPlayer?.currentPosition.orZero()
                 position.toFloat() / duration.toFloat()
             }
         }
@@ -249,6 +249,12 @@ class ExoVoicePlayerSensored(context: Context, config: ProxyConfig?) : IVoicePla
         if (exoPlayer != null) {
             playbackSpeed = !playbackSpeed
             exoPlayer?.setPlaybackSpeed(if (playbackSpeed) 2f else 1f)
+        }
+    }
+
+    override fun setPlayPositionChanged(position: Long) {
+        if (exoPlayer != null) {
+            exoPlayer?.seekTo(position)
         }
     }
 

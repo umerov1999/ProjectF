@@ -10,6 +10,6 @@ interface IStickersStorage : IStorage {
     fun storeStickerSetsCustom(accountId: Long, sets: List<StickerSetEntity>): Flow<Boolean>
     fun storeKeyWords(accountId: Long, sets: List<StickersKeywordsEntity>): Flow<Boolean>
     fun getStickerSets(accountId: Long): Flow<List<StickerSetEntity>>
-    fun getKeywordsStickers(accountId: Long, s: String?): Flow<List<StickerDboEntity>>
+    fun getKeywordsStickers(accountId: Long, s: String): Flow<List<StickerDboEntity>>
     fun clearAccount(accountId: Long): Flow<Boolean>
 }

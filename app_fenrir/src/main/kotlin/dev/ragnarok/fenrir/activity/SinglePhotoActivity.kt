@@ -125,16 +125,19 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                 when (event.action) {
                     MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
                         mContentRoot?.requestDisallowInterceptTouchEvent(true)
-                        return@setOnTouchListener false
+                        true
                     }
 
                     MotionEvent.ACTION_UP -> {
                         mContentRoot?.requestDisallowInterceptTouchEvent(false)
-                        return@setOnTouchListener true
+                        true
                     }
+
+                    else -> false
                 }
+            } else {
+                false
             }
-            true
         }
     }
 

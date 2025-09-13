@@ -32,6 +32,7 @@ import dev.ragnarok.fenrir.model.Sticker
 import dev.ragnarok.fenrir.model.Sticker.LocalSticker
 import dev.ragnarok.fenrir.model.StickerSet
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingleSafe
@@ -64,7 +65,7 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
                 return
             }
             rootView?.getWindowVisibleDisplayFrame(r)
-            val screenHeight = rootView?.rootView?.height ?: 0
+            val screenHeight = rootView?.rootView?.height.orZero()
             var heightDifference = screenHeight - (r.bottom - r.top)
             val navBarHeight =
                 mContext.resources.getIdentifier("navigation_bar_height", "dimen", "android")
@@ -101,7 +102,7 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
         if (emojisPager != null) {
             getPreferences(mContext)
                 .edit {
-                    putInt(KEY_PAGE, emojisPager?.currentItem ?: 0)
+                    putInt(KEY_PAGE, emojisPager?.currentItem.orZero())
                 }
         }
     }
@@ -204,7 +205,7 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
         val recyclerView: RecyclerView = view.findViewById(R.id.recycleView)
         val manager = LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false)
         recyclerView.layoutManager = manager
-        sections[emojisPager?.currentItem ?: 0].active = true
+        sections[emojisPager?.currentItem.orZero()].active = true
         val topSectionAdapter = SectionsAdapter(sections, mContext)
         recyclerView.adapter = topSectionAdapter
         view.findViewById<View>(R.id.backspace)
@@ -439,7 +440,7 @@ class EmojiconsPopup(private var rootView: View?, private val mContext: Activity
                     start.coerceAtLeast(end),
                     emojicon.emoji,
                     0,
-                    emojicon.emoji?.length ?: 0
+                    emojicon.emoji?.length.orZero()
                 )
             }
         }

@@ -78,7 +78,7 @@ class FeedbackVKOfficialPresenter(accountId: Long, savedInstanceState: Bundle?) 
 
     private fun onActualDataReceived(offset: Int, data: FeedbackVKOfficialList) {
         actualDataLoading = false
-        endOfContent = (data.items?.size ?: 0) < COUNT
+        endOfContent = data.items?.size.orZero() < COUNT
         actualDataReceived = true
         if (offset == 0) {
             pages.items?.clear()

@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.res.ColorStateList
 import android.text.Spannable
+import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
@@ -192,12 +193,12 @@ class CommentsAdapter(
     private fun genTimeAndReplyText(comment: Comment): Spannable {
         val time = AppTextUtils.getDateFromUnixTime(comment.date)
         if (comment.replyToUser == 0L) {
-            return Spannable.Factory.getInstance().newSpannable(time)
+            return SpannableStringBuilder(time)
         }
         val commentText = context.getString(R.string.comment).lowercase(Locale.getDefault())
         val target = context.getString(R.string.in_response_to, time, commentText)
         val start = target.indexOf(commentText)
-        val spannable = Spannable.Factory.getInstance().newSpannable(target)
+        val spannable = SpannableStringBuilder(target)
         val span: ClickableSpan = object : ClickableSpan() {
             override fun onClick(widget: View) {
                 listener?.onReplyToOwnerClick(comment.replyToUser, comment.replyToComment)

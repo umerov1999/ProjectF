@@ -7,6 +7,7 @@ import android.widget.RelativeLayout
 import androidx.core.view.isGone
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.PostImage
+import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.view.mozaik.MatrixCalculator.Libra
 import kotlin.math.roundToInt
 
@@ -95,11 +96,11 @@ class MozaikLayout : RelativeLayout {
                 }
                 val position = image.position
                 val params = parent.layoutParams as LayoutParams
-                params.width = position?.sizeX ?: 0
-                params.height = position?.sizeY ?: 0
-                params.topMargin = position?.marginY ?: 0
-                params.leftMargin = position?.marginX ?: 0
-                parent.measure(image.position?.sizeX ?: 0, image.position?.sizeY ?: 0)
+                params.width = position?.sizeX.orZero()
+                params.height = position?.sizeY.orZero()
+                params.topMargin = position?.marginY.orZero()
+                params.leftMargin = position?.marginX.orZero()
+                parent.measure(image.position?.sizeX.orZero(), image.position?.sizeY.orZero())
             }
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -166,15 +167,15 @@ class MozaikLayout : RelativeLayout {
                 }
                 val params = parent.layoutParams as LayoutParams
                 val position = postImage.position
-                params.width = position?.sizeX ?: 0
-                params.height = position?.sizeY ?: 0
-                params.topMargin = position?.marginY ?: 0
-                params.leftMargin = position?.marginX ?: 0
+                params.width = position?.sizeX.orZero()
+                params.height = position?.sizeY.orZero()
+                params.topMargin = position?.marginY.orZero()
+                params.leftMargin = position?.marginX.orZero()
 
                 //parent.setLayoutParams(params);
                 parent.layout(
-                    position?.marginX ?: 0,
-                    position?.marginY ?: 0,
+                    position?.marginX.orZero(),
+                    position?.marginY.orZero(),
                     params.rightMargin,
                     params.bottomMargin
                 )
