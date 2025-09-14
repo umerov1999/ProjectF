@@ -6,4 +6,7 @@ interface IErrorView {
     fun showError(errorText: String?)
     fun showThrowable(throwable: Throwable?)
     fun showError(@StringRes titleTes: Int, vararg params: Any?)
+
+    fun showBottomSheetError(title: String?, description: String?)
+    fun showBottomSheetError(throwable: Throwable?)
 }

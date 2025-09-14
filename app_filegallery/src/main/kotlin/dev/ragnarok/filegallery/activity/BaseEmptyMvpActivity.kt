@@ -1,96 +1,59 @@
-package dev.ragnarok.filegallery.fragment.base
+package dev.ragnarok.filegallery.activity
 
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.BaseTransientBottomBar
 import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.Includes.provideApplicationContext
-import dev.ragnarok.filegallery.R
-import dev.ragnarok.filegallery.activity.ActivityUtils.setToolbarSubtitle
-import dev.ragnarok.filegallery.activity.ActivityUtils.setToolbarTitle
 import dev.ragnarok.filegallery.dialog.BottomSheetErrorDialog
-import dev.ragnarok.filegallery.fragment.base.compat.AbsMvpFragment
+import dev.ragnarok.filegallery.fragment.base.compat.AbsEmptyMvpActivity
 import dev.ragnarok.filegallery.fragment.base.core.AbsPresenter
-import dev.ragnarok.filegallery.fragment.base.core.IErrorView
 import dev.ragnarok.filegallery.fragment.base.core.IMvpView
-import dev.ragnarok.filegallery.fragment.base.core.IToastView
-import dev.ragnarok.filegallery.fragment.base.core.IToolbarView
-import dev.ragnarok.filegallery.toColor
 import dev.ragnarok.filegallery.util.ErrorLocalizer.localizeThrowable
 import dev.ragnarok.filegallery.util.ViewUtils
 import dev.ragnarok.filegallery.util.toast.AbsCustomToast
-import dev.ragnarok.filegallery.util.toast.CustomSnackbars
-import dev.ragnarok.filegallery.util.toast.CustomToast.Companion.createCustomToast
+import dev.ragnarok.filegallery.util.toast.CustomToast
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
-abstract class BaseMvpFragment<P : AbsPresenter<V>, V : IMvpView> : AbsMvpFragment<P, V>(),
-    IMvpView, IErrorView, IToastView, IToolbarView {
-    protected fun hasHideToolbarExtra(): Boolean {
-        return arguments?.getBoolean(EXTRA_HIDE_TOOLBAR) == true
+abstract class BaseEmptyMvpActivity<P : AbsPresenter<V>, V : IMvpView> :
+    AbsEmptyMvpActivity<P, V>(),
+    IMvpView {
+    protected val arguments: Bundle?
+        get() = intent?.extras
+
+    protected fun requireArguments(): Bundle {
+        return intent!!.extras!!
     }
 
     override fun showError(errorText: String?) {
-        if (isAdded) {
+        if (!isFinishing) {
             customToast?.showToastError(errorText)
         }
     }
 
     override fun showThrowable(throwable: Throwable?) {
-        if (isAdded) {
-            CustomSnackbars.createCustomSnackbars(view)?.let {
-                val snack = it.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG).coloredSnack(
-                    localizeThrowable(provideApplicationContext(), throwable),
-                    "#eeff0000".toColor()
-                )
-                if (throwable !is SocketTimeoutException && throwable !is UnknownHostException) {
-                    snack.setAction(R.string.more_info) {
-                        val text = StringBuilder()
-                        text.append(
-                            localizeThrowable(
-                                provideApplicationContext(),
-                                throwable
-                            )
-                        )
-                        text.append("\r\n")
-                        for (stackTraceElement in (throwable ?: return@setAction).stackTrace) {
-                            text.append("    ")
-                            text.append(stackTraceElement)
-                            text.append("\r\n")
-                        }
-                        MaterialAlertDialogBuilder(requireActivity())
-                            .setIcon(R.drawable.ic_error)
-                            .setMessage(text)
-                            .setTitle(R.string.more_info)
-                            .setPositiveButton(R.string.button_ok, null)
-                            .setCancelable(true)
-                            .show()
-                    }
-                }
-                snack.show()
-            } ?: showError(localizeThrowable(provideApplicationContext(), throwable))
+        if (!isFinishing) {
+            showError(localizeThrowable(provideApplicationContext(), throwable))
         }
     }
 
     override fun showBottomSheetError(title: String?, description: String?) {
-        if (isAdded) {
+        if (!isFinishing) {
             val dialog = BottomSheetErrorDialog()
             val bundle = Bundle()
             bundle.putString(Extra.TITLE, title)
             bundle.putString(Extra.DATA, description)
             dialog.arguments = bundle
-            dialog.show(parentFragmentManager, "BottomSheetErrorDialog")
+            dialog.show(supportFragmentManager, "BottomSheetErrorDialog")
         }
     }
 
     override fun showBottomSheetError(throwable: Throwable?) {
-        if (isAdded) {
+        if (!isFinishing) {
             val text = StringBuilder()
             if (throwable !is SocketTimeoutException && throwable !is UnknownHostException) {
                 for (stackTraceElement in (throwable ?: return).stackTrace) {
@@ -117,22 +80,22 @@ abstract class BaseMvpFragment<P : AbsPresenter<V>, V : IMvpView> : AbsMvpFragme
     }
 
     override val customToast: AbsCustomToast?
-        get() = if (isAdded) {
-            createCustomToast(requireActivity(), view)
+        get() = if (!isFinishing) {
+            CustomToast.createCustomToast(this, null)
         } else null
 
     override fun showError(@StringRes titleTes: Int, vararg params: Any?) {
-        if (isAdded) {
+        if (!isFinishing) {
             showError(getString(titleTes, *params))
         }
     }
 
     override fun setToolbarSubtitle(subtitle: String?) {
-        setToolbarSubtitle(this, subtitle)
+        supportActionBar?.subtitle = subtitle
     }
 
     override fun setToolbarTitle(title: String?) {
-        setToolbarTitle(this, title)
+        supportActionBar?.title = title
     }
 
     protected fun styleSwipeRefreshLayoutWithCurrentTheme(
@@ -140,7 +103,7 @@ abstract class BaseMvpFragment<P : AbsPresenter<V>, V : IMvpView> : AbsMvpFragme
         needToolbarOffset: Boolean
     ) {
         ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme(
-            requireActivity(),
+            this,
             swipeRefreshLayout,
             needToolbarOffset
         )
@@ -148,7 +111,6 @@ abstract class BaseMvpFragment<P : AbsPresenter<V>, V : IMvpView> : AbsMvpFragme
 
     companion object {
         const val EXTRA_HIDE_TOOLBAR = "extra_hide_toolbar"
-
         fun safelySetChecked(button: CompoundButton?, checked: Boolean) {
             button?.isChecked = checked
         }
@@ -161,11 +123,7 @@ abstract class BaseMvpFragment<P : AbsPresenter<V>, V : IMvpView> : AbsMvpFragme
             target?.setText(text)
         }
 
-        fun safelySetVisibleOrGone(target: ViewGroup?, visible: Boolean) {
-            target?.visibility = if (visible) View.VISIBLE else View.GONE
-        }
-
-        fun safelySetVisibleOrGoneView(target: View?, visible: Boolean) {
+        fun safelySetVisibleOrGone(target: View?, visible: Boolean) {
             target?.visibility = if (visible) View.VISIBLE else View.GONE
         }
     }

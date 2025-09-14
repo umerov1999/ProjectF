@@ -25,6 +25,7 @@ import dev.ragnarok.fenrir.activity.DualTabPhotoActivity.Companion.createIntent
 import dev.ragnarok.fenrir.activity.VideoSelectActivity
 import dev.ragnarok.fenrir.api.exceptions.ApiException
 import dev.ragnarok.fenrir.db.model.AttachmentsTypes
+import dev.ragnarok.fenrir.dialog.BottomSheetErrorDialog
 import dev.ragnarok.fenrir.fragment.poll.createpoll.CreatePollDialogFragment
 import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
 import dev.ragnarok.fenrir.getParcelableCompat
@@ -389,6 +390,44 @@ class MessageAttachmentsFragment :
                 }
                 snack.show()
             } ?: showError(localizeThrowable(provideApplicationContext(), throwable))
+        }
+    }
+
+    override fun showBottomSheetError(title: String?, description: String?) {
+        if (isAdded) {
+            val dialog = BottomSheetErrorDialog()
+            val bundle = Bundle()
+            bundle.putString(Extra.TITLE, title)
+            bundle.putString(Extra.DATA, description)
+            dialog.arguments = bundle
+            dialog.show(parentFragmentManager, "BottomSheetErrorDialog")
+        }
+    }
+
+    override fun showBottomSheetError(throwable: Throwable?) {
+        if (isAdded) {
+            val text = StringBuilder()
+            if (throwable !is SocketTimeoutException && throwable !is UnknownHostException) {
+                for (stackTraceElement in (throwable ?: return).stackTrace) {
+                    text.append("    ")
+                    text.append(stackTraceElement)
+                    text.append("\r\n")
+                }
+            }
+
+            var stackTraceString = text.toString()
+            if (stackTraceString.length > 500) {
+                val disclaimer = " [stack trace too large]"
+                stackTraceString = stackTraceString.substring(
+                    0,
+                    500 - disclaimer.length
+                ) + disclaimer
+            }
+
+            showBottomSheetError(
+                localizeThrowable(provideApplicationContext(), throwable),
+                stackTraceString
+            )
         }
     }
 

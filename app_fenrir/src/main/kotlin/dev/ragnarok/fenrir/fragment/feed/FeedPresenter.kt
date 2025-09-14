@@ -66,7 +66,7 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
                 "updates_photos" -> "photo,photo_tag"
                 "updates_audios" -> "audio"
                 "updates_videos" -> "video"
-                "updates_full" -> "photo,photo_tag,wall_photo,friend,audio,video"
+                "updates_full" -> "photo,photo_tag,wall_photo,audio,video"
                 else -> {
                     throw UnsupportedOperationException()
                 }
@@ -432,6 +432,7 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
             data.add(FeedSource(null, R.string.news_feed, false))
             data.add(FeedSource("likes", R.string.likes_posts, false))
             data.add(FeedSource("updates_full", R.string.updates, false))
+            data.add(FeedSource("friends", R.string.friends, false))
             if (Utils.isOfficialVKCurrent) {
                 data.add(FeedSource("top", R.string.interesting, false))
             }

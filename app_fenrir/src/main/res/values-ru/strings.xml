@@ -1690,4 +1690,6 @@
     <string name="auth_by_qr">Вход по qr</string>
     <string name="auth_by_qr_error">Вход по qr не возможен!</string>
     <string name="refreshing_token">Перевыпуск токена…</string>
+    <string name="error_title">Ошибка: %1$s</string>
+    <string name="error_stacktrace">Трассировка стека: %1$s</string>
 </resources>

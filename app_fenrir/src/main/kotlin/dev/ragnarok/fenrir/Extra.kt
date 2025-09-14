@@ -116,4 +116,5 @@ object Extra {
     const val VIDEOS = "videos"
     const val DETAILS = "details"
     const val CODE = "code"
+    const val DATA = "data"
 }

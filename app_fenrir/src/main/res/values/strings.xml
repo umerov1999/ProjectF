@@ -1928,4 +1928,6 @@
     <string name="auth_by_qr">Auth by qr</string>
     <string name="auth_by_qr_error">QR code entry is not possible!</string>
     <string name="refreshing_token">Refreshing Token…</string>
+    <string name="error_title">Error title: %1$s</string>
+    <string name="error_stacktrace">Error stacktrace: %1$s</string>
 </resources>

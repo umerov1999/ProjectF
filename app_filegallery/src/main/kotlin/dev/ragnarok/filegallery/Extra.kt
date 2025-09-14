@@ -19,4 +19,5 @@ object Extra {
     const val STACK_TRACE = "stack_trace"
     const val TITLE = "title"
     const val URL = "url"
+    const val DATA = "data"
 }

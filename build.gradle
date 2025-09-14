@@ -67,7 +67,7 @@ buildscript {
     ext.guavaVersion = "33.4.8-android"
     ext.errorProneVersion = "2.41.0"
     ext.checkerCompatQualVersion = "2.5.6"
-    ext.checkerQualAndroidVersion = "3.50.0"
+    ext.checkerQualAndroidVersion = "3.51.0"
     ext.jspecifyAnnotation = "1.0.0"
     ext.desugarLibraryVersion = "2.1.5"
 

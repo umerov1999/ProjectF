@@ -1,26 +1,30 @@
-package dev.ragnarok.filegallery.activity
+package dev.ragnarok.fenrir.activity
 
 import android.os.Bundle
 import android.view.View
 import android.widget.CompoundButton
 import android.widget.TextView
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import dev.ragnarok.filegallery.Extra
-import dev.ragnarok.filegallery.Includes.provideApplicationContext
-import dev.ragnarok.filegallery.dialog.BottomSheetErrorDialog
-import dev.ragnarok.filegallery.fragment.base.compat.AbsMvpActivity
-import dev.ragnarok.filegallery.fragment.base.core.AbsPresenter
-import dev.ragnarok.filegallery.fragment.base.core.IMvpView
-import dev.ragnarok.filegallery.util.ErrorLocalizer.localizeThrowable
-import dev.ragnarok.filegallery.util.ViewUtils
-import dev.ragnarok.filegallery.util.toast.AbsCustomToast
-import dev.ragnarok.filegallery.util.toast.CustomToast
+import dev.ragnarok.fenrir.Extra
+import dev.ragnarok.fenrir.Includes.provideApplicationContext
+import dev.ragnarok.fenrir.dialog.BottomSheetErrorDialog
+import dev.ragnarok.fenrir.fragment.base.compat.AbsEmptyMvpActivity
+import dev.ragnarok.fenrir.fragment.base.core.AbsPresenter
+import dev.ragnarok.fenrir.fragment.base.core.IMvpView
+import dev.ragnarok.fenrir.service.ErrorLocalizer.localizeThrowable
+import dev.ragnarok.fenrir.util.ViewUtils
+import dev.ragnarok.fenrir.util.spots.SpotsDialog
+import dev.ragnarok.fenrir.util.toast.CustomToast
+import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
-abstract class BaseMvpActivity<P : AbsPresenter<V>, V : IMvpView> : AbsMvpActivity<P, V>(),
+abstract class BaseEmptyMvpActivity<P : AbsPresenter<V>, V : IMvpView> :
+    AbsEmptyMvpActivity<P, V>(),
     IMvpView {
+    private var mLoadingProgressDialog: AlertDialog? = null
     protected val arguments: Bundle?
         get() = intent?.extras
 
@@ -30,7 +34,7 @@ abstract class BaseMvpActivity<P : AbsPresenter<V>, V : IMvpView> : AbsMvpActivi
 
     override fun showError(errorText: String?) {
         if (!isFinishing) {
-            customToast?.showToastError(errorText)
+            customToast.showToastError(errorText)
         }
     }
 
@@ -78,10 +82,10 @@ abstract class BaseMvpActivity<P : AbsPresenter<V>, V : IMvpView> : AbsMvpActivi
         }
     }
 
-    override val customToast: AbsCustomToast?
+    override val customToast: CustomToast
         get() = if (!isFinishing) {
-            CustomToast.createCustomToast(this, null)
-        } else null
+            createCustomToast(this)
+        } else createCustomToast(null)
 
     override fun showError(@StringRes titleTes: Int, vararg params: Any?) {
         if (!isFinishing) {
@@ -106,6 +110,24 @@ abstract class BaseMvpActivity<P : AbsPresenter<V>, V : IMvpView> : AbsMvpActivi
             swipeRefreshLayout,
             needToolbarOffset
         )
+    }
+
+    override fun displayProgressDialog(
+        @StringRes title: Int,
+        @StringRes message: Int,
+        cancelable: Boolean
+    ) {
+        dismissProgressDialog()
+        mLoadingProgressDialog = SpotsDialog.Builder().setContext(this)
+            .setMessage(getString(title) + ": " + getString(message)).setCancelable(cancelable)
+            .build()
+        mLoadingProgressDialog?.show()
+    }
+
+    override fun dismissProgressDialog() {
+        if (mLoadingProgressDialog?.isShowing == true) {
+            mLoadingProgressDialog?.cancel()
+        }
     }
 
     companion object {

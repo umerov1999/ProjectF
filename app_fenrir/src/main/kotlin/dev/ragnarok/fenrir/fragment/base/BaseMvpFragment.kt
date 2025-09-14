@@ -1,5 +1,6 @@
 package dev.ragnarok.fenrir.fragment.base
 
+import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
@@ -9,10 +10,12 @@ import androidx.appcompat.app.AlertDialog
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
+import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.Includes.provideApplicationContext
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityUtils
 import dev.ragnarok.fenrir.api.exceptions.ApiException
+import dev.ragnarok.fenrir.dialog.BottomSheetErrorDialog
 import dev.ragnarok.fenrir.fragment.base.compat.AbsMvpFragment
 import dev.ragnarok.fenrir.fragment.base.core.AbsPresenter
 import dev.ragnarok.fenrir.fragment.base.core.IErrorView
@@ -76,6 +79,44 @@ abstract class BaseMvpFragment<P : AbsPresenter<V>, V : IMvpView> : AbsMvpFragme
                 }
                 snack.show()
             } ?: showError(localizeThrowable(provideApplicationContext(), throwable))
+        }
+    }
+
+    override fun showBottomSheetError(title: String?, description: String?) {
+        if (isAdded) {
+            val dialog = BottomSheetErrorDialog()
+            val bundle = Bundle()
+            bundle.putString(Extra.TITLE, title)
+            bundle.putString(Extra.DATA, description)
+            dialog.arguments = bundle
+            dialog.show(parentFragmentManager, "BottomSheetErrorDialog")
+        }
+    }
+
+    override fun showBottomSheetError(throwable: Throwable?) {
+        if (isAdded) {
+            val text = StringBuilder()
+            if (throwable !is SocketTimeoutException && throwable !is UnknownHostException) {
+                for (stackTraceElement in (throwable ?: return).stackTrace) {
+                    text.append("    ")
+                    text.append(stackTraceElement)
+                    text.append("\r\n")
+                }
+            }
+
+            var stackTraceString = text.toString()
+            if (stackTraceString.length > 500) {
+                val disclaimer = " [stack trace too large]"
+                stackTraceString = stackTraceString.substring(
+                    0,
+                    500 - disclaimer.length
+                ) + disclaimer
+            }
+
+            showBottomSheetError(
+                localizeThrowable(provideApplicationContext(), throwable),
+                stackTraceString
+            )
         }
     }
 
