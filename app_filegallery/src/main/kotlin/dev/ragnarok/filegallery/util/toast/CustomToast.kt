@@ -43,6 +43,16 @@ class CustomToast private constructor(context: Context) : AbsCustomToast {
         showToast(mContext.resources.getString(message, *params))
     }
 
+    override fun showToastBottom(message: String?) {
+        val t = getToast(mContext, message, CurrentTheme.getColorToast(mContext))
+        t.setGravity(Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM, 0, 40)
+        t.show()
+    }
+
+    override fun showToastBottom(@StringRes message: Int, vararg params: Any?) {
+        showToastBottom(mContext.resources.getString(message, *params))
+    }
+
     override fun showToastSuccessBottom(message: String?) {
         val t = getToast(mContext, message, "#AA48BE2D".toColor())
         t.setGravity(Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM, 0, 40)

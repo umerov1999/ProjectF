@@ -16,8 +16,8 @@ import dev.ragnarok.fenrir.fragment.base.core.IMvpView
 import dev.ragnarok.fenrir.service.ErrorLocalizer.localizeThrowable
 import dev.ragnarok.fenrir.util.ViewUtils
 import dev.ragnarok.fenrir.util.spots.SpotsDialog
+import dev.ragnarok.fenrir.util.toast.AbsCustomToast
 import dev.ragnarok.fenrir.util.toast.CustomToast
-import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
@@ -33,13 +33,13 @@ abstract class BaseMvpActivity<P : AbsPresenter<V>, V : IMvpView> : AbsMvpActivi
 
     override fun showError(errorText: String?) {
         if (!isFinishing) {
-            customToast.showToastError(errorText)
+            customToast?.showToastError(errorText)
         }
     }
 
     override fun showThrowable(throwable: Throwable?) {
         if (!isFinishing) {
-            showError(localizeThrowable(provideApplicationContext(), throwable))
+            customToast?.showToastThrowable(throwable)
         }
     }
 
@@ -81,10 +81,10 @@ abstract class BaseMvpActivity<P : AbsPresenter<V>, V : IMvpView> : AbsMvpActivi
         }
     }
 
-    override val customToast: CustomToast
+    override val customToast: AbsCustomToast?
         get() = if (!isFinishing) {
-            createCustomToast(this)
-        } else createCustomToast(null)
+            CustomToast.createCustomToast(this, null)
+        } else null
 
     override fun showError(@StringRes titleTes: Int, vararg params: Any?) {
         if (!isFinishing) {

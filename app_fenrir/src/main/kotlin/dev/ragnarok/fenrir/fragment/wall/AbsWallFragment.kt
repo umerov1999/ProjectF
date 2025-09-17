@@ -96,7 +96,6 @@ import dev.ragnarok.fenrir.util.Utils.is600dp
 import dev.ragnarok.fenrir.util.Utils.isLandscape
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
-import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.LoadMoreFooterHelper
 import dev.ragnarok.fenrir.view.LoadMoreFooterHelper.Companion.createFrom
 import dev.ragnarok.fenrir.view.UpEditFab
@@ -387,7 +386,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
     override fun showSnackbar(res: Int, isLong: Boolean) {
         CustomSnackbars.createCustomSnackbars(view)
             ?.setDurationSnack(if (isLong) BaseTransientBottomBar.LENGTH_LONG else BaseTransientBottomBar.LENGTH_SHORT)
-            ?.defaultSnack(res)?.show()
+            ?.defaultSnack(res, false)?.show()
     }
 
     override fun openPhotoAlbum(
@@ -592,7 +591,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
             requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
         val clip = ClipData.newPlainText(label, body)
         clipboard?.setPrimaryClip(clip)
-        customToast.showToast(R.string.copied)
+        customToast?.showToast(R.string.copied)
     }
 
     override fun goToPostCreation(accountId: Long, ownerId: Long, @EditingPostType postType: Int) {
@@ -649,8 +648,7 @@ abstract class AbsWallFragment<V : IWallView, P : AbsWallPresenter<V>> :
 
     override fun onCommentsClick(post: Post) {
         if (!post.isCanPostComment) {
-            CustomToast.createCustomToast(requireActivity())
-                .showToastError(R.string.comments_disabled_post)
+            customToast?.showToastError(R.string.comments_disabled_post)
         }
         presenter?.fireCommentsClick(post)
     }

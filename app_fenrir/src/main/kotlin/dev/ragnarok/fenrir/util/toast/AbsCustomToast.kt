@@ -1,5 +1,6 @@
-package dev.ragnarok.filegallery.util.toast
+package dev.ragnarok.fenrir.util.toast
 
+import android.graphics.Bitmap
 import android.view.View
 import androidx.annotation.StringRes
 
@@ -19,4 +20,5 @@ interface AbsCustomToast {
     fun showToastError(message: String?)
     fun showToastError(@StringRes message: Int, vararg params: Any?)
     fun showToastThrowable(throwable: Throwable?)
+    fun setBitmap(image: Bitmap?): AbsCustomToast
 }

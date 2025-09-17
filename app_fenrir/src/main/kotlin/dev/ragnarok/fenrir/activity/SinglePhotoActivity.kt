@@ -196,7 +196,8 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
         if (!dir.isDirectory) {
             val created = dir.mkdirs()
             if (!created) {
-                CustomToast.createCustomToast(this).showToastError("Can't create directory $dir")
+                CustomToast.createCustomToast(this, null)
+                    ?.showToastError("Can't create directory $dir")
                 return
             }
         } else dir.setLastModified(Calendar.getInstance().timeInMillis)
@@ -205,8 +206,8 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
             if (!dir_final.isDirectory) {
                 val created = dir_final.mkdirs()
                 if (!created) {
-                    CustomToast.createCustomToast(this)
-                        .showToastError("Can't create directory $dir")
+                    CustomToast.createCustomToast(this, null)
+                        ?.showToastError("Can't create directory $dir")
                     return
                 }
             } else dir_final.setLastModified(Calendar.getInstance().timeInMillis)
@@ -247,7 +248,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                 loadImage(url)
             } else {
                 PicassoInstance.with().cancelRequest(photo)
-                CustomToast.createCustomToast(ref.get()).showToast(R.string.empty_url)
+                CustomToast.createCustomToast(ref.get(), null)?.showToast(R.string.empty_url)
             }
         }
 

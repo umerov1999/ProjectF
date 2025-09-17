@@ -8,8 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.GridLayoutManager
@@ -28,7 +26,6 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
-import dev.ragnarok.fenrir.util.toast.CustomToast
 
 class LocalPhotosFragment : BaseMvpFragment<LocalPhotosPresenter, ILocalPhotosView>(),
     ILocalPhotosView, LocalPhotosAdapter.ClickListener, SwipeRefreshLayout.OnRefreshListener {
@@ -133,15 +130,6 @@ class LocalPhotosFragment : BaseMvpFragment<LocalPhotosPresenter, ILocalPhotosVi
 
     override fun requestReadExternalStoragePermission() {
         requestReadPermission.launch()
-    }
-
-    override fun showError(errorText: String?) {
-        if (isAdded) CustomToast.createCustomToast(requireActivity()).setDuration(Toast.LENGTH_LONG)
-            .showToastError(errorText)
-    }
-
-    override fun showError(@StringRes titleTes: Int, vararg params: Any?) {
-        if (isAdded) showError(getString(titleTes, *params))
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?): LocalPhotosPresenter {

@@ -245,9 +245,9 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
         CustomSnackbars.createCustomSnackbars(mContentRoot, null, true)
             ?.setDurationSnack(Snackbar.LENGTH_LONG)?.let {
                 if (error) {
-                    it.coloredSnack(message, "#ff0000".toColor()).show()
+                    it.coloredSnack(message, "#ff0000".toColor(), false).show()
                 } else {
-                    it.defaultSnack(message).show()
+                    it.defaultSnack(message, false).show()
                 }
             }
     }
@@ -256,9 +256,9 @@ class ShortVideoPagerActivity : BaseMvpActivity<ShortVideoPagerPresenter, IShort
         CustomSnackbars.createCustomSnackbars(mContentRoot, null, true)
             ?.setDurationSnack(Snackbar.LENGTH_LONG)?.let {
                 if (error) {
-                    it.coloredSnack(message, "#ff0000".toColor()).show()
+                    it.coloredSnack(message, "#ff0000".toColor(), false).show()
                 } else {
-                    it.defaultSnack(message).show()
+                    it.defaultSnack(message, false).show()
                 }
             }
     }

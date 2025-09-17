@@ -140,11 +140,9 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                         }
                         listDisposable += mVideoInteractor.update_time(hash).fromIOToMain(
                             {
-                                createCustomToast(
-                                    context
-                                ).showToast(R.string.success)
+                                createCustomToast(context, null)?.showToast(R.string.success)
                             }) { t ->
-                            createCustomToast(context).showToastThrowable(t)
+                            createCustomToast(context, null)?.showToastThrowable(t)
                         }
                     }
 
@@ -174,10 +172,14 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                         )
                                             .fromIOToMain({
                                                 createCustomToast(
-                                                    context
-                                                ).showToast(R.string.success)
+                                                    context,
+                                                    null
+                                                )?.showToast(R.string.success)
                                             }) { o ->
-                                                createCustomToast(context).showToastThrowable(
+                                                createCustomToast(
+                                                    context,
+                                                    null
+                                                )?.showToastThrowable(
                                                     o
                                                 )
                                             }
@@ -185,7 +187,7 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                                     .setNegativeButton(R.string.button_cancel, null)
                                     .show()
                             }) { t ->
-                            createCustomToast(context).showToastThrowable(t)
+                            createCustomToast(context, null)?.showToastThrowable(t)
                         }
                     }
 
@@ -202,11 +204,9 @@ class LocalServerVideosAdapter(private val context: Context, private var data: L
                             }
                             listDisposable += mVideoInteractor.delete_media(hash1).fromIOToMain(
                                 {
-                                    createCustomToast(
-                                        context
-                                    ).showToast(R.string.success)
+                                    createCustomToast(context, null)?.showToast(R.string.success)
                                 }) { o ->
-                                createCustomToast(context).showToastThrowable(o)
+                                createCustomToast(context, null)?.showToastThrowable(o)
                             }
                         }
                         .setNegativeButton(R.string.button_cancel, null)

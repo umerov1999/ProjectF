@@ -132,7 +132,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
         }
         audioListDisposable += doLocalBitrate(url).fromIOToMain(
             {
-                createCustomToast(mContext).showToast(
+                createCustomToast(mContext, null)?.showToast(
                     mContext.resources.getString(
                         R.string.bitrate,
                         it.first,
@@ -140,7 +140,7 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                     )
                 )
             }
-        ) { e -> createCustomToast(mContext).showToastThrowable(e) }
+        ) { e -> createCustomToast(mContext, null)?.showToastThrowable(e) }
     }
 
     @get:DrawableRes
@@ -273,11 +273,16 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                                     ?.setDurationSnack(Snackbar.LENGTH_LONG)
                                     ?.coloredSnack(
                                         R.string.success,
-                                        "#AA48BE2D".toColor()
+                                        "#AA48BE2D".toColor(), false
                                     )
                                     ?.show()
                             },
-                            { createCustomToast(mContext).showToastError(it.localizedMessage) }
+                            {
+                                createCustomToast(
+                                    mContext,
+                                    null
+                                )?.showToastError(it.localizedMessage)
+                            }
                         )
                     }
                 }
@@ -289,13 +294,13 @@ class AudioLocalRecyclerAdapter(private val mContext: Context, private var data:
                         ) {
                             CustomSnackbars.createCustomSnackbars(view)
                                 ?.setDurationSnack(Snackbar.LENGTH_LONG)
-                                ?.coloredSnack(R.string.success, "#AA48BE2D".toColor())
+                                ?.coloredSnack(R.string.success, "#AA48BE2D".toColor(), false)
                                 ?.show()
                             mClickListener?.onDelete(position)
                         }
                     }
                 } catch (e: Exception) {
-                    createCustomToast(mContext).showToastError(e.localizedMessage)
+                    createCustomToast(mContext, null)?.showToastError(e.localizedMessage)
                 }
 
                 else -> {}

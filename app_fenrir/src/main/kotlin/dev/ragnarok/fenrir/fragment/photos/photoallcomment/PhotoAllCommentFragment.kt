@@ -30,7 +30,6 @@ import dev.ragnarok.fenrir.model.menu.options.CommentsPhotoOption
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.util.spots.SpotsDialog
-import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
 
 class PhotoAllCommentFragment :
@@ -267,8 +266,8 @@ class PhotoAllCommentFragment :
                         .getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
                     val clip = ClipData.newPlainText("comment", comment.text)
                     clipboard?.setPrimaryClip(clip)
-                    createCustomToast(requireActivity()).setDuration(Toast.LENGTH_LONG)
-                        .showToast(R.string.copied_to_clipboard)
+                    customToast?.setDuration(Toast.LENGTH_LONG)
+                        ?.showToast(R.string.copied_to_clipboard)
                 }
 
                 CommentsPhotoOption.report_item_comment -> presenter?.fireReport(

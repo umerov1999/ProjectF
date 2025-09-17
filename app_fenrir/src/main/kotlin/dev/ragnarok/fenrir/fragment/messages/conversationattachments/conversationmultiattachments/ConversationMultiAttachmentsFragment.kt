@@ -49,7 +49,6 @@ import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
-import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.RecyclerViewSavedScroll
 
 class ConversationMultiAttachmentsFragment :
@@ -76,8 +75,7 @@ class ConversationMultiAttachmentsFragment :
             Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE
         )
     ) {
-        CustomToast.createCustomToast(requireActivity())
-            .showToast(R.string.permission_all_granted_text)
+        customToast?.showToast(R.string.permission_all_granted_text)
     }
 
     override fun onCreateView(
@@ -134,7 +132,7 @@ class ConversationMultiAttachmentsFragment :
         mSwipeRefreshLayout?.setOnRefreshListener {
             mSwipeRefreshLayout?.isRefreshing = false
             CustomSnackbars.createCustomSnackbars(view, null, true)
-                ?.setDurationSnack(Snackbar.LENGTH_LONG)?.defaultSnack(R.string.do_update)
+                ?.setDurationSnack(Snackbar.LENGTH_LONG)?.defaultSnack(R.string.do_update, false)
                 ?.setAction(R.string.button_yes) {
                     presenter?.fireRefresh()
                 }?.show()

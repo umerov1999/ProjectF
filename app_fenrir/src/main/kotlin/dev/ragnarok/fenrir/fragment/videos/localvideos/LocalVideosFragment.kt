@@ -7,8 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -25,7 +23,6 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getVkInternalPlayerPlace
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
-import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.MySearchView
 
 class LocalVideosFragment : BaseMvpFragment<LocalVideosPresenter, ILocalVideosView>(),
@@ -133,15 +130,6 @@ class LocalVideosFragment : BaseMvpFragment<LocalVideosPresenter, ILocalVideosVi
         if (!visible && fabAttach?.isShown == true) {
             fabAttach?.hide()
         }
-    }
-
-    override fun showError(errorText: String?) {
-        if (isAdded) CustomToast.createCustomToast(requireActivity()).setDuration(Toast.LENGTH_LONG)
-            .showToastError(errorText)
-    }
-
-    override fun showError(@StringRes titleTes: Int, vararg params: Any?) {
-        if (isAdded) showError(getString(titleTes, *params))
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?) =

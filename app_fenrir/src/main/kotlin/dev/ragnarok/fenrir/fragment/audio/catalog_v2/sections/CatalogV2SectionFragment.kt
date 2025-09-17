@@ -34,7 +34,6 @@ import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.AppPerms.DoRequestPermissions
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
-import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.LoadMoreFooterHelper
 import dev.ragnarok.fenrir.view.MySearchView
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
@@ -46,7 +45,7 @@ class CatalogV2SectionFragment :
         arrayOf(
             Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE
         )
-    ) { createCustomToast(requireActivity()).showToast(R.string.permission_all_granted_text) }
+    ) { customToast?.showToast(R.string.permission_all_granted_text) }
     private var mEmpty: TextView? = null
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
     private var mAdapter: CatalogV2SectionAdapter? = null
@@ -118,7 +117,7 @@ class CatalogV2SectionFragment :
                 PlaceFactory.getPlayerPlace(Settings.get().accounts().current)
                     .tryOpenWith(requireActivity())
             } else {
-                createCustomToast(requireActivity()).showToastError(R.string.null_audio)
+                customToast?.showToastError(R.string.null_audio)
             }
             true
         }
@@ -132,8 +131,8 @@ class CatalogV2SectionFragment :
                     recyclerView?.scrollToPosition(
                         index + mAdapter?.headersCount.orZero()
                     )
-                } else createCustomToast(requireActivity()).showToast(R.string.audio_not_found)
-            } else createCustomToast(requireActivity()).showToastError(R.string.null_audio)
+                } else customToast?.showToast(R.string.audio_not_found)
+            } else customToast?.showToastError(R.string.null_audio)
         }
         if (supportSearch) {
             mySearchView = root.findViewById(R.id.searchview)

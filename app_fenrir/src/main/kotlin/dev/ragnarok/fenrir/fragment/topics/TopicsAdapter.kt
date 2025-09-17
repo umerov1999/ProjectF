@@ -45,7 +45,7 @@ class TopicsAdapter(
                         "vk.ru/topic" + item.ownerId + "_" + item.id
                     )
                     clipboard?.setPrimaryClip(clip)
-                    createCustomToast(context).showToast(R.string.copied)
+                    createCustomToast(context, null)?.showToast(R.string.copied)
                     return@setOnMenuItemClickListener true
                 }
                 false

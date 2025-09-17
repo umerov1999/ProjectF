@@ -60,7 +60,7 @@ class LinkSpan(
                         context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
                     val clip = ClipData.newPlainText("response", link)
                     clipboard?.setPrimaryClip(clip)
-                    createCustomToast(context).showToast(R.string.copied_to_clipboard)
+                    createCustomToast(context, null)?.showToast(R.string.copied_to_clipboard)
                 }
             }
         }

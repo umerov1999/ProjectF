@@ -260,7 +260,7 @@ class AudioPlaylistsFragment : BaseMvpFragment<AudioPlaylistsPresenter, IAudioPl
     private fun showSnackbar(@StringRes res: Int, isLong: Boolean) {
         CustomSnackbars.createCustomSnackbars(view)
             ?.setDurationSnack(if (isLong) BaseTransientBottomBar.LENGTH_LONG else BaseTransientBottomBar.LENGTH_SHORT)
-            ?.defaultSnack(res)?.show()
+            ?.defaultSnack(res, false)?.show()
     }
 
     override fun onAdd(index: Int, album: AudioPlaylist, clone: Boolean) {

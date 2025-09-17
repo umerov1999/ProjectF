@@ -15,17 +15,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.BaseTransientBottomBar
 import dev.ragnarok.fenrir.Extra
-import dev.ragnarok.fenrir.Includes.provideApplicationContext
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.AttachmentsActivity
 import dev.ragnarok.fenrir.activity.AudioSelectActivity.Companion.createIntent
 import dev.ragnarok.fenrir.activity.DualTabPhotoActivity.Companion.createIntent
 import dev.ragnarok.fenrir.activity.VideoSelectActivity
-import dev.ragnarok.fenrir.api.exceptions.ApiException
 import dev.ragnarok.fenrir.db.model.AttachmentsTypes
-import dev.ragnarok.fenrir.dialog.BottomSheetErrorDialog
+import dev.ragnarok.fenrir.fragment.base.BaseMvpBottomSheetDialogFragment
 import dev.ragnarok.fenrir.fragment.poll.createpoll.CreatePollDialogFragment
 import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
 import dev.ragnarok.fenrir.getParcelableCompat
@@ -43,22 +40,15 @@ import dev.ragnarok.fenrir.model.selection.LocalPhotosSelectableSource
 import dev.ragnarok.fenrir.model.selection.LocalVideosSelectableSource
 import dev.ragnarok.fenrir.model.selection.Sources
 import dev.ragnarok.fenrir.model.selection.VKPhotosSelectableSource
-import dev.ragnarok.fenrir.service.ErrorLocalizer.localizeThrowable
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.Utils.hasScopedStorage
-import dev.ragnarok.fenrir.util.toast.CustomSnackbars
-import dev.ragnarok.fenrir.util.toast.CustomToast
-import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import me.minetsh.imaging.IMGEditActivity
 import java.io.File
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 
 class MessageAttachmentsFragment :
-    AbsPresenterBottomSheetFragment<MessageAttachmentsPresenter, IMessageAttachmentsView>(),
+    BaseMvpBottomSheetDialogFragment<MessageAttachmentsPresenter, IMessageAttachmentsView>(),
     IMessageAttachmentsView, AttachmentsBottomSheetAdapter.ActionListener {
     private val requestCameraPermission = requestPermissionsAbs(
         arrayOf(
@@ -180,7 +170,6 @@ class MessageAttachmentsFragment :
             .setImageResource(if (requireArguments().getBoolean(Extra.IS_CHAT)) R.drawable.chart_bar else R.drawable.photo_sizes)
 
         dialog.setContentView(view)
-        fireViewCreated()
 
         parentFragmentManager.setFragmentResultListener(
             CreatePollDialogFragment.REQUEST_CREATE_POLL,
@@ -189,6 +178,8 @@ class MessageAttachmentsFragment :
             val poll: Poll = result.getParcelableCompat("poll") ?: return@setFragmentResultListener
             presenter?.fireAttachmentsSelected(arrayListOf(poll))
         }
+
+        fireViewCreated()
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?): MessageAttachmentsPresenter {
@@ -350,97 +341,6 @@ class MessageAttachmentsFragment :
             entry
         )
     }
-
-    override fun showError(errorText: String?) {
-        if (isAdded) {
-            customToast.showToastError(errorText)
-        }
-    }
-
-    override fun showThrowable(throwable: Throwable?) {
-        if (isAdded) {
-            CustomSnackbars.createCustomSnackbars(view)?.let {
-                val snack = it.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG).coloredSnack(
-                    localizeThrowable(provideApplicationContext(), throwable),
-                    "#eeff0000".toColor()
-                )
-                if (throwable !is ApiException && throwable !is SocketTimeoutException && throwable !is UnknownHostException) {
-                    snack.setAction(R.string.more_info) {
-                        val text = StringBuilder()
-                        text.append(
-                            localizeThrowable(
-                                provideApplicationContext(),
-                                throwable
-                            )
-                        )
-                        text.append("\r\n")
-                        for (stackTraceElement in (throwable ?: return@setAction).stackTrace) {
-                            text.append("    ")
-                            text.append(stackTraceElement)
-                            text.append("\r\n")
-                        }
-                        MaterialAlertDialogBuilder(requireActivity())
-                            .setIcon(R.drawable.ic_error)
-                            .setMessage(text)
-                            .setTitle(R.string.more_info)
-                            .setPositiveButton(R.string.button_ok, null)
-                            .setCancelable(true)
-                            .show()
-                    }
-                }
-                snack.show()
-            } ?: showError(localizeThrowable(provideApplicationContext(), throwable))
-        }
-    }
-
-    override fun showBottomSheetError(title: String?, description: String?) {
-        if (isAdded) {
-            val dialog = BottomSheetErrorDialog()
-            val bundle = Bundle()
-            bundle.putString(Extra.TITLE, title)
-            bundle.putString(Extra.DATA, description)
-            dialog.arguments = bundle
-            dialog.show(parentFragmentManager, "BottomSheetErrorDialog")
-        }
-    }
-
-    override fun showBottomSheetError(throwable: Throwable?) {
-        if (isAdded) {
-            val text = StringBuilder()
-            if (throwable !is SocketTimeoutException && throwable !is UnknownHostException) {
-                for (stackTraceElement in (throwable ?: return).stackTrace) {
-                    text.append("    ")
-                    text.append(stackTraceElement)
-                    text.append("\r\n")
-                }
-            }
-
-            var stackTraceString = text.toString()
-            if (stackTraceString.length > 500) {
-                val disclaimer = " [stack trace too large]"
-                stackTraceString = stackTraceString.substring(
-                    0,
-                    500 - disclaimer.length
-                ) + disclaimer
-            }
-
-            showBottomSheetError(
-                localizeThrowable(provideApplicationContext(), throwable),
-                stackTraceString
-            )
-        }
-    }
-
-    override fun showError(titleTes: Int, vararg params: Any?) {
-        if (isAdded) {
-            showError(getString(titleTes, *params))
-        }
-    }
-
-    override val customToast: CustomToast
-        get() = if (isAdded) {
-            createCustomToast(requireActivity())
-        } else createCustomToast(null)
 
     companion object {
         const val MESSAGE_CLOSE_ONLY = "message_attachments_close_only"

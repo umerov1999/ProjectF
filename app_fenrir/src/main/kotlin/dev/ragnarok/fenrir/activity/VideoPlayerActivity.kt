@@ -488,7 +488,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
             requestedOrientation =
                 if (isLandscape) ActivityInfo.SCREEN_ORIENTATION_PORTRAIT else ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         } catch (_: Exception) {
-            CustomToast.createCustomToast(this).showToastError(R.string.not_supported)
+            CustomToast.createCustomToast(this, null)?.showToastError(R.string.not_supported)
         }
     }
 

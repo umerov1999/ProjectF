@@ -64,7 +64,6 @@ import dev.ragnarok.fenrir.util.MessagesReplyItemCallback
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
-import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.UpEditFab
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
 
@@ -100,7 +99,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
         if (Settings.get().security().isUsePinForSecurity) {
             requestEnterPin.launch(Intent(requireActivity(), EnterPinActivity::class.java))
         } else {
-            createCustomToast(requireActivity()).showToastError(R.string.not_supported_hide)
+            customToast?.showToastError(R.string.not_supported_hide)
             securitySettingsPlace.tryOpenWith(requireActivity())
         }
     }
@@ -362,7 +361,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
                 )
 
                 6 -> if (!Settings.get().security().isUsePinForSecurity) {
-                    createCustomToast(requireActivity()).showToastError(R.string.not_supported_hide)
+                    customToast?.showToastError(R.string.not_supported_hide)
                     securitySettingsPlace.tryOpenWith(requireActivity())
                 } else {
                     Settings.get().security().addHiddenDialog(dialog.getOwnerObjectId())
@@ -389,7 +388,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
 
     override fun askToReload() {
         CustomSnackbars.createCustomSnackbars(view, null, true)
-            ?.setDurationSnack(Snackbar.LENGTH_LONG)?.defaultSnack(R.string.update_dialogs)
+            ?.setDurationSnack(Snackbar.LENGTH_LONG)?.defaultSnack(R.string.update_dialogs, false)
             ?.setAction(R.string.button_yes) {
                 presenter?.fireRefresh()
             }?.show()
@@ -397,7 +396,8 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
 
     override fun askToScrollToEnd() {
         CustomSnackbars.createCustomSnackbars(view, null, true)
-            ?.setDurationSnack(Snackbar.LENGTH_LONG)?.defaultSnack(R.string.load_next_dialogs)
+            ?.setDurationSnack(Snackbar.LENGTH_LONG)
+            ?.defaultSnack(R.string.load_next_dialogs, false)
             ?.setAction(R.string.button_yes) {
                 presenter?.fireScrollToEnd()
             }?.show()
@@ -507,7 +507,7 @@ class DialogsFragment : BaseMvpFragment<DialogsPresenter, IDialogsView>(), IDial
     override fun showSnackbar(@StringRes res: Int, isLong: Boolean) {
         CustomSnackbars.createCustomSnackbars(view)
             ?.setDurationSnack(if (isLong) BaseTransientBottomBar.LENGTH_LONG else BaseTransientBottomBar.LENGTH_SHORT)
-            ?.defaultSnack(res)?.show()
+            ?.defaultSnack(res, false)?.show()
     }
 
     override fun showEnterNewGroupChatTitle(users: List<User>) {

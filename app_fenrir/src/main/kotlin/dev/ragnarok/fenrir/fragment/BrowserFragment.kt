@@ -72,7 +72,7 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
                 requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
             val clip = ClipData.newPlainText(getString(R.string.link), mWebView?.url)
             clipboard?.setPrimaryClip(clip)
-            CustomToast.createCustomToast(requireActivity()).showToast(R.string.copied)
+            CustomToast.createCustomToast(requireActivity(), view)?.showToast(R.string.copied)
             return true
         }
         return false
@@ -141,8 +141,8 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
             if (!dir_final.isDirectory) {
                 val created = dir_final.mkdirs()
                 if (!created) {
-                    CustomToast.createCustomToast(requireActivity())
-                        .showToastError("Can't create directory $dir_final")
+                    CustomToast.createCustomToast(requireActivity(), view)
+                        ?.showToastError("Can't create directory $dir_final")
                     return
                 }
             } else dir_final.setLastModified(Calendar.getInstance().timeInMillis)
@@ -198,8 +198,8 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
                 if (!dir.isDirectory) {
                     val created = dir.mkdirs()
                     if (!created) {
-                        CustomToast.createCustomToast(requireActivity())
-                            .showToastError("Can't create directory $dir")
+                        CustomToast.createCustomToast(requireActivity(), view)
+                            ?.showToastError("Can't create directory $dir")
                         return@show
                     }
                 } else dir.setLastModified(Calendar.getInstance().timeInMillis)
@@ -214,8 +214,8 @@ class BrowserFragment : BaseFragment(), MenuProvider, BackPressCallback,
                     requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
                 val clip = ClipData.newPlainText("response", imageUrl)
                 clipboard?.setPrimaryClip(clip)
-                CustomToast.createCustomToast(context)
-                    .showToast(R.string.copied_to_clipboard)
+                CustomToast.createCustomToast(requireActivity(), view)
+                    ?.showToast(R.string.copied_to_clipboard)
             }
         }
     }

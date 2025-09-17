@@ -315,7 +315,7 @@ class CatalogV2SectionAdapter(
             .fromIOToMain({
                 getItems().removeAt(index)
                 notifyItemBindableRemoved(index)
-                CustomToast.createCustomToast(mContext).showToast(R.string.deleted)
+                CustomToast.createCustomToast(mContext, null)?.showToast(R.string.deleted)
             }) { throwable ->
                 clickListener?.onError(
                     throwable
@@ -331,7 +331,7 @@ class CatalogV2SectionAdapter(
             album.access_key
         )
             .fromIOToMain({
-                CustomToast.createCustomToast(mContext).showToast(R.string.success)
+                CustomToast.createCustomToast(mContext, null)?.showToast(R.string.success)
             }) {
                 clickListener?.onError(
                     it
@@ -605,14 +605,14 @@ class CatalogV2SectionAdapter(
                 {
                     getItems().removeAt(position)
                     notifyItemBindableRemoved(position)
-                    CustomToast.createCustomToast(mContext).showToast(R.string.deleted)
-                }) { t -> CustomToast.createCustomToast(mContext).showToastThrowable(t) }
+                    CustomToast.createCustomToast(mContext, null)?.showToast(R.string.deleted)
+                }) { t -> CustomToast.createCustomToast(mContext, null)?.showToastThrowable(t) }
     }
 
     private fun addTrack(accountId: Long, audio: Audio) {
         audioListDisposable += mAudioInteractor.add(accountId, audio, null).fromIOToMain(
-            { CustomToast.createCustomToast(mContext).showToast(R.string.added) }) { t ->
-            CustomToast.createCustomToast(mContext).showToastThrowable(t)
+            { CustomToast.createCustomToast(mContext, null)?.showToast(R.string.added) }) { t ->
+            CustomToast.createCustomToast(mContext, null)?.showToastThrowable(t)
         }
     }
 
@@ -641,7 +641,7 @@ class CatalogV2SectionAdapter(
         audioListDisposable += if (audio.isHLS) {
             M3U8(pUrl).length.fromIOToMain(
                 { r ->
-                    CustomToast.createCustomToast(mContext).showToast(
+                    CustomToast.createCustomToast(mContext, null)?.showToast(
                         Mp3InfoHelper.getBitrate(
                             mContext,
                             audio.duration,
@@ -649,11 +649,11 @@ class CatalogV2SectionAdapter(
                         )
                     )
                 }
-            ) { e -> CustomToast.createCustomToast(mContext).showToastThrowable(e) }
+            ) { e -> CustomToast.createCustomToast(mContext, null)?.showToastThrowable(e) }
         } else {
             Mp3InfoHelper.getLength(pUrl).fromIOToMain(
                 { r ->
-                    CustomToast.createCustomToast(mContext).showToast(
+                    CustomToast.createCustomToast(mContext, null)?.showToast(
                         Mp3InfoHelper.getBitrate(
                             mContext,
                             audio.duration,
@@ -661,7 +661,7 @@ class CatalogV2SectionAdapter(
                         )
                     )
                 }
-            ) { e -> CustomToast.createCustomToast(mContext).showToastThrowable(e) }
+            ) { e -> CustomToast.createCustomToast(mContext, null)?.showToastThrowable(e) }
         }
     }
 
@@ -672,7 +672,7 @@ class CatalogV2SectionAdapter(
                     t,
                     audio
                 )
-            }) { t -> CustomToast.createCustomToast(mContext).showToastThrowable(t) }
+            }) { t -> CustomToast.createCustomToast(mContext, null)?.showToastThrowable(t) }
     }
 
     private fun onAudioLyricsReceived(Text: String, audio: Audio) {
@@ -688,7 +688,8 @@ class CatalogV2SectionAdapter(
                 ) as ClipboardManager?
                 val clip = ClipData.newPlainText("response", Text)
                 clipboard?.setPrimaryClip(clip)
-                CustomToast.createCustomToast(mContext).showToast(R.string.copied_to_clipboard)
+                CustomToast.createCustomToast(mContext, null)
+                    ?.showToast(R.string.copied_to_clipboard)
             }
             .setCancelable(true)
             .show()
@@ -964,7 +965,7 @@ class CatalogV2SectionAdapter(
                         mContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
                     val clip = ClipData.newPlainText("response", audio.url)
                     clipboard?.setPrimaryClip(clip)
-                    CustomToast.createCustomToast(mContext).showToast(R.string.copied)
+                    CustomToast.createCustomToast(mContext, null)?.showToast(R.string.copied)
                 }
 
                 AudioOption.add_item_audio -> {
@@ -994,8 +995,8 @@ class CatalogV2SectionAdapter(
                         isLocal = false
                     )
                     when (ret) {
-                        0 -> CustomToast.createCustomToast(mContext)
-                            .showToastBottom(R.string.saved_audio)
+                        0 -> CustomToast.createCustomToast(mContext, null)
+                            ?.showToastBottom(R.string.saved_audio)
 
                         1, 2 -> {
                             CustomSnackbars.createCustomSnackbars(view)
@@ -1018,8 +1019,8 @@ class CatalogV2SectionAdapter(
                         else -> {
                             audio.downloadIndicator = 0
                             updateDownloadState(holder, audio)
-                            CustomToast.createCustomToast(mContext)
-                                .showToastBottom(R.string.error_audio)
+                            CustomToast.createCustomToast(mContext, null)
+                                ?.showToastBottom(R.string.error_audio)
                         }
                     }
                 }
@@ -1039,8 +1040,8 @@ class CatalogV2SectionAdapter(
                         isLocal = false
                     )
                     when (ret) {
-                        0 -> CustomToast.createCustomToast(mContext)
-                            .showToastBottom(R.string.saved_audio)
+                        0 -> CustomToast.createCustomToast(mContext, null)
+                            ?.showToastBottom(R.string.saved_audio)
 
                         1, 2 -> {
                             CustomSnackbars.createCustomSnackbars(view)
@@ -1063,8 +1064,8 @@ class CatalogV2SectionAdapter(
                         else -> {
                             audio.downloadIndicator = 0
                             updateDownloadState(holder, audio)
-                            CustomToast.createCustomToast(mContext)
-                                .showToastBottom(R.string.error_audio)
+                            CustomToast.createCustomToast(mContext, null)
+                                ?.showToastBottom(R.string.error_audio)
                         }
                     }
                 }
@@ -1284,8 +1285,8 @@ class CatalogV2SectionAdapter(
                         isLocal = false
                     )
                     when (ret) {
-                        0 -> CustomToast.createCustomToast(mContext)
-                            .showToastBottom(R.string.saved_audio)
+                        0 -> CustomToast.createCustomToast(mContext, null)
+                            ?.showToastBottom(R.string.saved_audio)
 
                         1, 2 -> {
                             v?.let {
@@ -1310,8 +1311,8 @@ class CatalogV2SectionAdapter(
                         else -> {
                             audio.downloadIndicator = 0
                             updateDownloadState(this, audio)
-                            CustomToast.createCustomToast(mContext)
-                                .showToastBottom(R.string.error_audio)
+                            CustomToast.createCustomToast(mContext, null)
+                                ?.showToastBottom(R.string.error_audio)
                         }
                     }
                     true

@@ -541,9 +541,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                 )
             }
             inMainThread {
-                createCustomToast(
-                    applicationContext
-                ).showToastSuccessBottom(
+                createCustomToast(applicationContext, null)?.showToastSuccessBottom(
                     applicationContext.getString(R.string.success) + " " + applicationContext.getString(
                         R.string.chat
                     ) + " " + peer_title
@@ -552,9 +550,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
         } catch (e: Throwable) {
             e.printStackTrace()
             inMainThread {
-                createCustomToast(
-                    applicationContext
-                ).showToastError(e.localizedMessage)
+                createCustomToast(applicationContext, null)?.showToastError(e.localizedMessage)
             }
         }
     }
@@ -708,9 +704,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
                 )
             }
             inMainThread {
-                createCustomToast(
-                    applicationContext
-                ).showToastSuccessBottom(
+                createCustomToast(applicationContext, null)?.showToastSuccessBottom(
                     applicationContext.getString(R.string.success) + " " + applicationContext.getString(
                         R.string.chat
                     ) + " " + peer_title
@@ -719,9 +713,7 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
         } catch (e: Throwable) {
             e.printStackTrace()
             inMainThread {
-                createCustomToast(
-                    applicationContext
-                ).showToastError(e.localizedMessage)
+                createCustomToast(applicationContext, null)?.showToastError(e.localizedMessage)
             }
         }
     }
@@ -767,8 +759,9 @@ class ChatDownloadWorker(context: Context, workerParams: WorkerParameters) :
         createForeground()
         inMainThread {
             createCustomToast(
-                applicationContext
-            ).showToastBottom(applicationContext.getString(R.string.do_chat_download))
+                applicationContext,
+                null
+            )?.showToastBottom(applicationContext.getString(R.string.do_chat_download))
         }
         if ("html" == action) {
             doDownloadAsHTML(chat_title, account_id, owner_id)

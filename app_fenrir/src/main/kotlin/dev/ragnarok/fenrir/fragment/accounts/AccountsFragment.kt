@@ -92,7 +92,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
                 )
             )
         } else {
-            createCustomToast(requireActivity()).showToastError(R.string.not_supported_hide)
+            customToast?.showToastError(R.string.not_supported_hide)
         }
     }
     private val requestWritePermissionExchangeToken = requestPermissionsAbs(
@@ -110,7 +110,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
             )
         } else {
             presenter?.fireResetTempAccount()
-            createCustomToast(requireActivity()).showToastError(R.string.not_supported_hide)
+            customToast?.showToastError(R.string.not_supported_hide)
         }
     }
     private val requestReadPermissionImportAccount = requestPermissionsAbs(
@@ -158,7 +158,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
                     ) as ClipboardManager?
                     val clip = ClipData.newPlainText("response", restore.password)
                     clipboard?.setPrimaryClip(clip)
-                    createCustomToast(requireActivity()).showToast(R.string.copied_to_clipboard)
+                    customToast?.showToast(R.string.copied_to_clipboard)
                 }
                 .setNegativeButton(R.string.login_hint) { _, _ ->
                     val clipboard = requireActivity().getSystemService(
@@ -167,7 +167,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
                     val clip =
                         ClipData.newPlainText("response", restore.login)
                     clipboard?.setPrimaryClip(clip)
-                    createCustomToast(requireActivity()).showToast(R.string.copied_to_clipboard)
+                    customToast?.showToast(R.string.copied_to_clipboard)
                 }
                 .setCancelable(true)
                 .show()
@@ -413,7 +413,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
             ?.setDurationSnack(Snackbar.LENGTH_LONG)
             ?.coloredSnack(
                 text,
-                color
+                color, false
             )?.show()
     }
 
@@ -430,6 +430,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
             ?.coloredSnack(
                 resId,
                 color,
+                false,
                 params
             )?.show()
     }
@@ -521,7 +522,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
                 1 -> presenter?.createShortcut(requireActivity(), account)
                 2 -> presenter?.fireSetAsActive(account)
                 3 -> if (!Settings.get().security().isUsePinForSecurity) {
-                    createCustomToast(requireActivity()).showToastError(R.string.not_supported_hide)
+                    customToast?.showToastError(R.string.not_supported_hide)
                 } else {
                     presenter?.fireSetTempAccount(account.getOwnerObjectId())
                     requestEnterPinForShowPassword.launch(
@@ -559,7 +560,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
                         requestWritePermissionExchangeToken.launch()
                     } else {
                         if (!Settings.get().security().isUsePinForSecurity) {
-                            createCustomToast(requireActivity()).showToastError(R.string.not_supported_hide)
+                            customToast?.showToastError(R.string.not_supported_hide)
                         } else {
                             requestEnterPinForExchangeToken.launch(
                                 Intent(
@@ -638,7 +639,10 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
                             )
                         }
                     } catch (e: Exception) {
-                        createCustomToast(requireActivity()).showToastError(e.localizedMessage)
+                        createCustomToast(
+                            requireActivity(),
+                            view
+                        )?.showToastError(e.localizedMessage)
                     }
                     dismiss()
                 }.create()
@@ -702,7 +706,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
                         )
                     )
                 } else {
-                    createCustomToast(requireActivity()).showToastError(R.string.not_supported_hide)
+                    customToast?.showToastError(R.string.not_supported_hide)
                 }
                 return true
             }

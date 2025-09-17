@@ -91,7 +91,7 @@ class AudioLocalServerRecyclerAdapter(
         }
         audioListDisposable += doBitrate(url).fromIOToMain(
             {
-                createCustomToast(mContext).showToast(
+                createCustomToast(mContext, null)?.showToast(
                     mContext.resources.getString(
                         R.string.bitrate,
                         it,
@@ -99,7 +99,7 @@ class AudioLocalServerRecyclerAdapter(
                     )
                 )
             }
-        ) { e -> createCustomToast(mContext).showToastThrowable(e) }
+        ) { e -> createCustomToast(mContext, null)?.showToastThrowable(e) }
     }
 
     @get:DrawableRes
@@ -237,7 +237,11 @@ class AudioLocalServerRecyclerAdapter(
                         isLocal = true
                     )
                     when (ret) {
-                        0 -> createCustomToast(mContext).showToastBottom(R.string.saved_audio)
+                        0 -> createCustomToast(
+                            mContext,
+                            null
+                        )?.showToastBottom(R.string.saved_audio)
+
                         1, 2 -> {
                             CustomSnackbars.createCustomSnackbars(view)
                                 ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
@@ -259,7 +263,7 @@ class AudioLocalServerRecyclerAdapter(
                         else -> {
                             audio.downloadIndicator = 0
                             updateDownloadState(holder, audio)
-                            createCustomToast(mContext).showToastBottom(R.string.error_audio)
+                            createCustomToast(mContext, null)?.showToastBottom(R.string.error_audio)
                         }
                     }
                 }
@@ -286,8 +290,8 @@ class AudioLocalServerRecyclerAdapter(
                         return@show
                     }
                     audioListDisposable += mAudioInteractor.update_time(hash).fromIOToMain(
-                        { createCustomToast(mContext).showToast(R.string.success) }) { t ->
-                        createCustomToast(mContext).showToastThrowable(t)
+                        { createCustomToast(mContext, null)?.showToast(R.string.success) }) { t ->
+                        createCustomToast(mContext, null)?.showToastThrowable(t)
                     }
                 }
 
@@ -314,11 +318,11 @@ class AudioLocalServerRecyclerAdapter(
                                             .trim()
                                     )
                                         .fromIOToMain({
-                                            createCustomToast(mContext).showToast(
+                                            createCustomToast(mContext, null)?.showToast(
                                                 R.string.success
                                             )
                                         }) { o ->
-                                            createCustomToast(mContext).showToastThrowable(
+                                            createCustomToast(mContext, null)?.showToastThrowable(
                                                 o
                                             )
                                         }
@@ -326,7 +330,7 @@ class AudioLocalServerRecyclerAdapter(
                                 .setNegativeButton(R.string.button_cancel, null)
                                 .show()
                         }) { t ->
-                        createCustomToast(mContext).showToastThrowable(t)
+                        createCustomToast(mContext, null)?.showToastThrowable(t)
                     }
                 }
 
@@ -342,8 +346,13 @@ class AudioLocalServerRecyclerAdapter(
                             return@setPositiveButton
                         }
                         audioListDisposable += mAudioInteractor.delete_media(hash1).fromIOToMain(
-                            { createCustomToast(mContext).showToast(R.string.success) }) { o ->
-                            createCustomToast(mContext).showToastThrowable(o)
+                            {
+                                createCustomToast(
+                                    mContext,
+                                    null
+                                )?.showToast(R.string.success)
+                            }) { o ->
+                            createCustomToast(mContext, null)?.showToastThrowable(o)
                         }
                     }
                     .setNegativeButton(R.string.button_cancel, null)
@@ -355,8 +364,8 @@ class AudioLocalServerRecyclerAdapter(
                         return@show
                     }
                     audioListDisposable += mAudioInteractor.uploadAudio(hash1).fromIOToMain(
-                        { createCustomToast(mContext).showToast(R.string.success) }) { o ->
-                        createCustomToast(mContext).showToastThrowable(o)
+                        { createCustomToast(mContext, null)?.showToast(R.string.success) }) { o ->
+                        createCustomToast(mContext, null)?.showToastThrowable(o)
                     }
                 }
 
@@ -454,7 +463,7 @@ class AudioLocalServerRecyclerAdapter(
                     isLocal = true
                 )
             when (ret) {
-                0 -> createCustomToast(mContext).showToastBottom(R.string.saved_audio)
+                0 -> createCustomToast(mContext, null)?.showToastBottom(R.string.saved_audio)
                 1, 2 -> {
                     v?.let {
                         CustomSnackbars.createCustomSnackbars(it)
@@ -477,7 +486,7 @@ class AudioLocalServerRecyclerAdapter(
                 else -> {
                     audio.downloadIndicator = 0
                     updateDownloadState(holder, audio)
-                    createCustomToast(mContext).showToastBottom(R.string.error_audio)
+                    createCustomToast(mContext, null)?.showToastBottom(R.string.error_audio)
                 }
             }
             true

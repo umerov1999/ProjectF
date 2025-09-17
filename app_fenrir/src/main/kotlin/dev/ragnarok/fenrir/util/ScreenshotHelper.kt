@@ -36,8 +36,8 @@ object ScreenshotHelper {
                                 saveDir.mkdirs()
                             }
                             if (!saveDir.exists()) {
-                                CustomToast.createCustomToast(activity)
-                                    .setDuration(Toast.LENGTH_LONG).showToastError(
+                                CustomToast.createCustomToast(activity, null)
+                                    ?.setDuration(Toast.LENGTH_LONG)?.showToastError(
                                         activity.getText(R.string.error)
                                             .toString() + " " + saveDir.absolutePath
                                     )
@@ -51,9 +51,9 @@ object ScreenshotHelper {
                             try {
                                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream)
                                 fileOutputStream.flush()
-                                CustomToast.createCustomToast(activity)
-                                    .setDuration(Toast.LENGTH_LONG)
-                                    .showToastSuccessBottom(activity.getString(R.string.success) + " " + file.absolutePath)
+                                CustomToast.createCustomToast(activity, null)
+                                    ?.setDuration(Toast.LENGTH_LONG)
+                                    ?.showToastSuccessBottom(activity.getString(R.string.success) + " " + file.absolutePath)
                                 activity.sendBroadcast(
                                     @Suppress("deprecation")
                                     Intent(
@@ -64,13 +64,14 @@ object ScreenshotHelper {
                                 fileOutputStream.close()
                             } catch (e: Exception) {
                                 fileOutputStream.close()
-                                CustomToast.createCustomToast(activity).showToastThrowable(e)
+                                CustomToast.createCustomToast(activity, null)?.showToastThrowable(e)
                             }
                         }
 
                         else -> {
-                            CustomToast.createCustomToast(activity).setDuration(Toast.LENGTH_LONG)
-                                .showToastError(
+                            CustomToast.createCustomToast(activity, null)
+                                ?.setDuration(Toast.LENGTH_LONG)
+                                ?.showToastError(
                                     activity.getText(R.string.error)
                                         .toString() + " " + it.toString()
                                 )
@@ -80,9 +81,10 @@ object ScreenshotHelper {
                 handler
             )
         } catch (e: Exception) {
-            CustomToast.createCustomToast(activity).setDuration(Toast.LENGTH_LONG).showToastError(
-                activity.getText(R.string.error).toString() + " " + e
-            )
+            CustomToast.createCustomToast(activity, null)?.setDuration(Toast.LENGTH_LONG)
+                ?.showToastError(
+                    activity.getText(R.string.error).toString() + " " + e
+                )
         }
     }
 }

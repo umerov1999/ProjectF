@@ -128,15 +128,15 @@ class AudioContainer : LinearLayout {
     private fun deleteTrack(accountId: Long, audio: Audio) {
         audioListDisposable +=
             mAudioInteractor.delete(accountId, audio.id, audio.ownerId).fromIOToMain(
-                { createCustomToast(context).showToast(R.string.deleted) }) { t ->
-                createCustomToast(context).showToastThrowable(t)
+                { createCustomToast(context, null)?.showToast(R.string.deleted) }) { t ->
+                createCustomToast(context, null)?.showToastThrowable(t)
             }
     }
 
     private fun addTrack(accountId: Long, audio: Audio) {
         audioListDisposable += mAudioInteractor.add(accountId, audio, null).fromIOToMain(
-            { createCustomToast(context).showToast(R.string.added) }) { t ->
-            createCustomToast(context).showToastThrowable(t)
+            { createCustomToast(context, null)?.showToast(R.string.added) }) { t ->
+            createCustomToast(context, null)?.showToastThrowable(t)
         }
     }
 
@@ -165,26 +165,26 @@ class AudioContainer : LinearLayout {
         audioListDisposable += if (audio.isHLS) {
             M3U8(pUrl).length.fromIOToMain(
                 { r ->
-                    createCustomToast(context).showToast(
+                    createCustomToast(context, null)?.showToast(
                         getBitrate(
                             context, audio.duration, r
                         )
                     )
                 }
             ) { e ->
-                createCustomToast(context).showToastThrowable(e)
+                createCustomToast(context, null)?.showToastThrowable(e)
             }
         } else {
             getLength(pUrl).fromIOToMain(
                 { r ->
-                    createCustomToast(context).showToast(
+                    createCustomToast(context, null)?.showToast(
                         getBitrate(
                             context, audio.duration, r
                         )
                     )
                 }
             ) { e ->
-                createCustomToast(context).showToastThrowable(e)
+                createCustomToast(context, null)?.showToastThrowable(e)
             }
         }
     }
@@ -192,7 +192,7 @@ class AudioContainer : LinearLayout {
     private fun get_lyrics(audio: Audio) {
         audioListDisposable += mAudioInteractor.getLyrics(Settings.get().accounts().current, audio)
             .fromIOToMain({ t -> onAudioLyricsReceived(t, audio) }) { t ->
-                createCustomToast(context).showToastThrowable(t)
+                createCustomToast(context, null)?.showToastThrowable(t)
             }
     }
 
@@ -209,7 +209,7 @@ class AudioContainer : LinearLayout {
                 ) as ClipboardManager?
                 val clip = ClipData.newPlainText("response", Text)
                 clipboard?.setPrimaryClip(clip)
-                createCustomToast(context).showToast(R.string.copied_to_clipboard)
+                createCustomToast(context, null)?.showToast(R.string.copied_to_clipboard)
             }
             .setCancelable(true)
             .show()
@@ -426,7 +426,7 @@ class AudioContainer : LinearLayout {
                         context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
                     val clip = ClipData.newPlainText("response", audio.url)
                     clipboard?.setPrimaryClip(clip)
-                    createCustomToast(context).showToast(R.string.copied)
+                    createCustomToast(context, null)?.showToast(R.string.copied)
                 }
 
                 AudioOption.add_item_audio -> {
@@ -456,7 +456,7 @@ class AudioContainer : LinearLayout {
                         isLocal = false
                     )
                     when (ret) {
-                        0 -> createCustomToast(context).showToastBottom(R.string.saved_audio)
+                        0 -> createCustomToast(context, null)?.showToastBottom(R.string.saved_audio)
                         1, 2 -> {
                             CustomSnackbars.createCustomSnackbars(view)
                                 ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
@@ -480,7 +480,7 @@ class AudioContainer : LinearLayout {
                         else -> {
                             audio.downloadIndicator = 0
                             updateDownloadState(holder, audio)
-                            createCustomToast(context).showToastBottom(R.string.error_audio)
+                            createCustomToast(context, null)?.showToastBottom(R.string.error_audio)
                         }
                     }
                 }
@@ -500,7 +500,7 @@ class AudioContainer : LinearLayout {
                         isLocal = false
                     )
                     when (ret) {
-                        0 -> createCustomToast(context).showToastBottom(R.string.saved_audio)
+                        0 -> createCustomToast(context, null)?.showToastBottom(R.string.saved_audio)
                         1, 2 -> {
                             CustomSnackbars.createCustomSnackbars(view)
                                 ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
@@ -524,7 +524,7 @@ class AudioContainer : LinearLayout {
                         else -> {
                             audio.downloadIndicator = 0
                             updateDownloadState(holder, audio)
-                            createCustomToast(context).showToastBottom(R.string.error_audio)
+                            createCustomToast(context, null)?.showToastBottom(R.string.error_audio)
                         }
                     }
                 }
@@ -688,7 +688,7 @@ class AudioContainer : LinearLayout {
                     isLocal = false
                 )
                 when (ret) {
-                    0 -> createCustomToast(context).showToastBottom(R.string.saved_audio)
+                    0 -> createCustomToast(context, null)?.showToastBottom(R.string.saved_audio)
                     1, 2 -> {
                         v?.let {
                             CustomSnackbars.createCustomSnackbars(it)
@@ -714,7 +714,7 @@ class AudioContainer : LinearLayout {
                     else -> {
                         audio.downloadIndicator = 0
                         updateDownloadState(check, audio)
-                        createCustomToast(context).showToastBottom(R.string.error_audio)
+                        createCustomToast(context, null)?.showToastBottom(R.string.error_audio)
                     }
                 }
                 true

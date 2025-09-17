@@ -58,7 +58,6 @@ import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.inMainThread
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingle
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.syncSingleSafe
-import dev.ragnarok.fenrir.util.toast.CustomToast
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -759,7 +758,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                     Uri.fromFile(file)
                 )
             )
-            CustomToast.createCustomToast(context).showToast(
+            view?.customToast?.showToast(
                 R.string.saved_to_param_file_name,
                 file.absolutePath
             )

@@ -72,7 +72,6 @@ import dev.ragnarok.fenrir.util.ViewUtils
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
-import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.CircleCounterButton
 import dev.ragnarok.fenrir.view.ExpandableSurfaceView
 import dev.ragnarok.fenrir.view.TouchImageView
@@ -564,7 +563,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
             photo.resetZoom()
             photo.orientationLocked = TouchImageView.OrientationLocked.VERTICAL
             if (story.isIs_expired) {
-                createCustomToast(this@StoryPagerActivity).showToastError(R.string.is_expired)
+                customToast?.showToastError(R.string.is_expired)
                 mLoadingNow = false
                 resolveProgressVisibility(true)
                 return
@@ -581,7 +580,7 @@ class StoryPagerActivity : BaseMvpActivity<StoryPagerPresenter, IStoryPagerView>
                 loadImage(url)
             } else {
                 PicassoInstance.with().cancelRequest(photo)
-                createCustomToast(this@StoryPagerActivity).showToast(R.string.empty_url)
+                customToast?.showToast(R.string.empty_url)
             }
         }
 

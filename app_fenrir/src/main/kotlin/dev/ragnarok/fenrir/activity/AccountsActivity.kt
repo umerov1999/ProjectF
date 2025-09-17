@@ -51,7 +51,7 @@ class AccountsActivity : NoMainActivity(), PlaceProvider {
 
             else -> {
                 CustomSnackbars.createCustomSnackbars(findViewById(noMainContainerViewId))
-                    ?.coloredSnack(R.string.not_available, Color.RED)?.show()
+                    ?.coloredSnack(R.string.not_available, Color.RED, false)?.show()
             }
         }
     }

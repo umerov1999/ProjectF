@@ -956,7 +956,7 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                 loadImage(url)
             } else {
                 PicassoInstance.with().cancelRequest(photo)
-                createCustomToast(this@PhotoPagerActivity).showToastError(R.string.empty_url)
+                createCustomToast(this@PhotoPagerActivity, null)?.showToastError(R.string.empty_url)
             }
         }
 

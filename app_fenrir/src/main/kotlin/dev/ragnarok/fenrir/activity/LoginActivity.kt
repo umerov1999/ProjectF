@@ -61,7 +61,7 @@ class LoginActivity : AppCompatActivity() {
                 val url = Auth.getUrl(clientId, scope, groupIds)
                 webview.loadUrl(url)
             } catch (e: UnsupportedEncodingException) {
-                createCustomToast(this).showToastError(e.localizedMessage)
+                createCustomToast(this, null)?.showToastError(e.localizedMessage)
             }
         } else {
             TLogin = intent.getStringExtra(EXTRA_LOGIN)

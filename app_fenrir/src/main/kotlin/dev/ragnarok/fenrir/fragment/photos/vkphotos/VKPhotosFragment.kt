@@ -47,7 +47,6 @@ import dev.ragnarok.fenrir.util.AppPerms.hasReadWriteStoragePermission
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
-import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
 
 class VKPhotosFragment : BaseMvpFragment<VKPhotosPresenter, IVKPhotosView>(),
@@ -353,8 +352,8 @@ class VKPhotosFragment : BaseMvpFragment<VKPhotosPresenter, IVKPhotosView>(),
     }
 
     override fun showSelectPhotosToast() {
-        CustomToast.createCustomToast(requireActivity()).setDuration(Toast.LENGTH_LONG)
-            .showToastInfo(R.string.select_attachments)
+        customToast?.setDuration(Toast.LENGTH_LONG)
+            ?.showToastInfo(R.string.select_attachments)
     }
 
     override fun startLocalPhotosSelection() {

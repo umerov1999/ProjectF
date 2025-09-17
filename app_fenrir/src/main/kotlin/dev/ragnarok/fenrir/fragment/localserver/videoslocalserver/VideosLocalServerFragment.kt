@@ -20,7 +20,6 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
-import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.MySearchView
 import dev.ragnarok.fenrir.view.MySearchView.OnAdditionalButtonClickListener
 
@@ -34,7 +33,7 @@ class VideosLocalServerFragment :
             Manifest.permission.READ_EXTERNAL_STORAGE
         )
     ) {
-        createCustomToast(requireActivity()).showToast(R.string.permission_all_granted_text)
+        customToast?.showToast(R.string.permission_all_granted_text)
     }
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
     private var mVideoRecyclerAdapter: LocalServerVideosAdapter? = null

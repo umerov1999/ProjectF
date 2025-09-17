@@ -1149,7 +1149,7 @@ class AttachmentsViewBinder(
                 val clip =
                     ClipData.newPlainText("response", (link.attachment as NotSupported).body)
                 clipboard?.setPrimaryClip(clip)
-                CustomToast.createCustomToast(mContext).showToast(R.string.copied)
+                CustomToast.createCustomToast(mContext, null)?.showToast(R.string.copied)
             }
 
             AttachmentsTypes.GEO -> {

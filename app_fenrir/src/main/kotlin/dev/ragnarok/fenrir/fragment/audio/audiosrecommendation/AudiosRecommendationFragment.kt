@@ -33,7 +33,6 @@ import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.CheckDirectory
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.makeDownloadRequestAudio
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
-import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
 
 class AudiosRecommendationFragment :
@@ -43,7 +42,7 @@ class AudiosRecommendationFragment :
         arrayOf(
             Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE
         )
-    ) { createCustomToast(requireActivity()).showToast(R.string.permission_all_granted_text) }
+    ) { customToast?.showToast(R.string.permission_all_granted_text) }
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
     private var mAudioRecyclerAdapter: AudioRecyclerAdapter? = null
     private var isSaveMode = false
@@ -94,7 +93,7 @@ class AudiosRecommendationFragment :
                 if (curr != null) {
                     getPlayerPlace(Settings.get().accounts().current).tryOpenWith(requireActivity())
                 } else {
-                    createCustomToast(requireActivity()).showToastError(R.string.null_audio)
+                    customToast?.showToastError(R.string.null_audio)
                 }
             } else {
                 presenter?.fireSelectAll()
@@ -140,8 +139,8 @@ class AudiosRecommendationFragment :
                         recyclerView.scrollToPosition(
                             index + mAudioRecyclerAdapter?.headersCount.orZero()
                         )
-                    } else createCustomToast(requireActivity()).showToast(R.string.audio_not_found)
-                } else createCustomToast(requireActivity()).showToastError(R.string.null_audio)
+                    } else customToast?.showToast(R.string.audio_not_found)
+                } else customToast?.showToastError(R.string.null_audio)
             }
         }
         mAudioRecyclerAdapter =

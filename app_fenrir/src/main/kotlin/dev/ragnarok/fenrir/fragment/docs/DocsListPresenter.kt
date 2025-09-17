@@ -38,7 +38,6 @@ import dev.ragnarok.fenrir.util.Utils.shareLink
 import dev.ragnarok.fenrir.util.coroutines.CompositeJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
-import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import kotlinx.coroutines.flow.filter
 
 class DocsListPresenter(
@@ -121,9 +120,9 @@ class DocsListPresenter(
                         accessKey
                     )
                         .fromIOToMain({
-                            createCustomToast(context).setDuration(
+                            view?.customToast?.setDuration(
                                 Toast.LENGTH_LONG
-                            ).showToastSuccessBottom(R.string.added)
+                            )?.showToastSuccessBottom(R.string.added)
                         }) { t ->
                             showError(getCauseIfRuntime(t))
                         })

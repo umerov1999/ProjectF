@@ -57,7 +57,6 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.MessagesReplyItemCallback
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
 import dev.ragnarok.fenrir.util.spots.SpotsDialog
-import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.CommentsInputViewController
 import dev.ragnarok.fenrir.view.LoadMoreFooterHelperComment
 import dev.ragnarok.fenrir.view.LoadMoreFooterHelperComment.Companion.createFrom
@@ -347,7 +346,7 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
     }
 
     override fun showCommentSentToast() {
-        customToast.showToastSuccessBottom(R.string.toast_comment_sent, true)
+        customToast?.showToastSuccessBottom(R.string.toast_comment_sent, true)
     }
 
     override fun showAuthorSelectDialog(owners: List<Owner>) {
@@ -573,8 +572,8 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
                         .getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
                     val clip = ClipData.newPlainText("comment", comment.text)
                     clipboard?.setPrimaryClip(clip)
-                    createCustomToast(requireActivity()).setDuration(Toast.LENGTH_LONG)
-                        .showToast(R.string.copied_to_clipboard)
+                    customToast?.setDuration(Toast.LENGTH_LONG)
+                        ?.showToast(R.string.copied_to_clipboard)
                 }
 
                 CommentsOption.reply_item_comment -> presenter?.fireReplyToCommentClick(

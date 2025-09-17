@@ -103,7 +103,7 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
                 } ?: DeltaOwner()
             } catch (e: Exception) {
                 e.printStackTrace()
-                CustomToast.createCustomToast(this).showToastError(e.localizedMessage)
+                CustomToast.createCustomToast(this, null)?.showToastError(e.localizedMessage)
                 DeltaOwner()
             }
         } else {
@@ -152,13 +152,14 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
                                 Uri.fromFile(file)
                             )
                         )
-                        CustomToast.createCustomToast(this).showToast(
+                        CustomToast.createCustomToast(this, null)?.showToast(
                             R.string.saved_to_param_file_name,
                             file.absolutePath
                         )
                     } catch (e: Exception) {
                         e.printStackTrace()
-                        CustomToast.createCustomToast(this).showToastError(e.localizedMessage)
+                        CustomToast.createCustomToast(this, null)
+                            ?.showToastError(e.localizedMessage)
                     } finally {
                         Utils.safelyClose(out)
                     }
@@ -197,7 +198,7 @@ class DeltaOwnerActivity : AppCompatActivity(), PlaceProvider, AppStyleable {
                     )
                 }
                 Title.text = owner.owner.fullName
-            }, { CustomToast.createCustomToast(this).showToastThrowable(it) }
+            }, { CustomToast.createCustomToast(this, null)?.showToastThrowable(it) }
             )
 
         val viewPager: ViewPager2 = findViewById(R.id.delta_pager)

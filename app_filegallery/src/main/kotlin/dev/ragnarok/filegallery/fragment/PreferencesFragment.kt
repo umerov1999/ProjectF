@@ -194,7 +194,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     }
                     if (hasObject(objApp, "settings")) {
                         SettingsBackup().doRestore(objApp["settings"]?.jsonObject)
-                        createCustomToast(requireActivity(), null)?.setDuration(Toast.LENGTH_LONG)
+                        createCustomToast(requireActivity(), view)?.setDuration(Toast.LENGTH_LONG)
                             ?.showToastSuccessBottom(
                                 R.string.need_restart
                             )
@@ -854,7 +854,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                                 Uri.fromFile(file)
                             )
                         )
-                        createCustomToast(requireActivity(), null)?.showToast(
+                        createCustomToast(requireActivity(), view)?.showToast(
                             R.string.success,
                             file.absolutePath
                         )

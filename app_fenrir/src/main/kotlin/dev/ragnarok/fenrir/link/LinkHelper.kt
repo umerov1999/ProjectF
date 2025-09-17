@@ -93,14 +93,14 @@ object LinkHelper {
     @SuppressLint("CheckResult")
     fun openUrl(context: Activity, accountId: Long, link: String?, isMain: Boolean) {
         if (link.isNullOrEmpty()) {
-            createCustomToast(context).showToastError(R.string.empty_clipboard_url)
+            createCustomToast(context, null)?.showToastError(R.string.empty_clipboard_url)
             return
         }
         if (link.contains("vk.cc")) {
             InteractorFactory.createUtilsInteractor().checkLink(accountId, link)
                 .fromIOToMain({ t ->
                     if ("banned" == t.status) {
-                        createCustomToast(context).showToastError(R.string.link_banned)
+                        createCustomToast(context, null)?.showToastError(R.string.link_banned)
                     } else {
                         t.link?.let {
                             if (!openVKlink(context, accountId, it, isMain)) {
@@ -112,7 +112,7 @@ object LinkHelper {
                             }
                         }
                     }
-                }) { e -> createCustomToast(context).showToastThrowable(e) }
+                }) { e -> createCustomToast(context, null)?.showToastThrowable(e) }
         } else if (link.contains("vk.me")) {
             InteractorFactory.createUtilsInteractor().joinChatByInviteLink(accountId, link)
                 .fromIOToMain({ t ->
@@ -121,7 +121,7 @@ object LinkHelper {
                         accountId,
                         Peer(Peer.fromChatId(t.chat_id))
                     ).tryOpenWith(context)
-                }) { e -> createCustomToast(context).showToastThrowable(e) }
+                }) { e -> createCustomToast(context, null)?.showToastThrowable(e) }
         } else {
             if (!openVKlink(context, accountId, link, isMain)) {
                 if (Settings.get().main().isOpenUrlInternal > 0) {
@@ -394,7 +394,7 @@ object LinkHelper {
                     .fromIOToMain({
                         startForPlayList(context, ArrayList(it), 0, false)
                         getPlayerPlace(Settings.get().accounts().current).tryOpenWith(context)
-                    }) { e -> createCustomToast(context).showToastThrowable(e) }
+                    }) { e -> createCustomToast(context, null)?.showToastThrowable(e) }
             }
 
             AbsLink.STORY -> {
@@ -406,7 +406,7 @@ object LinkHelper {
                     .fromIOToMain({
                         PlaceFactory.getHistoryVideoPreviewPlace(accountId, ArrayList(it), 0)
                             .tryOpenWith(context)
-                    }) { e -> createCustomToast(context).showToastThrowable(e) }
+                    }) { e -> createCustomToast(context, null)?.showToastThrowable(e) }
             }
 
             AbsLink.MARKETS -> {

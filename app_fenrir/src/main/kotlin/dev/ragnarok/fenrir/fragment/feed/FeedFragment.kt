@@ -46,7 +46,6 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.Utils.is600dp
 import dev.ragnarok.fenrir.util.Utils.isLandscape
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
-import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.LoadMoreFooterHelper
 import dev.ragnarok.fenrir.view.LoadMoreFooterHelper.Companion.createFrom
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
@@ -263,8 +262,7 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
 
     override fun onCommentButtonClick(news: News) {
         if (!news.isCommentCanPost) {
-            CustomToast.createCustomToast(requireActivity())
-                .showToastError(R.string.comments_disabled_post)
+            customToast?.showToastError(R.string.comments_disabled_post)
         }
         presenter?.fireNewsCommentClick(
             news
@@ -318,7 +316,7 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
 
     override fun askToReload() {
         CustomSnackbars.createCustomSnackbars(view, null, true)
-            ?.setDurationSnack(Snackbar.LENGTH_LONG)?.defaultSnack(R.string.update_news)
+            ?.setDurationSnack(Snackbar.LENGTH_LONG)?.defaultSnack(R.string.update_news, false)
             ?.setAction(R.string.do_update) {
                 mFeedLayoutManager?.scrollToPosition(0)
                 presenter?.fireRefresh()
@@ -438,8 +436,8 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
     }
 
     override fun showSuccessToast() {
-        CustomToast.createCustomToast(requireActivity()).setDuration(Toast.LENGTH_SHORT)
-            .showToastSuccessBottom(R.string.success)
+        customToast?.setDuration(Toast.LENGTH_SHORT)
+            ?.showToastSuccessBottom(R.string.success)
     }
 
     override fun displayFeedSources(sources: MutableList<FeedSource>) {

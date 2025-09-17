@@ -48,7 +48,6 @@ import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
 import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
-import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.CircleCounterButton
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
 import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
@@ -84,13 +83,13 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
     }
 
     override fun displayPinComplete(pin: Boolean) {
-        CustomToast.createCustomToast(requireActivity()).setDuration(Toast.LENGTH_SHORT)
-            .showToastSuccessBottom(if (pin) R.string.pin_result else R.string.unpin_result)
+        customToast?.setDuration(Toast.LENGTH_SHORT)
+            ?.showToastSuccessBottom(if (pin) R.string.pin_result else R.string.unpin_result)
     }
 
     override fun displayDeleteOrRestoreComplete(deleted: Boolean) {
-        CustomToast.createCustomToast(requireActivity()).setDuration(Toast.LENGTH_SHORT)
-            .showToastSuccessBottom(if (deleted) R.string.delete_result else R.string.restore_result)
+        customToast?.setDuration(Toast.LENGTH_SHORT)
+            ?.showToastSuccessBottom(if (deleted) R.string.delete_result else R.string.restore_result)
     }
 
     override fun onResume() {
@@ -248,8 +247,8 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
     }
 
     override fun showSuccessToast() {
-        CustomToast.createCustomToast(requireActivity()).setDuration(Toast.LENGTH_SHORT)
-            .showToastSuccessBottom(R.string.success)
+        customToast?.setDuration(Toast.LENGTH_SHORT)
+            ?.showToastSuccessBottom(R.string.success)
     }
 
     override fun copyLinkToClipboard(link: String?) {
@@ -257,7 +256,7 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
             requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
         val clip = ClipData.newPlainText(getString(R.string.link), link)
         clipboard?.setPrimaryClip(clip)
-        customToast.showToast(R.string.copied_url)
+        customToast?.showToast(R.string.copied_url)
     }
 
     override fun copyTextToClipboard(text: String?) {
@@ -265,7 +264,7 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
             requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
         val clipData = ClipData.newPlainText(getString(R.string.post_text), text)
         manager?.setPrimaryClip(clipData)
-        customToast.showToast(R.string.copied_text)
+        customToast?.showToast(R.string.copied_text)
     }
 
     private fun resolveTextSelection() {
@@ -512,8 +511,8 @@ class WallPostFragment : PlaceSupportMvpFragment<WallPostPresenter, IWallPostVie
     }
 
     override fun showPostNotReadyToast() {
-        CustomToast.createCustomToast(requireActivity()).setDuration(Toast.LENGTH_LONG)
-            .showToastInfo(R.string.wall_post_is_not_yet_initialized)
+        customToast?.setDuration(Toast.LENGTH_LONG)
+            ?.showToastInfo(R.string.wall_post_is_not_yet_initialized)
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?): WallPostPresenter {

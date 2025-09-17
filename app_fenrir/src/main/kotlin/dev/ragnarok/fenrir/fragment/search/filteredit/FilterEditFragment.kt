@@ -55,7 +55,7 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
     ) {
-        createCustomToast(requireActivity()).showToast(R.string.permission_all_granted_text)
+        createCustomToast(requireActivity(), view)?.showToast(R.string.permission_all_granted_text)
     }
     private var mData: ArrayList<BaseOption>? = null
     private var mAdapter: SearchOptionsAdapter? = null
@@ -199,8 +199,8 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
                         (dependency ?: return).title
                     )
                 )
-                createCustomToast(requireActivity()).setDuration(Toast.LENGTH_SHORT)
-                    .showToastInfo(message)
+                createCustomToast(requireActivity(), view)?.setDuration(Toast.LENGTH_SHORT)
+                    ?.showToastInfo(message)
             }
 
             DatabaseOption.TYPE_UNIVERSITY -> if (dependency is DatabaseOption && dependency.value != null) {
@@ -212,8 +212,8 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
                         (dependency ?: return).title
                     )
                 )
-                createCustomToast(requireActivity()).setDuration(Toast.LENGTH_SHORT)
-                    .showToastInfo(message)
+                createCustomToast(requireActivity(), view)?.setDuration(Toast.LENGTH_SHORT)
+                    ?.showToastInfo(message)
             }
 
             DatabaseOption.TYPE_FACULTY -> if (dependency is DatabaseOption && dependency.value != null) {
@@ -225,8 +225,8 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
                         (dependency ?: return).title
                     )
                 )
-                createCustomToast(requireActivity()).setDuration(Toast.LENGTH_SHORT)
-                    .showToastInfo(message)
+                createCustomToast(requireActivity(), view)?.setDuration(Toast.LENGTH_SHORT)
+                    ?.showToastInfo(message)
             }
 
             DatabaseOption.TYPE_CHAIR -> if (dependency is DatabaseOption && dependency.value != null) {
@@ -238,8 +238,8 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
                         (dependency ?: return).title
                     )
                 )
-                createCustomToast(requireActivity()).setDuration(Toast.LENGTH_SHORT)
-                    .showToastInfo(message)
+                createCustomToast(requireActivity(), view)?.setDuration(Toast.LENGTH_SHORT)
+                    ?.showToastInfo(message)
             }
 
             DatabaseOption.TYPE_SCHOOL -> if (dependency is DatabaseOption && dependency.value != null) {
@@ -251,8 +251,8 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
                         (dependency ?: return).title
                     )
                 )
-                createCustomToast(requireActivity()).setDuration(Toast.LENGTH_SHORT)
-                    .showToastInfo(message)
+                createCustomToast(requireActivity(), view)?.setDuration(Toast.LENGTH_SHORT)
+                    ?.showToastInfo(message)
             }
 
             DatabaseOption.TYPE_SCHOOL_CLASS -> if (dependency is DatabaseOption && dependency.value != null) {
@@ -264,8 +264,8 @@ class FilterEditFragment : BottomSheetDialogFragment(), OptionClickListener {
                         (dependency ?: return).title
                     )
                 )
-                createCustomToast(requireActivity()).setDuration(Toast.LENGTH_SHORT)
-                    .showToastInfo(message)
+                createCustomToast(requireActivity(), view)?.setDuration(Toast.LENGTH_SHORT)
+                    ?.showToastInfo(message)
             }
         }
     }

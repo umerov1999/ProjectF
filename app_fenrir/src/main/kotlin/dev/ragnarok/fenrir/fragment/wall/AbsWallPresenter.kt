@@ -451,9 +451,9 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
                     )
                         .fromIOToMain({ t ->
                             when (t) {
-                                0 -> createCustomToast(context).showToastError(R.string.not_changed)
-                                1 -> createCustomToast(context).showToastSuccessBottom(R.string.success)
-                                2 -> createCustomToast(context).showToastBottom(R.string.later)
+                                0 -> view?.customToast?.showToastError(R.string.not_changed)
+                                1 -> view?.customToast?.showToastSuccessBottom(R.string.success)
+                                2 -> view?.customToast?.showToastBottom(R.string.later)
                             }
                         }) { t ->
                             showError(t)
@@ -543,10 +543,10 @@ abstract class AbsWallPresenter<V : IWallView> internal constructor(
                             Uri.fromFile(file)
                         )
                     )
-                    createCustomToast(context).showToast(R.string.success)
+                    createCustomToast(context, null)?.showToast(R.string.success)
                 } catch (e: IOException) {
                     e.printStackTrace()
-                    createCustomToast(context).showToastError("Save Failed")
+                    createCustomToast(context, null)?.showToastError("Save Failed")
                 }
             }
             .setIcon(R.drawable.qr_code)

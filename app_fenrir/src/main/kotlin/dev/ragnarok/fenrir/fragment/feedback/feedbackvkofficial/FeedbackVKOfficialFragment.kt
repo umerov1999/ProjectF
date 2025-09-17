@@ -76,7 +76,7 @@ class FeedbackVKOfficialFragment :
                         } else {
                             CustomSnackbars.createCustomSnackbars(recyclerView)
                                 ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
-                                ?.coloredSnack(R.string.error_hiding, Color.RED)
+                                ?.coloredSnack(R.string.error_hiding, Color.RED, false)
                                 ?.show()
                         }
                     }

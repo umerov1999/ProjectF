@@ -92,7 +92,7 @@ class App : Application() {
         messages
             .observeMessagesSendErrors()
             .sharedFlowToMain {
-                createCustomToast(this).showToastError(
+                createCustomToast(this, null)?.showToastError(
                     ErrorLocalizer.localizeThrowable(this, it)
                 )
                 it.printStackTrace()

@@ -189,8 +189,8 @@ class KeyExchangeService : Service() {
     ) {
         val existsSession = findSessionFor(accountId, peerId)
         if (existsSession != null) {
-            CustomToast.createCustomToast(this).setDuration(Toast.LENGTH_LONG)
-                .showToastInfo(R.string.session_already_created)
+            CustomToast.createCustomToast(this, null)?.setDuration(Toast.LENGTH_LONG)
+                ?.showToastInfo(R.string.session_already_created)
             return
         }
         mUtilsInteractor.getServerTime(accountId)
@@ -480,8 +480,8 @@ class KeyExchangeService : Service() {
         if (withError) {
             showError(getString(R.string.key_exchange_failed))
         } else {
-            CustomToast.createCustomToast(this).setDuration(Toast.LENGTH_LONG)
-                .showToastSuccessBottom(R.string.you_have_successfully_exchanged_keys)
+            CustomToast.createCustomToast(this, null)?.setDuration(Toast.LENGTH_LONG)
+                ?.showToastSuccessBottom(R.string.you_have_successfully_exchanged_keys)
         }
         d(TAG, "Session was released, id: " + session.id + ", withError: " + withError)
         toggleServiceLiveHandler()
@@ -497,7 +497,8 @@ class KeyExchangeService : Service() {
     }
 
     private fun showError(text: String) {
-        CustomToast.createCustomToast(this).setDuration(Toast.LENGTH_LONG).showToastError(text)
+        CustomToast.createCustomToast(this, null)?.setDuration(Toast.LENGTH_LONG)
+            ?.showToastError(text)
     }
 
     private fun finishAllByTimeout() {

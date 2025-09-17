@@ -23,7 +23,6 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getPlayerPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getSingleURLPhotoPlace
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
-import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 
 class AudiosSearchFragment :
     AbsSearchFragment<AudiosSearchPresenter, IAudioSearchView, Audio, AudioRecyclerAdapter>(),
@@ -34,7 +33,7 @@ class AudiosSearchFragment :
             Manifest.permission.READ_EXTERNAL_STORAGE
         )
     ) {
-        createCustomToast(requireActivity()).showToast(R.string.permission_all_granted_text)
+        customToast?.showToast(R.string.permission_all_granted_text)
     }
     private var isSelectMode = false
     override fun notifyDataAdded(position: Int, count: Int) {
@@ -63,7 +62,7 @@ class AudiosSearchFragment :
                 val curr = currentAudio
                 if (curr != null) {
                     getPlayerPlace(Settings.get().accounts().current).tryOpenWith(requireActivity())
-                } else createCustomToast(requireActivity()).showToastError(R.string.null_audio)
+                } else customToast?.showToastError(R.string.null_audio)
                 false
             }
         }
@@ -82,8 +81,8 @@ class AudiosSearchFragment :
                     val index = presenter?.getAudioPos(curr) ?: -1
                     if (index >= 0) {
                         recyclerView.scrollToPosition(index + mAdapter?.headersCount.orZero())
-                    } else createCustomToast(requireActivity()).showToast(R.string.audio_not_found)
-                } else createCustomToast(requireActivity()).showToastError(R.string.null_audio)
+                    } else customToast?.showToast(R.string.audio_not_found)
+                } else customToast?.showToastError(R.string.null_audio)
             }
         }
     }

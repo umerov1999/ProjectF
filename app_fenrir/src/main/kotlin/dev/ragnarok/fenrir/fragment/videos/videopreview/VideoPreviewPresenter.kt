@@ -23,7 +23,6 @@ import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
-import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 
 class VideoPreviewPresenter(
     accountId: Long,
@@ -253,7 +252,7 @@ class VideoPreviewPresenter(
             "https://vk.ru/video" + video?.ownerId + "_" + video?.id
         )
         clipboard?.setPrimaryClip(clip)
-        createCustomToast(context).showToast(R.string.copied_url)
+        view?.customToast?.showToast(R.string.copied_url)
     }
 
     fun fireOwnerClick(ownerId: Long) {

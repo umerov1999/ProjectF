@@ -39,7 +39,6 @@ import dev.ragnarok.fenrir.place.PlaceFactory
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import kotlin.math.abs
 
 abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMvpFragment<P, V>(),
@@ -51,7 +50,7 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
             Manifest.permission.READ_EXTERNAL_STORAGE
         )
     ) {
-        createCustomToast(requireActivity()).showToast(R.string.permission_all_granted_text)
+        customToast?.showToast(R.string.permission_all_granted_text)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

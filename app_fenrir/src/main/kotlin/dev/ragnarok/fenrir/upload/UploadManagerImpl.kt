@@ -275,8 +275,8 @@ class UploadManagerImpl(
                 }
                 t.printStackTrace()
                 compositeDisposable.add(inMainThread {
-                    CustomToast.createCustomToast(context).setDuration(Toast.LENGTH_SHORT)
-                        .showToastError(message)
+                    CustomToast.createCustomToast(context, null)?.setDuration(Toast.LENGTH_SHORT)
+                        ?.showToastError(message)
                 })
             }
             val errorMessage: String? = if (t is ApiException) {

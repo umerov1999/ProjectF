@@ -499,7 +499,7 @@ class AudioPlayerFragment : BottomSheetDialogFragment(), CustomSeekBar.CustomSee
             view?.let {
                 CustomSnackbars.createCustomSnackbars(view, mPlayPauseButton)
                     ?.setDurationSnack(Snackbar.LENGTH_LONG)
-                    ?.coloredSnack(R.string.no_system_equalizer, "#eeff0000".toColor())
+                    ?.coloredSnack(R.string.no_system_equalizer, "#eeff0000".toColor(), false)
                     ?.show()
             }
         }

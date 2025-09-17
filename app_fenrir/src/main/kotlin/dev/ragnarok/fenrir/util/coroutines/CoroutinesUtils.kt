@@ -30,7 +30,7 @@ object CoroutinesUtils {
         val ctx = Includes.provideApplicationContext()
         Handler(ctx.mainLooper).post {
             if (Settings.get().main().isDeveloper_mode) {
-                createCustomToast(ctx).showToastError(
+                createCustomToast(ctx, null)?.showToastError(
                     ErrorLocalizer.localizeThrowable(
                         ctx,
                         throwable

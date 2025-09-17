@@ -83,8 +83,8 @@ class DefaultErrorActivity : AppCompatActivity() {
                 errorInformation
             )
             clipboard.setPrimaryClip(clip)
-            CustomToast.createCustomToast(this)
-                .showToastInfo(R.string.crash_error_activity_error_details_copied)
+            CustomToast.createCustomToast(this, null)
+                ?.showToastInfo(R.string.crash_error_activity_error_details_copied)
         }
     }
 }

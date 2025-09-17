@@ -31,7 +31,6 @@ import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
-import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
 
 class ShortedLinksFragment : BaseMvpFragment<ShortedLinksPresenter, IShortedLinksView>(),
@@ -169,7 +168,7 @@ class ShortedLinksFragment : BaseMvpFragment<ShortedLinksPresenter, IShortedLink
             }
         }
         CustomSnackbars.createCustomSnackbars(mLink, view?.findViewById(R.id.recycler_view))
-            ?.setDurationSnack(Snackbar.LENGTH_LONG)?.coloredSnack(stat, color)?.show()
+            ?.setDurationSnack(Snackbar.LENGTH_LONG)?.coloredSnack(stat, color, false)?.show()
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?) = ShortedLinksPresenter(
@@ -182,7 +181,7 @@ class ShortedLinksFragment : BaseMvpFragment<ShortedLinksPresenter, IShortedLink
             requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
         val clip = ClipData.newPlainText("response", link.short_url)
         clipboard?.setPrimaryClip(clip)
-        createCustomToast(context).showToast(R.string.copied)
+        customToast?.showToast(R.string.copied)
     }
 
     override fun onDelete(index: Int, link: ShortLink) {

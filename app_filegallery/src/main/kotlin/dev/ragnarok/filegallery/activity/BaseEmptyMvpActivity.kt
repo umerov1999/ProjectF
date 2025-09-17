@@ -37,7 +37,7 @@ abstract class BaseEmptyMvpActivity<P : AbsPresenter<V>, V : IMvpView> :
 
     override fun showThrowable(throwable: Throwable?) {
         if (!isFinishing) {
-            showError(localizeThrowable(provideApplicationContext(), throwable))
+            customToast?.showToastThrowable(throwable)
         }
     }
 

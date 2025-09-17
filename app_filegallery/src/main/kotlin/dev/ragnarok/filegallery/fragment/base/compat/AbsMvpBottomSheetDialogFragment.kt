@@ -34,6 +34,10 @@ abstract class AbsMvpBottomSheetDialogFragment<P : IPresenter<V>, V : IMvpView> 
         delegate.onViewCreated()
     }
 
+    protected fun fireViewCreated() {
+        delegate.onViewCreated()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         delegate.onSaveInstanceState(outState)
@@ -59,12 +63,13 @@ abstract class AbsMvpBottomSheetDialogFragment<P : IPresenter<V>, V : IMvpView> 
         delegate.onDestroyView()
     }
 
+    fun lazyPresenter(block: P.() -> Unit) {
+        delegate.lazyPresenter(block)
+    }
+
     override fun onDestroy() {
         delegate.onDestroy()
         super.onDestroy()
     }
 
-    fun lazyPresenter(block: P.() -> Unit) {
-        delegate.lazyPresenter(block)
-    }
 }

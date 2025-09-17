@@ -351,8 +351,8 @@ class SecurityPreferencesFragment : AbsPreferencesFragment(),
                 removeKeysFor(currentAccountId)
             }
         }
-        CustomToast.createCustomToast(requireActivity()).setDuration(Toast.LENGTH_LONG)
-            .showToastSuccessBottom(R.string.deleted)
+        CustomToast.createCustomToast(requireActivity(), view)?.setDuration(Toast.LENGTH_LONG)
+            ?.showToastSuccessBottom(R.string.deleted)
     }
 
     private fun removeKeysFor(accountId: Long) {

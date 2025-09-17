@@ -410,8 +410,8 @@ class MessagesRepository(
                         )
                             .fromIOToMain { userInfo ->
                                 createCustomToast(
-                                    provideApplicationContext()
-                                ).setBitmap(userInfo.avatar).showToastInfo(
+                                    provideApplicationContext(), null
+                                )?.setBitmap(userInfo.avatar)?.showToastInfo(
                                     userInfo.owner.fullName + " " + provideApplicationContext().getString(
                                         getTypeUser(userInfo)
                                     )

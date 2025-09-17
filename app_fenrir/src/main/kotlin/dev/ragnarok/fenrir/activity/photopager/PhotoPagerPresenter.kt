@@ -45,7 +45,6 @@ import dev.ragnarok.fenrir.util.DownloadWorkUtils.fixStart
 import dev.ragnarok.fenrir.util.DownloadWorkUtils.makeLegalFilename
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
-import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import java.io.File
 import java.util.Calendar
 import kotlin.math.abs
@@ -512,14 +511,14 @@ open class PhotoPagerPresenter internal constructor(
                             ) as ClipboardManager?
                             val clip = ClipData.newPlainText("response", data)
                             clipboard?.setPrimaryClip(clip)
-                            createCustomToast(context).showToast(R.string.copied_to_clipboard)
+                            view?.customToast?.showToast(R.string.copied_to_clipboard)
                         }
                         .setCancelable(true)
                         .show()
                 }
 
                 override fun onBitmapFailed(e: Exception, errorDrawable: Drawable?) {
-                    createCustomToast(context).showToastError(e.localizedMessage)
+                    view?.customToast?.showToastError(e.localizedMessage)
                 }
 
                 override fun onPrepareLoad(placeHolderDrawable: Drawable?) {}

@@ -198,7 +198,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
     private val requestReadPermission = requestPermissionsAbs(
         arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
     ) {
-        createCustomToast(requireActivity()).showToast(R.string.permission_all_granted_text)
+        createCustomToast(requireActivity(), view)?.showToast(R.string.permission_all_granted_text)
     }
 
     override fun onCreateView(
@@ -308,13 +308,13 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     result.data?.getStringExtra(Extra.PATH) ?: return@registerForActivityResult,
                     true
                 )
-                createCustomToast(requireActivity())
-                    .setDuration(Toast.LENGTH_LONG)
-                    .showToastSuccessBottom(R.string.success)
+                createCustomToast(requireActivity(), view)
+                    ?.setDuration(Toast.LENGTH_LONG)
+                    ?.showToastSuccessBottom(R.string.success)
             } catch (e: Exception) {
-                createCustomToast(requireActivity())
-                    .setDuration(Toast.LENGTH_LONG)
-                    .showToastError(e.localizedMessage)
+                createCustomToast(requireActivity(), view)
+                    ?.setDuration(Toast.LENGTH_LONG)
+                    ?.showToastError(e.localizedMessage)
             }
         }
     }
@@ -578,16 +578,26 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     disposables.add(
                         InteractorFactory.createAccountInteractor()
                             .getPushSettings(accountId)
-                            .fromIOToMain({
-                                Settings.get().notifications().resetAccount(accountId)
-                                for (i in it) {
-                                    if (i.disabled_until < 0) {
-                                        Settings.get().notifications()
-                                            .setSilentPeer(accountId, i.peer_id, true)
+                            .fromIOToMain(
+                                {
+                                    Settings.get().notifications().resetAccount(accountId)
+                                    for (i in it) {
+                                        if (i.disabled_until < 0) {
+                                            Settings.get().notifications()
+                                                .setSilentPeer(accountId, i.peer_id, true)
+                                        }
                                     }
-                                }
-                                createCustomToast(requireActivity()).showToast(R.string.success)
-                            }, { createCustomToast(requireActivity()).showToastThrowable(it) })
+                                    createCustomToast(
+                                        requireActivity(),
+                                        view
+                                    )?.showToast(R.string.success)
+                                },
+                                {
+                                    createCustomToast(
+                                        requireActivity(),
+                                        view
+                                    )?.showToastThrowable(it)
+                                })
                     )
                     true
                 }
@@ -597,9 +607,9 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 iconRes = R.drawable.feed_settings
                 onClick {
                     AppNotificationChannels.invalidateSoundChannels(requireActivity())
-                    createCustomToast(requireActivity())
-                        .setDuration(Toast.LENGTH_LONG)
-                        .showToastSuccessBottom(R.string.success)
+                    createCustomToast(requireActivity(), view)
+                        ?.setDuration(Toast.LENGTH_LONG)
+                        ?.showToastSuccessBottom(R.string.success)
                     true
                 }
             }
@@ -614,9 +624,17 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                             )
                                 .fromIOToMain(
                                     {
-                                        createCustomToast(requireActivity()).showToast(if (it) R.string.success else (R.string.error))
+                                        createCustomToast(
+                                            requireActivity(),
+                                            view
+                                        )?.showToast(if (it) R.string.success else (R.string.error))
                                     },
-                                    { createCustomToast(requireActivity()).showToast(it.localizedMessage) })
+                                    {
+                                        createCustomToast(
+                                            requireActivity(),
+                                            view
+                                        )?.showToast(it.localizedMessage)
+                                    })
                         )
                     }
                     true
@@ -1128,8 +1146,8 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         tryDeleteFile(chatLight)
                         tryDeleteFile(chatDark)
                     } catch (e: Exception) {
-                        createCustomToast(activity).setDuration(Toast.LENGTH_LONG)
-                            .showToastError(e.message)
+                        createCustomToast(requireActivity(), view)?.setDuration(Toast.LENGTH_LONG)
+                            ?.showToastError(e.message)
                     }
                     preferencesAdapter?.applyToPreference("chat_light_background") {
                         val bitmap = getDrawerBackgroundFile(requireActivity(), true)
@@ -1904,7 +1922,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         ShortcutManager::class.java
                     )
                     manager?.removeAllDynamicShortcuts()
-                    createCustomToast(context).showToast(R.string.success)
+                    createCustomToast(requireActivity(), view)?.showToast(R.string.success)
                     true
                 }
             }
@@ -2100,8 +2118,8 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 }
             }
         } catch (e: Exception) {
-            createCustomToast(requireActivity()).setDuration(Toast.LENGTH_LONG)
-                .showToastError(e.message)
+            createCustomToast(requireActivity(), view)?.setDuration(Toast.LENGTH_LONG)
+                ?.showToastError(e.message)
         }
     }
 
@@ -2141,7 +2159,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                createCustomToast(requireActivity()).showToastError(e.localizedMessage)
+                createCustomToast(requireActivity(), view)?.showToastError(e.localizedMessage)
             }
         }
     }
@@ -2149,7 +2167,10 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
     private fun showAdditionalInfo(secured: Boolean) {
         if (secured) {
             if (!Settings.get().security().isUsePinForSecurity) {
-                createCustomToast(requireActivity()).showToastError(R.string.not_supported_hide)
+                createCustomToast(
+                    requireActivity(),
+                    view
+                )?.showToastError(R.string.not_supported_hide)
                 PlaceFactory.securitySettingsPlace.tryOpenWith(requireActivity())
             } else {
                 requestPinForAdditionalInfo.launch(
@@ -2535,16 +2556,22 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 .setOnClickListener {
                     Includes.networkInterfaces.localServerApi().rebootPC("win")
                         .fromIOToMain({
-                            createCustomToast(requireActivity()).showToastSuccessBottom(R.string.success)
-                        }, { createCustomToast(requireActivity()).showToastThrowable(it) })
+                            createCustomToast(
+                                requireActivity(),
+                                view
+                            )?.showToastSuccessBottom(R.string.success)
+                        }, { createCustomToast(requireActivity(), view)?.showToastThrowable(it) })
                 }
 
             view.findViewById<MaterialButton>(dev.ragnarok.fenrir_common.R.id.reboot_pc_linux)
                 .setOnClickListener {
                     Includes.networkInterfaces.localServerApi().rebootPC("linux")
                         .fromIOToMain({
-                            createCustomToast(requireActivity()).showToastSuccessBottom(R.string.success)
-                        }, { createCustomToast(requireActivity()).showToastThrowable(it) })
+                            createCustomToast(
+                                requireActivity(),
+                                view
+                            )?.showToastSuccessBottom(R.string.success)
+                        }, { createCustomToast(requireActivity(), view)?.showToastThrowable(it) })
                 }
 
             return MaterialAlertDialogBuilder(requireActivity())
@@ -2857,10 +2884,10 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                         }
                     }
                 }
-                if (notify) createCustomToast(context).showToast(R.string.success)
+                if (notify) createCustomToast(context, null)?.showToast(R.string.success)
             } catch (e: Exception) {
                 e.printStackTrace()
-                if (notify) createCustomToast(context).showToastError(e.localizedMessage)
+                if (notify) createCustomToast(context, null)?.showToastError(e.localizedMessage)
             }
         }
 

@@ -268,7 +268,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                         ) as ClipboardManager?
                         val clip = ClipData.newPlainText("response", scanner)
                         clipboard?.setPrimaryClip(clip)
-                        createCustomToast(this).showToast(R.string.copied_to_clipboard)
+                        createCustomToast(this, null)?.showToast(R.string.copied_to_clipboard)
                     }
                     .setCancelable(true)
                     .create().show()
@@ -488,7 +488,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                             )
                             .fromIOToMain(dummy()) { t ->
                                 if (Settings.get().main().isDeveloper_mode) {
-                                    createCustomToast(this).showToastThrowable(t)
+                                    createCustomToast(this, null)?.showToastThrowable(t)
                                 }
                             })
                     Settings.get().main().last_audio_sync.let {
@@ -554,7 +554,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                     mLastBackPressedTime = System.currentTimeMillis()
                     CustomSnackbars.createCustomSnackbars(mViewFragment, mBottomNavigationContainer)
                         ?.setDurationSnack(BaseTransientBottomBar.LENGTH_SHORT)
-                        ?.defaultSnack(R.string.click_back_to_exit)?.show()
+                        ?.defaultSnack(R.string.click_back_to_exit, false)?.show()
                 } else {
                     supportFragmentManager.popBackStack()
                 }
@@ -757,9 +757,12 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     }
 
     private fun onSetOffline(success: Boolean) {
-        if (success) createCustomToast(this).showToast(R.string.succ_offline) else createCustomToast(
-            this
-        ).showToastError(R.string.err_offline)
+        if (success) createCustomToast(
+            this,
+            null
+        )?.showToast(R.string.succ_offline) else createCustomToast(
+            this, null
+        )?.showToastError(R.string.err_offline)
     }
 
     private fun onCurrentAccountChange(newAccountId: Long) {
@@ -794,7 +797,10 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 val newAccountId = intent.extras!!.getLong(Extra.ACCOUNT_ID)
                 if (Settings.get().accounts().current != newAccountId) {
                     if (!Settings.get().accounts().registered.contains(newAccountId)) {
-                        createCustomToast(this).showToastError(R.string.account_not_registered)
+                        createCustomToast(
+                            this,
+                            null
+                        )?.showToastError(R.string.account_not_registered)
                     } else {
                         Settings.get()
                             .accounts().current = newAccountId
@@ -813,7 +819,10 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 if (prefsAid != newAccountId) {
                     if (!Settings.get().accounts().registered.contains(newAccountId)) {
                         newAccountId = prefsAid
-                        createCustomToast(this).showToastError(R.string.account_not_registered)
+                        createCustomToast(
+                            this,
+                            null
+                        )?.showToastError(R.string.account_not_registered)
                     } else {
                         Settings.get()
                             .accounts().current = newAccountId
@@ -833,7 +842,10 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                 if (prefsAid != aid) {
                     if (!Settings.get().accounts().registered.contains(aid)) {
                         aid = prefsAid
-                        createCustomToast(this).showToastError(R.string.account_not_registered)
+                        createCustomToast(
+                            this,
+                            null
+                        )?.showToastError(R.string.account_not_registered)
                     } else {
                         Settings.get()
                             .accounts().current = aid

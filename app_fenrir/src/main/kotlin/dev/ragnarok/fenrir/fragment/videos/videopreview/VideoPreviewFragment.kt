@@ -62,7 +62,6 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.firstNonEmptyString
 import dev.ragnarok.fenrir.util.Utils.shareLink
 import dev.ragnarok.fenrir.util.ViewUtils.displayAvatar
-import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.CircleCounterButton
 import dev.ragnarok.fenrir.view.natives.animation.AnimatedShapeableImageView
 import dev.ragnarok.fenrir.view.natives.animation.AspectRatioAnimatedShapeableImageView
@@ -83,7 +82,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
             Manifest.permission.READ_EXTERNAL_STORAGE
         )
     ) {
-        createCustomToast(requireActivity()).showToast(R.string.permission_all_granted_text)
+        customToast?.showToast(R.string.permission_all_granted_text)
     }
     private var mRootView: View? = null
     private var likeButton: CircleCounterButton? = null
@@ -208,8 +207,8 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
 
     private fun playWithExternalSoftware(url: String) {
         if (url.isEmpty()) {
-            createCustomToast(requireActivity()).setDuration(Toast.LENGTH_LONG)
-                .showToastError(R.string.error_video_playback_is_not_possible)
+            customToast?.setDuration(Toast.LENGTH_LONG)
+                ?.showToastError(R.string.error_video_playback_is_not_possible)
             return
         }
         val intent = Intent(Intent.ACTION_VIEW, url.toUri())
@@ -335,7 +334,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
     }
 
     override fun showSuccessToast() {
-        createCustomToast(requireActivity()).showToastSuccessBottom(
+        customToast?.showToastSuccessBottom(
             R.string.success,
             Toast.LENGTH_SHORT
         )
@@ -645,7 +644,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
         } else if (video.player.nonNullNoEmpty()) {
             playWithExternalSoftware(video.player ?: return)
         } else {
-            createCustomToast(requireActivity()).showToastError(R.string.video_not_have_link)
+            customToast?.showToastError(R.string.video_not_have_link)
         }
     }
 
@@ -709,7 +708,7 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
                     requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
                 val clip = ClipData.newPlainText("response", video.externalLink)
                 clipboard?.setPrimaryClip(clip)
-                createCustomToast(context).showToast(R.string.copied)
+                customToast?.showToast(R.string.copied)
             }
         }
     }

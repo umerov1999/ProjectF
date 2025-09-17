@@ -101,7 +101,7 @@ class CaptchaLegacyActivity : AppCompatActivity() {
     private fun onOkButtonClick() {
         val text: CharSequence? = mTextField?.text
         if (text.isNullOrEmpty()) {
-            CustomToast.createCustomToast(this).showToastError(R.string.enter_captcha_text)
+            CustomToast.createCustomToast(this, null)?.showToastError(R.string.enter_captcha_text)
             return
         }
         requestSid?.let { captchaProvider?.enterCode(it, text.toString()) }

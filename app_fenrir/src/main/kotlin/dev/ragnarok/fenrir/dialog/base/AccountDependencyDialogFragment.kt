@@ -63,7 +63,7 @@ abstract class AccountDependencyDialogFragment : BaseDialogFragment(), OnAttachm
             Manifest.permission.READ_EXTERNAL_STORAGE
         )
     ) {
-        createCustomToast(requireActivity()).showToast(R.string.permission_all_granted_text)
+        createCustomToast(requireActivity(), view)?.showToast(R.string.permission_all_granted_text)
     }
     protected var accountId = 0L
         private set

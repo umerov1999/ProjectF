@@ -51,7 +51,7 @@ class EnterPinFragment : BaseMvpFragment<EnterPinPresenter, IEnterPinView>(), IE
 
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                 super.onAuthenticationError(errorCode, errString)
-                customToast.showToastError(errString.toString())
+                customToast?.showToastError(errString.toString())
             }
         }
 
@@ -59,7 +59,7 @@ class EnterPinFragment : BaseMvpFragment<EnterPinPresenter, IEnterPinView>(), IE
         if (BiometricManager.from(requireActivity())
                 .canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK) != BiometricManager.BIOMETRIC_SUCCESS
         ) {
-            customToast.showToastError(R.string.biometric_not_support)
+            customToast?.showToastError(R.string.biometric_not_support)
             return
         }
         val authenticationCallback = authenticationCallback

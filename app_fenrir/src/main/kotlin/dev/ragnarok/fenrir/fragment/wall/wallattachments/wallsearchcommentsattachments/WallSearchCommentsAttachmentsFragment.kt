@@ -62,7 +62,7 @@ class WallSearchCommentsAttachmentsFragment :
         mSwipeRefreshLayout?.setOnRefreshListener {
             mSwipeRefreshLayout?.isRefreshing = false
             CustomSnackbars.createCustomSnackbars(view, null, true)
-                ?.setDurationSnack(Snackbar.LENGTH_LONG)?.defaultSnack(R.string.do_update)
+                ?.setDurationSnack(Snackbar.LENGTH_LONG)?.defaultSnack(R.string.do_update, true)
                 ?.setAction(R.string.button_yes) {
                     presenter?.fireRefresh()
                 }?.show()

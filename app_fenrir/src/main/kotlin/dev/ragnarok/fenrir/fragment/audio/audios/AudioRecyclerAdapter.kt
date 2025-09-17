@@ -89,9 +89,9 @@ class AudioRecyclerAdapter(
         audioListDisposable += if (playlist_id == null) {
             mAudioInteractor.delete(accountId, audio.id, audio.ownerId).fromIOToMain(
                 {
-                    createCustomToast(mContext).showToast(R.string.deleted)
+                    createCustomToast(mContext, null)?.showToast(R.string.deleted)
                     mClickListener?.onDelete(position)
-                }) { t -> createCustomToast(mContext).showToastThrowable(t) }
+                }) { t -> createCustomToast(mContext, null)?.showToastThrowable(t) }
         } else {
             mAudioInteractor.removeFromPlaylist(
                 accountId, audio.ownerId, playlist_id, listOf(
@@ -102,17 +102,17 @@ class AudioRecyclerAdapter(
             ).fromIOToMain(
                 { t ->
                     if (t != 0) {
-                        createCustomToast(mContext).showToast(R.string.deleted)
+                        createCustomToast(mContext, null)?.showToast(R.string.deleted)
                         mClickListener?.onDelete(position)
                     }
-                }) { t -> createCustomToast(mContext).showToastThrowable(t) }
+                }) { t -> createCustomToast(mContext, null)?.showToastThrowable(t) }
         }
     }
 
     private fun addTrack(accountId: Long, audio: Audio) {
         audioListDisposable += mAudioInteractor.add(accountId, audio, null).fromIOToMain(
-            { createCustomToast(mContext).showToast(R.string.added) }) { t ->
-            createCustomToast(mContext).showToastThrowable(t)
+            { createCustomToast(mContext, null)?.showToast(R.string.added) }) { t ->
+            createCustomToast(mContext, null)?.showToastThrowable(t)
         }
     }
 
@@ -141,7 +141,7 @@ class AudioRecyclerAdapter(
         audioListDisposable += if (audio.isHLS) {
             M3U8(pUrl).length.fromIOToMain(
                 { r ->
-                    createCustomToast(mContext).showToast(
+                    createCustomToast(mContext, null)?.showToast(
                         getBitrate(
                             mContext,
                             audio.duration,
@@ -149,11 +149,11 @@ class AudioRecyclerAdapter(
                         )
                     )
                 }
-            ) { e -> createCustomToast(mContext).showToastThrowable(e) }
+            ) { e -> createCustomToast(mContext, null)?.showToastThrowable(e) }
         } else {
             getLength(pUrl).fromIOToMain(
                 { r ->
-                    createCustomToast(mContext).showToast(
+                    createCustomToast(mContext, null)?.showToast(
                         getBitrate(
                             mContext,
                             audio.duration,
@@ -161,7 +161,7 @@ class AudioRecyclerAdapter(
                         )
                     )
                 }
-            ) { e -> createCustomToast(mContext).showToastThrowable(e) }
+            ) { e -> createCustomToast(mContext, null)?.showToastThrowable(e) }
         }
     }
 
@@ -176,7 +176,7 @@ class AudioRecyclerAdapter(
                     t,
                     audio
                 )
-            }) { t -> createCustomToast(mContext).showToastThrowable(t) }
+            }) { t -> createCustomToast(mContext, null)?.showToastThrowable(t) }
     }
 
     private fun onAudioLyricsReceived(Text: String, audio: Audio) {
@@ -192,7 +192,7 @@ class AudioRecyclerAdapter(
                 ) as ClipboardManager?
                 val clip = ClipData.newPlainText("response", Text)
                 clipboard?.setPrimaryClip(clip)
-                createCustomToast(mContext).showToast(R.string.copied_to_clipboard)
+                createCustomToast(mContext, null)?.showToast(R.string.copied_to_clipboard)
             }
             .setCancelable(true)
             .show()
@@ -492,7 +492,7 @@ class AudioRecyclerAdapter(
                         mContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
                     val clip = ClipData.newPlainText("response", audio.url)
                     clipboard?.setPrimaryClip(clip)
-                    createCustomToast(mContext).showToast(R.string.copied)
+                    createCustomToast(mContext, null)?.showToast(R.string.copied)
                 }
 
                 AudioOption.add_item_audio -> {
@@ -522,7 +522,11 @@ class AudioRecyclerAdapter(
                         isLocal = false
                     )
                     when (ret) {
-                        0 -> createCustomToast(mContext).showToastBottom(R.string.saved_audio)
+                        0 -> createCustomToast(
+                            mContext,
+                            null
+                        )?.showToastBottom(R.string.saved_audio)
+
                         1, 2 -> {
                             CustomSnackbars.createCustomSnackbars(view)
                                 ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
@@ -544,7 +548,7 @@ class AudioRecyclerAdapter(
                         else -> {
                             audio.downloadIndicator = 0
                             updateDownloadState(holder, audio)
-                            createCustomToast(mContext).showToastBottom(R.string.error_audio)
+                            createCustomToast(mContext, null)?.showToastBottom(R.string.error_audio)
                         }
                     }
                 }
@@ -564,7 +568,11 @@ class AudioRecyclerAdapter(
                         isLocal = false
                     )
                     when (ret) {
-                        0 -> createCustomToast(mContext).showToastBottom(R.string.saved_audio)
+                        0 -> createCustomToast(
+                            mContext,
+                            null
+                        )?.showToastBottom(R.string.saved_audio)
+
                         1, 2 -> {
                             CustomSnackbars.createCustomSnackbars(view)
                                 ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
@@ -586,7 +594,7 @@ class AudioRecyclerAdapter(
                         else -> {
                             audio.downloadIndicator = 0
                             updateDownloadState(holder, audio)
-                            createCustomToast(mContext).showToastBottom(R.string.error_audio)
+                            createCustomToast(mContext, null)?.showToastBottom(R.string.error_audio)
                         }
                     }
                 }
@@ -744,7 +752,11 @@ class AudioRecyclerAdapter(
                         isLocal = false
                     )
                     when (ret) {
-                        0 -> createCustomToast(mContext).showToastBottom(R.string.saved_audio)
+                        0 -> createCustomToast(
+                            mContext,
+                            null
+                        )?.showToastBottom(R.string.saved_audio)
+
                         1, 2 -> {
                             v?.let {
                                 CustomSnackbars.createCustomSnackbars(it)
@@ -768,7 +780,7 @@ class AudioRecyclerAdapter(
                         else -> {
                             audio.downloadIndicator = 0
                             updateDownloadState(viewHolder, audio)
-                            createCustomToast(mContext).showToastBottom(R.string.error_audio)
+                            createCustomToast(mContext, null)?.showToastBottom(R.string.error_audio)
                         }
                     }
                     true

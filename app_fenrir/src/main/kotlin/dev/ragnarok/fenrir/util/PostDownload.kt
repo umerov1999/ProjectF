@@ -472,9 +472,7 @@ class PostDownload(private val context: Context) {
                     )
                 }
                 inMainThread {
-                    CustomToast.createCustomToast(
-                        context
-                    ).showToastSuccessBottom(
+                    CustomToast.createCustomToast(context, null)?.showToastSuccessBottom(
                         context.getString(R.string.success) + " " + context.getString(
                             R.string.for_post
                         ) + " " + peer_title
@@ -486,9 +484,7 @@ class PostDownload(private val context: Context) {
                 }
                 e.printStackTrace()
                 inMainThread {
-                    CustomToast.createCustomToast(
-                        context
-                    ).showToastError(e.localizedMessage)
+                    CustomToast.createCustomToast(context, null)?.showToastError(e.localizedMessage)
                 }
             }
             emit(true)

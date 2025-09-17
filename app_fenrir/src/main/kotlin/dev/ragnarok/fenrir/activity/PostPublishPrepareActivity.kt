@@ -63,8 +63,8 @@ class PostPublishPrepareActivity : AppCompatActivity(), RecyclerMenuAdapter.Acti
         if (savedInstanceState == null) {
             accountId = Settings.get().accounts().current
             if (accountId == ISettings.IAccountsSettings.INVALID_ID) {
-                CustomToast.createCustomToast(this).setDuration(Toast.LENGTH_LONG)
-                    .showToastError(R.string.error_post_creation_no_auth)
+                CustomToast.createCustomToast(this, null)?.setDuration(Toast.LENGTH_LONG)
+                    ?.showToastError(R.string.error_post_creation_no_auth)
                 finish()
             }
             streams = ActivityUtils.checkLocalStreams(this)
@@ -102,8 +102,8 @@ class PostPublishPrepareActivity : AppCompatActivity(), RecyclerMenuAdapter.Acti
 
     private fun onOwnersGetError(throwable: Throwable) {
         setLoading(false)
-        CustomToast.createCustomToast(this).setDuration(Toast.LENGTH_LONG)
-            .showToastError(Utils.firstNonEmptyString(throwable.message, throwable.toString()))
+        CustomToast.createCustomToast(this, null)?.setDuration(Toast.LENGTH_LONG)
+            ?.showToastError(Utils.firstNonEmptyString(throwable.message, throwable.toString()))
         finish()
     }
 

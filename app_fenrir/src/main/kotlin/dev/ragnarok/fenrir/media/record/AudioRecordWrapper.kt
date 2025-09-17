@@ -37,7 +37,7 @@ class AudioRecordWrapper internal constructor(builder: Builder) {
             try {
                 mRecorder?.start()
             } catch (e: IllegalStateException) {
-                createCustomToast(mContext).showToastError(e.localizedMessage)
+                createCustomToast(mContext, null)?.showToastError(e.localizedMessage)
             }
         }
     }
@@ -56,7 +56,7 @@ class AudioRecordWrapper internal constructor(builder: Builder) {
             try {
                 mRecorder?.pause()
             } catch (e: IllegalStateException) {
-                createCustomToast(mContext).showToastError(e.localizedMessage)
+                createCustomToast(mContext, null)?.showToastError(e.localizedMessage)
             }
         } else {
             Logger.wtf(TAG, "Recorder status is not RECORDING_NOW")
@@ -68,7 +68,7 @@ class AudioRecordWrapper internal constructor(builder: Builder) {
         try {
             mRecorder?.stopAndRelease()
         } catch (e: IllegalStateException) {
-            createCustomToast(mContext).showToastError(e.localizedMessage)
+            createCustomToast(mContext, null)?.showToastError(e.localizedMessage)
         }
         mRecorder = null
     }

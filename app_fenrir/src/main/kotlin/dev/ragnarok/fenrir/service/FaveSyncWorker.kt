@@ -572,8 +572,8 @@ class FaveSyncWorker(context: Context, workerParams: WorkerParameters) :
             NotificationHelper.NOTIFICATION_DOWNLOADING
         )
         inMainThread {
-            CustomToast.createCustomToast(applicationContext)
-                .showToastBottom(R.string.success)
+            CustomToast.createCustomToast(applicationContext, null)
+                ?.showToastBottom(R.string.success)
         }
         try {
             val file = File(Environment.getExternalStorageDirectory(), "fenrir_fave_sync_log.txt")

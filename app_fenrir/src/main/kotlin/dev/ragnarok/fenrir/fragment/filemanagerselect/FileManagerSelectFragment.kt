@@ -209,14 +209,14 @@ class FileManagerSelectFragment :
     override fun onError(throwable: Throwable) {
         CustomSnackbars.createCustomSnackbars(mRecyclerView)
             ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
-            ?.coloredSnack(throwable.stackTraceToString(), Color.RED)
+            ?.coloredSnack(throwable.stackTraceToString(), Color.RED, false)
             ?.show()
     }
 
     override fun showMessage(@StringRes res: Int) {
         CustomSnackbars.createCustomSnackbars(mRecyclerView)
             ?.setDurationSnack(BaseTransientBottomBar.LENGTH_LONG)
-            ?.defaultSnack(res)
+            ?.defaultSnack(res, false)
             ?.show()
     }
 

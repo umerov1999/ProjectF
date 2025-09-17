@@ -44,7 +44,6 @@ import dev.ragnarok.fenrir.util.HelperSimple
 import dev.ragnarok.fenrir.util.HelperSimple.needHelp
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
-import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.MySearchView
 import dev.ragnarok.fenrir.view.navigation.AbsNavigationView
 
@@ -56,7 +55,7 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
             Manifest.permission.READ_EXTERNAL_STORAGE
         )
     ) {
-        createCustomToast(requireActivity()).showToast(R.string.permission_all_granted_text)
+        customToast?.showToast(R.string.permission_all_granted_text)
     }
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
     private var mAudioRecyclerAdapter: AudioRecyclerAdapter? = null
@@ -181,7 +180,7 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
                 if (curr != null) {
                     getPlayerPlace(Settings.get().accounts().current).tryOpenWith(requireActivity())
                 } else {
-                    createCustomToast(requireActivity()).showToastError(R.string.null_audio)
+                    customToast?.showToastError(R.string.null_audio)
                 }
             } else {
                 presenter?.fireSelectAll()
@@ -236,8 +235,8 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
                             recyclerView.scrollToPosition(
                                 index + mAudioRecyclerAdapter?.headersCount.orZero()
                             )
-                        } else createCustomToast(requireActivity()).showToast(R.string.audio_not_found)
-                    } else createCustomToast(requireActivity()).showToastError(R.string.null_audio)
+                        } else customToast?.showToast(R.string.audio_not_found)
+                    } else customToast?.showToastError(R.string.null_audio)
                 }
             }
         }
@@ -298,7 +297,7 @@ class AudiosFragment : BaseMvpFragment<AudiosPresenter, IAudiosView>(), IAudiosV
     private fun showSnackbar(@StringRes res: Int, isLong: Boolean) {
         CustomSnackbars.createCustomSnackbars(view)
             ?.setDurationSnack(if (isLong) BaseTransientBottomBar.LENGTH_LONG else BaseTransientBottomBar.LENGTH_SHORT)
-            ?.defaultSnack(res)?.show()
+            ?.defaultSnack(res, false)?.show()
     }
 
     override fun showAudioDeadHelper() {

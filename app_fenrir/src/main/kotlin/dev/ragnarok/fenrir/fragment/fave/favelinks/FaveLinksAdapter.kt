@@ -109,7 +109,7 @@ class FaveLinksAdapter(private var data: List<FaveLink>, private val context: Co
                     context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
                 val clip = ClipData.newPlainText("response", faveLink.url)
                 clipboard?.setPrimaryClip(clip)
-                createCustomToast(context).showToast(R.string.copied)
+                createCustomToast(context, null)?.showToast(R.string.copied)
                 true
             }
         }

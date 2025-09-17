@@ -22,7 +22,6 @@ import dev.ragnarok.fenrir.fragment.base.RecyclerMenuAdapter
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.menu.AdvancedItem
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.toast.CustomToast
 
 class ProcessAuthCodeFragment : BaseMvpFragment<ProcessAuthCodePresenter, IProcessAuthCodeView>(),
     IProcessAuthCodeView, RecyclerMenuAdapter.ActionListener {
@@ -75,9 +74,8 @@ class ProcessAuthCodeFragment : BaseMvpFragment<ProcessAuthCodePresenter, IProce
     }
 
     override fun success() {
-        CustomToast.createCustomToast(requireActivity())
-            .setDuration(Toast.LENGTH_LONG)
-            .showToastSuccessBottom(R.string.success)
+        customToast?.setDuration(Toast.LENGTH_LONG)
+            ?.showToastSuccessBottom(R.string.success)
 
         requireActivity().onBackPressedDispatcher.onBackPressed()
     }
@@ -120,7 +118,7 @@ class ProcessAuthCodeFragment : BaseMvpFragment<ProcessAuthCodePresenter, IProce
                     ClipData.newPlainText("Details", details)
                 }
             clipboard.setPrimaryClip(clip)
-            CustomToast.createCustomToast(requireActivity()).showToast(R.string.copied_to_clipboard)
+            customToast?.showToast(R.string.copied_to_clipboard)
         }
     }
 }

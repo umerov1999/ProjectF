@@ -45,7 +45,6 @@ import dev.ragnarok.fenrir.util.coroutines.CancelableJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayTaskFlow
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.toMain
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
-import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.MySearchView
 import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 
@@ -163,19 +162,16 @@ class FileManagerRemoteFragment :
             if (curr != null) {
                 PlaceFactory.getPlayerPlace(Settings.get().accounts().current)
                     .tryOpenWith(requireActivity())
-            } else CustomToast.createCustomToast(requireActivity())
-                .showToastError(R.string.null_audio)
+            } else customToast?.showToastError(R.string.null_audio)
             false
         }
         musicButton?.setOnClickListener {
             val curr = MusicPlaybackController.currentAudio
             if (curr != null) {
                 if (presenter?.scrollTo(curr.id, curr.ownerId) != true) {
-                    CustomToast.createCustomToast(requireActivity())
-                        .showToastError(R.string.audio_not_found)
+                    customToast?.showToastError(R.string.audio_not_found)
                 }
-            } else CustomToast.createCustomToast(requireActivity())
-                .showToastError(R.string.null_audio)
+            } else customToast?.showToastError(R.string.null_audio)
         }
         return root
     }
@@ -226,14 +222,14 @@ class FileManagerRemoteFragment :
         CustomSnackbars.createCustomSnackbars(mRecyclerView)?.setDurationSnack(Snackbar.LENGTH_LONG)
             ?.coloredSnack(
                 ErrorLocalizer.localizeThrowable(requireActivity(), throwable),
-                Color.RED
+                Color.RED, false
             )
             ?.show()
     }
 
     override fun showMessage(@StringRes res: Int) {
         CustomSnackbars.createCustomSnackbars(mRecyclerView)?.setDurationSnack(Snackbar.LENGTH_LONG)
-            ?.defaultSnack(res)?.show()
+            ?.defaultSnack(res, false)?.show()
     }
 
     private val requestPhotoUpdate = registerForActivityResult(

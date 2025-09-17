@@ -127,7 +127,6 @@ import dev.ragnarok.fenrir.util.ScreenshotHelper
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils
 import dev.ragnarok.fenrir.util.toast.CustomSnackbars
-import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.InputViewController
 import dev.ragnarok.fenrir.view.LoadMoreFooterHelper
 import dev.ragnarok.fenrir.view.ReactionContainer
@@ -1413,7 +1412,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
     override fun showSnackbar(@StringRes res: Int, isLong: Boolean) {
         CustomSnackbars.createCustomSnackbars(view, inputView)
             ?.setDurationSnack(if (isLong) BaseTransientBottomBar.LENGTH_LONG else BaseTransientBottomBar.LENGTH_SHORT)
-            ?.defaultSnack(res)?.show()
+            ?.defaultSnack(res, false)?.show()
     }
 
     private class EditAttachmentsHolder(
@@ -2193,7 +2192,7 @@ class ChatFragment : PlaceSupportMvpFragment<ChatPresenter, IChatView>(), IChatV
             requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
         val clip = ClipData.newPlainText("response", link)
         clipboard?.setPrimaryClip(clip)
-        CustomToast.createCustomToast(requireActivity()).showToast(R.string.copied_to_clipboard)
+        customToast?.showToast(R.string.copied_to_clipboard)
     }
 
     fun saveState() {

@@ -264,7 +264,7 @@ class DocPreviewFragment : BaseFragment(), MenuProvider {
     private fun onDeleteSuccess() {
         CustomSnackbars.createCustomSnackbars(rootView)
             ?.setDurationSnack(Snackbar.LENGTH_LONG)
-            ?.coloredSnack(R.string.deleted, "#AA48BE2D".toColor())?.show()
+            ?.coloredSnack(R.string.deleted, "#AA48BE2D".toColor(), false)?.show()
         deleted = true
         resolveButtons()
     }
@@ -346,7 +346,7 @@ class DocPreviewFragment : BaseFragment(), MenuProvider {
     private fun onDocumentAdded() {
         CustomSnackbars.createCustomSnackbars(rootView)
             ?.setDurationSnack(Snackbar.LENGTH_LONG)
-            ?.coloredSnack(R.string.added, "#AA48BE2D".toColor())?.show()
+            ?.coloredSnack(R.string.added, "#AA48BE2D".toColor(), false)?.show()
         deleted = false
         resolveButtons()
     }

@@ -131,8 +131,8 @@ object AppPerms {
             if (Utils.checkValues(result.values)) {
                 granted.invoke()
             } else {
-                CustomToast.createCustomToast(requireActivity())
-                    .showToastError(R.string.not_permitted)
+                CustomToast.createCustomToast(requireActivity(), null)
+                    ?.showToastError(R.string.not_permitted)
             }
         }
         return object : DoRequestPermissions {
@@ -152,7 +152,7 @@ object AppPerms {
             if (Utils.checkValues(result.values)) {
                 granted.invoke()
             } else {
-                CustomToast.createCustomToast(this).showToastError(R.string.not_permitted)
+                CustomToast.createCustomToast(this, null)?.showToastError(R.string.not_permitted)
             }
         }
         return object : DoRequestPermissions {
@@ -173,7 +173,7 @@ object AppPerms {
             if (Utils.checkValues(result.values)) {
                 granted.invoke()
             } else {
-                CustomToast.createCustomToast(this).showToastError(R.string.not_permitted)
+                CustomToast.createCustomToast(this, null)?.showToastError(R.string.not_permitted)
                 denied.invoke()
             }
         }
@@ -195,8 +195,8 @@ object AppPerms {
             if (Utils.checkValues(result.values)) {
                 granted.invoke()
             } else {
-                CustomToast.createCustomToast(requireActivity())
-                    .showToastError(R.string.not_permitted)
+                CustomToast.createCustomToast(requireActivity(), null)
+                    ?.showToastError(R.string.not_permitted)
                 denied.invoke()
             }
         }

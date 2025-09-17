@@ -79,7 +79,7 @@ class PlaylistFragment : BottomSheetDialogFragment(), AudioRecyclerAdapter.Click
             if (curr != null) {
                 PlaceFactory.getPlayerPlace(Settings.get().accounts().current)
                     .tryOpenWith(requireActivity())
-            } else createCustomToast(requireActivity()).showToastError(R.string.null_audio)
+            } else createCustomToast(requireActivity(), view)?.showToastError(R.string.null_audio)
             false
         }
         Goto.setOnClickListener {
@@ -88,8 +88,11 @@ class PlaylistFragment : BottomSheetDialogFragment(), AudioRecyclerAdapter.Click
                 val index = getAudioPos(curr)
                 if (index >= 0) {
                     mRecyclerView?.scrollToPosition(index)
-                } else createCustomToast(requireActivity()).showToast(R.string.audio_not_found)
-            } else createCustomToast(requireActivity()).showToastError(R.string.null_audio)
+                } else createCustomToast(
+                    requireActivity(),
+                    view
+                )?.showToast(R.string.audio_not_found)
+            } else createCustomToast(requireActivity(), view)?.showToastError(R.string.null_audio)
         }
         ItemTouchHelper(MessagesReplyItemCallback {
             if (checkPosition(it)) {
@@ -162,7 +165,7 @@ class PlaylistFragment : BottomSheetDialogFragment(), AudioRecyclerAdapter.Click
             Manifest.permission.READ_EXTERNAL_STORAGE
         )
     ) {
-        createCustomToast(requireActivity()).showToast(R.string.permission_all_granted_text)
+        createCustomToast(requireActivity(), view)?.showToast(R.string.permission_all_granted_text)
     }
 
     override fun onRequestWritePermissions() {

@@ -52,7 +52,6 @@ import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.shareLink
 import dev.ragnarok.fenrir.util.Utils.singletonArrayList
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
-import dev.ragnarok.fenrir.util.toast.CustomToast.Companion.createCustomToast
 import dev.ragnarok.fenrir.view.MySearchView
 
 class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), IVideosListView,
@@ -418,7 +417,7 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
                         "https://vk.ru/video" + video.ownerId + "_" + video.id
                     )
                     clipboard?.setPrimaryClip(clip)
-                    createCustomToast(requireActivity()).showToast(R.string.copied_url)
+                    customToast?.showToast(R.string.copied_url)
                 }
 
                 R.id.check_show_author -> {
@@ -499,8 +498,8 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
     }
 
     override fun showSuccessToast() {
-        createCustomToast(requireActivity()).setDuration(Toast.LENGTH_SHORT)
-            .showToastSuccessBottom(R.string.success)
+        customToast?.setDuration(Toast.LENGTH_SHORT)
+            ?.showToastSuccessBottom(R.string.success)
     }
 
     companion object {
