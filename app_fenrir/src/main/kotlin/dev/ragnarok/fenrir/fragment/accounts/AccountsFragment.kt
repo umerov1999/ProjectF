@@ -431,7 +431,7 @@ class AccountsFragment : BaseMvpFragment<AccountsPresenter, IAccountsView>(), IA
                 resId,
                 color,
                 false,
-                params
+                *params
             )?.show()
     }
 

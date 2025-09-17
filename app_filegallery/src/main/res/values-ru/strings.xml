@@ -249,4 +249,5 @@
     <string name="in_order">В очереди</string>
     <string name="error_title">Ошибка: %1$s</string>
     <string name="error_stacktrace">Трассировка стека: %1$s</string>
+    <string name="saved_to_param_file_name">Сохранено в %1$s</string>
 </resources>

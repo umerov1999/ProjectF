@@ -166,7 +166,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                     )
                 )
                 createCustomToast(requireActivity(), view)?.showToast(
-                    R.string.success,
+                    R.string.saved_to_param_file_name,
                     file.absolutePath
                 )
 
@@ -855,7 +855,7 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                             )
                         )
                         createCustomToast(requireActivity(), view)?.showToast(
-                            R.string.success,
+                            R.string.saved_to_param_file_name,
                             file.absolutePath
                         )
                     } catch (e: Exception) {

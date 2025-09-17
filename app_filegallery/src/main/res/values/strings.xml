@@ -380,4 +380,5 @@
     <string name="in_order">In queue</string>
     <string name="error_title">Error title: %1$s</string>
     <string name="error_stacktrace">Error stacktrace: %1$s</string>
+    <string name="saved_to_param_file_name">Saved in %1$s</string>
 </resources>

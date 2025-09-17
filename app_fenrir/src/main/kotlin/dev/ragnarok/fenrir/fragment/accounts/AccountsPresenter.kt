@@ -544,10 +544,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                     e.printStackTrace()
                 }
             }
-            view?.customToast?.showToast(
-                R.string.accounts_restored,
-                file.absolutePath
-            )
+            view?.customToast?.showToast(R.string.accounts_restored)
         } catch (e: Exception) {
             e.printStackTrace()
             view?.customToast?.showToastError(e.localizedMessage)

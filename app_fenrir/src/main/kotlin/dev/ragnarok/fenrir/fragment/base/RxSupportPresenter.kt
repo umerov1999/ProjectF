@@ -85,7 +85,7 @@ abstract class RxSupportPresenter<V : IMvpView>(savedInstanceState: Bundle?) :
         }
         val tView = resumedView as IToastView
         tView.customToast?.setDuration(if (isLong) Toast.LENGTH_LONG else Toast.LENGTH_SHORT)
-            ?.showToast(titleTes, params)
+            ?.showToast(titleTes, *params)
     }
 
     protected fun showError(view: IErrorView?, throwable: Throwable?) {

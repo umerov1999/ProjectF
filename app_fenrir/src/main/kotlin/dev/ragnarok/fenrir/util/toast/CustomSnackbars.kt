@@ -1,5 +1,8 @@
 package dev.ragnarok.fenrir.util.toast
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context.CLIPBOARD_SERVICE
 import android.graphics.Bitmap
 import android.view.Gravity
 import android.view.View
@@ -40,7 +43,7 @@ class CustomSnackbars private constructor(private val view: View, private var an
     fun defaultSnack(
         @StringRes resId: Int, top: Boolean, vararg params: Any?
     ): Snackbar {
-        return defaultSnack(view.resources.getString(resId, params), top)
+        return defaultSnack(view.resources.getString(resId, *params), top)
     }
 
     fun defaultSnack(text: String?, top: Boolean): Snackbar {
@@ -86,7 +89,7 @@ class CustomSnackbars private constructor(private val view: View, private var an
         @StringRes resId: Int,
         @ColorInt color: Int, top: Boolean, vararg params: Any?
     ): Snackbar {
-        return coloredSnack(view.resources.getString(resId, params), color, top)
+        return coloredSnack(view.resources.getString(resId, *params), color, top)
     }
 
     fun coloredSnack(
@@ -138,7 +141,7 @@ class CustomSnackbars private constructor(private val view: View, private var an
     fun themedSnack(
         @StringRes resId: Int, vararg params: Any?
     ): Snackbar {
-        return themedSnack(view.resources.getString(resId, params))
+        return themedSnack(view.resources.getString(resId, *params))
     }
 
     fun themedSnack(
@@ -185,7 +188,7 @@ class CustomSnackbars private constructor(private val view: View, private var an
     }
 
     override fun showToast(@StringRes message: Int, vararg params: Any?) {
-        defaultSnack(message, true, params).show()
+        defaultSnack(message, true, *params).show()
     }
 
     override fun showToastBottom(message: String?) {
@@ -193,7 +196,7 @@ class CustomSnackbars private constructor(private val view: View, private var an
     }
 
     override fun showToastBottom(message: Int, vararg params: Any?) {
-        defaultSnack(message, false, params).show()
+        defaultSnack(message, false, *params).show()
     }
 
     override fun showToastSuccessBottom(message: String?) {
@@ -201,7 +204,7 @@ class CustomSnackbars private constructor(private val view: View, private var an
     }
 
     override fun showToastSuccessBottom(@StringRes message: Int, vararg params: Any?) {
-        coloredSnack(message, "#AA48BE2D".toColor(), false, params).show()
+        coloredSnack(message, "#AA48BE2D".toColor(), false, *params).show()
     }
 
     override fun showToastWarningBottom(message: String?) {
@@ -209,7 +212,7 @@ class CustomSnackbars private constructor(private val view: View, private var an
     }
 
     override fun showToastWarningBottom(@StringRes message: Int, vararg params: Any?) {
-        coloredSnack(message, "#AAED760E".toColor(), false, params).show()
+        coloredSnack(message, "#AAED760E".toColor(), false, *params).show()
     }
 
     override fun showToastInfo(message: String?) {
@@ -217,7 +220,7 @@ class CustomSnackbars private constructor(private val view: View, private var an
     }
 
     override fun showToastInfo(@StringRes message: Int, vararg params: Any?) {
-        coloredSnack(message, CurrentTheme.getColorSecondary(view.context), true, params).show()
+        coloredSnack(message, CurrentTheme.getColorSecondary(view.context), true, *params).show()
     }
 
     override fun showToastError(message: String?) {
@@ -225,7 +228,7 @@ class CustomSnackbars private constructor(private val view: View, private var an
     }
 
     override fun showToastError(message: Int, vararg params: Any?) {
-        coloredSnack(message, "#F44336".toColor(), true, params).show()
+        coloredSnack(message, "#F44336".toColor(), true, *params).show()
     }
 
     override fun showToastThrowable(throwable: Throwable?) {
@@ -254,7 +257,19 @@ class CustomSnackbars private constructor(private val view: View, private var an
                     .setIcon(R.drawable.ic_error)
                     .setMessage(text)
                     .setTitle(R.string.more_info)
-                    .setPositiveButton(R.string.button_ok, null)
+                    .setNegativeButton(R.string.button_ok, null)
+                    .setPositiveButton(R.string.copy_data) { _, _ ->
+                        val clipboard =
+                            view.context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager?
+                        if (clipboard != null) {
+                            val clip = ClipData.newPlainText(
+                                "throwable",
+                                text
+                            )
+                            clipboard.setPrimaryClip(clip)
+                            showToastInfo(R.string.crash_error_activity_error_details_copied)
+                        }
+                    }
                     .setCancelable(true)
                     .show()
             }
