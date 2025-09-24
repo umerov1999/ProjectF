@@ -375,6 +375,7 @@
     <string name="refresh">Refresh</string>
 
     <string name="set_groupchat_title">Specify the subject of the conversation</string>
+    <string name="set_news_list_title">Please enter a name for the list</string>
 
     <string name="copied_to_clipboard">Copied to clipboard</string>
 
@@ -1679,6 +1680,7 @@
     <string name="later">Request accepted, please wait…</string>
     <string name="work_manager">Fenrir Work</string>
     <string name="channel_keep_work_manager">WorkManager</string>
+    <string name="action_create_list">Create list</string>
     <string name="player_has_background">Player has background</string>
     <string name="show_mutual_count">Show mutual friends</string>
     <string name="show_mutual_count_summary">On user page</string>

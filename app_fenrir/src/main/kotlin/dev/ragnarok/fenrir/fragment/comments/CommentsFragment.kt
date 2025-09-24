@@ -236,7 +236,7 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
 
     override fun notifyDataAddedToTop(count: Int) {
         val startSize = mAdapter?.realItemCount.orZero()
-        mAdapter?.notifyItemRangeInserted(startSize + mAdapter?.headersCount.orZero(), count)
+        mAdapter?.notifyItemBindableRangeInserted(startSize, count)
     }
 
     override fun notifyDataAddedToBottom(count: Int) {
@@ -245,7 +245,7 @@ class CommentsFragment : PlaceSupportMvpFragment<CommentsPresenter, ICommentsVie
     }
 
     override fun notifyItemChanged(index: Int) {
-        mAdapter?.notifyItemChanged(index + mAdapter?.headersCount.orZero())
+        mAdapter?.notifyItemBindableChanged(index)
     }
 
     override fun moveFocusTo(index: Int, smooth: Boolean) {

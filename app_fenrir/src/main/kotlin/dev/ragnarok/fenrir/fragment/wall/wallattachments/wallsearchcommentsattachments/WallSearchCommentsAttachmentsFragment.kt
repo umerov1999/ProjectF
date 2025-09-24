@@ -140,7 +140,7 @@ class WallSearchCommentsAttachmentsFragment :
     }
 
     override fun notifyItemChanged(index: Int) {
-        mAdapter?.notifyItemChanged(index + mAdapter?.headersCount.orZero())
+        mAdapter?.notifyItemBindableChanged(index)
     }
 
     override fun goToPost(accountId: Long, ownerId: Long, postId: Int) {

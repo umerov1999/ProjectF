@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.squareup.picasso3"
-    compileSdk = appCompileSDK
+    compileSdkVersion = appCompileSDK
     buildToolsVersion = appBuildTools
 
     buildFeatures {

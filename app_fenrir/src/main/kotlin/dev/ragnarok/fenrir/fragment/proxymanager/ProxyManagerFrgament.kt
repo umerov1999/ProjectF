@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
 import dev.ragnarok.fenrir.model.ProxyConfig
-import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.PlaceFactory.proxyAddPlace
 
 class ProxyManagerFrgament : BaseMvpFragment<ProxyManagerPresenter, IProxyManagerView>(),
@@ -60,11 +59,11 @@ class ProxyManagerFrgament : BaseMvpFragment<ProxyManagerPresenter, IProxyManage
     }
 
     override fun notifyItemAdded(position: Int) {
-        mProxiesAdapter?.notifyItemInserted(position + mProxiesAdapter?.headersCount.orZero())
+        mProxiesAdapter?.notifyItemBindableRangeInserted(position, 1)
     }
 
     override fun notifyItemRemoved(position: Int) {
-        mProxiesAdapter?.notifyItemRemoved(position + mProxiesAdapter?.headersCount.orZero())
+        mProxiesAdapter?.notifyItemBindableRemoved(position)
     }
 
     override fun setActiveAndNotifyDataSetChanged(config: ProxyConfig?) {

@@ -37,7 +37,6 @@ import dev.ragnarok.fenrir.model.AttachmentEntry
 import dev.ragnarok.fenrir.model.LocalPhoto
 import dev.ragnarok.fenrir.model.Photo
 import dev.ragnarok.fenrir.model.Poll
-import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.PlaceFactory.getCreatePollPlace
 import dev.ragnarok.fenrir.upload.Upload
 import dev.ragnarok.fenrir.util.Action
@@ -306,7 +305,7 @@ abstract class AbsAttachmentsEditFragment<P : AbsAttachmentsEditPresenter<V>, V 
     }
 
     override fun notifyItemRangeInsert(position: Int, count: Int) {
-        mAdapter?.notifyItemRangeInserted(position + (mAdapter?.headersCount.orZero()), count)
+        mAdapter?.notifyItemBindableRangeInserted(position, count)
         resolveEmptyTextVisibility()
     }
 
@@ -406,14 +405,14 @@ abstract class AbsAttachmentsEditFragment<P : AbsAttachmentsEditPresenter<V>, V 
     }
 
     override fun notifyItemRemoved(position: Int) {
-        mAdapter?.notifyItemRemoved(position + (mAdapter?.headersCount.orZero()))
+        mAdapter?.notifyItemBindableRemoved(position)
         if (mAdapter?.realItemCount == 0) {
             postResolveEmptyTextVisibility()
         }
     }
 
     override fun notifyItemChanged(position: Int) {
-        mAdapter?.notifyItemChanged(position + (mAdapter?.headersCount.orZero()))
+        mAdapter?.notifyItemBindableChanged(position)
         if (mAdapter?.realItemCount == 0) {
             postResolveEmptyTextVisibility()
         }

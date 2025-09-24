@@ -29,7 +29,7 @@ android {
         includeInBundle = false
     }
 
-    compileSdk = appCompileSDK
+    compileSdkVersion = appCompileSDK
     buildToolsVersion = appBuildTools
     ndkVersion = appNdk
 

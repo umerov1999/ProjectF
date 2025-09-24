@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.google.firebase.installations"
-    compileSdk = appCompileSDK
+    compileSdkVersion = appCompileSDK
     buildToolsVersion = appBuildTools
 
     buildFeatures {

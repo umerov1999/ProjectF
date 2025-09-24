@@ -134,12 +134,17 @@ class CustomToast private constructor(context: Context) : AbsCustomToast {
     }
 
     companion object {
+        private var lastShown = 0L
         fun createCustomToast(
             context: Context?,
             view: View?,
             anchorView: View? = null
         ): AbsCustomToast? {
-            if (view != null && view.isAttachedToWindow && Snackbar.findSuitableParent(view) != null) {
+            if (view != null && System.currentTimeMillis() - lastShown > 3000 && view.isAttachedToWindow && Snackbar.findSuitableParent(
+                    view
+                ) != null
+            ) {
+                lastShown = System.currentTimeMillis()
                 return CustomSnackbars.createCustomSnackbars(view, anchorView)
             }
             if (context is Activity && (context.isFinishing || context.isDestroyed)) {

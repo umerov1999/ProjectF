@@ -82,7 +82,7 @@ android {
             main.res.srcDirs += 'java/' + it + '/res-public'
         }
     }
-    compileSdk = appCompileSDK
+    compileSdkVersion = appCompileSDK
     buildToolsVersion = appBuildTools
 
     defaultConfig {

@@ -478,6 +478,25 @@ object Utils {
         return sb.toString()
     }
 
+    fun join(delimiter: CharSequence, tokens: LongArray?): String {
+        if (tokens == null || tokens.isEmpty()) {
+            return ""
+        }
+        val it = tokens.iterator()
+        if (!it.hasNext()) {
+            return ""
+        }
+        val sb = StringBuilder()
+        if (it.hasNext()) {
+            sb.append(it.next())
+            while (it.hasNext()) {
+                sb.append(delimiter)
+                sb.append(it.next())
+            }
+        }
+        return sb.toString()
+    }
+
     /**
      * Returns a string containing the tokens joined by delimiters.
      *

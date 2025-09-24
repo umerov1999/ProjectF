@@ -64,9 +64,10 @@ class FenrirContentProvider : ContentProvider() {
         const val URI_FAVE_ARTICLES = 41
         const val URI_FAVE_PRODUCTS = 42
         const val URI_COUNTRIES = 43
-        const val URI_FRIEND_LISTS = 44
-        const val URI_KEYS = 45
-        const val URI_PEERS = 46
+        const val URI_FEED_OWNERS = 44
+        const val URI_FRIEND_LISTS = 45
+        const val URI_KEYS = 46
+        const val URI_PEERS = 47
 
         // path
         private const val USER_PATH = "users"

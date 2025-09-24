@@ -7,8 +7,8 @@ object Constants {
     const val AUTH_API_VERSION = API_VERSION
     const val OLD_API_FOR_AUDIO_VERSION = "5.90"
 
-    const val DATABASE_FENRIR_VERSION = 45
-    const val DATABASE_TEMPORARY_VERSION = 10
+    const val DATABASE_FENRIR_VERSION = 46
+    const val DATABASE_TEMPORARY_VERSION = 11
     const val EXPORT_SETTINGS_FORMAT = 1
     const val forceDeveloperMode = BuildConfig.FORCE_DEVELOPER_MODE
 

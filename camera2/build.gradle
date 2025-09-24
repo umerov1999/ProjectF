@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "androidx.camera"
-    compileSdk = appCompileSDK
+    compileSdkVersion = appCompileSDK
     buildToolsVersion = appBuildTools
 
     defaultConfig {

@@ -1,6 +1,6 @@
 package dev.ragnarok.fenrir.model
 
-class LogEvent(val id: Int) {
+class LogEvent(val id: Long) {
     var date: Long = 0
         private set
     var type = 0

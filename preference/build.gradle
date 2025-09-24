@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "de.maxr1998.modernpreferences"
-    compileSdk = appCompileSDK
+    compileSdkVersion = appCompileSDK
     buildToolsVersion = appBuildTools
 
     defaultConfig {

@@ -14,18 +14,18 @@ class FeedSource : Entry, Parcelable {
     val value: String?
     private val title: Text?
     private var active = false
-    private var custom: Boolean
+    private var custom: Boolean = false
+    var customId: Long? = null
+        private set
 
-    constructor(value: String?, title: String?, custom: Boolean) {
+    constructor(value: String?, title: String?) {
         this.value = value
         this.title = Text(title)
-        this.custom = custom
     }
 
-    constructor(value: String?, @StringRes title: Int, custom: Boolean) {
+    constructor(value: String?, @StringRes title: Int) {
         this.value = value
         this.title = Text(title)
-        this.custom = custom
     }
 
     internal constructor(parcel: Parcel) {
@@ -63,6 +63,11 @@ class FeedSource : Entry, Parcelable {
 
     fun setCustom(custom: Boolean): FeedSource {
         this.custom = custom
+        return this
+    }
+
+    fun setCustomId(customId: Long): FeedSource {
+        this.customId = customId
         return this
     }
 

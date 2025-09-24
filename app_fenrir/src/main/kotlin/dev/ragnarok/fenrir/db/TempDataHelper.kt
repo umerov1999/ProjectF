@@ -7,6 +7,7 @@ import android.provider.BaseColumns
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.db.column.AudiosColumns
+import dev.ragnarok.fenrir.db.column.FeedOwnersColumns
 import dev.ragnarok.fenrir.db.column.LogsColumns
 import dev.ragnarok.fenrir.db.column.ReactionsColumns
 import dev.ragnarok.fenrir.db.column.SearchRequestColumns
@@ -34,6 +35,7 @@ class TempDataHelper(context: Context) :
         createStickerSetsCustomTable(db)
         createStickersKeywordsTable(db)
         createReactionAssetsTable(db)
+        createFeedOwnersTable(db)
     }
 
     private fun createReactionAssetsTable(db: SQLiteDatabase) {
@@ -156,6 +158,15 @@ class TempDataHelper(context: Context) :
         db.execSQL(sql)
     }
 
+    private fun createFeedOwnersTable(db: SQLiteDatabase) {
+        val sql = "CREATE TABLE IF NOT EXISTS [" + FeedOwnersColumns.TABLENAME + "] (\n" +
+                " [" + BaseColumns._ID + "] INTEGER NOT NULL UNIQUE, " +
+                " [" + FeedOwnersColumns.TITLE + "] TEXT, " +
+                " [" + FeedOwnersColumns.OWNERS_IDS + "] TEXT, " +
+                " CONSTRAINT [] PRIMARY KEY([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
+        db.execSQL(sql)
+    }
+
     fun clear() {
         val db = writableDatabase
         db.execSQL("DELETE FROM " + TempDataColumns.TABLENAME)
@@ -178,6 +189,7 @@ class TempDataHelper(context: Context) :
         db.execSQL("DROP TABLE IF EXISTS " + StickerSetsCustomColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + StickersKeywordsColumns.TABLENAME)
         db.execSQL("DROP TABLE IF EXISTS " + ReactionsColumns.TABLENAME)
+        db.execSQL("DROP TABLE IF EXISTS " + FeedOwnersColumns.TABLENAME)
         onCreate(db)
     }
 

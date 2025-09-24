@@ -17,7 +17,6 @@ import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.Poll
 import dev.ragnarok.fenrir.model.Post
-import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.util.Utils.is600dp
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 
@@ -138,7 +137,7 @@ class FavePostsFragment : PlaceSupportMvpFragment<FavePostsPresenter, IFavePosts
 
     override fun notifyDataAdded(position: Int, count: Int) {
         if (mAdapter != null) {
-            mAdapter?.notifyItemRangeInserted(position + mAdapter?.headersCount.orZero(), count)
+            mAdapter?.notifyItemBindableRangeInserted(position, count)
             resolveEmptyText()
         }
     }
@@ -148,7 +147,7 @@ class FavePostsFragment : PlaceSupportMvpFragment<FavePostsPresenter, IFavePosts
     }
 
     override fun notifyItemChanged(index: Int) {
-        mAdapter?.notifyItemChanged(index + mAdapter?.headersCount.orZero())
+        mAdapter?.notifyItemBindableChanged(index)
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?) = FavePostsPresenter(

@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "me.minetsh.imaging"
-    compileSdk = appCompileSDK
+    compileSdkVersion = appCompileSDK
     buildToolsVersion = appBuildTools
 
     defaultConfig {

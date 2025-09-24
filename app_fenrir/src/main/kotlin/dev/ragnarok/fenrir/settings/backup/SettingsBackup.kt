@@ -4,6 +4,7 @@ import androidx.annotation.Keep
 import androidx.core.content.edit
 import de.maxr1998.modernpreferences.PreferenceScreen
 import dev.ragnarok.fenrir.Includes
+import dev.ragnarok.fenrir.db.model.entity.FeedOwnersEntity
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.model.ShortcutStored
 import dev.ragnarok.fenrir.nonNullNoEmpty
@@ -217,11 +218,19 @@ class SettingsBackup {
                 user_names_pointers
             )
         )
-        val yu = Includes.stores.tempStore().getShortcutAll().syncSingleSafe()
-        if (yu.nonNullNoEmpty()) {
+        val shortcuts = Includes.stores.tempStore().getShortcutAll().syncSingleSafe()
+        if (shortcuts.nonNullNoEmpty()) {
             ret.put(
                 "shortcuts",
-                kJson.encodeToJsonElement(ListSerializer(ShortcutStored.serializer()), yu)
+                kJson.encodeToJsonElement(ListSerializer(ShortcutStored.serializer()), shortcuts)
+            )
+        }
+
+        val feedOwners = Includes.stores.tempStore().getFeedOwners().syncSingleSafe()
+        if (feedOwners.nonNullNoEmpty()) {
+            ret.put(
+                "feed_owners",
+                kJson.encodeToJsonElement(ListSerializer(FeedOwnersEntity.serializer()), feedOwners)
             )
         }
         return ret.build()
@@ -271,9 +280,18 @@ class SettingsBackup {
         Settings.get().main().reloadUserNameChangesSettings(false)
 
         ret["shortcuts"]?.let {
-            val jp = kJson.decodeFromJsonElement(ListSerializer(ShortcutStored.serializer()), it)
-            if (jp.nonNullNoEmpty()) {
-                Includes.stores.tempStore().addShortcuts(jp.reversed()).syncSingleSafe()
+            val shortcuts =
+                kJson.decodeFromJsonElement(ListSerializer(ShortcutStored.serializer()), it)
+            if (shortcuts.nonNullNoEmpty()) {
+                Includes.stores.tempStore().addShortcuts(shortcuts.reversed()).syncSingleSafe()
+            }
+        }
+
+        ret["feed_owners"]?.let {
+            val feedOwners =
+                kJson.decodeFromJsonElement(ListSerializer(FeedOwnersEntity.serializer()), it)
+            if (feedOwners.nonNullNoEmpty()) {
+                Includes.stores.tempStore().storeFeedOwners(feedOwners, true).syncSingleSafe()
             }
         }
     }

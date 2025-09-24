@@ -2,19 +2,19 @@ buildscript {
     //APP
     ext.developer_build = true
 
-    ext.appCompileSDK = 36
-    ext.appBuildTools = "36.0.0"
+    ext.appCompileSDK = "android-36.1"
+    ext.appBuildTools = "36.1.0"
     ext.appNdk = "29.0.14033849"
     ext.appCMake = "4.1.1"
     ext.appMinSDK = developer_build ? 29 : 26
-    ext.appTargetSDK = 35
+    ext.appTargetSDK = 36
     ext.appFenrirVersionCode = 999
     ext.appFenrirVersionName = "2.999"
     ext.appFileGalleryVersionCode = 999
     ext.appFileGalleryVersionName = "1.999"
 
     //androidx libraries
-    ext.activityVersion = "1.12.0-alpha08"
+    ext.activityVersion = "1.12.0-alpha09"
     ext.annotationVersion = "1.9.1"
     ext.appcompatVersion = "1.7.1"
     ext.biometricVersion = "1.4.0-alpha04"
@@ -43,11 +43,11 @@ buildscript {
     ext.transitionVersion = "1.6.0"
     ext.vectordrawableVersion = "1.2.0"
     ext.webkitVersion = "1.14.0"
-    ext.workVersion = "2.11.0-alpha01"
+    ext.workVersion = "2.11.0-beta01"
 
     //firebase libraries
-    ext.firebaseDatatransportVersion = "20.0.0"
-    ext.firebaseMessagingVersion = "25.0.0"
+    ext.firebaseDatatransportVersion = "20.0.1"
+    ext.firebaseMessagingVersion = "25.0.1"
 
     //firebase common libraries
     ext.firebaseCommonVersion = "22.0.1"
@@ -64,8 +64,8 @@ buildscript {
     ext.kotlin_serializer = "1.9.0"
     ext.okhttpLibraryVersion = "5.1.0"
     ext.okioVersion = "3.16.0"
-    ext.guavaVersion = "33.4.8-android"
-    ext.errorProneVersion = "2.41.0"
+    ext.guavaVersion = "33.5.0-android"
+    ext.errorProneVersion = "2.42.0"
     ext.checkerCompatQualVersion = "2.5.6"
     ext.checkerQualAndroidVersion = "3.51.0"
     ext.jspecifyAnnotation = "1.0.0"

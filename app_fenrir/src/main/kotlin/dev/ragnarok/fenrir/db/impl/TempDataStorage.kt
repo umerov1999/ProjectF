@@ -7,12 +7,14 @@ import android.provider.BaseColumns
 import androidx.core.database.sqlite.transaction
 import dev.ragnarok.fenrir.db.TempDataHelper
 import dev.ragnarok.fenrir.db.column.AudiosColumns
+import dev.ragnarok.fenrir.db.column.FeedOwnersColumns
 import dev.ragnarok.fenrir.db.column.LogsColumns
 import dev.ragnarok.fenrir.db.column.ReactionsColumns
 import dev.ragnarok.fenrir.db.column.SearchRequestColumns
 import dev.ragnarok.fenrir.db.column.ShortcutsColumns
 import dev.ragnarok.fenrir.db.column.TempDataColumns
 import dev.ragnarok.fenrir.db.interfaces.ITempDataStorage
+import dev.ragnarok.fenrir.db.model.entity.FeedOwnersEntity
 import dev.ragnarok.fenrir.db.model.entity.ReactionAssetEntity
 import dev.ragnarok.fenrir.db.serialize.ISerializeAdapter
 import dev.ragnarok.fenrir.getBlob
@@ -297,7 +299,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
             cv.put(LogsColumns.DATE, now)
             val id = helper.writableDatabase.insert(LogsColumns.TABLENAME, null, cv)
             emit(
-                LogEvent(id.toInt())
+                LogEvent(id)
                     .setBody(body)
                     .setTag(tag)
                     .setDate(now)
@@ -421,6 +423,68 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         }
     }
 
+    override fun addFeedOwners(title: String, owners: LongArray): Flow<FeedOwnersEntity> {
+        return flow {
+            val db = helper.writableDatabase
+            val dbo = FeedOwnersEntity().setTitle(title).setOwnersIds(owners)
+            val cv = FeedOwnersColumns.getCV(dbo)
+            val id = db.insert(FeedOwnersColumns.TABLENAME, null, cv)
+            dbo.setId(id)
+            emit(dbo)
+        }
+    }
+
+    override fun storeFeedOwners(list: List<FeedOwnersEntity>, clear: Boolean): Flow<Boolean> {
+        return flow {
+            val db = helper.writableDatabase
+            db.transaction {
+                if (clear) {
+                    delete(
+                        FeedOwnersColumns.TABLENAME,
+                        null,
+                        null
+                    )
+                }
+                for (i in list) {
+                    val cv = FeedOwnersColumns.getCV(i)
+                    val id = insert(FeedOwnersColumns.TABLENAME, null, cv)
+                    i.setId(id)
+                }
+                emit(true)
+            }
+        }
+    }
+
+    override fun getFeedOwners(): Flow<List<FeedOwnersEntity>> {
+        return flow {
+            val cursor = helper.writableDatabase.query(
+                FeedOwnersColumns.TABLENAME,
+                PROJECTION_FEED_OWNERS,
+                null,
+                null,
+                null,
+                null,
+                BaseColumns._ID + " DESC"
+            )
+            val data: MutableList<FeedOwnersEntity> = ArrayList(cursor.count)
+            while (cursor.moveToNext()) {
+                data.add(mapFeedOwners(cursor))
+            }
+            cursor.close()
+            emit(data)
+        }
+    }
+
+    override fun deleteFeedOwners(id: Long): Flow<Boolean> {
+        return flow {
+            helper.writableDatabase.delete(
+                FeedOwnersColumns.TABLENAME,
+                BaseColumns._ID + " = ?", arrayOf(id.toString())
+            )
+            emit(true)
+        }
+    }
+
     companion object {
         private val PROJECTION_TEMPORARY = arrayOf(
             BaseColumns._ID,
@@ -475,6 +539,10 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
             AudiosColumns.IS_HQ
         )
 
+        private val PROJECTION_FEED_OWNERS = arrayOf(
+            BaseColumns._ID, FeedOwnersColumns.TITLE, FeedOwnersColumns.OWNERS_IDS
+        )
+
         internal fun mapAudio(cursor: Cursor): Audio {
             val v = Audio()
                 .setId(cursor.getInt(AudiosColumns.AUDIO_ID))
@@ -513,7 +581,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         }
 
         internal fun mapLog(cursor: Cursor): LogEvent {
-            return LogEvent(cursor.getInt(BaseColumns._ID))
+            return LogEvent(cursor.getLong(BaseColumns._ID))
                 .setType(cursor.getInt(LogsColumns.TYPE))
                 .setDate(cursor.getLong(LogsColumns.DATE))
                 .setTag(cursor.getString(LogsColumns.TAG))
@@ -533,6 +601,23 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                 .setBigAnimation(cursor.getString(ReactionsColumns.BIG_ANIMATION))
                 .setSmallAnimation(cursor.getString(ReactionsColumns.SMALL_ANIMATION))
                 .setStatic(cursor.getString(ReactionsColumns.STATIC))
+        }
+
+        internal fun mapFeedOwners(cursor: Cursor): FeedOwnersEntity {
+            val id = cursor.getLong(BaseColumns._ID)
+            val title = cursor.getString(FeedOwnersColumns.TITLE)
+            val entity = FeedOwnersEntity().setId(id).setTitle(title)
+            val owners =
+                cursor.getString(FeedOwnersColumns.OWNERS_IDS)
+            var ownersIds: LongArray? = null
+            if (owners.nonNullNoEmpty()) {
+                val ids = owners.split(Regex(",")).toTypedArray()
+                ownersIds = LongArray(ids.size)
+                for (i in ids.indices) {
+                    ownersIds[i] = ids[i].toLong()
+                }
+            }
+            return entity.setOwnersIds(ownersIds)
         }
     }
 }

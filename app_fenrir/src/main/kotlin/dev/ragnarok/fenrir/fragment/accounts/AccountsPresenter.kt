@@ -512,8 +512,7 @@ class AccountsPresenter(savedInstanceState: Bundle?) :
                 }
                 if (hasObject(obj, "settings")) {
                     SettingsBackup().doRestore(obj["settings"]?.jsonObject)
-                    view?.customToast?.setDuration(Toast.LENGTH_LONG)
-                    view?.customToast?.showToastSuccessBottom(
+                    view?.customToast?.setDuration(Toast.LENGTH_LONG)?.showToastSuccessBottom(
                         R.string.need_restart
                     )
                 }

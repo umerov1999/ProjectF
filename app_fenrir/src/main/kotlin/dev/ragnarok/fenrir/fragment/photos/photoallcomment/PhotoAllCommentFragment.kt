@@ -139,12 +139,12 @@ class PhotoAllCommentFragment :
     override fun notifyDataAddedToTop(count: Int) {
         if (mAdapter != null) {
             val startSize = mAdapter?.realItemCount.orZero()
-            mAdapter?.notifyItemRangeInserted(startSize + mAdapter?.headersCount.orZero(), count)
+            mAdapter?.notifyItemBindableRangeInserted(startSize, count)
         }
     }
 
     override fun notifyItemChanged(index: Int) {
-        mAdapter?.notifyItemChanged(index + mAdapter?.headersCount.orZero())
+        mAdapter?.notifyItemBindableChanged(index)
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?) = PhotoAllCommentPresenter(
