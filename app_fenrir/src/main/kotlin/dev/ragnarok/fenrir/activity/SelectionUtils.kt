@@ -65,7 +65,7 @@ object SelectionUtils {
 
     private fun createLayoutParams(parent: ViewGroup): ViewGroup.LayoutParams {
         return if (parent is FrameLayout) {
-            val margin = Utils.dpToPx(6f, parent.getContext()).toInt()
+            val margin = Utils.dpToPx(6f, parent.context).toInt()
             val params = FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
             )

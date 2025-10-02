@@ -20,7 +20,6 @@
         android:layout_margin="@dimen/fab_margin"
         android:contentDescription="@null"
         android:src="@drawable/plus"
-        app:layout_behavior="dev.ragnarok.filegallery.view.FABBehavior"
         app:maxImageSize="30dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

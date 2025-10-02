@@ -27,6 +27,7 @@ import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarSubtitle
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarTitle
 import dev.ragnarok.fenrir.activity.LoginActivity.Companion.createIntent
 import dev.ragnarok.fenrir.activity.LoginActivity.Companion.extractGroupTokens
+import dev.ragnarok.fenrir.activity.SelectionUtils.addSelectionProfileSupport
 import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalMenuAdapter
 import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalOptionsAdapter
 import dev.ragnarok.fenrir.fragment.docs.DocsListPresenter
@@ -219,6 +220,8 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
         }
         mHeaderHolder?.blacklisted?.visibility =
             if (community.isBlacklisted) View.VISIBLE else View.GONE
+
+        addSelectionProfileSupport(requireActivity(), mHeaderHolder?.ivAvatarRoot, community)
     }
 
     override fun onSinglePhoto(ava: String, prefix: String?, community: Community) {
@@ -561,6 +564,7 @@ class GroupWallFragment : AbsWallFragment<IGroupWallView, GroupWallPresenter>(),
     private inner class GroupHeaderHolder(root: View) {
         val blacklisted: ThorVGLottieView = root.findViewById(R.id.item_blacklisted)
         val vgCover: ViewGroup = root.findViewById(R.id.cover)
+        val ivAvatarRoot: ViewGroup = root.findViewById(R.id.header_group_avatar_root)
         val ivAvatar: ImageView = root.findViewById(R.id.header_group_avatar)
         val ivVerified: ImageView = root.findViewById(R.id.item_verified)
         val bDonate: ThorVGLottieView = root.findViewById(R.id.donated_anim)

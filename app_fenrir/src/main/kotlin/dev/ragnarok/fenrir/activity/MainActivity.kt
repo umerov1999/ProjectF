@@ -88,6 +88,8 @@ import dev.ragnarok.fenrir.fragment.fave.FaveTabsFragment
 import dev.ragnarok.fenrir.fragment.feed.FeedFragment
 import dev.ragnarok.fenrir.fragment.feed.feedbanned.FeedBannedFragment
 import dev.ragnarok.fenrir.fragment.feed.newsfeedmentions.NewsfeedMentionsFragment
+import dev.ragnarok.fenrir.fragment.feed.ownerlist.FeedOwnerListFragment
+import dev.ragnarok.fenrir.fragment.feed.ownerlist.owners.FeedOwnersFragment
 import dev.ragnarok.fenrir.fragment.feedback.FeedbackFragment
 import dev.ragnarok.fenrir.fragment.feedback.feedbackvkofficial.FeedbackVKOfficialFragment
 import dev.ragnarok.fenrir.fragment.friends.birthday.BirthDayFragment
@@ -1727,6 +1729,23 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             Place.ALBUMS_BY_VIDEO -> attachToFront(VideoAlbumsByVideoFragment.newInstance(args))
             Place.FRIENDS_BY_PHONES -> attachToFront(FriendsByPhonesFragment.newInstance(args))
             Place.VOTERS -> attachToFront(VotersFragment.newInstance(args))
+
+            Place.FEED_OWNER_LIST -> {
+                clearBackStack()
+                attachToFront(
+                    FeedOwnerListFragment.newInstance(
+                        args.getLong(Extra.ACCOUNT_ID)
+                    )
+                )
+            }
+
+            Place.FEED_OWNERS -> attachToFront(
+                FeedOwnersFragment.newInstance(
+                    args.getLong(Extra.ACCOUNT_ID),
+                    args.getLong(Extra.DB_ID)
+                )
+            )
+
             else -> throw IllegalArgumentException("Main activity can't open this place, type: " + place.type)
         }
     }

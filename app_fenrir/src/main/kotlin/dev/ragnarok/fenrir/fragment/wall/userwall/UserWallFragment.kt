@@ -28,6 +28,7 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarSubtitle
 import dev.ragnarok.fenrir.activity.ActivityUtils.setToolbarTitle
 import dev.ragnarok.fenrir.activity.PhotosActivity
+import dev.ragnarok.fenrir.activity.SelectionUtils.addSelectionProfileSupport
 import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalOptionsAdapter
 import dev.ragnarok.fenrir.fragment.wall.AbsWallFragment
 import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
@@ -221,6 +222,8 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
             )
         }
         mHeaderHolder?.blacklisted?.visibility = if (user.blacklisted) View.VISIBLE else View.GONE
+
+        addSelectionProfileSupport(requireActivity(), mHeaderHolder?.ivAvatarRoot, user)
     }
 
     private val coverTarget = object : BitmapTarget {
@@ -614,6 +617,7 @@ class UserWallFragment : AbsWallFragment<IUserWallView, UserWallPresenter>(), IU
 
     private inner class UserHeaderHolder(root: View) {
         val vgCover: ViewGroup = root.findViewById(R.id.cover)
+        val ivAvatarRoot: ViewGroup = root.findViewById(R.id.avatar_root)
         val ivAvatar: ImageView = root.findViewById(R.id.avatar)
         val ivVerified: ImageView = root.findViewById(R.id.item_verified)
         val tvName: TextView = root.findViewById(R.id.fragment_user_profile_name)

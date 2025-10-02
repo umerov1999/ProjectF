@@ -20,8 +20,8 @@
         android:orientation="vertical">
 
         <FrameLayout
-            android:layout_width="@dimen/avatar_size_very_big"
-            android:layout_height="@dimen/avatar_size_very_big">
+            android:layout_width="@dimen/catalog_2_playlists_size_usage"
+            android:layout_height="@dimen/catalog_2_playlists_size_usage">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/item_thumb"

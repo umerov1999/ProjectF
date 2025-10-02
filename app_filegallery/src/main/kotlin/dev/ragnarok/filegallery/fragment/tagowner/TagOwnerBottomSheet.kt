@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -83,19 +84,34 @@ class TagOwnerBottomSheet : BaseMvpBottomSheetDialogFragment<TagOwnerPresenter, 
     }
 
     override fun successAdd(owner: TagOwner, item: FileItem) {
-        CustomToast.createCustomToast(requireActivity(), null)
-            ?.showToastSuccessBottom(getString(R.string.success_add, item.file_name, owner.name))
-        val intent = Bundle()
-        intent.putParcelable(Extra.PATH, item)
-        parentFragmentManager.setFragmentResult(REQUEST_TAG, intent)
+        if (!requireArguments().getBoolean(Extra.IS_SELECT)) {
+            CustomToast.createCustomToast(requireActivity(), null)
+                ?.showToastSuccessBottom(
+                    getString(
+                        R.string.success_add,
+                        item.file_name,
+                        owner.name
+                    )
+                )
+            val intent = Bundle()
+            intent.putParcelable(Extra.PATH, item)
+            parentFragmentManager.setFragmentResult(REQUEST_TAG, intent)
+        }
         dismiss()
     }
 
     override fun onTagOwnerClick(index: Int, owner: TagOwner) {
-        presenter?.addDir(
-            owner,
-            requireArguments().getParcelableCompat(Extra.PATH) ?: return,
-        )
+        if (!requireArguments().getBoolean(Extra.IS_SELECT)) {
+            presenter?.addDir(
+                owner,
+                requireArguments().getParcelableCompat(Extra.PATH) ?: return,
+            )
+        } else {
+            val ret = Bundle()
+            ret.putParcelable(Extra.NAME, owner)
+            setFragmentResult(SELECTED_OWNER_KEY, ret)
+            dismiss()
+        }
     }
 
     override fun onTagOwnerDelete(index: Int, owner: TagOwner) {
@@ -120,10 +136,20 @@ class TagOwnerBottomSheet : BaseMvpBottomSheetDialogFragment<TagOwnerPresenter, 
     }
 
     companion object {
+        const val SELECTED_OWNER_KEY = "selected_owner_key"
         const val REQUEST_TAG = "tag_owner_request"
         fun create(item: FileItem): TagOwnerBottomSheet {
             val args = Bundle()
             args.putParcelable(Extra.PATH, item)
+            args.putBoolean(Extra.IS_SELECT, false)
+            val fragment = TagOwnerBottomSheet()
+            fragment.arguments = args
+            return fragment
+        }
+
+        fun createSelectMode(): TagOwnerBottomSheet {
+            val args = Bundle()
+            args.putBoolean(Extra.IS_SELECT, true)
             val fragment = TagOwnerBottomSheet()
             fragment.arguments = args
             return fragment

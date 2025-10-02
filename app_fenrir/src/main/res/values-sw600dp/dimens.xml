@@ -7,6 +7,10 @@
     <integer name="local_gallery_column_count">4</integer>
     <integer name="photos_albums_column_count">3</integer>
     <integer name="privacy_entry_column_count">5</integer>
+    <integer name="catalog_2_link_column_count">5</integer>
+    <integer name="catalog_2_recommended_playlists_column_count">2</integer>
+    <integer name="catalog_2_music_playlists_column_count">5</integer>
+    <integer name="catalog_2_videos_column_count">3</integer>
 
     <!--Диаметр кнопки "Play" для вложенных аудиозаписей-->
     <dimen name="article_size">45dp</dimen>

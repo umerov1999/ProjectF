@@ -30,6 +30,7 @@ import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationBarView
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.filegallery.Extra
 import dev.ragnarok.filegallery.R
@@ -80,6 +81,7 @@ import dev.ragnarok.filegallery.util.ViewUtils.keyboardHide
 import dev.ragnarok.filegallery.util.coroutines.CompositeJob
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils
 import dev.ragnarok.filegallery.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.filegallery.util.toast.CustomSnackbars
 import dev.ragnarok.filegallery.util.toast.CustomToast.Companion.createCustomToast
 import java.io.File
 
@@ -215,11 +217,9 @@ class MainActivity : AppCompatActivity(), OnSectionResumeCallback, AppStyleable,
                         return
                     }
                     mLastBackPressedTime = System.currentTimeMillis()
-                    mViewFragment?.let {
-                        createCustomToast(it.context, mViewFragment, mBottomNavigation)
-                            ?.setDuration(Toast.LENGTH_SHORT)
-                            ?.showToast(R.string.click_back_to_exit)
-                    }
+                    CustomSnackbars.createCustomSnackbars(mViewFragment, mBottomNavigation)
+                        ?.setDurationSnack(BaseTransientBottomBar.LENGTH_SHORT)
+                        ?.defaultSnack(R.string.click_back_to_exit, false)?.show()
                 } else {
                     supportFragmentManager.popBackStack()
                 }

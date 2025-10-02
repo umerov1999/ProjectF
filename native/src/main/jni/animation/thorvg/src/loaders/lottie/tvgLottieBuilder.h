@@ -30,6 +30,7 @@
 #include "tvgLottieModifier.h"
 
 struct LottieComposition;
+struct AssetResolver;
 
 struct RenderRepeater
 {
@@ -141,12 +142,14 @@ struct LottieBuilder
     bool update(LottieComposition* comp, float progress);
     void build(LottieComposition* comp);
 
+    const AssetResolver* resolver = nullptr;  //do not free this
+
 private:
     void appendRect(Shape* shape, Point& pos, Point& size, float r, bool clockwise, RenderContext* ctx);
     bool fragmented(LottieGroup* parent, LottieObject** child, Inlist<RenderContext>& contexts, RenderContext* ctx, RenderFragment fragment);
 
     void updateStrokeEffect(LottieLayer* layer, LottieFxStroke* effect, float frameNo);
-    void updateEffect(LottieLayer* layer, float frameNo);
+    void updateEffect(LottieLayer* layer, float frameNo, uint8_t quality);
     void updateLayer(LottieComposition* comp, Scene* scene, LottieLayer* layer, float frameNo);
     bool updateMatte(LottieComposition* comp, float frameNo, Scene* scene, LottieLayer* layer);
     void updatePrecomp(LottieComposition* comp, LottieLayer* precomp, float frameNo);

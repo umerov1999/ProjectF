@@ -115,6 +115,12 @@ class CatalogV2SectionAdapter(
     private val isDark: Boolean = Settings.get().ui().isDarkModeEnabled(mContext)
     private var recyclerView: RecyclerView? = null
 
+    private var currentListContentType: String? = null
+
+    fun updateContentType(listContentType: String?) {
+        currentListContentType = listContentType
+    }
+
     companion object {
         val poolCatalogV2Section: RecyclerView.RecycledViewPool by lazy {
             RecyclerView.RecycledViewPool()
@@ -157,11 +163,19 @@ class CatalogV2SectionAdapter(
             }
 
             AbsModelType.MODEL_AUDIO_PLAYLIST -> {
-                R.layout.item_catalog_v2_audio_playlist
+                if (currentListContentType == "music_playlists") {
+                    R.layout.item_catalog_v2_audio_playlist
+                } else {
+                    R.layout.item_catalog_v2_audio_playlist_horizontal
+                }
             }
 
             AbsModelType.MODEL_CATALOG_V2_RECOMMENDATION_PLAYLIST -> {
-                R.layout.item_catalog_v2_playlist_recommended_horizontal
+                if (currentListContentType == "music_recommended_playlists") {
+                    R.layout.item_catalog_v2_playlist_recommended
+                } else {
+                    R.layout.item_catalog_v2_playlist_recommended_horizontal
+                }
             }
 
             else -> CatalogV2Layout.createHolder(type).getLayout()

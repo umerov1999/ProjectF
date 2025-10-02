@@ -20,4 +20,5 @@ object Extra {
     const val TITLE = "title"
     const val URL = "url"
     const val DATA = "data"
+    const val IS_SELECT = "is_select"
 }

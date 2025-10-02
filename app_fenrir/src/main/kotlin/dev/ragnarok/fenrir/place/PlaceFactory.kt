@@ -976,4 +976,20 @@ object PlaceFactory {
         return Place(Place.VOTERS)
             .setArguments(VotersFragment.buildArgs(accountId, ownerId, pollId, board, answer))
     }
+
+    fun getFeedOwnerListPlace(
+        accountId: Long
+    ): Place {
+        return Place(Place.FEED_OWNER_LIST)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
+    }
+
+    fun getFeedOwnersPlace(
+        accountId: Long,
+        listDbId: Long
+    ): Place {
+        return Place(Place.FEED_OWNERS)
+            .withLongExtra(Extra.ACCOUNT_ID, accountId)
+            .withLongExtra(Extra.DB_ID, listDbId)
+    }
 }

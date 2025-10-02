@@ -55,7 +55,7 @@ buildscript {
     ext.firebaseComponentsVersion = "19.0.0"
     ext.firebaseAnnotationsVersion = "17.0.0"
     ext.playServicesTasksVersion = "18.4.0"
-    ext.playServicesBase = "18.8.0"
+    ext.playServicesBase = "18.9.0"
     ext.autoValueVersion = "1.11.0"
 
     //common libraries

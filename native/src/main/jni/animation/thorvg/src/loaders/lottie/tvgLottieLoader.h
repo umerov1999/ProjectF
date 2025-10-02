@@ -102,6 +102,8 @@ public:
     float shorten(float frameNo);  //Reduce the accuracy for performance
     bool tween(float from, float to, float progress);
     bool assign(const char* layer, uint32_t ix, const char* var, float val);
+    bool quality(uint8_t value);
+    void set(const AssetResolver* resolver) override;
 
 private:
     bool ready();

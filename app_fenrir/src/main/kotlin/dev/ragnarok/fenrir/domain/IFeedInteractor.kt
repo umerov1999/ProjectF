@@ -2,6 +2,7 @@ package dev.ragnarok.fenrir.domain
 
 import dev.ragnarok.fenrir.api.model.response.IgnoreItemResponse
 import dev.ragnarok.fenrir.fragment.search.criteria.NewsFeedCriteria
+import dev.ragnarok.fenrir.model.FeedOwners
 import dev.ragnarok.fenrir.model.News
 import dev.ragnarok.fenrir.model.NewsfeedComment
 import dev.ragnarok.fenrir.model.Owner
@@ -46,4 +47,10 @@ interface IFeedInteractor {
         startTime: Long?,
         endTime: Long?
     ): Flow<Pair<List<NewsfeedComment>, String?>>
+
+    fun getFeedListById(
+        accountId: Long,
+        dbId: Long,
+        refresh: Boolean
+    ): Flow<FeedOwners?>
 }

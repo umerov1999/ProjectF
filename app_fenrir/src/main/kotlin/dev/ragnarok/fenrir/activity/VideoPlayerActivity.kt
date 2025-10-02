@@ -41,6 +41,7 @@ import dev.ragnarok.fenrir.activity.slidr.model.SlidrListener
 import dev.ragnarok.fenrir.activity.slidr.model.SlidrPosition
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.getParcelableExtraCompat
+import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.listener.AppStyleable
 import dev.ragnarok.fenrir.media.video.ExoVideoPlayer
 import dev.ragnarok.fenrir.media.video.IVideoPlayer
@@ -94,10 +95,10 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
     private var isLocal = false
     private var isLandscape = false
 
-    private fun onOpen() {
+    private fun openWall(ownerId: Long) {
         val intent = Intent(this, SwipebleActivity::class.java)
         intent.action = MainActivity.ACTION_OPEN_WALL
-        intent.putExtra(Extra.OWNER_ID, (video ?: return).ownerId)
+        intent.putExtra(Extra.OWNER_ID, ownerId)
         doNotPause = true
         applyIntent(intent)
         requestSwipeble.launch(intent)
@@ -126,8 +127,21 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
         size = intent.getIntExtra(EXTRA_SIZE, InternalVideoSize.SIZE_240)
         isLocal = intent.getBooleanExtra(EXTRA_LOCAL, false)
         val actionBar = supportActionBar
-        actionBar?.title = video?.title
-        actionBar?.subtitle = video?.description
+
+        actionBar?.title = OwnerLinkSpanFactory.withSpans(
+            video?.title,
+            owners = true,
+            topics = false,
+            listener = null
+        )
+
+        actionBar?.subtitle = OwnerLinkSpanFactory.withSpans(
+            video?.description,
+            owners = true,
+            topics = false,
+            listener = null
+        )
+
         if (!isLocal && video != null) {
             mCompositeJob.add(
                 OwnerInfo.getRx(
@@ -139,7 +153,9 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
                         val av =
                             findViewById<ImageView>(R.id.toolbar_avatar)
                         av.setImageBitmap(userInfo.avatar)
-                        av.setOnClickListener { onOpen() }
+                        av.setOnClickListener {
+                            video?.ownerId?.let { ownerId -> openWall(ownerId) }
+                        }
                         if (video?.description.isNullOrEmpty() && actionBar != null) {
                             actionBar.subtitle = userInfo.owner.fullName
                         }
@@ -192,8 +208,19 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
             isLocal = savedInstanceState.getBoolean("isLocal")
             seekSave = savedInstanceState.getLong("seek")
             val actionBar = supportActionBar
-            actionBar?.title = video?.title
-            actionBar?.subtitle = video?.description
+            actionBar?.title = OwnerLinkSpanFactory.withSpans(
+                video?.title,
+                owners = true,
+                topics = false,
+                listener = null
+            )
+
+            actionBar?.subtitle = OwnerLinkSpanFactory.withSpans(
+                video?.description,
+                owners = true,
+                topics = false,
+                listener = null
+            )
             if (!isLocal && video != null) {
                 mCompositeJob.add(
                     OwnerInfo.getRx(
@@ -205,7 +232,9 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback,
                             val av =
                                 findViewById<ImageView>(R.id.toolbar_avatar)
                             av.setImageBitmap(userInfo.avatar)
-                            av.setOnClickListener { onOpen() }
+                            av.setOnClickListener {
+                                video?.ownerId?.let { ownerId -> openWall(ownerId) }
+                            }
                             if (video?.description.isNullOrEmpty() && actionBar != null) {
                                 actionBar.subtitle = userInfo.owner.fullName
                             }

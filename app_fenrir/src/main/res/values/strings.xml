@@ -1680,7 +1680,6 @@
     <string name="later">Request accepted, please wait…</string>
     <string name="work_manager">Fenrir Work</string>
     <string name="channel_keep_work_manager">WorkManager</string>
-    <string name="action_create_list">Create list</string>
     <string name="player_has_background">Player has background</string>
     <string name="show_mutual_count">Show mutual friends</string>
     <string name="show_mutual_count_summary">On user page</string>
@@ -1932,4 +1931,8 @@
     <string name="refreshing_token">Refreshing Token…</string>
     <string name="error_title">Error title: %1$s</string>
     <string name="error_stacktrace">Error stacktrace: %1$s</string>
+    <string name="feed_owner_list">Feed Lists</string>
+    <string name="owner_count_a">%1$d owner</string>
+    <string name="owner_count_b">%1$d owners</string>
+    <string name="owner_count_c">%1$d owners</string>
 </resources>

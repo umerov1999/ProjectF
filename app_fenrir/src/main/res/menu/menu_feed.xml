@@ -9,8 +9,8 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/action_create_list"
-        android:title="@string/action_create_list"
+        android:id="@+id/action_feed_lists"
+        android:title="@string/feed_owner_list"
         app:showAsAction="never" />
 
     <item

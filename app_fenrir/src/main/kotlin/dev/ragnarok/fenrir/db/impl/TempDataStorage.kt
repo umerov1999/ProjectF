@@ -427,7 +427,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         return flow {
             val db = helper.writableDatabase
             val dbo = FeedOwnersEntity().setTitle(title).setOwnersIds(owners)
-            val cv = FeedOwnersColumns.getCV(dbo)
+            val cv = FeedOwnersColumns.getCVFull(dbo)
             val id = db.insert(FeedOwnersColumns.TABLENAME, null, cv)
             dbo.setId(id)
             emit(dbo)
@@ -446,7 +446,7 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
                     )
                 }
                 for (i in list) {
-                    val cv = FeedOwnersColumns.getCV(i)
+                    val cv = FeedOwnersColumns.getCVFull(i)
                     val id = insert(FeedOwnersColumns.TABLENAME, null, cv)
                     i.setId(id)
                 }
@@ -475,10 +475,57 @@ class TempDataStorage internal constructor(context: Context) : ITempDataStorage 
         }
     }
 
+    override fun getFeedOwnersById(id: Long): Flow<FeedOwnersEntity?> {
+        return flow {
+            val where = BaseColumns._ID + " = ?"
+            val args = arrayOf(id.toString())
+            val cursor = helper.writableDatabase.query(
+                FeedOwnersColumns.TABLENAME,
+                PROJECTION_FEED_OWNERS,
+                where,
+                args,
+                null,
+                null,
+                BaseColumns._ID + " DESC"
+            )
+            var ret: FeedOwnersEntity? = null
+            if (cursor.moveToNext()) {
+                ret = mapFeedOwners(cursor)
+            }
+            cursor.close()
+            emit(ret)
+        }
+    }
+
     override fun deleteFeedOwners(id: Long): Flow<Boolean> {
         return flow {
             helper.writableDatabase.delete(
                 FeedOwnersColumns.TABLENAME,
+                BaseColumns._ID + " = ?", arrayOf(id.toString())
+            )
+            emit(true)
+        }
+    }
+
+    override fun renameFeedOwners(id: Long, newTitle: String?): Flow<Boolean> {
+        return flow {
+            val contentValues = ContentValues()
+            contentValues.put(FeedOwnersColumns.TITLE, newTitle)
+            helper.writableDatabase.update(
+                FeedOwnersColumns.TABLENAME,
+                contentValues,
+                BaseColumns._ID + " = ?", arrayOf(id.toString())
+            )
+            emit(true)
+        }
+    }
+
+    override fun updateFeedOwners(id: Long, owners: LongArray): Flow<Boolean> {
+        return flow {
+            val cv = FeedOwnersColumns.getCVOwnerIds(owners)
+            helper.writableDatabase.update(
+                FeedOwnersColumns.TABLENAME,
+                cv,
                 BaseColumns._ID + " = ?", arrayOf(id.toString())
             )
             emit(true)

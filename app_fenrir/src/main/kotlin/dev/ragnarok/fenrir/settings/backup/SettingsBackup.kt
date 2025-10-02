@@ -291,7 +291,8 @@ class SettingsBackup {
             val feedOwners =
                 kJson.decodeFromJsonElement(ListSerializer(FeedOwnersEntity.serializer()), it)
             if (feedOwners.nonNullNoEmpty()) {
-                Includes.stores.tempStore().storeFeedOwners(feedOwners, true).syncSingleSafe()
+                Includes.stores.tempStore().storeFeedOwners(feedOwners.reversed(), true)
+                    .syncSingleSafe()
             }
         }
     }

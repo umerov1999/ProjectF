@@ -32,7 +32,6 @@ import dev.ragnarok.filegallery.fragment.base.BaseMvpFragment
 import dev.ragnarok.filegallery.fragment.filemanager.FileManagerAdapter.ClickListener
 import dev.ragnarok.filegallery.fragment.tagowner.TagOwnerBottomSheet
 import dev.ragnarok.filegallery.fragment.tagowner.TagOwnerBottomSheet.Companion.REQUEST_TAG
-import dev.ragnarok.filegallery.fragment.tagowner.TagOwnerBottomSheetSelected
 import dev.ragnarok.filegallery.getParcelableCompat
 import dev.ragnarok.filegallery.getParcelableExtraCompat
 import dev.ragnarok.filegallery.listener.BackPressCallback
@@ -125,7 +124,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
         super.onCreate(savedInstanceState)
 
         parentFragmentManager.setFragmentResultListener(
-            TagOwnerBottomSheetSelected.SELECTED_OWNER_KEY, this
+            TagOwnerBottomSheet.SELECTED_OWNER_KEY, this
         ) { _, result ->
             presenter?.setSelectedOwner(
                 result.getParcelableCompat(Extra.NAME) ?: return@setFragmentResultListener
@@ -155,7 +154,7 @@ class FileManagerFragment : BaseMvpFragment<FileManagerPresenter, IFileManagerVi
         mySearchView?.setOnAdditionalButtonClickListener(object :
             MySearchView.OnAdditionalButtonClickListener {
             override fun onAdditionalButtonClick() {
-                TagOwnerBottomSheetSelected().show(parentFragmentManager, "selectOwner")
+                TagOwnerBottomSheet.createSelectMode().show(parentFragmentManager, "selectOwner")
             }
         })
 

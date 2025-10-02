@@ -48,5 +48,8 @@ interface ITempDataStorage {
     fun addFeedOwners(title: String, owners: LongArray): Flow<FeedOwnersEntity>
     fun storeFeedOwners(list: List<FeedOwnersEntity>, clear: Boolean): Flow<Boolean>
     fun getFeedOwners(): Flow<List<FeedOwnersEntity>>
+    fun getFeedOwnersById(id: Long): Flow<FeedOwnersEntity?>
     fun deleteFeedOwners(id: Long): Flow<Boolean>
+    fun renameFeedOwners(id: Long, newTitle: String?): Flow<Boolean>
+    fun updateFeedOwners(id: Long, owners: LongArray): Flow<Boolean>
 }

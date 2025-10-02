@@ -1,8 +1,6 @@
 package dev.ragnarok.fenrir.fragment.feed
 
-import android.content.Context
 import android.os.Bundle
-import android.text.InputType
 import dev.ragnarok.fenrir.Includes
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.db.interfaces.ITempDataStorage
@@ -17,12 +15,10 @@ import dev.ragnarok.fenrir.fragment.base.PlaceSupportPresenter
 import dev.ragnarok.fenrir.model.FeedSource
 import dev.ragnarok.fenrir.model.LoadMoreState
 import dev.ragnarok.fenrir.model.News
-import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.requireNonNull
 import dev.ragnarok.fenrir.settings.Settings
-import dev.ragnarok.fenrir.util.InputTextDialog
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.Utils.getCauseIfRuntime
 import dev.ragnarok.fenrir.util.Utils.needReloadNews
@@ -319,55 +315,6 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
         }
     }
 
-    fun fireAddToFaveOwners(context: Context, owners: ArrayList<Owner>?) {
-        if (owners.isNullOrEmpty()) {
-            return
-        }
-        val iIds = LongArray(owners.size)
-        for (i in iIds.indices) {
-            iIds[i] = owners[i].ownerId
-        }
-        InputTextDialog.Builder(context)
-            .setTitleRes(R.string.set_news_list_title)
-            .setAllowEmpty(false)
-            .setInputType(InputType.TYPE_CLASS_TEXT)
-            .setCallback(object : InputTextDialog.Callback {
-                override fun onChanged(newValue: String?) {
-                    appendJob(
-                        tempDataStorage.addFeedOwners(
-                            newValue?.trim().orEmpty(),
-                            iIds
-                        )
-                            .fromIOToMain({
-                                view?.customToast?.showToastSuccessBottom(R.string.success)
-                                if (mFeedSources.isNotEmpty()) {
-                                    mFeedSources.add(
-                                        1,
-                                        FeedSource(
-                                            Utils.join(",", it.ownersIds),
-                                            it.title
-                                        ).setCustom(
-                                            true
-                                        )
-                                            .setCustomId(it.id)
-                                    )
-                                    view?.notifyFeedSourcesAdded(1, 1)
-                                    fireFeedSourceClick(mFeedSources[1])
-                                } else {
-                                    view?.notifyFeedSourcesChanged()
-                                }
-                            }) { i ->
-                                showError(i)
-                            })
-                }
-
-                override fun onCanceled() {
-
-                }
-            })
-            .show()
-    }
-
     fun fireFeedSourceClick(entry: FeedSource) {
         mSourceIds = entry.value
         mNextFrom = null
@@ -510,6 +457,9 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
             data.add(FeedSource(null, R.string.news_feed))
             feedOwners.nonNullNoEmpty {
                 for (i in it) {
+                    if (i.ownersIds == null || i.ownersIds?.isEmpty() == true) {
+                        continue
+                    }
                     data.add(
                         FeedSource(Utils.join(",", i.ownersIds), i.title).setCustom(true)
                             .setCustomId(i.id)

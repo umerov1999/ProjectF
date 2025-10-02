@@ -208,6 +208,8 @@ open class Place : Parcelable {
         const val STORIES_VIEWS = 98
         const val SHORT_VIDEOS = 99
         const val AUTH_BY_CODE = 100
+        const val FEED_OWNER_LIST = 101
+        const val FEED_OWNERS = 102
 
         @JvmField
         val CREATOR: Parcelable.Creator<Place> = object : Parcelable.Creator<Place> {

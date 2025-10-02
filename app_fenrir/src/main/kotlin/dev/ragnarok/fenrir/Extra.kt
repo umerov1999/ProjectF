@@ -117,4 +117,5 @@ object Extra {
     const val DETAILS = "details"
     const val CODE = "code"
     const val DATA = "data"
+    const val DB_ID = "db_id"
 }

@@ -10,7 +10,6 @@ import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import kotlinx.serialization.SerialName
 
-
 class KspProcessor(private val env: SymbolProcessorEnvironment) : SymbolProcessor {
     private fun checkAnnotatedClass(list: Sequence<KSAnnotation>, className: String): Boolean {
         for (i in list) {
@@ -28,7 +27,7 @@ class KspProcessor(private val env: SymbolProcessorEnvironment) : SymbolProcesso
             id("com.android.application")
             id("kotlin-android")
             id("kotlinx-serialization")
-            id 'com.google.devtools.ksp' version "1.7.0-1.0.6"
+            id 'com.google.devtools.ksp' version "2.2.20-2.0.3"
         }
         ksp project(':kspcomplier')
         }*/

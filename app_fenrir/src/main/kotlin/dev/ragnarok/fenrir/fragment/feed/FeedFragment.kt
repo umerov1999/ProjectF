@@ -1,7 +1,6 @@
 package dev.ragnarok.fenrir.fragment.feed
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -11,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,11 +25,9 @@ import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.activity.ActivityFeatures
 import dev.ragnarok.fenrir.activity.ActivityUtils.supportToolbarFor
-import dev.ragnarok.fenrir.activity.selectprofiles.SelectProfilesActivity.Companion.startFaveSelection
 import dev.ragnarok.fenrir.domain.ILikesInteractor
 import dev.ragnarok.fenrir.fragment.base.PlaceSupportMvpFragment
 import dev.ragnarok.fenrir.fragment.base.horizontal.HorizontalOptionsAdapter
-import dev.ragnarok.fenrir.getParcelableArrayListExtraCompat
 import dev.ragnarok.fenrir.kJson
 import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.OnSectionResumeCallback
@@ -41,7 +37,6 @@ import dev.ragnarok.fenrir.model.CommentedType
 import dev.ragnarok.fenrir.model.FeedSource
 import dev.ragnarok.fenrir.model.LoadMoreState
 import dev.ragnarok.fenrir.model.News
-import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory
@@ -59,17 +54,6 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
     SwipeRefreshLayout.OnRefreshListener, FeedAdapter.ClickListener,
     HorizontalOptionsAdapter.Listener<FeedSource>,
     HorizontalOptionsAdapter.CustomListener<FeedSource>, MenuProvider {
-    private val requestProfileSelect = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val owners: ArrayList<Owner>? =
-                result.data?.getParcelableArrayListExtraCompat(Extra.OWNERS)
-            lazyPresenter {
-                presenter?.fireAddToFaveOwners(requireActivity(), owners)
-            }
-        }
-    }
     private var mAdapter: FeedAdapter? = null
     private var mEmptyText: TextView? = null
     private var mRecycleView: RecyclerView? = null
@@ -116,8 +100,9 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
                 true
             }
 
-            R.id.action_create_list -> {
-                requestProfileSelect.launch(startFaveSelection(requireActivity()))
+            R.id.action_feed_lists -> {
+                PlaceFactory.getFeedOwnerListPlace(Settings.get().accounts().current)
+                    .tryOpenWith(requireActivity())
                 true
             }
 

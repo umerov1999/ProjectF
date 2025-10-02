@@ -28,6 +28,8 @@ import dev.ragnarok.fenrir.fragment.search.options.SimpleDateOption
 import dev.ragnarok.fenrir.fragment.search.options.SimpleGPSOption
 import dev.ragnarok.fenrir.model.Comment
 import dev.ragnarok.fenrir.model.Commented
+import dev.ragnarok.fenrir.model.Community
+import dev.ragnarok.fenrir.model.FeedOwners
 import dev.ragnarok.fenrir.model.IOwnersBundle
 import dev.ragnarok.fenrir.model.News
 import dev.ragnarok.fenrir.model.NewsfeedComment
@@ -35,6 +37,7 @@ import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.PhotoWithOwner
 import dev.ragnarok.fenrir.model.Post
 import dev.ragnarok.fenrir.model.TopicWithOwner
+import dev.ragnarok.fenrir.model.User
 import dev.ragnarok.fenrir.model.VideoWithOwner
 import dev.ragnarok.fenrir.model.criteria.FeedCriteria
 import dev.ragnarok.fenrir.nonNullNoEmpty
@@ -46,9 +49,12 @@ import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils.listEmptyIfNull
 import dev.ragnarok.fenrir.util.VKOwnIds
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.isActive
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.single
 import java.util.Locale
 
 class FeedInteractor(
@@ -350,6 +356,36 @@ class FeedInteractor(
                         create(comments, response.nextFrom)
                     }
             }
+    }
+
+    override fun getFeedListById(
+        accountId: Long,
+        dbId: Long,
+        refresh: Boolean
+    ): Flow<FeedOwners?> {
+        return stores.tempStore().getFeedOwnersById(dbId).map { entity ->
+            if (entity == null) {
+                null
+            } else {
+                val ret = FeedOwners(entity.id).setTitle(entity.title)
+                val ids = entity.ownersIds
+                val listOwners = ArrayList<Owner>(ids?.size.orZero())
+                if (ids != null) {
+                    for (id in ids) {
+                        if (!isActive()) {
+                            break
+                        }
+                        val owner = ownersRepository.getBaseOwnerInfo(
+                            accountId,
+                            id,
+                            if (refresh) IOwnersRepository.MODE_NET else IOwnersRepository.MODE_ANY
+                        ).catch { emit(if (id > 0) User(id) else Community(-id)) }.single()
+                        listOwners.add(owner)
+                    }
+                }
+                ret.setOwners(listOwners)
+            }
+        }
     }
 
     companion object {

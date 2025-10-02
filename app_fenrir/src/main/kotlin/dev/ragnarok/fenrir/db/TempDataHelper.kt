@@ -160,10 +160,10 @@ class TempDataHelper(context: Context) :
 
     private fun createFeedOwnersTable(db: SQLiteDatabase) {
         val sql = "CREATE TABLE IF NOT EXISTS [" + FeedOwnersColumns.TABLENAME + "] (\n" +
-                " [" + BaseColumns._ID + "] INTEGER NOT NULL UNIQUE, " +
+                " [" + BaseColumns._ID + "] INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 " [" + FeedOwnersColumns.TITLE + "] TEXT, " +
                 " [" + FeedOwnersColumns.OWNERS_IDS + "] TEXT, " +
-                " CONSTRAINT [] PRIMARY KEY([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
+                " CONSTRAINT [] UNIQUE ([" + BaseColumns._ID + "]) ON CONFLICT REPLACE);"
         db.execSQL(sql)
     }
 

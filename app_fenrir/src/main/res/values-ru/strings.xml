@@ -1443,7 +1443,6 @@
     <string name="later">Заявка принята, ожидайте…</string>
     <string name="work_manager">Fenrir Work</string>
     <string name="channel_keep_work_manager">WorkManager</string>
-    <string name="action_create_list">Создать список</string>
     <string name="player_has_background">Фон плеера</string>
     <string name="show_mutual_count">Показывать общих друзей</string>
     <string name="show_mutual_count_summary">На странице пользователя</string>
@@ -1694,4 +1693,8 @@
     <string name="refreshing_token">Перевыпуск токена…</string>
     <string name="error_title">Ошибка: %1$s</string>
     <string name="error_stacktrace">Трассировка стека: %1$s</string>
+    <string name="feed_owner_list">Списки новостей</string>
+    <string name="owner_count_a">%1$d штука</string>
+    <string name="owner_count_b">%1$d штуки</string>
+    <string name="owner_count_c">%1$d штук</string>
 </resources>

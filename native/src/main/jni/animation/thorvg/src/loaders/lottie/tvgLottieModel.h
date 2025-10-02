@@ -874,6 +874,7 @@ struct LottieGradientStroke : LottieGradient, LottieStroke
 struct LottieImage : LottieObject, LottieRenderPooler<tvg::Picture>
 {
     LottieBitmap data;
+    bool updated = false;
 
     void override(LottieProperty* prop, bool release = false) override
     {
@@ -1151,6 +1152,7 @@ struct LottieComposition
     Array<LottieMarker*> markers;
     bool expressions = false;
     bool initiated = false;
+    uint8_t quality = 50;
 };
 
 #endif //_TVG_LOTTIE_MODEL_H_

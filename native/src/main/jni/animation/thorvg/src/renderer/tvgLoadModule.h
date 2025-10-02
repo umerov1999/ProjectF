@@ -29,6 +29,13 @@
 #include "tvgInlist.h"
 
 
+struct AssetResolver
+{
+    std::function<bool(Paint* paint, const char* src, void* data)> func;
+    void* data;
+};
+
+
 struct LoadModule
 {
     INLIST_ITEM(LoadModule);
@@ -92,6 +99,7 @@ struct ImageLoader : LoadModule
 
     virtual bool animatable() { return false; }  //true if this loader supports animation.
     virtual Paint* paint() { return nullptr; }
+    virtual void set(const AssetResolver* resolver) {}
 
     virtual RenderSurface* bitmap()
     {
@@ -103,12 +111,11 @@ struct ImageLoader : LoadModule
 
 struct FontMetrics
 {
-    float minw;
-    float width;
-    float ascent;
-    float descent;
+    float w, h;  //text width, height
+    float scale;
 
-    //TODO: add necessary metrics
+    virtual ~FontMetrics() {}
+    virtual FontMetrics* duplicate() = 0;
 };
 
 
@@ -120,8 +127,9 @@ struct FontLoader : LoadModule
 
     using LoadModule::read;
 
-    virtual bool read(Shape* shape, char* text, FontMetrics& out) = 0;
-    virtual float transform(Paint* paint, FontMetrics& mertrics, float fontSize, float italicShear) = 0;
+    virtual bool read(RenderPath& path, char* text, FontMetrics* out) = 0;
+    virtual void transform(Paint* paint, FontMetrics* mertrics, float fontSize, float italicShear) = 0;
+    virtual FontMetrics* metrics() = 0;
 };
 
 #endif //_TVG_LOAD_MODULE_H_
