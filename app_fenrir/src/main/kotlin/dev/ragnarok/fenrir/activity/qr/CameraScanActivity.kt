@@ -389,7 +389,7 @@ class CameraScanActivity : NoMainActivity(), AppStyleable {
                     true
                 }
 
-                MotionEvent.ACTION_UP -> {
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     focusHideJob.cancel()
                     mFocusView?.visibility = View.VISIBLE
                     mFocusView?.x = event.x

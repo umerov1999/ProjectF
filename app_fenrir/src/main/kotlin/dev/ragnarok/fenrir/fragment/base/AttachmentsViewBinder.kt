@@ -1183,6 +1183,7 @@ class AttachmentsViewBinder(
 
     interface OnAttachmentsActionCallback {
         fun onPollOpen(poll: Poll)
+        fun onVideoOpen(video: Video)
         fun onVideoPlay(video: Video)
         fun onAudioPlay(position: Int, audios: ArrayList<Audio>, holderPosition: Int?)
         fun onForwardMessagesOpen(messages: ArrayList<Message>)

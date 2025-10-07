@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.app.Activity
 import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -31,12 +32,14 @@ import android.view.Display
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.core.content.edit
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.createBitmap
+import androidx.core.net.toUri
 import androidx.core.util.size
 import androidx.media3.common.MediaItem
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -69,23 +72,28 @@ import dev.ragnarok.fenrir.link.internal.OwnerLinkSpanFactory
 import dev.ragnarok.fenrir.media.exo.OkHttpDataSource
 import dev.ragnarok.fenrir.model.ISelectable
 import dev.ragnarok.fenrir.model.ISomeones
+import dev.ragnarok.fenrir.model.InternalVideoSize
 import dev.ragnarok.fenrir.model.Lang
 import dev.ragnarok.fenrir.model.Owner
 import dev.ragnarok.fenrir.model.ProxyConfig
 import dev.ragnarok.fenrir.model.ReactionAsset
 import dev.ragnarok.fenrir.model.Sticker.LocalSticker
+import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.module.FenrirNative
 import dev.ragnarok.fenrir.module.animation.thorvg.ThorVGSVGRender
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.place.Place
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
+import dev.ragnarok.fenrir.place.PlaceFactory.getVkInternalPlayerPlace
+import dev.ragnarok.fenrir.settings.AppPrefs
 import dev.ragnarok.fenrir.settings.CurrentTheme
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.toColor
 import dev.ragnarok.fenrir.util.AppTextUtils.updateDateLang
 import dev.ragnarok.fenrir.util.FileUtil.updateDateLang
 import dev.ragnarok.fenrir.util.Pair.Companion.create
+import dev.ragnarok.fenrir.util.toast.AbsCustomToast
 import dev.ragnarok.fenrir.view.emoji.EmojiconTextView
 import dev.ragnarok.fenrir.view.natives.animation.ThorVGLottieView
 import dev.ragnarok.fenrir.view.pager.BackgroundToForegroundTransformer
@@ -133,6 +141,8 @@ object Utils {
     var currentParser = 0
 
     var currentColorsReplacement = ArrayMap<String, Int>()
+
+    private var lastSetOnline: Long = 0
 
     fun getReactionsAssets(): MutableMap<Long, MutableMap<Int, ReactionAsset>> {
         return reactionsAssets
@@ -255,6 +265,12 @@ object Utils {
             }
         }
         return false
+    }
+
+    fun needSetOnline(): Boolean {
+        val ret = System.currentTimeMillis() - lastSetOnline > 5 * 60 * 1000
+        lastSetOnline = System.currentTimeMillis()
+        return ret
     }
 
     inline fun <reified T> lastOf(data: List<T>): T {
@@ -1645,6 +1661,123 @@ object Utils {
         intent.action = MainActivity.ACTION_OPEN_PLACE
         intent.putExtra(Extra.PLACE, place)
         start(context, intent)
+    }
+
+    fun openVideoInternal(context: Context, video: Video, @InternalVideoSize size: Int) {
+        getVkInternalPlayerPlace(video, size, false).tryOpenWith(context)
+    }
+
+    fun playVideoWithCoub(context: Context, video: Video) {
+        val outerLink = video.externalLink
+        val intent = Intent()
+        intent.data = outerLink?.toUri()
+        intent.action = Intent.ACTION_VIEW
+        intent.component = ComponentName("com.coub.android", "com.coub.android.ui.ViewCoubActivity")
+        context.startActivity(intent)
+    }
+
+    fun playVideoWithNewPipe(context: Context, video: Video) {
+        val outerLink = video.externalLink
+        val intent = Intent()
+        intent.data = outerLink?.toUri()
+        intent.action = Intent.ACTION_VIEW
+        intent.component = ComponentName("org.schabi.newpipe", "org.schabi.newpipe.RouterActivity")
+        context.startActivity(intent)
+    }
+
+    fun playVideoWithYoutube(context: Context, video: Video) {
+        val outerLink = video.externalLink
+        val intent = Intent()
+        intent.data = outerLink?.toUri()
+        intent.action = Intent.ACTION_VIEW
+        intent.component = ComponentName(
+            "com.google.android.youtube",
+            "com.google.android.apps.youtube.app.application.Shell\$UrlActivity"
+        )
+        context.startActivity(intent)
+    }
+
+    fun playVideoWithYoutubeReVanced(context: Context, video: Video) {
+        val outerLink = video.externalLink
+        val intent = Intent()
+        intent.data = outerLink?.toUri()
+        intent.action = Intent.ACTION_VIEW
+        intent.component = ComponentName(
+            AppPrefs.revanced?.first.orEmpty(),
+            AppPrefs.revanced?.second.orEmpty()
+        )
+        context.startActivity(intent)
+    }
+
+    fun playVideoWithExternalSoftware(
+        context: Context,
+        customToast: AbsCustomToast?,
+        url: String
+    ) {
+        if (url.isEmpty()) {
+            customToast?.setDuration(Toast.LENGTH_LONG)
+                ?.showToastError(R.string.error_video_playback_is_not_possible)
+            return
+        }
+        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+        context.startActivity(intent)
+    }
+
+    fun doAutoPlayVideo(context: Context, customToast: AbsCustomToast?, video: Video) {
+        if (!video.live.isNullOrEmpty()) {
+            openVideoInternal(context, video, InternalVideoSize.SIZE_LIVE)
+        } else if (!video.hls.isNullOrEmpty()) {
+            openVideoInternal(context, video, InternalVideoSize.SIZE_HLS)
+        } else if (!video.mp4link2160.isNullOrEmpty()) {
+            openVideoInternal(context, video, InternalVideoSize.SIZE_2160)
+        } else if (!video.mp4link1440.isNullOrEmpty()) {
+            openVideoInternal(context, video, InternalVideoSize.SIZE_1440)
+        } else if (!video.mp4link1080.isNullOrEmpty()) {
+            openVideoInternal(context, video, InternalVideoSize.SIZE_1080)
+        } else if (!video.mp4link720.isNullOrEmpty()) {
+            openVideoInternal(context, video, InternalVideoSize.SIZE_720)
+        } else if (!video.mp4link480.isNullOrEmpty()) {
+            openVideoInternal(context, video, InternalVideoSize.SIZE_480)
+        } else if (!video.mp4link360.isNullOrEmpty()) {
+            openVideoInternal(context, video, InternalVideoSize.SIZE_360)
+        } else if (!video.mp4link240.isNullOrEmpty()) {
+            openVideoInternal(context, video, InternalVideoSize.SIZE_240)
+        } else if (video.externalLink.nonNullNoEmpty()) {
+            if (video.externalLink?.contains("youtube") == true) {
+                when {
+                    AppPrefs.isReVancedYoutubeInstalled(context) -> {
+                        playVideoWithYoutubeReVanced(context, video)
+                    }
+
+                    AppPrefs.isNewPipeInstalled(context) -> {
+                        playVideoWithNewPipe(context, video)
+                    }
+
+                    AppPrefs.isYoutubeInstalled(context) -> {
+                        playVideoWithYoutube(context, video)
+                    }
+
+                    else -> {
+                        playVideoWithExternalSoftware(
+                            context,
+                            customToast,
+                            video.externalLink ?: return
+                        )
+                    }
+                }
+            } else if (video.externalLink?.contains("coub") == true && AppPrefs.isCoubInstalled(
+                    context
+                )
+            ) {
+                playVideoWithCoub(context, video)
+            } else {
+                playVideoWithExternalSoftware(context, customToast, video.externalLink ?: return)
+            }
+        } else if (video.player.nonNullNoEmpty()) {
+            playVideoWithExternalSoftware(context, customToast, video.player ?: return)
+        } else {
+            customToast?.showToastError(R.string.video_not_have_link)
+        }
     }
 
     fun BytesToSize(Bytes: Long): String {

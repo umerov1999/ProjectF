@@ -26,7 +26,7 @@ class LinkViewHolder(itemView: View) : IViewHolder(itemView) {
         CurrentTheme.createTransformationForAvatar()
     }
 
-    override fun bind(position: Int, itemDataHolder: AbsModel) {
+    override fun bind(position: Int, itemDataHolder: AbsModel, listContentType: String?) {
         val item = itemDataHolder as CatalogV2Link
         if (item.title.isNullOrEmpty()) tvTitle.visibility = View.INVISIBLE else {
             tvTitle.visibility = View.VISIBLE
@@ -50,8 +50,13 @@ class LinkViewHolder(itemView: View) : IViewHolder(itemView) {
                 ivImage.setImageResource(R.drawable.ic_avatar_unknown)
             }
         } else {
-            ivImage.layoutParams.width = Utils.dp(80f)
-            ivImage.layoutParams.height = Utils.dp(80f)
+            if (listContentType == "links") {
+                ivImage.layoutParams.width = Utils.dp(65f)
+                ivImage.layoutParams.height = Utils.dp(65f)
+            } else {
+                ivImage.layoutParams.width = Utils.dp(80f)
+                ivImage.layoutParams.height = Utils.dp(80f)
+            }
             tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
             tvDescription.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
             ivImage.imageTintList = null

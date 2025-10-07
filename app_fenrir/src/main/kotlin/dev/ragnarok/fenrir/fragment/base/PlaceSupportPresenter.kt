@@ -103,8 +103,19 @@ abstract class PlaceSupportPresenter<V>(accountId: Long, savedInstanceState: Bun
         view?.playAudioList(accountId, position, apiAudio)
     }
 
-    fun fireVideoClick(apiVideo: Video) {
+    fun fireVideoOpen(apiVideo: Video) {
         view?.openVideo(accountId, apiVideo)
+    }
+
+    fun fireVideoPlay(apiVideo: Video) {
+        appendJob(
+            InteractorFactory.createVideosInteractor()
+                .getById(accountId, apiVideo.ownerId, apiVideo.id, apiVideo.accessKey, false)
+                .fromIOToMain({
+                    view?.playVideo(accountId, it)
+                }) {
+                    view?.openVideo(accountId, apiVideo)
+                })
     }
 
     fun fireAudioPlaylistClick(playlist: AudioPlaylist) {

@@ -54,7 +54,12 @@ class VideoSearchFragment :
     }
 
     override fun onVideoLongClick(position: Int, video: Video): Boolean {
-        return false
+        if (Settings.get().main().isDo_auto_play_video) {
+            presenter?.fireVideoOpen(video)
+        } else {
+            presenter?.fireVideoPlay(video)
+        }
+        return true
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?) = VideosSearchPresenter(

@@ -466,7 +466,9 @@ class FeedPresenter(accountId: Long, savedInstanceState: Bundle?) :
                     )
                 }
             }
-            data.add(FeedSource("likes", R.string.likes_posts))
+            if (Utils.isOfficialVKCurrent) {
+                data.add(FeedSource("likes", R.string.likes_posts))
+            }
             data.add(FeedSource("updates_full", R.string.updates))
             data.add(FeedSource("friends", R.string.friends))
             if (Utils.isOfficialVKCurrent) {

@@ -198,7 +198,6 @@ import dev.ragnarok.fenrir.util.MainActivityTransforms
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
 import dev.ragnarok.fenrir.util.Utils
-import dev.ragnarok.fenrir.util.Utils.hasVanillaIceCreamTarget
 import dev.ragnarok.fenrir.util.coroutines.CompositeJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.andThen
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.delayedFlow
@@ -587,6 +586,14 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
             action.call(this)
         }
         postResumeActions.clear()
+
+        if (Settings.get()
+                .main().isBe_online && !Utils.isHiddenAccount(mAccountId) && Utils.needSetOnline()
+        ) {
+            mCompositeJob.add(
+                InteractorFactory.createAccountInteractor().setOnline(mAccountId).hiddenIO()
+            )
+        }
     }
 
     private fun startEnterPinActivity() {
@@ -694,9 +701,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
                             0 -> {
                                 mCompositeJob.add(
                                     InteractorFactory.createAccountInteractor()
-                                        .setOffline(
-                                            Settings.get().accounts().current
-                                        )
+                                        .setOffline(mAccountId)
                                         .fromIOToMain({ onSetOffline(it) }) {
                                             onSetOffline(
                                                 false
@@ -1269,7 +1274,9 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     }
 
     override fun readAllNotifications() {
-        if (Utils.isHiddenAccount(mAccountId)) return
+        if (Utils.isHiddenAccount(mAccountId)) {
+            return
+        }
         mCompositeJob.add(
             InteractorFactory.createFeedbackInteractor()
                 .markAsViewed(mAccountId)
@@ -1298,7 +1305,7 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
     override fun setStatusbarColored(colored: Boolean, invertIcons: Boolean) {
         val w = window
         @Suppress("deprecation")
-        if (!hasVanillaIceCreamTarget()) {
+        if (!Utils.hasVanillaIceCreamTarget()) {
             w.statusBarColor =
                 if (colored) getStatusBarColor(this) else getStatusBarNonColored(
                     this
@@ -1338,6 +1345,13 @@ open class MainActivity : AppCompatActivity(), NavigationDrawerCallbacks, OnSect
 
     override fun openPlace(place: Place) {
         val args = place.safeArguments()
+        if (Settings.get()
+                .main().isBe_online && !Utils.isHiddenAccount(mAccountId) && Utils.needSetOnline()
+        ) {
+            mCompositeJob.add(
+                InteractorFactory.createAccountInteractor().setOnline(mAccountId).hiddenIO()
+            )
+        }
         when (place.type) {
             Place.VIDEO_PREVIEW -> attachToFront(VideoPreviewFragment.newInstance(args))
             Place.STORY_PLAYER -> place.launchActivityForResult(

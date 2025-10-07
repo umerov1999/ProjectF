@@ -223,7 +223,7 @@ class WallMultiAttachmentsFragment :
     }
 
     override fun onVideoClick(position: Int, video: Video) {
-        presenter?.fireVideoClick(
+        presenter?.fireVideoOpen(
             video
         )
     }

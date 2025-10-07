@@ -16,6 +16,7 @@ interface IVideosListView : IMvpView, IToolbarView, IErrorView, IToastView {
     fun notifyItemChanged(position: Int)
     fun returnSelectionToParent(video: Video)
     fun showVideoPreview(accountId: Long, video: Video)
+    fun goPlayVideo(accountId: Long, video: Video)
     fun notifyUploadItemsAdded(position: Int, count: Int)
     fun notifyUploadItemRemoved(position: Int)
     fun notifyUploadItemChanged(position: Int)

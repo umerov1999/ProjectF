@@ -9,6 +9,7 @@ import dev.ragnarok.fenrir.fragment.search.nextfrom.IntNextFrom
 import dev.ragnarok.fenrir.fragment.videos.IVideosListView
 import dev.ragnarok.fenrir.getParcelableCompat
 import dev.ragnarok.fenrir.model.Video
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.trimmedNonNullNoEmpty
 import dev.ragnarok.fenrir.util.Pair
 import dev.ragnarok.fenrir.util.Pair.Companion.create
@@ -62,7 +63,11 @@ class VideosSearchPresenter(
                 apiVideo
             )
         } else {
-            view?.openVideo(accountId, apiVideo)
+            if (Settings.get().main().isDo_auto_play_video) {
+                view?.playVideo(accountId, apiVideo)
+            } else {
+                view?.openVideo(accountId, apiVideo)
+            }
         }
     }
 }

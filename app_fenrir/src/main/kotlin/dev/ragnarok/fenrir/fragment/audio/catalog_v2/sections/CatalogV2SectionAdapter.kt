@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory
 import android.view.ContextMenu
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
@@ -163,19 +164,11 @@ class CatalogV2SectionAdapter(
             }
 
             AbsModelType.MODEL_AUDIO_PLAYLIST -> {
-                if (currentListContentType == "music_playlists") {
-                    R.layout.item_catalog_v2_audio_playlist
-                } else {
-                    R.layout.item_catalog_v2_audio_playlist_horizontal
-                }
+                R.layout.item_catalog_v2_audio_playlist
             }
 
             AbsModelType.MODEL_CATALOG_V2_RECOMMENDATION_PLAYLIST -> {
-                if (currentListContentType == "music_recommended_playlists") {
-                    R.layout.item_catalog_v2_playlist_recommended
-                } else {
-                    R.layout.item_catalog_v2_playlist_recommended_horizontal
-                }
+                R.layout.item_catalog_v2_playlist_recommended
             }
 
             else -> CatalogV2Layout.createHolder(type).getLayout()
@@ -194,7 +187,7 @@ class CatalogV2SectionAdapter(
         position: Int,
         type: Int
     ) {
-        viewHolder.bind(position, getItem(position))
+        viewHolder.bind(position, getItem(position), currentListContentType)
     }
 
     fun setClickListener(clickListener: ClickListener?) {
@@ -292,7 +285,7 @@ class CatalogV2SectionAdapter(
             return -1
         }
 
-        override fun bind(position: Int, itemDataHolder: AbsModel) {
+        override fun bind(position: Int, itemDataHolder: AbsModel, listContentType: String?) {
             if (itemDataHolder !is CatalogV2Block) {
                 list.visibility = View.GONE
                 list.clearOnScrollListeners()
@@ -355,6 +348,7 @@ class CatalogV2SectionAdapter(
 
     inner class PlaylistHolder(itemView: View) : IViewHolder(itemView),
         View.OnCreateContextMenuListener {
+        val thumbRoot: FrameLayout
         val thumb: ImageView
         val title: TextView
         val year: TextView
@@ -388,6 +382,7 @@ class CatalogV2SectionAdapter(
 
         init {
             itemView.setOnCreateContextMenuListener(this)
+            thumbRoot = itemView.findViewById(R.id.item_thumb_root)
             thumb = itemView.findViewById(R.id.item_thumb)
             title = itemView.findViewById(R.id.item_title)
             playlist_container = itemView.findViewById(R.id.playlist_container)
@@ -400,7 +395,14 @@ class CatalogV2SectionAdapter(
             item_subtitle_badge = itemView.findViewById(R.id.item_subtitle_badge)
         }
 
-        override fun bind(position: Int, itemDataHolder: AbsModel) {
+        override fun bind(position: Int, itemDataHolder: AbsModel, listContentType: String?) {
+            if (listContentType == "music_playlists") {
+                thumbRoot.layoutParams.width = Utils.dp(95f)
+                thumbRoot.layoutParams.height = Utils.dp(95f)
+            } else {
+                thumbRoot.layoutParams.width = Utils.dp(130f)
+                thumbRoot.layoutParams.height = Utils.dp(130f)
+            }
             val playlist = itemDataHolder as AudioPlaylist
             if (playlist.thumb_image.nonNullNoEmpty()) ViewUtils.displayAvatar(
                 thumb,
@@ -456,6 +458,7 @@ class CatalogV2SectionAdapter(
 
     inner class RecommendationPlaylistHolder(itemView: View) : IViewHolder(itemView),
         View.OnCreateContextMenuListener {
+        val contentRoot: MaterialCardView = itemView.findViewById(R.id.root_container)
         val percentage: TextView = itemView.findViewById(R.id.percentage)
         private val percentageTitle: TextView = itemView.findViewById(R.id.percentageTitle)
         val title: TextView
@@ -499,7 +502,29 @@ class CatalogV2SectionAdapter(
         }
 
         @SuppressLint("SetTextI18n")
-        override fun bind(position: Int, itemDataHolder: AbsModel) {
+        override fun bind(position: Int, itemDataHolder: AbsModel, listContentType: String?) {
+            if (listContentType == "music_recommended_playlists") {
+                contentRoot.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+                if (contentRoot.layoutParams is RecyclerView.LayoutParams) {
+                    (contentRoot.layoutParams as RecyclerView.LayoutParams).setMargins(
+                        Utils.dp(16f),
+                        Utils.dp(8f),
+                        Utils.dp(16f),
+                        Utils.dp(8f)
+                    )
+                }
+            } else {
+                contentRoot.layoutParams.width = Utils.dp(286f)
+                if (contentRoot.layoutParams is RecyclerView.LayoutParams) {
+                    (contentRoot.layoutParams as RecyclerView.LayoutParams).setMargins(
+                        Utils.dp(4.5f),
+                        Utils.dp(4.5f),
+                        Utils.dp(4.5f),
+                        Utils.dp(4.5f)
+                    )
+                }
+            }
+
             val recPlaylist = itemDataHolder as CatalogV2RecommendationPlaylist
             val playlist = recPlaylist.getPlaylist()
             playlist_container.setOnClickListener {
@@ -522,6 +547,10 @@ class CatalogV2SectionAdapter(
             audios.displayAudios(recPlaylist.audios, object :
                 AttachmentsViewBinder.OnAttachmentsActionCallback {
                 override fun onPollOpen(poll: Poll) {
+
+                }
+
+                override fun onVideoOpen(video: Video) {
 
                 }
 
@@ -1192,7 +1221,7 @@ class CatalogV2SectionAdapter(
             selectionView.visibility = View.INVISIBLE
         }
 
-        override fun bind(position: Int, itemDataHolder: AbsModel) {
+        override fun bind(position: Int, itemDataHolder: AbsModel, listContentType: String?) {
             val audio = itemDataHolder as Audio
             cancelSelectionAnimation()
             if (audio.isAnimationNow) {

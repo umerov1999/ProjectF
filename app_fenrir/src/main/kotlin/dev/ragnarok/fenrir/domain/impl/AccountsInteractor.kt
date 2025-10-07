@@ -125,6 +125,12 @@ class AccountsInteractor(
             .setOffline()
     }
 
+    override fun setOnline(accountId: Long): Flow<Boolean> {
+        return networker.vkDefault(accountId)
+            .account()
+            .setOnline()
+    }
+
     override fun getProfileInfo(accountId: Long): Flow<VKApiProfileInfo> {
         return networker.vkDefault(accountId)
             .account()

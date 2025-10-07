@@ -133,6 +133,14 @@ class NotReadMessagesActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                 GifPagerActivity.newInstance(this, args)
             )
 
+            Place.VK_INTERNAL_PLAYER -> {
+                val videoActivity = VideoPlayerActivity.newInstance(this, args)
+                place.launchActivityForResult(
+                    this,
+                    videoActivity
+                )
+            }
+
             Place.DOC_PREVIEW -> {
                 val document: Document? = args.getParcelableCompat(Extra.DOC)
                 if (document != null && document.hasValidGifVideoLink()) {

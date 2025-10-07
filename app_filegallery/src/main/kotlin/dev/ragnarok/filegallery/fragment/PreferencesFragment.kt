@@ -403,9 +403,21 @@ class PreferencesFragment : AbsPreferencesFragment(), PreferencesAdapter.OnScree
                 titleRes = R.string.video_swipes
             }
 
-            switch("download_photo_tap") {
+            switch("photo_zoom_enable_list") {
                 defaultValue = true
-                titleRes = R.string.download_photo_tap
+                titleRes = R.string.photo_zoom_enable_list
+            }
+
+            singleChoice(
+                "long_click_photo",
+                selItems(
+                    R.array.array_long_click_photo_names,
+                    R.array.array_long_click_photo_items
+                ),
+                parentFragmentManager
+            ) {
+                initialSelection = "0"
+                titleRes = R.string.long_click_photo
             }
 
             switch("show_photos_line") {

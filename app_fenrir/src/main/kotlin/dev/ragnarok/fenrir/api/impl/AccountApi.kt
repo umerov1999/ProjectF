@@ -101,6 +101,15 @@ internal class AccountApi(accountId: Long, provider: IServiceProvider) :
             }
     }
 
+    override fun setOnline(): Flow<Boolean> {
+        return provideService(IAccountService(), TokenType.USER)
+            .flatMapConcat {
+                it.setOnline
+                    .map(extractResponseWithErrorHandling())
+                    .checkInt()
+            }
+    }
+
     override val profileInfo: Flow<VKApiProfileInfo>
         get() = provideService(IAccountService(), TokenType.USER)
             .flatMapConcat {

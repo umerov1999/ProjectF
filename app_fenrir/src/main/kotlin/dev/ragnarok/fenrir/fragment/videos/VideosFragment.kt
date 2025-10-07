@@ -318,6 +318,10 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
         getVideoPreviewPlace(accountId, video).tryOpenWith(requireActivity())
     }
 
+    override fun goPlayVideo(accountId: Long, video: Video) {
+        Utils.doAutoPlayVideo(requireActivity(), customToast, video)
+    }
+
     override fun onRemoveClick(upload: Upload) {
         presenter?.fireRemoveClick(
             upload
@@ -339,11 +343,23 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
         video: Video
     ) {
         val menus = ModalBottomSheetDialogFragment.Builder()
+        menus.add(
+            OptionRequest(
+                -1,
+                if (Settings.get()
+                        .main().isDo_auto_play_video
+                ) getString(R.string.open) else getString(R.string.play),
+                if (Settings.get()
+                        .main().isDo_auto_play_video
+                ) R.drawable.arrow_right_bold else R.drawable.play,
+                false
+            )
+        )
         if (!isMy) {
             if (video.isCanAdd) {
                 menus.add(
                     OptionRequest(
-                        R.id.action_add_to_my_videos,
+                        0,
                         getString(R.string.add_to_my_videos),
                         R.drawable.plus,
                         false
@@ -353,7 +369,7 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
         } else {
             menus.add(
                 OptionRequest(
-                    R.id.action_delete_from_my_videos,
+                    1,
                     getString(R.string.delete),
                     R.drawable.ic_outline_delete,
                     true
@@ -363,7 +379,7 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
         if (video.isCanEdit) {
             menus.add(
                 OptionRequest(
-                    R.id.action_edit,
+                    2,
                     getString(R.string.edit),
                     R.drawable.pencil,
                     true
@@ -372,7 +388,7 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
         }
         menus.add(
             OptionRequest(
-                R.id.action_copy_url,
+                3,
                 getString(R.string.copy_url),
                 R.drawable.content_copy,
                 false
@@ -380,7 +396,7 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
         )
         menus.add(
             OptionRequest(
-                R.id.share_button,
+                4,
                 getString(R.string.share),
                 R.drawable.share,
                 true
@@ -388,7 +404,7 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
         )
         menus.add(
             OptionRequest(
-                R.id.check_show_author,
+                5,
                 getString(R.string.author),
                 R.drawable.person,
                 true
@@ -396,7 +412,7 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
         )
         menus.add(
             OptionRequest(
-                R.id.album_container,
+                6,
                 getString(R.string.videos_albums),
                 R.drawable.album_photo,
                 true
@@ -409,7 +425,15 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
             "video_options"
         ) { _, option ->
             when (option.id) {
-                R.id.action_copy_url -> {
+                -1 -> {
+                    if (Settings.get().main().isDo_auto_play_video) {
+                        showVideoPreview(accountId, video)
+                    } else {
+                        presenter?.fireVideoPlay(video)
+                    }
+                }
+
+                3 -> {
                     val clipboard =
                         requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
                     val clip = ClipData.newPlainText(
@@ -420,14 +444,30 @@ class VideosFragment : BaseMvpFragment<VideosListPresenter, IVideosListView>(), 
                     customToast?.showToast(R.string.copied_url)
                 }
 
-                R.id.check_show_author -> {
+                5 -> {
                     getOwnerWallPlace(accountId, video.ownerId, null).tryOpenWith(requireActivity())
                 }
 
-                R.id.album_container -> {
+                6 -> {
                     getAlbumsByVideoPlace(accountId, ownerId, video.ownerId, video.id).tryOpenWith(
                         requireActivity()
                     )
+                }
+
+                1 -> {
+                    MaterialAlertDialogBuilder(requireActivity())
+                        .setTitle(R.string.remove_confirm)
+                        .setMessage(R.string.video_remove_confirm_message)
+                        .setPositiveButton(R.string.button_yes) { _, _ ->
+                            presenter?.fireVideoOption(
+                                1,
+                                video,
+                                position,
+                                requireActivity()
+                            )
+                        }
+                        .setNegativeButton(R.string.cancel, null)
+                        .show()
                 }
 
                 else -> {

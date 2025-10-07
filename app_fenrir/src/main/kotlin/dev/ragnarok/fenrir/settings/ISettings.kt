@@ -181,7 +181,6 @@ interface ISettings {
         val isDo_not_clear_back_stack: Boolean
         val isMention_fave: Boolean
         val isDisabled_encryption: Boolean
-        val isDownload_photo_tap: Boolean
         val isDisable_sensored_voice: Boolean
         var isInvertPhotoRev: Boolean
         val isAudio_save_mode_button: Boolean
@@ -209,6 +208,8 @@ interface ISettings {
         val photoExt: Set<String>
         val audioExt: Set<String>
         val maxThumbResolution: Int
+        val isPhoto_zoom_enable_list: Boolean
+        val longClickPhoto: Int
         val isEnable_dirs_files_count: Boolean
         val last_audio_sync: Long
         fun set_last_audio_sync(time: Long)

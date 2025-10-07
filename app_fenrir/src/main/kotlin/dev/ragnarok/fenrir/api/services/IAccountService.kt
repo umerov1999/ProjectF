@@ -104,6 +104,9 @@ class IAccountService : IServiceRest() {
     val setOffline: Flow<BaseResponse<Int>>
         get() = rest.request("account.setOffline", null, baseInt)
 
+    val setOnline: Flow<BaseResponse<Int>>
+        get() = rest.request("account.setOnline", null, baseInt)
+
     val profileInfo: Flow<BaseResponse<VKApiProfileInfo>>
         get() = rest.request("account.getProfileInfo", null, base(VKApiProfileInfo.serializer()))
 

@@ -41,6 +41,7 @@ interface IAttachmentsPlacesView {
     fun openForwardMessages(accountId: Long, messages: ArrayList<Message>)
     fun playAudioList(accountId: Long, position: Int, apiAudio: ArrayList<Audio>)
     fun openVideo(accountId: Long, apiVideo: Video)
+    fun playVideo(accountId: Long, apiVideo: Video)
     fun openHistoryVideo(accountId: Long, stories: ArrayList<Story>, index: Int)
     fun openPoll(accountId: Long, apiPoll: Poll)
     fun openSearch(accountId: Long, @SearchContentType type: Int, criteria: BaseSearchCriteria?)

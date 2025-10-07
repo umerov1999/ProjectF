@@ -106,8 +106,12 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
         presenter?.firePollClick(poll)
     }
 
+    override fun onVideoOpen(video: Video) {
+        presenter?.fireVideoOpen(video)
+    }
+
     override fun onVideoPlay(video: Video) {
-        presenter?.fireVideoClick(video)
+        presenter?.fireVideoPlay(video)
     }
 
     override fun onAudioPlay(position: Int, audios: ArrayList<Audio>, holderPosition: Int?) {
@@ -302,6 +306,10 @@ abstract class PlaceSupportMvpFragment<P : PlaceSupportPresenter<V>, V> : BaseMv
 
     override fun openVideo(accountId: Long, apiVideo: Video) {
         PlaceFactory.getVideoPreviewPlace(accountId, apiVideo).tryOpenWith(requireActivity())
+    }
+
+    override fun playVideo(accountId: Long, apiVideo: Video) {
+        Utils.doAutoPlayVideo(requireActivity(), customToast, apiVideo)
     }
 
     override fun openHistoryVideo(accountId: Long, stories: ArrayList<Story>, index: Int) {

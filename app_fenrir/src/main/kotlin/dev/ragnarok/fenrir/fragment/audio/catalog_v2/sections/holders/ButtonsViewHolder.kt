@@ -21,7 +21,7 @@ class ButtonsViewHolder(itemView: View) : IViewHolder(itemView) {
         null
     }
 
-    override fun bind(position: Int, itemDataHolder: AbsModel) {
+    override fun bind(position: Int, itemDataHolder: AbsModel, listContentType: String?) {
         if (itemDataHolder !is CatalogV2Block) {
             button.visibility = View.GONE
             itemView.layoutParams.height = Utils.dp(1f)

@@ -69,6 +69,12 @@
         <item>Все ссылки</item>
     </string-array>
 
+    <string-array name="array_long_click_photo_names">
+        <item>Выключить.</item>
+        <item>Скачать</item>
+        <item>Поворот</item>
+    </string-array>
+
     <string-array name="array_accounts_input">
         <item>VK Android</item>
         <item>Kate</item>
@@ -678,10 +684,10 @@
     <string name="share_to_message">В ЛС</string>
     <string name="new_comment">Новый комментарий</string>
     <string name="editing">Редактирование</string>
-    <string name="add_document_to_yourself_commit">Добавить в свои документы ?</string>
+    <string name="add_document_to_yourself_commit">Добавить в свои документы?</string>
     <string name="avatar_style_title">Стиль аватарок</string>
 
-    <string name="save_changes_question">Сохранить изменения ?</string>
+    <string name="save_changes_question">Сохранить изменения?</string>
     <string name="comment">Комментарий</string>
     <string name="search">Поиск</string>
     <string name="input">Ввод</string>
@@ -715,8 +721,9 @@
     <string name="share_document_title">Поделиться документом</string>
     <string name="deleted">Удалено</string>
     <string name="remove_confirm">Подтвердите удаление</string>
-    <string name="doc_remove_confirm_message">Вы действительно хотите удалить этот документ ? Это действие нельзя отменить.</string>
-    <string name="album_remove_confirm_message">Вы действительно хотите удалить этот альбом ? Это действие нельзя отменить.</string>
+    <string name="doc_remove_confirm_message">Вы действительно хотите удалить этот документ? Это действие нельзя отменить.</string>
+    <string name="video_remove_confirm_message">Вы действительно хотите удалить это видео? Это действие нельзя отменить.</string>
+    <string name="album_remove_confirm_message">Вы действительно хотите удалить этот альбом? Это действие нельзя отменить.</string>
     <string name="in_response_to">%1$s в ответ на %2$s</string>
     <string name="no_photos">Нет изображений</string>
     <string name="no_videos">Нет видео</string>
@@ -1394,7 +1401,6 @@
     <string name="input_call">Исходящий звонок</string>
     <string name="output_call">Входящий звонок</string>
     <string name="graffiti">Граффити</string>
-    <string name="download_photo_tap">Скачивать фото по долгому нажатию</string>
     <string name="photo_album">Фото Альбом</string>
     <string name="custom_second_message_color">Второй цвет исходящего сообщения</string>
     <string name="short_link">Сокращение ссылок</string>
@@ -1697,4 +1703,6 @@
     <string name="owner_count_a">%1$d штука</string>
     <string name="owner_count_b">%1$d штуки</string>
     <string name="owner_count_c">%1$d штук</string>
+    <string name="long_click_photo">Долгое нажатие на фото</string>
+    <string name="photo_zoom_enable_list">Листать приближенные изображения</string>
 </resources>

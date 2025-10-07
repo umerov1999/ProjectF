@@ -3,7 +3,6 @@ package dev.ragnarok.fenrir.fragment.videos.videopreview
 import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -48,7 +47,6 @@ import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
 import dev.ragnarok.fenrir.place.PlaceFactory.getCommentsPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getLikesCopiesPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getOwnerWallPlace
-import dev.ragnarok.fenrir.place.PlaceFactory.getVkInternalPlayerPlace
 import dev.ragnarok.fenrir.place.PlaceUtil.goToPostCreation
 import dev.ragnarok.fenrir.settings.AppPrefs
 import dev.ragnarok.fenrir.settings.CurrentTheme
@@ -182,37 +180,13 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
             presenter?.fireOpenOwnerClicked()
         }
         mTransformation = CurrentTheme.createTransformationForAvatar()
-        if (Settings.get().main().isDo_auto_play_video) {
-            mRootView?.findViewById<View>(R.id.cover_cardview)?.setOnClickListener {
-                presenter?.fireAutoPlayClick()
-            }
-            mRootView?.findViewById<View>(R.id.cover_cardview)?.setOnLongClickListener {
-                presenter?.firePlayClick()
-                true
-            }
-        } else {
-            mRootView?.findViewById<View>(R.id.cover_cardview)?.setOnClickListener {
-                presenter?.firePlayClick()
-            }
-            mRootView?.findViewById<View>(R.id.cover_cardview)?.setOnLongClickListener {
-                presenter?.fireAutoPlayClick()
-                true
-            }
+        mRootView?.findViewById<View>(R.id.cover_cardview)?.setOnClickListener {
+            presenter?.firePlayClick()
         }
         mRootView?.findViewById<View>(R.id.try_again_button)?.setOnClickListener {
             presenter?.fireTryAgainClick()
         }
         return mRootView
-    }
-
-    private fun playWithExternalSoftware(url: String) {
-        if (url.isEmpty()) {
-            customToast?.setDuration(Toast.LENGTH_LONG)
-                ?.showToastError(R.string.error_video_playback_is_not_possible)
-            return
-        }
-        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
-        startActivity(intent)
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?): VideoPreviewPresenter {
@@ -595,59 +569,6 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
             .show()
     }
 
-    override fun doAutoPlayVideo(accountId: Long, video: Video) {
-        if (!video.live.isNullOrEmpty()) {
-            openInternal(video, InternalVideoSize.SIZE_LIVE)
-        } else if (!video.hls.isNullOrEmpty()) {
-            openInternal(video, InternalVideoSize.SIZE_HLS)
-        } else if (!video.mp4link2160.isNullOrEmpty()) {
-            openInternal(video, InternalVideoSize.SIZE_2160)
-        } else if (!video.mp4link1440.isNullOrEmpty()) {
-            openInternal(video, InternalVideoSize.SIZE_1440)
-        } else if (!video.mp4link1080.isNullOrEmpty()) {
-            openInternal(video, InternalVideoSize.SIZE_1080)
-        } else if (!video.mp4link720.isNullOrEmpty()) {
-            openInternal(video, InternalVideoSize.SIZE_720)
-        } else if (!video.mp4link480.isNullOrEmpty()) {
-            openInternal(video, InternalVideoSize.SIZE_480)
-        } else if (!video.mp4link360.isNullOrEmpty()) {
-            openInternal(video, InternalVideoSize.SIZE_360)
-        } else if (!video.mp4link240.isNullOrEmpty()) {
-            openInternal(video, InternalVideoSize.SIZE_240)
-        } else if (video.externalLink.nonNullNoEmpty()) {
-            if (video.externalLink?.contains("youtube") == true) {
-                when {
-                    AppPrefs.isReVancedYoutubeInstalled(requireActivity()) -> {
-                        playWithYoutubeReVanced(video)
-                    }
-
-                    AppPrefs.isNewPipeInstalled(requireActivity()) -> {
-                        playWithNewPipe(video)
-                    }
-
-                    AppPrefs.isYoutubeInstalled(requireActivity()) -> {
-                        playWithYoutube(video)
-                    }
-
-                    else -> {
-                        playWithExternalSoftware(video.externalLink ?: return)
-                    }
-                }
-            } else if (video.externalLink?.contains("coub") == true && AppPrefs.isCoubInstalled(
-                    requireActivity()
-                )
-            ) {
-                playWithCoub(video)
-            } else {
-                playWithExternalSoftware(video.externalLink ?: return)
-            }
-        } else if (video.player.nonNullNoEmpty()) {
-            playWithExternalSoftware(video.player ?: return)
-        } else {
-            customToast?.showToastError(R.string.video_not_have_link)
-        }
-    }
-
     override fun goToLikes(accountId: Long, type: String, ownerId: Long, id: Int) {
         getLikesCopiesPlace(accountId, type, ownerId, id, ILikesInteractor.FILTER_LIKES)
             .tryOpenWith(requireActivity())
@@ -672,18 +593,63 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
 
     private fun onPlayMenuItemClick(video: Video, item: Item) {
         when (item.key) {
-            Menu.P_240 -> openInternal(video, InternalVideoSize.SIZE_240)
-            Menu.P_360 -> openInternal(video, InternalVideoSize.SIZE_360)
-            Menu.P_480 -> openInternal(video, InternalVideoSize.SIZE_480)
-            Menu.P_720 -> openInternal(video, InternalVideoSize.SIZE_720)
-            Menu.P_1080 -> openInternal(video, InternalVideoSize.SIZE_1080)
-            Menu.P_1440 -> openInternal(video, InternalVideoSize.SIZE_1440)
-            Menu.P_2160 -> openInternal(video, InternalVideoSize.SIZE_2160)
-            Menu.LIVE -> openInternal(video, InternalVideoSize.SIZE_LIVE)
-            Menu.HLS -> openInternal(video, InternalVideoSize.SIZE_HLS)
+            Menu.P_240 -> Utils.openVideoInternal(
+                requireActivity(),
+                video,
+                InternalVideoSize.SIZE_240
+            )
+
+            Menu.P_360 -> Utils.openVideoInternal(
+                requireActivity(),
+                video,
+                InternalVideoSize.SIZE_360
+            )
+
+            Menu.P_480 -> Utils.openVideoInternal(
+                requireActivity(),
+                video,
+                InternalVideoSize.SIZE_480
+            )
+
+            Menu.P_720 -> Utils.openVideoInternal(
+                requireActivity(),
+                video,
+                InternalVideoSize.SIZE_720
+            )
+
+            Menu.P_1080 -> Utils.openVideoInternal(
+                requireActivity(),
+                video,
+                InternalVideoSize.SIZE_1080
+            )
+
+            Menu.P_1440 -> Utils.openVideoInternal(
+                requireActivity(),
+                video,
+                InternalVideoSize.SIZE_1440
+            )
+
+            Menu.P_2160 -> Utils.openVideoInternal(
+                requireActivity(),
+                video,
+                InternalVideoSize.SIZE_2160
+            )
+
+            Menu.LIVE -> Utils.openVideoInternal(
+                requireActivity(),
+                video,
+                InternalVideoSize.SIZE_LIVE
+            )
+
+            Menu.HLS -> Utils.openVideoInternal(
+                requireActivity(),
+                video,
+                InternalVideoSize.SIZE_HLS
+            )
+
             Menu.P_EXTERNAL_PLAYER -> showPlayExternalPlayerMenu(video)
             Menu.NEW_PIPE -> if (AppPrefs.isNewPipeInstalled(requireActivity())) {
-                playWithNewPipe(video)
+                Utils.playVideoWithNewPipe(requireActivity(), video)
             } else {
                 openLinkInBrowser(
                     requireActivity(),
@@ -691,11 +657,25 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
                 )
             }
 
-            Menu.YOUTUBE -> playWithYoutube(video)
-            Menu.YOUTUBE_VANCED -> playWithYoutubeReVanced(video)
-            Menu.COUB -> playWithCoub(video)
-            Menu.PLAY_ANOTHER_SOFT -> video.externalLink?.let { playWithExternalSoftware(it) }
-            Menu.PLAY_BROWSER -> video.player?.let { playWithExternalSoftware(it) }
+            Menu.YOUTUBE -> Utils.playVideoWithYoutube(requireActivity(), video)
+            Menu.YOUTUBE_VANCED -> Utils.playVideoWithYoutubeReVanced(requireActivity(), video)
+            Menu.COUB -> Utils.playVideoWithCoub(requireActivity(), video)
+            Menu.PLAY_ANOTHER_SOFT -> video.externalLink?.let {
+                Utils.playVideoWithExternalSoftware(
+                    requireActivity(),
+                    customToast,
+                    it
+                )
+            }
+
+            Menu.PLAY_BROWSER -> video.player?.let {
+                Utils.playVideoWithExternalSoftware(
+                    requireActivity(),
+                    customToast,
+                    it
+                )
+            }
+
             Menu.DOWNLOAD -> if (!hasReadWriteStoragePermission(requireActivity())) {
                 requestWritePermission.launch()
             } else {
@@ -807,52 +787,6 @@ class VideoPreviewFragment : BaseMvpFragment<VideoPreviewPresenter, IVideoPrevie
     private fun playDirectVkLinkInExternalPlayer(url: String) {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.setDataAndType(url.toUri(), "video/mp4")
-        startActivity(intent)
-    }
-
-    private fun openInternal(video: Video, @InternalVideoSize size: Int) {
-        getVkInternalPlayerPlace(video, size, false).tryOpenWith(requireActivity())
-    }
-
-    private fun playWithCoub(video: Video) {
-        val outerLink = video.externalLink
-        val intent = Intent()
-        intent.data = outerLink?.toUri()
-        intent.action = Intent.ACTION_VIEW
-        intent.component = ComponentName("com.coub.android", "com.coub.android.ui.ViewCoubActivity")
-        startActivity(intent)
-    }
-
-    private fun playWithNewPipe(video: Video) {
-        val outerLink = video.externalLink
-        val intent = Intent()
-        intent.data = outerLink?.toUri()
-        intent.action = Intent.ACTION_VIEW
-        intent.component = ComponentName("org.schabi.newpipe", "org.schabi.newpipe.RouterActivity")
-        startActivity(intent)
-    }
-
-    private fun playWithYoutube(video: Video) {
-        val outerLink = video.externalLink
-        val intent = Intent()
-        intent.data = outerLink?.toUri()
-        intent.action = Intent.ACTION_VIEW
-        intent.component = ComponentName(
-            "com.google.android.youtube",
-            "com.google.android.apps.youtube.app.application.Shell\$UrlActivity"
-        )
-        startActivity(intent)
-    }
-
-    private fun playWithYoutubeReVanced(video: Video) {
-        val outerLink = video.externalLink
-        val intent = Intent()
-        intent.data = outerLink?.toUri()
-        intent.action = Intent.ACTION_VIEW
-        intent.component = ComponentName(
-            AppPrefs.revanced?.first.orEmpty(),
-            AppPrefs.revanced?.second.orEmpty()
-        )
         startActivity(intent)
     }
 

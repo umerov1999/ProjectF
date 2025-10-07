@@ -680,8 +680,6 @@ internal class MainSettings(context: Context) : IMainSettings {
         get() = getPreferences(app).getBoolean("mention_fave", false)
     override val isDisabled_encryption: Boolean
         get() = getPreferences(app).getBoolean("disable_encryption", false)
-    override val isDownload_photo_tap: Boolean
-        get() = getPreferences(app).getBoolean("download_photo_tap", true)
     override val isAudio_save_mode_button: Boolean
         get() = getPreferences(app).getBoolean("audio_save_mode_button", true)
     override val isShow_mutual_count: Boolean
@@ -707,7 +705,7 @@ internal class MainSettings(context: Context) : IMainSettings {
     override val isShow_photos_date: Boolean
         get() = getPreferences(app).getBoolean("show_photos_date", false)
     override val isDo_auto_play_video: Boolean
-        get() = getPreferences(app).getBoolean("do_auto_play_video", false)
+        get() = getPreferences(app).getBoolean("do_auto_play_video", true)
     override val isVideo_controller_to_decor: Boolean
         get() = getPreferences(app).getBoolean("video_controller_to_decor", false)
     override val isVideo_swipes: Boolean
@@ -904,6 +902,16 @@ internal class MainSettings(context: Context) : IMainSettings {
             384
         }
 
+    override val isPhoto_zoom_enable_list: Boolean
+        get() = getPreferences(app).getBoolean("photo_zoom_enable_list", true)
+
+    override val longClickPhoto: Int
+        get() = try {
+            getPreferences(app).getString("long_click_photo", "0")?.trim()?.toInt()
+                ?: 0
+        } catch (_: Exception) {
+            0
+        }
     override val isEnable_dirs_files_count: Boolean
         get() = getPreferences(app).getBoolean("enable_dirs_files_count", true)
 

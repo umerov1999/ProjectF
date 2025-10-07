@@ -1,98 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="4dp"
-    app:cardElevation="1dp"
-    app:contentPadding="0dp">
+    android:orientation="vertical">
+
+    <dev.ragnarok.filegallery.view.RoundCornerLinearView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="2dp"
+        android:layout_weight="1"
+        android:elevation="5dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:radius_bottom_left="1dp"
+        app:radius_bottom_right="1dp"
+        app:radius_top_left="24dp"
+        app:radius_top_right="24dp"
+        app:view_color="?colorSecondaryContainer">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/pin_title_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/create_pin_code_title"
+            android:textColor="?colorOnSecondaryContainer"
+            android:textSize="24sp" />
+
+        <LinearLayout
+            android:id="@+id/value_root"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal"
+            android:padding="@dimen/content_large_margin">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/pincode_digit_0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/pin_digit"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:src="@drawable/runic_letter_algis"
+                app:tint="?colorOnSecondaryContainer" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/pincode_digit_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/pin_digit"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:src="@drawable/runic_letter_manaz"
+                app:tint="?colorOnSecondaryContainer" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/pincode_digit_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/pin_digit"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:src="@drawable/runic_letter_naudiz"
+                app:tint="?colorOnSecondaryContainer" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/pincode_digit_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/pin_digit"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:src="@drawable/runic_letter_raido"
+                app:tint="?colorOnSecondaryContainer" />
+        </LinearLayout>
+
+    </dev.ragnarok.filegallery.view.RoundCornerLinearView>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="?colorPrimary"
-            android:elevation="5dp"
-            android:gravity="center"
-            android:orientation="vertical">
+        <dev.ragnarok.filegallery.view.KeyboardView
+            android:id="@+id/keyboard"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            app:keyboard_theme="fullscreen" />
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/pin_title_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/create_pin_code_title"
-                android:textColor="?white_color_contrast_fix"
-                android:textSize="24sp" />
-
-            <LinearLayout
-                android:id="@+id/value_root"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:orientation="horizontal"
-                android:padding="@dimen/content_large_margin">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/pincode_digit_0"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@string/pin_digit"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:src="@drawable/runic_letter_algis"
-                    app:tint="?white_color_contrast_fix" />
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/pincode_digit_1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@string/pin_digit"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:src="@drawable/runic_letter_manaz"
-                    app:tint="?white_color_contrast_fix" />
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/pincode_digit_2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@string/pin_digit"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:src="@drawable/runic_letter_naudiz"
-                    app:tint="?white_color_contrast_fix" />
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/pincode_digit_3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@string/pin_digit"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:src="@drawable/runic_letter_raido"
-                    app:tint="?white_color_contrast_fix" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-
-            <dev.ragnarok.filegallery.view.KeyboardView
-                android:id="@+id/keyboard"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                app:keyboard_theme="fullscreen" />
-
-        </FrameLayout>
     </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+</LinearLayout>

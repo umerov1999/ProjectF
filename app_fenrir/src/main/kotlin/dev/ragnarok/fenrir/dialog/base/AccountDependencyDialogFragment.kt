@@ -49,6 +49,7 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getVKPhotosAlbumPlace
 import dev.ragnarok.fenrir.place.PlaceFactory.getVideoPreviewPlace
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppPerms.requestPermissionsAbs
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.coroutines.CompositeJob
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
 import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.sharedFlowToMain
@@ -115,8 +116,22 @@ abstract class AccountDependencyDialogFragment : BaseDialogFragment(), OnAttachm
         //       .open();
     }
 
-    override fun onVideoPlay(video: Video) {
+    override fun onVideoOpen(video: Video) {
         getVideoPreviewPlace(accountId, video).tryOpenWith(requireActivity())
+    }
+
+    override fun onVideoPlay(video: Video) {
+        appendJob(
+            InteractorFactory.createVideosInteractor()
+                .getById(accountId, video.ownerId, video.id, video.accessKey, false)
+                .fromIOToMain({
+                    Utils.doAutoPlayVideo(
+                        requireActivity(),
+                        createCustomToast(requireActivity(), null), video
+                    )
+                }) {
+                    getVideoPreviewPlace(accountId, video).tryOpenWith(requireActivity())
+                })
     }
 
     override fun onAudioPlay(position: Int, audios: ArrayList<Audio>, holderPosition: Int?) {

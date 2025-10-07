@@ -46,7 +46,7 @@ class PhotosViewHelper internal constructor(
         container.visibility = View.VISIBLE
 
         val i = videos.size - container.childCount
-        for (j in 0 until i) {
+        (0 until i).forEach { j ->
             val root = LayoutInflater.from(context)
                 .inflate(R.layout.item_video_attachment, container, false)
             container.addView(root)
@@ -66,7 +66,24 @@ class PhotosViewHelper internal constructor(
             holder.vgVideo.setOnClickListener {
                 if (image.type == PostImage.TYPE_VIDEO) {
                     val video = image.attachment as Video
-                    attachmentsActionCallback?.onVideoPlay(video)
+                    if (Settings.get().main().isDo_auto_play_video) {
+                        attachmentsActionCallback?.onVideoPlay(video)
+                    } else {
+                        attachmentsActionCallback?.onVideoOpen(video)
+                    }
+                }
+            }
+            holder.vgVideo.setOnLongClickListener {
+                if (image.type == PostImage.TYPE_VIDEO) {
+                    val video = image.attachment as Video
+                    if (Settings.get().main().isDo_auto_play_video) {
+                        attachmentsActionCallback?.onVideoOpen(video)
+                    } else {
+                        attachmentsActionCallback?.onVideoPlay(video)
+                    }
+                    true
+                } else {
+                    false
                 }
             }
             val url = image.getPreviewUrl(mPhotoPreviewSize)
@@ -211,13 +228,30 @@ class PhotosViewHelper internal constructor(
                     PostImage.TYPE_IMAGE -> openImages(photos, g)
                     PostImage.TYPE_VIDEO -> {
                         val video = image.attachment as Video
-                        attachmentsActionCallback?.onVideoPlay(video)
+                        if (Settings.get().main().isDo_auto_play_video) {
+                            attachmentsActionCallback?.onVideoPlay(video)
+                        } else {
+                            attachmentsActionCallback?.onVideoOpen(video)
+                        }
                     }
 
                     PostImage.TYPE_GIF -> {
                         val document = image.attachment as Document
                         attachmentsActionCallback?.onDocPreviewOpen(document)
                     }
+                }
+            }
+            holder.vgPhoto.setOnLongClickListener {
+                if (image.type == PostImage.TYPE_VIDEO) {
+                    val video = image.attachment as Video
+                    if (Settings.get().main().isDo_auto_play_video) {
+                        attachmentsActionCallback?.onVideoOpen(video)
+                    } else {
+                        attachmentsActionCallback?.onVideoPlay(video)
+                    }
+                    true
+                } else {
+                    false
                 }
             }
             val url = image.getPreviewUrl(mPhotoPreviewSize)

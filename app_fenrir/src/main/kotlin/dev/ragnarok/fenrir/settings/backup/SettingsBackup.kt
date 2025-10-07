@@ -50,6 +50,8 @@ class SettingsBackup {
         var photo_rounded_view: String? = null
         var font_size_int: Int? = null
         var font_only_for_chats: Boolean? = null
+        var long_click_photo: String? = null
+        var photo_zoom_enable_list: Boolean? = null
         var is_open_url_internal: String? = null
         var webview_night_mode: Boolean? = null
         var load_history_notif: Boolean? = null
@@ -133,7 +135,6 @@ class SettingsBackup {
         var do_not_clear_back_stack: Boolean? = null
         var mention_fave: Boolean? = null
         var disable_encryption: Boolean? = null
-        var download_photo_tap: Boolean? = null
         var audio_save_mode_button: Boolean? = null
         var show_mutual_count: Boolean? = null
         var do_zoom_photo: Boolean? = null

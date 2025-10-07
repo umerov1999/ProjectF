@@ -5,5 +5,5 @@ import androidx.recyclerview.widget.RecyclerView
 import dev.ragnarok.fenrir.model.AbsModel
 
 abstract class IViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    abstract fun bind(position: Int, itemDataHolder: AbsModel)
+    abstract fun bind(position: Int, itemDataHolder: AbsModel, listContentType: String?)
 }

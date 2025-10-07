@@ -16,6 +16,7 @@ import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.nonNullNoEmpty
 import dev.ragnarok.fenrir.orZero
 import dev.ragnarok.fenrir.picasso.PicassoInstance.Companion.with
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.view.VideoServiceIcons.getIconByType
@@ -79,6 +80,7 @@ class FaveVideosAdapter(private val context: Context, private var data: List<Vid
 
     interface VideoOnClickListener {
         fun onVideoClick(position: Int, video: Video)
+        fun onVideoOptionClick(position: Int, video: Video)
         fun onDelete(index: Int, video: Video)
     }
 
@@ -94,6 +96,15 @@ class FaveVideosAdapter(private val context: Context, private var data: List<Vid
             val position = recyclerView?.getChildAdapterPosition(v).orZero()
             val video = data[position]
             menu.setHeaderTitle(video.title)
+            menu.add(
+                0,
+                v.id,
+                0,
+                if (Settings.get().main().isDo_auto_play_video) R.string.open else R.string.play
+            ).setOnMenuItemClickListener {
+                videoOnClickListener?.onVideoOptionClick(position, video)
+                true
+            }
             menu.add(0, v.id, 0, R.string.delete).setOnMenuItemClickListener {
                 videoOnClickListener?.onDelete(position, video)
                 true

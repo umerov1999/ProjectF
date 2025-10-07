@@ -25,11 +25,12 @@ class SettingsBackup {
         var language_ui: String? = null
         var delete_disabled: Boolean? = null
         var font_size_int: Int? = null
+        var long_click_photo: String? = null
+        var photo_zoom_enable_list: Boolean? = null
         var local_media_server: String? = null
         var use_internal_downloader: Boolean? = null
         var video_controller_to_decor: Boolean? = null
         var video_swipes: Boolean? = null
-        var download_photo_tap: Boolean? = null
         var show_photos_line: Boolean? = null
         var instant_photo_display: Boolean? = null
         var validate_tls: Boolean? = null

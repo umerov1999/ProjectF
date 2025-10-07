@@ -334,15 +334,6 @@ class VideoPreviewPresenter(
         }
     }
 
-    fun fireAutoPlayClick() {
-        video?.let {
-            view?.doAutoPlayVideo(
-                accountId,
-                it
-            )
-        }
-    }
-
     fun fireTryAgainClick() {
         refreshVideoInfo()
     }

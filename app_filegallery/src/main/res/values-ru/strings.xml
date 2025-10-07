@@ -51,6 +51,12 @@
         <item>Принудительно Hardware</item>
     </string-array>
 
+    <string-array name="array_long_click_photo_names">
+        <item>Выключить.</item>
+        <item>Скачать</item>
+        <item>Поворот</item>
+    </string-array>
+
     <string name="files">Файлы</string>
     <string name="button_back">Назад</string>
     <string name="search_hint">Найти</string>
@@ -76,7 +82,6 @@
     <string name="use_internal_downloader_summary">Для видео и документов</string>
     <string name="video_controller_to_decor">Видео кнопки в DecorView</string>
     <string name="video_swipes">Свайпы у видео</string>
-    <string name="download_photo_tap">Скачивать фото по долгому нажатию</string>
     <string name="show_photos_line">Показывать трекбар с фотками</string>
     <string name="music_settings">Плеер и музыка</string>
     <string name="audio_round_icon">Круглые обложки аудио</string>
@@ -250,4 +255,6 @@
     <string name="error_title">Ошибка: %1$s</string>
     <string name="error_stacktrace">Трассировка стека: %1$s</string>
     <string name="saved_to_param_file_name">Сохранено в %1$s</string>
+    <string name="long_click_photo">Долгое нажатие на фото</string>
+    <string name="photo_zoom_enable_list">Листать приближенные изображения</string>
 </resources>

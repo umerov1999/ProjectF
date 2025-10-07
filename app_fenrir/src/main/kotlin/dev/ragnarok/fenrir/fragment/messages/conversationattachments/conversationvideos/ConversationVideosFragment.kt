@@ -24,7 +24,7 @@ class ConversationVideosFragment :
     }
 
     override fun onVideoClick(position: Int, video: Video) {
-        presenter?.fireVideoClick(
+        presenter?.fireVideoOpen(
             video
         )
     }

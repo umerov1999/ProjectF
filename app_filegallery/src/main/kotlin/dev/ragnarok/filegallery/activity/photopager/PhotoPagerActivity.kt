@@ -67,6 +67,7 @@ import dev.ragnarok.filegallery.util.toast.CustomToast.Companion.createCustomToa
 import dev.ragnarok.filegallery.view.TouchImageView
 import dev.ragnarok.filegallery.view.natives.animation.ThorVGLottieView
 import dev.ragnarok.filegallery.view.pager.WeakPicassoLoadCallback
+import kotlin.math.abs
 
 class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>(), IPhotoPagerView,
     PlaceProvider, AppStyleable, MenuProvider {
@@ -462,6 +463,9 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
         var animationDispose = CancelableJob()
         private var mAnimationLoaded = false
         private var mLoadingNow = false
+
+        var initialX = 0f
+        var initialY = 0f
         fun bindTo(photo_image: Photo) {
             selected.visibility =
                 if (Utils.shouldSelectPhoto && photo_image.inLocal() && Utils.listSelected.contains(
@@ -481,17 +485,22 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                     }
                     true
                 } else {
-                    val o = presenter?.fireSaveOnDriveClick()
-                    if (o == true && photo.drawable is Rotatable) {
-                        var rot = (photo.drawable as Rotatable).getRotation() + 45f
+                    val lCMode = Settings.get().main().longClickPhoto
+                    if (lCMode == 1) {
+                        presenter?.fireSaveOnDriveClick()
+                        true
+                    } else if (lCMode == 2 && photo.drawable is Rotatable) {
+                        var rot = (photo.drawable as Rotatable).getRotation() + 45
                         if (rot >= 360f) {
                             rot = 0f
                         }
                         (photo.drawable as Rotatable).rotate(rot)
                         photo.fitImageToView()
                         photo.invalidate()
+                        true
+                    } else {
+                        false
                     }
-                    true
                 }
             }
             photo.resetZoom()
@@ -614,6 +623,8 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
 
     private inner class Adapter(val mPhotos: List<Photo>) :
         RecyclerView.Adapter<PhotoViewHolder>() {
+        private var touchSlop = 0
+
         @SuppressLint("ClickableViewAccessibility")
         override fun onCreateViewHolder(container: ViewGroup, viewType: Int): PhotoViewHolder {
             val ret = PhotoViewHolder(
@@ -621,14 +632,46 @@ class PhotoPagerActivity : BaseMvpActivity<PhotoPagerPresenter, IPhotoPagerView>
                     .inflate(R.layout.content_photo_page, container, false)
             )
             ret.photo.setOnTouchListener { view, event ->
-                if (event.pointerCount >= 2 || view is TouchImageView && view.isZoomed) {
+                if (event.pointerCount >= 2 || (!Settings.get()
+                        .main().isPhoto_zoom_enable_list && view is TouchImageView && view.isZoomed)
+                ) {
                     when (event.action) {
                         MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
                             container.requestDisallowInterceptTouchEvent(true)
                             true
                         }
 
-                        MotionEvent.ACTION_UP -> {
+                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                            container.requestDisallowInterceptTouchEvent(false)
+                            true
+                        }
+
+                        else -> false
+                    }
+                } else if (Settings.get()
+                        .main().isPhoto_zoom_enable_list && view is TouchImageView && view.isZoomed
+                ) {
+                    when (event.action) {
+                        MotionEvent.ACTION_DOWN -> {
+                            ret.initialX = event.x
+                            ret.initialY = event.y
+                            container.requestDisallowInterceptTouchEvent(true)
+                            true
+                        }
+
+                        MotionEvent.ACTION_MOVE -> {
+                            val dx = event.x - ret.initialX
+                            val absDX = abs(dx)
+                            val scaledDx: Float = absDX * .2f
+                            if (scaledDx > touchSlop) {
+                                val canScroll =
+                                    ret.photo.canScrollHorizontally(if (dx > 0) -1 else 1)
+                                container.requestDisallowInterceptTouchEvent(canScroll)
+                            }
+                            true
+                        }
+
+                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                             container.requestDisallowInterceptTouchEvent(false)
                             true
                         }

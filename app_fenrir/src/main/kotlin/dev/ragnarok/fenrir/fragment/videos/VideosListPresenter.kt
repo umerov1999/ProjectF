@@ -14,6 +14,7 @@ import dev.ragnarok.fenrir.fragment.base.AccountDependencyPresenter
 import dev.ragnarok.fenrir.fragment.search.nextfrom.IntNextFrom
 import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.nonNullNoEmpty
+import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.upload.IUploadManager
 import dev.ragnarok.fenrir.upload.IUploadManager.IProgressUpdate
 import dev.ragnarok.fenrir.upload.Upload
@@ -307,11 +308,29 @@ class VideosListPresenter(
                 video
             )
         } else {
-            view?.showVideoPreview(
-                accountId,
-                video
-            )
+            if (Settings.get().main().isDo_auto_play_video) {
+                fireVideoPlay(video)
+            } else {
+                view?.showVideoPreview(
+                    accountId,
+                    video
+                )
+            }
         }
+    }
+
+    fun fireVideoPlay(video: Video) {
+        appendJob(
+            InteractorFactory.createVideosInteractor()
+                .getById(accountId, video.ownerId, video.id, video.accessKey, false)
+                .fromIOToMain({
+                    view?.goPlayVideo(accountId, it)
+                }) {
+                    view?.showVideoPreview(
+                        accountId,
+                        video
+                    )
+                })
     }
 
     private fun fireEditVideo(context: Context, position: Int, video: Video) {
@@ -349,7 +368,7 @@ class VideosListPresenter(
 
     fun fireVideoOption(id: Int, video: Video, position: Int, context: Context) {
         when (id) {
-            R.id.action_add_to_my_videos -> {
+            0 -> {
                 netDisposable.add(
                     interactor.addToMy(accountId, accountId, video.ownerId, video.id)
                         .fromIOToMain({ onAddComplete() }) { t ->
@@ -357,11 +376,11 @@ class VideosListPresenter(
                         })
             }
 
-            R.id.action_edit -> {
+            2 -> {
                 fireEditVideo(context, position, video)
             }
 
-            R.id.action_delete_from_my_videos -> {
+            1 -> {
                 netDisposable.add(
                     interactor.delete(accountId, video.id, video.ownerId, accountId)
                         .fromIOToMain({
@@ -374,7 +393,7 @@ class VideosListPresenter(
                         })
             }
 
-            R.id.share_button -> {
+            4 -> {
                 view?.displayShareDialog(
                     accountId,
                     video,

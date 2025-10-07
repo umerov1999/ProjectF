@@ -17,6 +17,7 @@ import androidx.annotation.LayoutRes
 import androidx.core.view.WindowInsetsControllerCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.squareup.picasso3.Callback
+import com.squareup.picasso3.Rotatable
 import dev.ragnarok.fenrir.App
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
@@ -114,8 +115,22 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                 }).build()
         )
         ret.photo.setOnLongClickListener {
-            doSaveOnDrive(true)
-            true
+            val lCMode = Settings.get().main().longClickPhoto
+            if (lCMode == 1) {
+                doSaveOnDrive(true)
+                true
+            } else if (lCMode == 2 && ret.photo.drawable is Rotatable) {
+                var rot = (ret.photo.drawable as Rotatable).getRotation() + 45
+                if (rot >= 360f) {
+                    rot = 0f
+                }
+                (ret.photo.drawable as Rotatable).rotate(rot)
+                ret.photo.fitImageToView()
+                ret.photo.invalidate()
+                true
+            } else {
+                false
+            }
         }
         mDownload?.setOnClickListener { doSaveOnDrive(true) }
         resolveFullscreenViews()
@@ -128,7 +143,7 @@ class SinglePhotoActivity : NoMainActivity(), PlaceProvider, AppStyleable {
                         true
                     }
 
-                    MotionEvent.ACTION_UP -> {
+                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                         mContentRoot?.requestDisallowInterceptTouchEvent(false)
                         true
                     }

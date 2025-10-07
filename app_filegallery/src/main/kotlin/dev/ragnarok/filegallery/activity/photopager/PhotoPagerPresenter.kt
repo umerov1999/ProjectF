@@ -106,10 +106,7 @@ open class PhotoPagerPresenter internal constructor(
         resolveToolbarTitleSubtitleView()
     }
 
-    fun fireSaveOnDriveClick(): Boolean {
-        if (!get().main().isDownload_photo_tap) {
-            return true
-        }
+    fun fireSaveOnDriveClick() {
         if (current.isAnimation && current.photo_url != null) {
             val v = Video()
             v.setId(current.id)
@@ -118,17 +115,17 @@ open class PhotoPagerPresenter internal constructor(
             v.setTitle(current.text)
             v.setLink(current.photo_url)
             view?.displayVideo(v)
-            return false
+            return
         }
         if (current.inLocal()) {
-            return true
+            return
         }
         val dir = File(get().main().photoDir)
         if (!dir.isDirectory) {
             val created = dir.mkdirs()
             if (!created) {
                 view?.showError("Can't create directory $dir")
-                return false
+                return
             }
         } else dir.setLastModified(Calendar.getInstance().timeInMillis)
         val photo = current
@@ -138,7 +135,6 @@ open class PhotoPagerPresenter internal constructor(
             path = ndx?.let { path.substring(0, it) }
         }
         DownloadResult(path, dir, photo)
-        return false
     }
 
     private fun getCustomTabsPackages(context: Context): ArrayList<ResolveInfo> {

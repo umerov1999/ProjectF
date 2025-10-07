@@ -255,9 +255,6 @@ internal class MainSettings(context: Context) : IMainSettings {
             return getPreferences(app).getBoolean("instant_photo_display", false)
         }
 
-    override val isDownload_photo_tap: Boolean
-        get() = getPreferences(app).getBoolean("download_photo_tap", true)
-
     override val isAudio_round_icon: Boolean
         get() = getPreferences(app).getBoolean("audio_round_icon", true)
 
@@ -334,6 +331,17 @@ internal class MainSettings(context: Context) : IMainSettings {
 
     override val isOpen_folder_new_window: Boolean
         get() = getPreferences(app).getBoolean("open_folder_new_window", false)
+
+    override val isPhoto_zoom_enable_list: Boolean
+        get() = getPreferences(app).getBoolean("photo_zoom_enable_list", true)
+
+    override val longClickPhoto: Int
+        get() = try {
+            getPreferences(app).getString("long_click_photo", "0")?.trim()?.toInt()
+                ?: 0
+        } catch (_: Exception) {
+            0
+        }
 
     override val picassoDispatcher: Int
         get() = try {

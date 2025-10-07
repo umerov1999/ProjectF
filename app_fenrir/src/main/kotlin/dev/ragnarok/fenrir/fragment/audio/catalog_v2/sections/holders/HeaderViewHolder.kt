@@ -23,7 +23,7 @@ class HeaderViewHolder(itemView: View) : IViewHolder(itemView) {
     private val top_title_icon: ImageView = itemView.findViewById(R.id.top_title_icon)
     private val top_title: TextView = itemView.findViewById(R.id.top_title)
 
-    override fun bind(position: Int, itemDataHolder: AbsModel) {
+    override fun bind(position: Int, itemDataHolder: AbsModel, listContentType: String?) {
         if (itemDataHolder !is CatalogV2Block) {
             title.visibility = View.GONE
             button.visibility = View.GONE

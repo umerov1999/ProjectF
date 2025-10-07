@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dev.ragnarok.fenrir.Extra
 import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.fragment.base.BaseMvpFragment
@@ -15,6 +16,8 @@ import dev.ragnarok.fenrir.listener.EndlessRecyclerOnScrollListener
 import dev.ragnarok.fenrir.listener.PicassoPauseOnScrollListener
 import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.place.PlaceFactory.getVideoPreviewPlace
+import dev.ragnarok.fenrir.settings.Settings
+import dev.ragnarok.fenrir.util.Utils
 import dev.ragnarok.fenrir.util.ViewUtils.setupSwipeRefreshLayoutWithCurrentTheme
 
 class FaveVideosFragment : BaseMvpFragment<FaveVideosPresenter, IFaveVideosView>(),
@@ -57,16 +60,41 @@ class FaveVideosFragment : BaseMvpFragment<FaveVideosPresenter, IFaveVideosView>
     }
 
     override fun onVideoClick(position: Int, video: Video) {
-        presenter?.fireVideoClick(
-            video
-        )
+        if (Settings.get().main().isDo_auto_play_video) {
+            presenter?.fireVideoPlay(
+                video
+            )
+        } else {
+            presenter?.fireVideoOpen(
+                video
+            )
+        }
+    }
+
+    override fun onVideoOptionClick(position: Int, video: Video) {
+        if (Settings.get().main().isDo_auto_play_video) {
+            presenter?.fireVideoOpen(
+                video
+            )
+        } else {
+            presenter?.fireVideoPlay(
+                video
+            )
+        }
     }
 
     override fun onDelete(index: Int, video: Video) {
-        presenter?.fireVideoDelete(
-            index,
-            video
-        )
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(R.string.remove_confirm)
+            .setMessage(R.string.video_remove_confirm_message)
+            .setPositiveButton(R.string.button_yes) { _, _ ->
+                presenter?.fireVideoDelete(
+                    index,
+                    video
+                )
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     override fun displayData(videos: List<Video>) {
@@ -104,6 +132,10 @@ class FaveVideosFragment : BaseMvpFragment<FaveVideosPresenter, IFaveVideosView>
     override fun goToPreview(accountId: Long, video: Video) {
         getVideoPreviewPlace(accountId, video)
             .tryOpenWith(requireActivity())
+    }
+
+    override fun goPlayVideo(accountId: Long, video: Video) {
+        Utils.doAutoPlayVideo(requireActivity(), customToast, video)
     }
 
     override fun getPresenterFactory(saveInstanceState: Bundle?) = FaveVideosPresenter(

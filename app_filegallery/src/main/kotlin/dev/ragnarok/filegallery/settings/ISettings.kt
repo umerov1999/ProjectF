@@ -29,6 +29,8 @@ interface ISettings {
         val nightMode: Int
         val isDeveloper_mode: Boolean
         val isOpen_folder_new_window: Boolean
+        val isPhoto_zoom_enable_list: Boolean
+        val longClickPhoto: Int
         val isEnable_dirs_files_count: Boolean
 
         val musicDir: String
@@ -57,7 +59,6 @@ interface ISettings {
         val observeLocalServer: SharedFlow<LocalServerSettings>
         val isShow_photos_line: Boolean
         val isInstant_photo_display: Boolean
-        val isDownload_photo_tap: Boolean
         val isAudio_round_icon: Boolean
         val isPhoto_to_user_dir: Boolean
         val isVideo_swipes: Boolean

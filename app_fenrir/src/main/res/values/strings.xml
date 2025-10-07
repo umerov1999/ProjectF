@@ -198,6 +198,18 @@
         <item>2</item>
     </string-array>
 
+    <string-array name="array_long_click_photo_names">
+        <item>Disable</item>
+        <item>Download</item>
+        <item>Rotate</item>
+    </string-array>
+
+    <string-array name="array_long_click_photo_items" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
     <string-array name="array_pager_transform_names" translatable="false">
         <item>Off</item>
         <item>Depth Transformer</item>
@@ -918,6 +930,7 @@
     <string name="deleted">Deleted</string>
     <string name="remove_confirm">Confirm deletion</string>
     <string name="doc_remove_confirm_message">Are you sure you want to delete this document? This action cannot be undone.</string>
+    <string name="video_remove_confirm_message">Are you sure you want to delete this video? This action cannot be undone.</string>
 
     <!-- Do not translate. Duration format for duration < 1 hour -->
     <string name="duration_format_min_sec" translatable="false"><xliff:g id="format">%1$d:%2$02d</xliff:g></string>
@@ -1631,7 +1644,6 @@
     <string name="input_call">Outgoing call</string>
     <string name="output_call">Incoming call</string>
     <string name="graffiti">Graffiti</string>
-    <string name="download_photo_tap">Download pictures by long press</string>
     <string name="photo_album">Photo Album</string>
     <string name="custom_second_message_color">Second color of outgoing message</string>
     <string name="short_link">Shorten links</string>
@@ -1935,4 +1947,6 @@
     <string name="owner_count_a">%1$d owner</string>
     <string name="owner_count_b">%1$d owners</string>
     <string name="owner_count_c">%1$d owners</string>
+    <string name="long_click_photo">Long press on the photo</string>
+    <string name="photo_zoom_enable_list">Scroll through zoomed images</string>
 </resources>

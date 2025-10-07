@@ -79,8 +79,8 @@ class VP2NestedRecyclerView @JvmOverloads constructor(
                 val absDX = abs(dx)
                 val absDY = abs(dy)
                 // assuming ViewPager2 touch-slop is 2x touch-slop of child
-                val scaledDx = absDX * if (isVpHorizontal) .7f else 1f
-                val scaledDy = absDY * if (isVpHorizontal) 1f else .7f
+                val scaledDx = absDX * if (isVpHorizontal) .5f else 1f
+                val scaledDy = absDY * if (isVpHorizontal) 1f else .5f
                 if (scaledDx > touchSlop || scaledDy > touchSlop) {
                     return if (isVpHorizontal == scaledDy > scaledDx) { // Gesture is perpendicular
                         scrolled = true

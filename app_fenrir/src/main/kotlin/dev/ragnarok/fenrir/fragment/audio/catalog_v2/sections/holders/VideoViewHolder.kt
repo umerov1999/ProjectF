@@ -1,10 +1,12 @@
 package dev.ragnarok.fenrir.fragment.audio.catalog_v2.sections.holders
 
+import android.content.Context
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import dev.ragnarok.fenrir.Constants
 import dev.ragnarok.fenrir.R
+import dev.ragnarok.fenrir.domain.InteractorFactory
 import dev.ragnarok.fenrir.model.AbsModel
 import dev.ragnarok.fenrir.model.Video
 import dev.ragnarok.fenrir.nonNullNoEmpty
@@ -13,6 +15,8 @@ import dev.ragnarok.fenrir.place.PlaceFactory.getVideoPreviewPlace
 import dev.ragnarok.fenrir.settings.Settings
 import dev.ragnarok.fenrir.util.AppTextUtils
 import dev.ragnarok.fenrir.util.Utils
+import dev.ragnarok.fenrir.util.coroutines.CoroutinesUtils.fromIOToMain
+import dev.ragnarok.fenrir.util.toast.CustomToast
 import dev.ragnarok.fenrir.view.VideoServiceIcons.getIconByType
 
 class VideoViewHolder(itemView: View) : IViewHolder(itemView) {
@@ -23,7 +27,25 @@ class VideoViewHolder(itemView: View) : IViewHolder(itemView) {
     val title: TextView = itemView.findViewById(R.id.title)
     val viewsCount: TextView = itemView.findViewById(R.id.view_count)
 
-    override fun bind(position: Int, itemDataHolder: AbsModel) {
+    private fun doAutoplayVideo(context: Context, video: Video) {
+        InteractorFactory.createVideosInteractor()
+            .getById(
+                Settings.get().accounts().current,
+                video.ownerId,
+                video.id,
+                video.accessKey,
+                false
+            )
+            .fromIOToMain({
+                Utils.doAutoPlayVideo(context, CustomToast.createCustomToast(context, null), video)
+            }) {
+                getVideoPreviewPlace(
+                    Settings.get().accounts().current, video
+                ).tryOpenWith(itemView.context)
+            }
+    }
+
+    override fun bind(position: Int, itemDataHolder: AbsModel, listContentType: String?) {
         val video = itemDataHolder as Video
         viewsCount.text = String.format(Utils.appLocale, "%d", video.views)
         title.text = video.title
@@ -45,9 +67,23 @@ class VideoViewHolder(itemView: View) : IViewHolder(itemView) {
             videoService.visibility = View.GONE
         }
         card.setOnClickListener {
-            getVideoPreviewPlace(
-                Settings.get().accounts().current, video
-            ).tryOpenWith(itemView.context)
+            if (Settings.get().main().isDo_auto_play_video) {
+                doAutoplayVideo(itemView.context, video)
+            } else {
+                getVideoPreviewPlace(
+                    Settings.get().accounts().current, video
+                ).tryOpenWith(itemView.context)
+            }
+        }
+        card.setOnLongClickListener {
+            if (Settings.get().main().isDo_auto_play_video) {
+                getVideoPreviewPlace(
+                    Settings.get().accounts().current, video
+                ).tryOpenWith(itemView.context)
+            } else {
+                doAutoplayVideo(itemView.context, video)
+            }
+            true
         }
     }
 

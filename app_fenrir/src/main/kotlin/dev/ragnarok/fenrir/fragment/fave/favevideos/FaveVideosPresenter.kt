@@ -125,11 +125,25 @@ class FaveVideosPresenter(accountId: Long, savedInstanceState: Bundle?) :
         requestAtLast()
     }
 
-    fun fireVideoClick(video: Video) {
+    fun fireVideoOpen(video: Video) {
         view?.goToPreview(
             accountId,
             video
         )
+    }
+
+    fun fireVideoPlay(video: Video) {
+        appendJob(
+            InteractorFactory.createVideosInteractor()
+                .getById(accountId, video.ownerId, video.id, video.accessKey, false)
+                .fromIOToMain({
+                    view?.goPlayVideo(accountId, it)
+                }) {
+                    view?.goToPreview(
+                        accountId,
+                        video
+                    )
+                })
     }
 
     fun fireVideoDelete(index: Int, video: Video) {

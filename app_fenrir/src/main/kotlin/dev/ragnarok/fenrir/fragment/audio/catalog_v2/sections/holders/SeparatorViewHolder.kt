@@ -5,7 +5,7 @@ import dev.ragnarok.fenrir.R
 import dev.ragnarok.fenrir.model.AbsModel
 
 class SeparatorViewHolder(itemView: View) : IViewHolder(itemView) {
-    override fun bind(position: Int, itemDataHolder: AbsModel) {}
+    override fun bind(position: Int, itemDataHolder: AbsModel, listContentType: String?) {}
     class Fabric : ViewHolderFabric {
         override fun create(view: View): IViewHolder {
             return SeparatorViewHolder(

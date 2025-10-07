@@ -20,7 +20,6 @@ interface IVideoPreviewView : IMvpView, IErrorView, IToastView {
     fun showComments(accountId: Long, commented: Commented)
     fun displayShareDialog(accountId: Long, video: Video, canPostToMyWall: Boolean)
     fun showVideoPlayMenu(accountId: Long, video: Video)
-    fun doAutoPlayVideo(accountId: Long, video: Video)
     fun goToLikes(accountId: Long, type: String, ownerId: Long, id: Int)
     fun displayOwner(owner: Owner)
     interface IOptionView {
