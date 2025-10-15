@@ -1,18 +1,15 @@
-cmake_minimum_required(VERSION 4.1.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 4.1.2 FATAL_ERROR)
 project(fenrir_jni C CXX ASM)
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-    set(LTO_LINK "")
     set(CMAKE_CXX_FLAGS "-std=c++23 -DANDROID -g -DDEBUG_PLATFORM")
     set(CMAKE_C_FLAGS "-std=c23 -w -DANDROID -D_LARGEFILE_SOURCE=1 -g -DDEBUG_PLATFORM")
     set(OPTIMIZE_NORMAL "-O0")
     set(OPTIMIZE_FAST "-O0")
     set(SYM_VISIBILITY "")
 else ()
-    #set(LTO_LINK "-flto=thin")
-    set(LTO_LINK "")
-    set(CMAKE_CXX_FLAGS "-std=c++23 -DANDROID -DFENRIR_NATIVE_LOG_DISABLED -ffunction-sections -fdata-sections -fmerge-all-constants ${LTO_LINK}")
-    set(CMAKE_C_FLAGS "-std=c23 -w -DANDROID -DFENRIR_NATIVE_LOG_DISABLED -D_LARGEFILE_SOURCE=1 -ffunction-sections -fdata-sections -fmerge-all-constants ${LTO_LINK}")
+    set(CMAKE_CXX_FLAGS "-std=c++23 -DANDROID -DFENRIR_NATIVE_LOG_DISABLED -ffunction-sections -fdata-sections -fmerge-all-constants")
+    set(CMAKE_C_FLAGS "-std=c23 -w -DANDROID -DFENRIR_NATIVE_LOG_DISABLED -D_LARGEFILE_SOURCE=1 -ffunction-sections -fdata-sections -fmerge-all-constants")
     set(OPTIMIZE_NORMAL "-Os")
     set(OPTIMIZE_FAST "-O3")
     set(SYM_VISIBILITY "-fvisibility=hidden")
@@ -387,10 +384,6 @@ add_library(common STATIC
         compress/zlib/trees.c
         compress/zlib/uncompr.c
         compress/zlib/zutil.c
-        compress/zstd/legacy/zstd_v06.c
-        compress/zstd/legacy/zstd_v05.c
-        compress/zstd/legacy/zstd_v07.c
-        compress/zstd/legacy/zstd_v04.c
         compress/zstd/dictBuilder/fastcover.c
         compress/zstd/dictBuilder/cover.c
         compress/zstd/dictBuilder/zdict.c
@@ -399,7 +392,6 @@ add_library(common STATIC
         compress/zstd/decompress/zstd_decompress.c
         compress/zstd/decompress/zstd_ddict.c
         compress/zstd/decompress/zstd_decompress_block.c
-        compress/zstd/jni_zdict.c
         compress/zstd/common/xxhash.c
         compress/zstd/common/error_private.c
         compress/zstd/common/pool.c
@@ -442,11 +434,10 @@ target_include_directories(common
         compress/zstd/common
         compress/zstd/compress
         compress/zstd/decompress
-        compress/zstd/dictBuilder
-        compress/zstd/legacy)
+        compress/zstd/dictBuilder)
 
 target_compile_options(common PRIVATE
-        ${OPTIMIZE_FAST} -DZSTD_MULTITHREAD=1 -DZSTD_LEGACY_SUPPORT=4 -DHAVE_ZLIB=1 -DTAGLIB_STATIC=1 -funroll-loops -fno-strict-aliasing -fno-math-errno -Wno-unused-parameter -Wno-unused-variable ${SYM_VISIBILITY})
+        ${OPTIMIZE_FAST} -DZSTD_MULTITHREAD=1 -DZSTD_LEGACY_SUPPORT=0 -DHAVE_ZLIB=1 -DTAGLIB_STATIC=1 -funroll-loops -fno-strict-aliasing -fno-math-errno -Wno-unused-parameter -Wno-unused-variable ${SYM_VISIBILITY})
 
 add_library(fenrir_jni
         SHARED
@@ -484,7 +475,6 @@ target_include_directories(fenrir_jni
         compress/zstd/compress
         compress/zstd/decompress
         compress/zstd/dictBuilder
-        compress/zstd/legacy
         compress/zlib
         audio/opus/libopus/include
         audio/taglib
@@ -502,14 +492,14 @@ target_link_libraries(fenrir_jni
         PRIVATE android
         PRIVATE jnigraphics
         PRIVATE log
-        PRIVATE swscale ${LTO_LINK}
-        PRIVATE avformat ${LTO_LINK}
-        PRIVATE avcodec ${LTO_LINK}
-        PRIVATE swresample ${LTO_LINK}
-        PRIVATE avutil ${LTO_LINK}
-        PRIVATE common ${LTO_LINK}
-        PRIVATE thorvg ${LTO_LINK}
-        PRIVATE libyuv ${LTO_LINK}
-        PRIVATE opus ${LTO_LINK})
+        PRIVATE swscale
+        PRIVATE avformat
+        PRIVATE avcodec
+        PRIVATE swresample
+        PRIVATE avutil
+        PRIVATE common
+        PRIVATE thorvg
+        PRIVATE libyuv
+        PRIVATE opus)
 
 target_link_options(fenrir_jni PRIVATE "-Wl,-z,max-page-size=16384")

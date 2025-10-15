@@ -10,19 +10,24 @@ abstract class EndlessRecyclerOnScrollListener : RecyclerView.OnScrollListener {
     private val MIN_DELAY: Int
     private val VISIBILITY_THRESHOLD //elements to the end
             : Int
+    private var USE_SCROLL_STATEMENT: Boolean
     private var mLastInterceptTime: Long? = null
     private var visibleItemCount = 0
     private var totalItemCount = 0
     private var pastVisibleItems = 0
+    private var statementLastScroll = false
+    private var statementFirstScroll = false
 
     constructor() {
         MIN_DELAY = 200
         VISIBILITY_THRESHOLD = 0
+        USE_SCROLL_STATEMENT = false
     }
 
-    constructor(visibilityThreshold: Int, minDelay: Int) {
+    constructor(visibilityThreshold: Int, minDelay: Int, useScrollStatement: Boolean) {
         MIN_DELAY = minDelay
         VISIBILITY_THRESHOLD = visibilityThreshold
+        USE_SCROLL_STATEMENT = useScrollStatement
     }
 
     private fun isAllowScrollIntercept(minDelay: Long): Boolean {
@@ -64,13 +69,31 @@ abstract class EndlessRecyclerOnScrollListener : RecyclerView.OnScrollListener {
                 isFirstElementVisible = manager.findFirstVisibleItemPosition() == 0
             }
         }
-        if (isLastElementVisible) {
-            mLastInterceptTime = System.currentTimeMillis()
-            onScrollToLastElement()
-            return
-        } else if (isFirstElementVisible) {
-            mLastInterceptTime = System.currentTimeMillis()
-            onScrollToFirstElement()
+        if (USE_SCROLL_STATEMENT) {
+            if (!statementLastScroll != isLastElementVisible) {
+                if (isLastElementVisible) {
+                    mLastInterceptTime = System.currentTimeMillis()
+                    onScrollToLastElement()
+                }
+                statementLastScroll = isLastElementVisible
+                return
+            }
+            if (statementFirstScroll != isFirstElementVisible) {
+                if (isFirstElementVisible) {
+                    mLastInterceptTime = System.currentTimeMillis()
+                    onScrollToFirstElement()
+                }
+                statementFirstScroll = isFirstElementVisible
+            }
+        } else {
+            if (isLastElementVisible) {
+                mLastInterceptTime = System.currentTimeMillis()
+                onScrollToLastElement()
+                return
+            } else if (isFirstElementVisible) {
+                mLastInterceptTime = System.currentTimeMillis()
+                onScrollToFirstElement()
+            }
         }
     }
 

@@ -154,20 +154,20 @@ std::string doDecompressResource(size_t length, char *bytes, bool &orig) {
     if (length >= GZIP_HEADER_LENGTH && memcmp(bytes, GZIP_HEADER, GZIP_HEADER_LENGTH) == 0) {
         z_stream zs;
         memset(&zs, 0, sizeof(zs));
-
-        if (inflateInit2(&zs, 15 + 16) != Z_OK) {
+        const int MOD_GZIP_ZLIB_WINDOWSIZE = 15;
+        if (inflateInit2(&zs, MOD_GZIP_ZLIB_WINDOWSIZE + 16) != Z_OK) {
             return "";
         }
 
-        zs.next_in = (Bytef *) bytes;
-        zs.avail_in = length;
+        zs.next_in = reinterpret_cast<Bytef *>(bytes);
+        zs.avail_in = (uInt) length;
 
-        int ret;
+        int ret = Z_OK;
         std::vector<char> outBuffer(32768);
 
         do {
             zs.next_out = reinterpret_cast<Bytef *>(outBuffer.data());
-            zs.avail_out = outBuffer.size();
+            zs.avail_out = (uInt) outBuffer.size();
             ret = inflate(&zs, 0);
             if (data.size() < zs.total_out) {
                 data.append(outBuffer.data(), zs.total_out - data.size());

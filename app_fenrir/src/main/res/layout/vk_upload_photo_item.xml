@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -70,9 +71,9 @@
                 android:gravity="center"
                 android:maxLines="2"
                 android:minLines="2"
-                android:text="Device.Camera"
                 android:textColor="?android:textColorPrimaryInverse"
-                android:textSize="@dimen/font_size_additional" />
+                android:textSize="@dimen/font_size_additional"
+                tools:text="Device.Camera" />
 
         </RelativeLayout>
 

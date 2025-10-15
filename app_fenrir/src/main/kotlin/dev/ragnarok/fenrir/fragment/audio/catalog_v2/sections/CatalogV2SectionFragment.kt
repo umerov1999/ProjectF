@@ -82,7 +82,7 @@ class CatalogV2SectionFragment :
         recyclerView?.layoutManager = LinearLayoutManager(requireActivity())
         //recyclerView.setRecycledViewPool(CatalogV2SectionAdapter.poolCatalogV2Section)
         PicassoPauseOnScrollListener.addListener(recyclerView)
-        recyclerView?.addOnScrollListener(object : EndlessRecyclerOnScrollListener(4, 1000) {
+        recyclerView?.addOnScrollListener(object : EndlessRecyclerOnScrollListener(4, 1000, false) {
             override fun onScrollToLastElement() {
                 presenter?.onNext()
             }
@@ -174,28 +174,33 @@ class CatalogV2SectionFragment :
         recyclerView?.let {
             it.layoutManager = when (type) {
                 "links" -> {
+                    mLoadMoreFooterHelper?.updateLoadMoreButton(true)
                     val columnCount = resources.getInteger(R.integer.catalog_2_link_column_count)
                     GridLayoutManager(requireActivity(), columnCount)
                 }
 
                 "music_recommended_playlists" -> {
+                    mLoadMoreFooterHelper?.updateLoadMoreButton(true)
                     val columnCount =
                         resources.getInteger(R.integer.catalog_2_recommended_playlists_column_count)
                     GridLayoutManager(requireActivity(), columnCount)
                 }
 
                 "music_playlists" -> {
+                    mLoadMoreFooterHelper?.updateLoadMoreButton(true)
                     val columnCount =
                         resources.getInteger(R.integer.catalog_2_music_playlists_column_count)
                     GridLayoutManager(requireActivity(), columnCount)
                 }
 
                 "videos", "artist_videos" -> {
+                    mLoadMoreFooterHelper?.updateLoadMoreButton(true)
                     val columnCount = resources.getInteger(R.integer.catalog_2_videos_column_count)
                     GridLayoutManager(requireActivity(), columnCount)
                 }
 
                 else -> {
+                    mLoadMoreFooterHelper?.updateLoadMoreButton(false)
                     LinearLayoutManager(requireActivity())
                 }
             }

@@ -214,6 +214,14 @@
     <string name="entered_pin_codes_do_not_match">Введенные PIN-коды не совпадают</string>
     <string name="pin_digit">Пин код</string>
     <string name="use_pin_title">Используйте PIN-код или отпечаток пальца</string>
+    <string name="button_2_desc">АБВ</string>
+    <string name="button_3_desc">ГДЕ</string>
+    <string name="button_4_desc">ЖЗИ</string>
+    <string name="button_5_desc">КЛМ</string>
+    <string name="button_6_desc">НОП</string>
+    <string name="button_7_desc">РСТУ</string>
+    <string name="button_8_desc">ФХЦ</string>
+    <string name="button_9_desc">ЧШЭЮ</string>
     <string name="repeat_pin_code_title">Повторите PIN-код</string>
     <string name="not_yet_implemented_message">Ещё не реализовано!</string>
     <string name="error_login_by_fingerprint_not_allowed">Вход с помощью отпечатка пальца не разрешен</string>

@@ -17,6 +17,17 @@
         android:textAllCaps="true"
         android:textAppearance="@style/TextAppearance.Material3.TitleSmall" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/footer_load_more_run_fab"
+        style="@style/Widget.Material3.FloatingActionButton.Primary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/fab_margin"
+        android:contentDescription="@null"
+        android:src="@drawable/keyboard_arrow_down"
+        android:visibility="gone" />
+
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/footer_load_more_progress"
         android:layout_width="36dp"

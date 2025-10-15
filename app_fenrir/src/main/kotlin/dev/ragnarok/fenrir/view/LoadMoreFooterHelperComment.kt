@@ -20,6 +20,9 @@ class LoadMoreFooterHelperComment {
     }
 
     fun switchToState(@LoadMoreState state: Int) {
+        if (this.state == state) {
+            return
+        }
         this.state = state
         holder?.container?.visibility =
             if (state == LoadMoreState.INVISIBLE) View.GONE else View.VISIBLE
@@ -55,11 +58,9 @@ class LoadMoreFooterHelperComment {
         val progress: CircularProgressIndicator = root.findViewById(R.id.footer_load_more_progress)
         val bLoadMore: View = root.findViewById(R.id.footer_load_more_run)
         val tvEndOfList: TextView = root.findViewById(R.id.footer_load_more_end_of_list)
-
     }
 
     companion object {
-
         fun createFrom(view: View, callback: Callback?): LoadMoreFooterHelperComment {
             val helper = LoadMoreFooterHelperComment()
             helper.holder = Holder(view)

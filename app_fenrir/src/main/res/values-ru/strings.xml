@@ -919,6 +919,14 @@
     <string name="repeat_pin_code_title">Повторите PIN-код</string>
     <string name="session_already_created">Сессия уже активна</string>
     <string name="use_pin_title">Используйте PIN-код или отпечаток пальца</string>
+    <string name="button_2_desc">АБВ</string>
+    <string name="button_3_desc">ГДЕ</string>
+    <string name="button_4_desc">ЖЗИ</string>
+    <string name="button_5_desc">КЛМ</string>
+    <string name="button_6_desc">НОП</string>
+    <string name="button_7_desc">РСТУ</string>
+    <string name="button_8_desc">ФХЦ</string>
+    <string name="button_9_desc">ЧШЭЮ</string>
     <string name="key_exchange_failed">Обмен ключами не удался</string>
     <string name="you_have_successfully_exchanged_keys">Вы успешно обменялись ключами, теперь можете включить шифрование сообщений</string>
     <string name="encryption_status">Статус шифрования</string>

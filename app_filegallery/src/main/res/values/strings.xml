@@ -340,6 +340,7 @@
     <string name="entered_pin_codes_do_not_match">Entered PIN codes do not match</string>
     <string name="pin_digit">Pin code</string>
     <string name="use_pin_title">Use PIN or fingerprint</string>
+    <string name="button_0" translatable="false">0</string>
     <string name="button_1" translatable="false">1</string>
     <string name="button_2" translatable="false">2</string>
     <string name="button_3" translatable="false">3</string>
@@ -349,7 +350,15 @@
     <string name="button_7" translatable="false">7</string>
     <string name="button_8" translatable="false">8</string>
     <string name="button_9" translatable="false">9</string>
-    <string name="button_0" translatable="false">0</string>
+    <string name="button_1_desc" translatable="false">  </string>
+    <string name="button_2_desc">ABC</string>
+    <string name="button_3_desc">DEF</string>
+    <string name="button_4_desc">GHI</string>
+    <string name="button_5_desc">JKL</string>
+    <string name="button_6_desc">MNO</string>
+    <string name="button_7_desc">PQRS</string>
+    <string name="button_8_desc">TUV</string>
+    <string name="button_9_desc">WXYZ</string>
     <string name="repeat_pin_code_title">Repeat PIN</string>
     <string name="not_yet_implemented_message">Not implemented yet!</string>
     <string name="error_login_by_fingerprint_not_allowed">Fingerprint login not allowed</string>

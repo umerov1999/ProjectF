@@ -31,7 +31,7 @@
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="File Gallery"
+                android:text="@string/button_1_desc"
                 android:textColor="?android:textColorSecondary"
                 android:textSize="@dimen/pincode_button_subtitle_text_size" />
 
@@ -55,7 +55,7 @@
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ABC"
+                android:text="@string/button_2_desc"
                 android:textColor="?android:textColorSecondary"
                 android:textSize="@dimen/pincode_button_subtitle_text_size" />
 
@@ -79,7 +79,7 @@
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="DEF"
+                android:text="@string/button_3_desc"
                 android:textColor="?android:textColorSecondary"
                 android:textSize="@dimen/pincode_button_subtitle_text_size" />
 
@@ -108,7 +108,7 @@
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="GHI"
+                android:text="@string/button_4_desc"
                 android:textColor="?android:textColorSecondary"
                 android:textSize="@dimen/pincode_button_subtitle_text_size" />
 
@@ -132,7 +132,7 @@
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="JKL"
+                android:text="@string/button_5_desc"
                 android:textColor="?android:textColorSecondary"
                 android:textSize="@dimen/pincode_button_subtitle_text_size" />
 
@@ -156,7 +156,7 @@
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="MNO"
+                android:text="@string/button_6_desc"
                 android:textColor="?android:textColorSecondary"
                 android:textSize="@dimen/pincode_button_subtitle_text_size" />
 
@@ -185,7 +185,7 @@
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PQRS"
+                android:text="@string/button_7_desc"
                 android:textColor="?android:textColorSecondary"
                 android:textSize="@dimen/pincode_button_subtitle_text_size" />
 
@@ -209,7 +209,7 @@
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TUV"
+                android:text="@string/button_8_desc"
                 android:textColor="?android:textColorSecondary"
                 android:textSize="@dimen/pincode_button_subtitle_text_size" />
 
@@ -233,7 +233,7 @@
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="WXYZ"
+                android:text="@string/button_9_desc"
                 android:textColor="?android:textColorSecondary"
                 android:textSize="@dimen/pincode_button_subtitle_text_size" />
 

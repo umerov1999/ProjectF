@@ -139,7 +139,7 @@ class FeedFragment : PlaceSupportMvpFragment<FeedPresenter, IFeedView>(), IFeedV
         mRecycleView = root.findViewById(R.id.fragment_feeds_list)
         mRecycleView?.layoutManager = mFeedLayoutManager
         PicassoPauseOnScrollListener.addListener(mRecycleView)
-        mRecycleView?.addOnScrollListener(object : EndlessRecyclerOnScrollListener(4, 1000) {
+        mRecycleView?.addOnScrollListener(object : EndlessRecyclerOnScrollListener(4, 1000, false) {
             override fun onScrollToLastElement() {
                 presenter?.fireScrollToBottom()
             }

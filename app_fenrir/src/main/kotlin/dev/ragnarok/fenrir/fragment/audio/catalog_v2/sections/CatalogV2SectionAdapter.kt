@@ -212,7 +212,7 @@ class CatalogV2SectionAdapter(
             list: RecyclerView,
             adapter: WeakReference<RecyclerBindableAdapter<T, VH>>
         ) {
-            list.addOnScrollListener(object : EndlessRecyclerOnScrollListener(4, 1000) {
+            list.addOnScrollListener(object : EndlessRecyclerOnScrollListener(4, 1000, false) {
                 override fun onScrollToLastElement() {
                     if (itemDataHolder.next_from.nonNullNoEmpty()) {
                         clickListener?.onNext(true)

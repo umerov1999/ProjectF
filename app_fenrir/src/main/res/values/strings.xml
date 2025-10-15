@@ -1135,6 +1135,7 @@
     <string name="repeat_pin_code_title">Repeat PIN</string>
     <string name="session_already_created">The session is already active</string>
     <string name="use_pin_title">Use a PIN or fingerprint</string>
+    <string name="button_0" translatable="false">0</string>
     <string name="button_1" translatable="false">1</string>
     <string name="button_2" translatable="false">2</string>
     <string name="button_3" translatable="false">3</string>
@@ -1144,7 +1145,16 @@
     <string name="button_7" translatable="false">7</string>
     <string name="button_8" translatable="false">8</string>
     <string name="button_9" translatable="false">9</string>
-    <string name="button_0" translatable="false">0</string>
+    <string name="button_1_desc" translatable="false">  </string>
+    <string name="button_2_desc">ABC</string>
+    <string name="button_3_desc">DEF</string>
+    <string name="button_4_desc">GHI</string>
+    <string name="button_5_desc">JKL</string>
+    <string name="button_6_desc">MNO</string>
+    <string name="button_7_desc">PQRS</string>
+    <string name="button_8_desc">TUV</string>
+    <string name="button_9_desc">WXYZ</string>
+    <string name="vk_url" translatable="false">https://vk.ru/</string>
     <string name="key_exchange_failed">Key exchange failed</string>
     <string name="you_have_successfully_exchanged_keys">You have successfully exchanged keys, now you can enable message encryption</string>
     <string name="encryption_status">Encryption status</string>
