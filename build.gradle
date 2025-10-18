@@ -37,7 +37,7 @@ buildscript {
     ext.mediaVersion = "1.7.1"
     ext.media3Version = "1.8.0"
     ext.resourceInspectionAnnotation = "1.0.1"
-    ext.savedStateVersion = "1.3.3"
+    ext.savedStateVersion = "1.4.0-beta01"
     ext.swiperefreshlayoutVersion = "1.2.0-beta01"
     ext.tracingVersion = "1.3.0"
     ext.transitionVersion = "1.6.0"
@@ -59,7 +59,7 @@ buildscript {
     ext.autoValueVersion = "1.11.0"
 
     //common libraries
-    ext.kotlin_version = "2.2.21-RC"
+    ext.kotlin_version = "2.2.21-RC2"
     ext.kotlin_coroutines = "1.10.2"
     ext.kotlin_serializer = "1.9.0"
     ext.okhttpLibraryVersion = "5.2.1"

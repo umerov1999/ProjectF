@@ -19,8 +19,8 @@ class LoadMoreFooterHelperComment {
         holder?.tvEndOfList?.text = text
     }
 
-    fun switchToState(@LoadMoreState state: Int) {
-        if (this.state == state) {
+    fun switchToState(@LoadMoreState state: Int, force: Boolean = false) {
+        if (!force && this.state == state) {
             return
         }
         this.state = state
@@ -66,6 +66,8 @@ class LoadMoreFooterHelperComment {
             helper.holder = Holder(view)
             helper.callback = callback
             helper.holder?.bLoadMore?.setOnClickListener { callback?.onLoadMoreClick() }
+
+            helper.switchToState(LoadMoreState.INVISIBLE, true)
             return helper
         }
     }

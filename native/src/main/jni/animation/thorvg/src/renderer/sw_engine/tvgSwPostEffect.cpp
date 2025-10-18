@@ -272,22 +272,21 @@ static void _shift(uint32_t** dst, uint32_t** src, int dstride, int sstride, int
     size.h = bbox.max.y - bbox.min.y;
 
     //shift
-    if (bbox.min.x + offset.x < 0) {
-        offset.x *= -1;
-        *src += offset.x;
+    if (offset.x < 0) {
+        *src -= offset.x;
+        size.w += offset.x;
     } else {
         *dst += offset.x;
+        size.w -= offset.x;
     }
 
-    if (bbox.min.y + offset.y < 0) {
-        offset.y *= -1;
-        *src += (offset.y * sstride);
+    if (offset.y < 0) {
+        *src -= (offset.y * sstride);
+        size.h += offset.y;
     } else {
         *dst += (offset.y * dstride);
+        size.h -= offset.y;
     }
-
-    if (size.w + bbox.min.x + offset.x > wmax) size.w -= (size.w + bbox.min.x + offset.x - wmax);
-    if (size.h + bbox.min.y + offset.y > hmax) size.h -= (size.h + bbox.min.y + offset.y - hmax);
 }
 
 
@@ -390,12 +389,8 @@ void effectDropShadowUpdate(RenderEffectDropShadow* params, const Matrix& transf
     }
 
     //offset
-    if (params->distance > 0.0f) {
-        auto radian = tvg::deg2rad(90.0f - params->angle);
-        rd->offset = {(int32_t)((params->distance * scale) * cosf(radian)), (int32_t)(-1.0f * (params->distance * scale) * sinf(radian))};
-    } else {
-        rd->offset = {0, 0};
-    }
+    auto radian = tvg::deg2rad(90.0f - params->angle) - tvg::radian(transform);
+    rd->offset = {(int32_t)((params->distance * scale) * cosf(radian)), (int32_t)(-1.0f * (params->distance * scale) * sinf(radian))};
 
     params->valid = true;
 }
@@ -470,6 +465,7 @@ bool effectDropShadow(SwCompositor* cmp, SwSurface* surface[2], const RenderEffe
     //draw to the intermediate surface
     rasterClear(surface[1], bbox.min.x, bbox.min.y, w, h);
     _dropShadowShift(buffer[1]->buf32, cmp->image.buf32, buffer[1]->stride, cmp->image.stride, buffer[1]->w, buffer[1]->h, bbox, data->offset, opacity, direct);
+    std::swap(cmp->image.buf32, buffer[1]->buf32);
 
     //compositing shadow and body
     auto s = buffer[0]->buf32 + (bbox.min.y * buffer[0]->stride + bbox.min.x);

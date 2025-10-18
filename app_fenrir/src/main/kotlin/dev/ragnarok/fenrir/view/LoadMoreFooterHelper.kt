@@ -15,8 +15,8 @@ class LoadMoreFooterHelper {
     private var holder: Holder? = null
     private var state = LoadMoreState.INVISIBLE
     private var animation_id = 0
-    fun switchToState(@LoadMoreState state: Int) {
-        if (this.state == state) {
+    fun switchToState(@LoadMoreState state: Int, force: Boolean = false) {
+        if (!force && this.state == state) {
             return
         }
         this.state = state
@@ -90,6 +90,7 @@ class LoadMoreFooterHelper {
 
     fun updateLoadMoreButton(isFab: Boolean) {
         holder?.updateLoadMoreButton(isFab)
+        switchToState(state, true)
     }
 
     interface Callback {
@@ -108,12 +109,10 @@ class LoadMoreFooterHelper {
         fun updateLoadMoreButton(isFab: Boolean) {
             if (isFab) {
                 currentLoadMore = bLoadMoreFab
-                bLoadMoreFab.visibility = View.INVISIBLE
                 bLoadMoreButton.visibility = View.GONE
             } else {
                 currentLoadMore = bLoadMoreButton
                 bLoadMoreFab.visibility = View.GONE
-                bLoadMoreButton.visibility = View.INVISIBLE
             }
         }
     }
@@ -127,6 +126,8 @@ class LoadMoreFooterHelper {
             helper.callback = callback
             helper.holder?.bLoadMoreButton?.setOnClickListener { callback?.onLoadMoreClick() }
             helper.holder?.bLoadMoreFab?.setOnClickListener { callback?.onLoadMoreClick() }
+
+            helper.switchToState(LoadMoreState.INVISIBLE, true)
             return helper
         }
     }

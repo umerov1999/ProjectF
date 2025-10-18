@@ -95,7 +95,6 @@ add_library(libyuv STATIC
         animation/libyuv/source/compare.cc
         animation/libyuv/source/compare_common.cc
         animation/libyuv/source/compare_gcc.cc
-        animation/libyuv/source/compare_msa.cc
         animation/libyuv/source/compare_neon64.cc
         animation/libyuv/source/compare_neon.cc
         animation/libyuv/source/convert_argb.cc
@@ -116,7 +115,6 @@ add_library(libyuv STATIC
         animation/libyuv/source/rotate_gcc.cc
         animation/libyuv/source/rotate_sme.cc
         animation/libyuv/source/rotate_lsx.cc
-        animation/libyuv/source/rotate_msa.cc
         animation/libyuv/source/rotate_neon64.cc
         animation/libyuv/source/rotate_neon.cc
         animation/libyuv/source/row_any.cc
@@ -124,7 +122,6 @@ add_library(libyuv STATIC
         animation/libyuv/source/row_gcc.cc
         animation/libyuv/source/row_lasx.cc
         animation/libyuv/source/row_lsx.cc
-        animation/libyuv/source/row_msa.cc
         animation/libyuv/source/row_neon64.cc
         animation/libyuv/source/row_neon.cc
         animation/libyuv/source/row_rvv.cc
@@ -136,7 +133,6 @@ add_library(libyuv STATIC
         animation/libyuv/source/scale_common.cc
         animation/libyuv/source/scale_gcc.cc
         animation/libyuv/source/scale_lsx.cc
-        animation/libyuv/source/scale_msa.cc
         animation/libyuv/source/scale_neon64.cc
         animation/libyuv/source/scale_neon.cc
         animation/libyuv/source/scale_rgb.cc

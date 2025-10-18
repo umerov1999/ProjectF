@@ -769,11 +769,10 @@ void LottieBuilder::updateTrimpath(TVG_UNUSED LottieGroup* parent, LottieObject*
     trimpath->segment(frameNo, begin, end, tween, exps);
 
     if (SHAPE(ctx->propagator)->rs.stroke) {
-        auto pbegin = SHAPE(ctx->propagator)->rs.stroke->trim.begin;
-        auto pend = SHAPE(ctx->propagator)->rs.stroke->trim.end;
-        auto length = fabsf(pend - pbegin);
-        begin = (length * begin) + pbegin;
-        end = (length * end) + pbegin;
+        auto length = fabsf(begin - end);
+        auto tmp = begin;
+        begin = (length * SHAPE(ctx->propagator)->rs.stroke->trim.begin) + tmp;
+        end = (length * SHAPE(ctx->propagator)->rs.stroke->trim.end) + tmp;
     }
 
     ctx->propagator->trimpath(begin, end, trimpath->type == LottieTrimpath::Type::Simultaneous);
@@ -1217,7 +1216,7 @@ void LottieBuilder::updateMasks(LottieLayer* layer, float frameNo)
             SHAPE(pShape)->reset();
             auto compMethod = (method == MaskMethod::Subtract || method == MaskMethod::InvAlpha) ? MaskMethod::InvAlpha : MaskMethod::Alpha;
             //Cheaper. Replace the masking with a clipper
-            if (layer->masks.count == 1 && compMethod == MaskMethod::Alpha) {
+            if (layer->effects.empty() && layer->masks.count == 1 && compMethod == MaskMethod::Alpha) {
                 layer->scene->opacity(MULTIPLY(layer->scene->opacity(), opacity));
                 layer->scene->clip(pShape);
             } else {
@@ -1360,7 +1359,7 @@ void LottieBuilder::updateEffect(LottieLayer* layer, float frameNo, uint8_t qual
                 auto effect = static_cast<LottieFxDropShadow*>(*p);
                 auto color = effect->color(frameNo);
                 //seems the opacity range in dropshadow is 0 ~ 256
-                layer->scene->push(SceneEffect::DropShadow, color.r, color.g, color.b, std::min(255, (int)effect->opacity(frameNo)), (double)effect->angle(frameNo), double(effect->distance(frameNo) * 0.5f), (double)(effect->blurness(frameNo) * BLUR_TO_SIGMA), quality);
+                layer->scene->push(SceneEffect::DropShadow, color.r, color.g, color.b, std::min(255, (int)effect->opacity(frameNo)), (double)effect->angle(frameNo), double(effect->distance(frameNo)), (double)(effect->blurness(frameNo) * BLUR_TO_SIGMA), quality);
                 break;
             }
             case LottieEffect::GaussianBlur: {
@@ -1571,8 +1570,6 @@ void LottieBuilder::build(LottieComposition* comp)
     comp->root->scene = Scene::gen();
 
     _buildComposition(comp, comp->root);
-
-    if (!update(comp, 0)) return;
 
     //viewport clip
     auto clip = Shape::gen();

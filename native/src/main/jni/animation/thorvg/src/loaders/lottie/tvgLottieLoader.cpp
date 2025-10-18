@@ -39,30 +39,32 @@ LottieCustomSlot::~LottieCustomSlot()
 }
 
 
+bool LottieLoader::prepare()
+{
+    LottieParser parser(content, dirName, builder->expressions(), colorReplaceInternal);
+    if (!parser.parse()) return false;
+    {
+        ScopedLock lock(key);
+        comp = parser.comp;
+    }
+    if (!comp) return false;
+    if (parser.slots) {
+        auto slotcode = gen(parser.slots, true);
+        apply(slotcode, true);
+        del(slotcode, true);
+        parser.slots = nullptr;
+    }
+    builder->build(comp);
+    release();
+    return true;
+}
+
+
 void LottieLoader::run(unsigned tid)
 {
-    //update frame
-    if (comp) {
-        builder->update(comp, frameNo);
-    //initial loading
-    } else {
-        LottieParser parser(content, dirName, builder->expressions(), colorReplaceInternal);
-        if (!parser.parse()) return;
-        {
-            ScopedLock lock(key);
-            comp = parser.comp;
-        }
-        if (parser.slots) {
-            auto slotcode = gen(parser.slots, true);
-            apply(slotcode, true);
-            del(slotcode, true);
-            parser.slots = nullptr;
-        }
-        builder->build(comp);
-
-        release();
-    }
-    rebuild = false;
+    if (comp) builder->update(comp, frameNo);      //update frame
+    else if (prepare()) builder->update(comp, 0);  //initial loading
+    build = false;
 }
 
 
@@ -104,16 +106,14 @@ bool LottieLoader::header()
     //A single thread doesn't need to perform intensive tasks.
     if (TaskScheduler::threads() == 0) {
         LoadModule::read();
-        run(0);
-        if (comp) {
+        if (prepare()) {
             w = static_cast<float>(comp->w);
             h = static_cast<float>(comp->h);
             segmentEnd = frameCnt = comp->frameCnt();
             frameRate = comp->frameRate;
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     //Quickly validate the given Lottie file without parsing in order to get the animation info.
@@ -293,7 +293,7 @@ bool LottieLoader::read()
 
 Paint* LottieLoader::paint()
 {
-    done();
+    sync();
 
     if (!comp) return nullptr;
     comp->initiated = true;
@@ -326,7 +326,7 @@ bool LottieLoader::apply(uint32_t slotcode, bool byDefault)
         }
     }
     curSlot = slotcode;
-    if (applied) rebuild = true;
+    if (applied) build = true;
     return applied;
 }
 
@@ -342,7 +342,7 @@ bool LottieLoader::del(uint32_t slotcode, bool byDefault)
             ARRAY_FOREACH(p, slot->props) {
                 p->target->reset();
             }
-            rebuild = true;
+            build = true;
         }
         this->slots.remove(slot);
         delete(slot);
@@ -367,11 +367,15 @@ uint32_t LottieLoader::gen(const char* slots, bool byDefault)
     //Generates list of the custom slot overriding
     while (auto sid = djb2Encode(parser.sid(idx == 0))) {
         //Associates the overrding target to apply for the current custom slot
+        auto found = false;
         ARRAY_FOREACH(p, comp->slots) {
             if ((*p)->sid != sid) continue;  //find target
             if (auto prop = parser.parse(*p)) custom->props.push({prop, *p});
+            found = true;
             break;
         }
+
+        if (!found) parser.skip(); //skip the value if the target slot is not found
         ++idx;
     }
 
@@ -444,7 +448,7 @@ void LottieLoader::sync()
 {
     done();
 
-    if (rebuild) run(0);
+    if (build) run(0);
 }
 
 
@@ -537,7 +541,7 @@ bool LottieLoader::quality(uint8_t value)
     if (!ready()) return false;
     if (comp->quality != value) {
         comp->quality = value;
-        rebuild = true;
+        build = true;
     }
     return true;
 }
